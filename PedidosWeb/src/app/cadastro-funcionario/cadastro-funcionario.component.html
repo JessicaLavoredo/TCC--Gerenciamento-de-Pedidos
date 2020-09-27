@@ -1,0 +1,125 @@
+ <app-menu></app-menu>
+ <div class="TituloPagina ">
+   <span class="align-middle">Cadastro de Funcionario</span>
+ </div>
+
+<form>
+    <div class="container corpo">
+        <div class="form-row">
+            <div class="form-group col-md-2">
+                <label for="txtCodigo">Codigo</label>
+                <input type="text" class="form-control" id="txtCodigo">
+            </div>
+            <div class="form-group col-md-5">
+                <label for="txtNome">Nome</label>
+                <input type="text" class="form-control" id="txtNome">
+            </div>
+            <div class="form-group col-md-5">
+                <label for="txtApelido">Apelido</label>
+                <input type="text" class="form-control" id="txtApelido">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="txtCpf">CPF</label>
+                <input type="text" class="form-control" id="txtCpf">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="txtRg">RG</label>
+                <input type="text" class="form-control" id="txtRg">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="txtDataNasc">Data de Nascimento</label>
+                <input type="date" class="form-control" id="txtDataNasc">
+            </div>
+        </div>
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <div>
+                <label>Genero</label>
+            </div>            
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="optmasculino" value="option1">
+                <label class="form-check-label" for="optmasculino">Masculino</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                <label class="form-check-label" for="inlineRadio2">Feminino</label>
+            </div>
+        </div>
+       
+        <div class="form-group col-md-4">
+            <div class="form-check">
+              <input class="form-check-input" type="checkbox" id="gridCheck">
+              <label class="form-check-label" for="gridCheck">
+                inativo
+              </label>
+            </div>
+          </div>
+          <div class="form-group col-md-4">
+            <label for="inputState">Cargo</label>
+            <select id="inputState" class="form-control">
+              <option selected>Choose...</option>
+              <option>...</option>
+            </select>
+          </div>
+    </div> 
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Endereço</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Email</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Telefone</a>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+       
+        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+        <div class="form-row">
+          <div class="form-group col-md-12">
+            <label for="txtCodigo">Logradouro</label>
+            <input type="text" class="form-control" id="txtCodigo">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-10">
+            <label for="txtCodigo">Bairo</label>
+            <input type="text" class="form-control" id="txtCodigo">
+          </div>
+          <div class="form-group col-md-2">
+            <label for="txtCodigo">CEP</label>
+            <input type="text" class="form-control" id="txtCodigo">
+          </div>
+          <div class="form-group col-md-2">
+            <label for="txtCodigo">Cidade</label>
+            <input type="text" class="form-control" id="txtCodigo">
+          </div>
+        </div>
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label for="inputState">Cargo</label>
+              <select id="inputState" class="form-control">
+                <option selected>Choose...</option>
+                <option>...</option>
+              </select>
+            </div>
+            </div>
+        </div>
+        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">email</div>
+        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab"></div>
+      </div>    
+
+</div>
+
+    
+ <app-footer>
+    <span footer>
+        <button type="button" class="btn btn-secondary mr-5 rounded-pill">Salvar</button>
+        <button type="button" class="btn btn-secondary rounded-pill">Novo</button>
+    </span>
+ </app-footer>
+
+</form>

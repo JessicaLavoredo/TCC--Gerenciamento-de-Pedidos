@@ -6,13 +6,15 @@ import { MenuComponent } from './menu/menu.component';
 import { FooterComponent } from './footer/footer.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HomeComponent } from './home/home.component';
+import { CadastroFuncionarioComponent } from './cadastro-funcionario/cadastro-funcionario.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     MenuComponent,
     FooterComponent,
-    HomeComponent
+    HomeComponent,
+    CadastroFuncionarioComponent
   ],
   imports: [
     BrowserModule,
