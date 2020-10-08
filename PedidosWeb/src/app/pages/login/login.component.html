@@ -1,0 +1,16 @@
+<div class="wrapper">
+    <div id="formContent">
+        <div id="logintitle">
+            <h1>Login</h1>
+        </div>  
+        <form (ngSubmit)="onSubmit()" #form="ngForm">
+        <input class="form-control" type="email" id="Usuario"  name="email" placeholder="Usuario" [(ngModel)]="login.email" required>
+        <input class="form-control" type="password" id="Senha" name="login" placeholder="Senha" [(ngModel)]="login.Password" required>
+        <button type="submit" class="btn btn-primary">Entrar</button>
+      </form>
+      <div id="formFooter">
+        <a class="underlineHover" href="#">Esqueceu a senha?</a>
+      </div>
+  
+    </div>
+  </div>

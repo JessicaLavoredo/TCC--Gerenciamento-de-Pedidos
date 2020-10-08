@@ -1,0 +1,311 @@
+ <app-menu></app-menu>
+ <div class="TituloPagina">
+   <span>Cadastro de Funcionario</span>
+ </div>
+
+<form >
+    <div class="container corpo">
+        <div class="form-row">
+            <div class="form-group col-md-2">
+                <label for="txtCodigo">Codigo</label>
+                <input type="text" class="form-control" id="txtCodigo">
+            </div>
+            <div class="form-group col-md-5">
+                <label for="txtNome">Nome</label>
+                <input type="text" class="form-control" id="txtNome">
+            </div>
+            <div class="form-group col-md-5">
+                <label for="txtApelido">Apelido</label>
+                <input type="text" class="form-control" id="txtApelido">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="txtCpf">CPF</label>
+                <input type="text" class="form-control" id="txtCpf">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="txtRg">RG</label>
+                <input type="text" class="form-control" id="txtRg">
+            </div>
+            
+            <div class="form-group col-md-4">
+                <label for="txtDataNasc">Data de Nascimento</label>
+                <input type="date" class="form-control" id="txtDataNasc" pattern="dd/MM/yyyy">
+            </div>
+        </div>
+    <div class="form-row">
+        <div class="form-group col-md-4">
+            <div>
+                <label>Genero</label>
+            </div>            
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="optmasculino" value="option1">
+                <label class="form-check-label label-radio" for="optmasculino">Masculino</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
+                <label class="form-check-label label-radio" for="inlineRadio2">Feminino</label>
+            </div>
+        </div>
+       
+       
+          <div class="form-group col-md-4">
+            <label for="inputState">Cargo</label>
+            <select id="inputState" class="form-control">
+              <option selected>Choose...</option>
+              <option>...</option>
+            </select>
+          </div>
+          <div class="form-group col-md-4">
+            <div class="form-check ">
+              <input class="form-check-input checkboxInativo" type="checkbox" id="gridCheck">
+              <label class="form-check-label checkboxlabelInativo" for="gridCheck">
+                inativo
+              </label>
+            </div>
+          </div>
+    </div> 
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+          <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Endereço</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Email</a>
+        </li>
+        <li class="nav-item" role="presentation">
+          <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Telefone</a>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+       
+        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+        <div class="form-row">
+          <div class="form-group col-md-2">
+            <label for="txtCodigo">Codigo</label>
+            <input type="text" class="form-control" id="txtCodigo" >
+          </div>
+          <div class="form-group col-md-10">
+            <label for="txtCodigo">Logradouro</label>
+            <input type="text" class="form-control" id="txtCodigo">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-8">
+            <label for="txtCodigo">Bairo</label>
+            <input type="text" class="form-control" id="txtCodigo">
+          </div>
+          <div class="form-group col-md-2">
+            <label for="txtCodigo">CEP</label>
+            <input type="text" class="form-control" id="txtCodigo">
+          </div>
+          <div class="form-group col-md-2">
+            <label for="txtCodigo">Cidade</label>
+            <input type="text" class="form-control" id="txtCodigo">
+          </div>
+        </div>
+          <div class="form-row">
+            <div class="form-group col-md-4">
+              <label for="inputState">Categoria</label>
+              <select id="inputState" class="form-control">
+                <option selected>Choose...</option>
+                <option>...</option>
+              </select>
+            </div>
+            <div class="form-group col-md-8">
+              <label for="txtCodigo">Observação</label>
+              <input type="text" class="form-control" id="txtCodigo">
+            </div>
+            </div>
+            <div>
+              <button type="button" class="btn btn-secondary mb-3 mt-3 rounded-pill">Adicionar</button>
+            </div>
+            <table class="table">
+              <thead class="tabelas">
+                <tr>
+                  <th scope="col">Codigo</th>
+                  <th scope="col">Logradouro</th>
+                  <th scope="col">Bairo</th>
+                  <th scope="col">CEP</th>
+                  <th scope="col">Cidade</th>
+                  <th scope="col">Categoria</th>
+                  <th scope="col">Observação</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th scope="row">1</th>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <th scope="row">2</th>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+                <tr>
+                  <th scope="row">3</th>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>
+            
+        </div>
+        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+          <div class="form-row">
+            <div class="form-group col-md-2">
+              <label for="txtCodigo">Codigo</label>
+              <input type="text" class="form-control" id="txtCodigo">
+            </div>
+            <div class="form-group col-md-10">
+              <label for="txtCodigo">Endereço</label>
+              <input type="text" class="form-control" id="txtCodigo">
+            </div>
+          </div>
+          <div class="form-row">
+              <div class="form-group col-md-4">
+                <label for="inputState">Categoria</label>
+                <select id="inputState" class="form-control">
+                  <option selected>Choose...</option>
+                  <option>...</option>
+                </select>
+              </div>
+              <div class="form-group col-md-8">
+                <label for="txtCodigo">Observação</label>
+                <input type="text" class="form-control" id="txtCodigo">
+              </div>
+              </div>
+              <div>
+                <button type="button" class="btn btn-secondary mb-3 mt-3 rounded-pill">Adicionar</button>
+              </div>
+              <table class="table">
+                <thead class="tabelas">
+                  <tr>
+                    <th scope="col">Codigo</th>
+                    <th scope="col">Endereço</th>
+                    <th scope="col">Categoria</th>
+                    <th scope="col">Observação</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">1</th>
+                    <td>coluna</td>
+                    <td>coluna</td>
+                    <td>coluna</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">2</th>
+                    <td>coluna</td>
+                    <td>coluna</td>
+                    <td>coluna</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">3</th>
+                    <td>coluna</td>
+                    <td>coluna</td>
+                    <td>coluna</td>
+                  </tr>
+                </tbody>
+              </table>
+        </div>
+        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+          <div class="form-row">
+            <div class="form-group col-md-2">
+              <label for="txtCodigo">Codigo</label>
+              <input type="text" class="form-control" id="txtCodigo">
+            </div>
+            <div class="form-group col-md-2">
+              <label for="txtCodigo">DDD</label>
+              <input type="text" class="form-control" id="txtCodigo">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="txtCodigo">Numero</label>
+              <input type="text" class="form-control" id="txtCodigo">
+            </div>
+            <div class="form-group col-md-4">
+              <label for="txtCodigo">Ramal</label>
+              <input type="text" class="form-control" id="txtCodigo">
+            </div>
+          </div>
+          <div class="form-row">
+              <div class="form-group col-md-4">
+                <label for="inputState">Categoria</label>
+                <select id="inputState" class="form-control">
+                  <option selected>Choose...</option>
+                  <option>...</option>
+                </select>
+              </div>
+              <div class="form-group col-md-8">
+                <label for="txtCodigo">Observação</label>
+                <input type="text" class="form-control" id="txtCodigo">
+              </div>
+              </div>
+              <div>
+                <button type="button" class="btn btn-secondary mb-3 mt-3 rounded-pill">Adicionar</button>
+              </div>
+              <table class="table">
+                <thead class="tabelas">
+                  <tr>
+                    <th scope="col">Codigo</th>
+                    <th scope="col">DDD</th>
+                    <th scope="col">Numero</th>
+                    <th scope="col">Ramal</th>
+                    <th scope="col">Categoria</th>
+                    <th scope="col">Observação</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th scope="row">1</th>
+                    <td>coluna</td>
+                    <td>coluna</td>
+                    <td>coluna</td>
+                    <td>coluna</td>
+                    <td>coluna</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">2</th>
+                    <td>coluna</td>
+                    <td>coluna</td>
+                    <td>coluna</td>
+                    <td>coluna</td>
+                    <td>coluna</td>
+                  </tr>
+                  <tr>
+                    <th scope="row">3</th>
+                    <td>coluna</td>
+                    <td>coluna</td>
+                    <td>coluna</td>
+                    <td>coluna</td>
+                    <td>coluna</td>
+                  </tr>
+                </tbody>
+              </table>
+        </div>
+      </div>    
+
+</div>
+
+    
+ <app-footer>
+    <span rodape>
+        <button type="submit" class="btn btn-secondary ml-5 rounded-pill">Salvar</button>
+        <button type="button" class="btn btn-secondary ml-5 rounded-pill">Novo</button>
+    </span>
+ </app-footer>
+
+</form>
