@@ -14,6 +14,15 @@ import { PageLogadaComponent } from './pages/page-logada/page-logada.component';
 import { CadastroCatEmailComponent } from './pages/cadastro-cat-email/cadastro-cat-email.component';
 import { CadastroCatEnderecoComponent } from './pages/cadastro-cat-endereco/cadastro-cat-endereco.component';
 import { CadastroCatTelefoneComponent } from './pages/cadastro-cat-telefone/cadastro-cat-telefone.component';
+import { HomeAdminComponent } from './pages/home-admin/home-admin.component';
+import { CadastroPerfilUsuarioComponent } from './pages/cadastro-perfil-usuario/cadastro-perfil-usuario.component';
+import { CadastroUsuarioComponent } from './pages/cadastro-usuario/cadastro-usuario.component';
+import { CadastroProdutoComponent } from './pages/cadastro-produto/cadastro-produto.component';
+import { CadastroListaPrecoComponent } from './pages/cadastro-lista-preco/cadastro-lista-preco.component';
+import { CadastroFormaPagamentoComponent } from './pages/cadastro-forma-pagamento/cadastro-forma-pagamento.component';
+import { CadastroClienteComponent } from './pages/cadastro-cliente/cadastro-cliente.component';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { NgxMaskModule, IConfig } from 'ngx-mask';
 
 @NgModule({
   declarations: [
@@ -27,12 +36,21 @@ import { CadastroCatTelefoneComponent } from './pages/cadastro-cat-telefone/cada
     PageLogadaComponent,
     CadastroCatEmailComponent,
     CadastroCatEnderecoComponent,
-    CadastroCatTelefoneComponent
+    CadastroCatTelefoneComponent,
+    HomeAdminComponent,
+    CadastroPerfilUsuarioComponent,
+    CadastroUsuarioComponent,
+    CadastroProdutoComponent,
+    CadastroListaPrecoComponent,
+    CadastroFormaPagamentoComponent,
+    CadastroClienteComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
-    FormsModule
+    FormsModule,
+    NgbModule,
+    NgxMaskModule.forRoot(),
   ],
   providers: [],
   bootstrap: [AppComponent]

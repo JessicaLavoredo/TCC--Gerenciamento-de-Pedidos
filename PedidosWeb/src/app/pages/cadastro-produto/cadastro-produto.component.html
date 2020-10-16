@@ -1,0 +1,61 @@
+<app-menu></app-menu>
+<div class="TituloPagina">
+  <span>Cadastro de Produto</span>
+</div>
+
+<form >
+   <div class="container corpo">
+       <div class="form-row">
+           <div class="form-group col-md-2">
+               <label for="txtCodigo">Código</label>
+               <input type="text" class="form-control" id="txtCodigo">
+           </div>
+           <div class="form-group col-md-5">
+               <label for="txtNome">Nome Técnico</label>
+               <input type="text" class="form-control" id="txtNome">
+           </div>
+           <div class="form-group col-md-5">
+            <label for="inputState">Nome Comercial</label>
+            <input type="text" class="form-control" id="txtCpf">
+           </div>
+       </div>
+       <div class="form-row">
+           <div class="form-group col-md-4">
+               <label for="txtCpf">Codigo Interno</label>
+               <input type="text" class="form-control" id="txtCpf">
+           </div>
+           <div class="form-group col-md-4">
+               <label for="txtRg">Descrição</label>
+               <input type="text" class="form-control" id="txtRg">
+           </div>
+       </div>
+       <div class="form-row">
+        <div class="form-group col-md-4">
+            <label for="inputState">Lista de Preço</label>
+            <select id="inputState" class="form-control">
+              <option selected></option>
+              <option></option>
+            </select>
+          </div>
+        <div class="form-group col-md-4">
+            <label for="txtCpf">Preço à vista</label>
+            <input type="number" class="form-control" id="txtCpf" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/" > 
+        </div>
+        <div class="form-group col-md-4">
+            <label for="txtRg">Preço à Prazo</label>
+            <input type="text" class="form-control" id="txtRg">
+        </div>
+    </div>
+    </div>
+
+   
+<app-footer>
+   <span rodape>
+       <button type="submit" class="btn btn-secondary ml-5 rounded-pill">Salvar</button>
+       <button type="button" class="btn btn-secondary ml-5 rounded-pill">Novo</button>
+   </span>
+</app-footer>
+
+</form>
+
+
