@@ -1,13 +1,13 @@
  <app-menu></app-menu>
  <div class="TituloPagina">
-   <span>Cadastro de Funcionario</span>
+   <span>Cadastro de Funcionário</span>
  </div>
 
 <form >
     <div class="container corpo">
         <div class="form-row">
             <div class="form-group col-md-2">
-                <label for="txtCodigo">Codigo</label>
+                <label for="txtCodigo">Código</label>
                 <input type="text" class="form-control" id="txtCodigo">
             </div>
             <div class="form-group col-md-5">
@@ -22,16 +22,16 @@
         <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="txtCpf">CPF</label>
-                <input type="text" class="form-control" id="txtCpf">
+                <input type="text" class="form-control" id="txtCpf" mask="000.000.000-00">
             </div>
             <div class="form-group col-md-4">
                 <label for="txtRg">RG</label>
-                <input type="text" class="form-control" id="txtRg">
+                <input type="text" class="form-control" id="txtRg" mask="00.000.000-0">
             </div>
             
             <div class="form-group col-md-4">
                 <label for="txtDataNasc">Data de Nascimento</label>
-                <input type="date" class="form-control" id="txtDataNasc" pattern="dd/MM/yyyy">
+                <input type="text" class="form-control" id="txtDataNasc" mask="00/00/0000">
             </div>
         </div>
     <div class="form-row">
@@ -53,8 +53,8 @@
           <div class="form-group col-md-4">
             <label for="inputState">Cargo</label>
             <select id="inputState" class="form-control">
-              <option selected>Choose...</option>
-              <option>...</option>
+              <option selected></option>
+              <option></option>
             </select>
           </div>
           <div class="form-group col-md-4">
@@ -82,7 +82,7 @@
         <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
         <div class="form-row">
           <div class="form-group col-md-2">
-            <label for="txtCodigo">Codigo</label>
+            <label for="txtCodigo">Código</label>
             <input type="text" class="form-control" id="txtCodigo" >
           </div>
           <div class="form-group col-md-10">
@@ -92,12 +92,12 @@
         </div>
         <div class="form-row">
           <div class="form-group col-md-8">
-            <label for="txtCodigo">Bairo</label>
+            <label for="txtCodigo">Bairro</label>
             <input type="text" class="form-control" id="txtCodigo">
           </div>
           <div class="form-group col-md-2">
             <label for="txtCodigo">CEP</label>
-            <input type="text" class="form-control" id="txtCodigo">
+            <input type="text" class="form-control" id="txtCodigo" mask="00000-000">
           </div>
           <div class="form-group col-md-2">
             <label for="txtCodigo">Cidade</label>
@@ -108,8 +108,8 @@
             <div class="form-group col-md-4">
               <label for="inputState">Categoria</label>
               <select id="inputState" class="form-control">
-                <option selected>Choose...</option>
-                <option>...</option>
+                <option selected></option>
+                <option></option>
               </select>
             </div>
             <div class="form-group col-md-8">
@@ -123,9 +123,9 @@
             <table class="table">
               <thead class="tabelas">
                 <tr>
-                  <th scope="col">Codigo</th>
+                  <th scope="col">Código</th>
                   <th scope="col">Logradouro</th>
-                  <th scope="col">Bairo</th>
+                  <th scope="col">Bairro</th>
                   <th scope="col">CEP</th>
                   <th scope="col">Cidade</th>
                   <th scope="col">Categoria</th>
@@ -167,7 +167,7 @@
         <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
           <div class="form-row">
             <div class="form-group col-md-2">
-              <label for="txtCodigo">Codigo</label>
+              <label for="txtCodigo">Código</label>
               <input type="text" class="form-control" id="txtCodigo">
             </div>
             <div class="form-group col-md-10">
@@ -179,8 +179,8 @@
               <div class="form-group col-md-4">
                 <label for="inputState">Categoria</label>
                 <select id="inputState" class="form-control">
-                  <option selected>Choose...</option>
-                  <option>...</option>
+                  <option selected></option>
+                  <option></option>
                 </select>
               </div>
               <div class="form-group col-md-8">
@@ -194,7 +194,7 @@
               <table class="table">
                 <thead class="tabelas">
                   <tr>
-                    <th scope="col">Codigo</th>
+                    <th scope="col">Código</th>
                     <th scope="col">Endereço</th>
                     <th scope="col">Categoria</th>
                     <th scope="col">Observação</th>
@@ -203,21 +203,21 @@
                 <tbody>
                   <tr>
                     <th scope="row">1</th>
-                    <td>coluna</td>
-                    <td>coluna</td>
-                    <td>coluna</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                   </tr>
                   <tr>
                     <th scope="row">2</th>
-                    <td>coluna</td>
-                    <td>coluna</td>
-                    <td>coluna</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                   </tr>
                   <tr>
                     <th scope="row">3</th>
-                    <td>coluna</td>
-                    <td>coluna</td>
-                    <td>coluna</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                   </tr>
                 </tbody>
               </table>
@@ -225,16 +225,16 @@
         <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
           <div class="form-row">
             <div class="form-group col-md-2">
-              <label for="txtCodigo">Codigo</label>
+              <label for="txtCodigo">Código</label>
               <input type="text" class="form-control" id="txtCodigo">
             </div>
             <div class="form-group col-md-2">
               <label for="txtCodigo">DDD</label>
-              <input type="text" class="form-control" id="txtCodigo">
+              <input type="text" class="form-control" id="txtCodigo" mask="(00)">
             </div>
             <div class="form-group col-md-4">
               <label for="txtCodigo">Numero</label>
-              <input type="text" class="form-control" id="txtCodigo">
+              <input type="text" class="form-control" id="txtCodigo" mask="00000-0000">
             </div>
             <div class="form-group col-md-4">
               <label for="txtCodigo">Ramal</label>
@@ -245,8 +245,8 @@
               <div class="form-group col-md-4">
                 <label for="inputState">Categoria</label>
                 <select id="inputState" class="form-control">
-                  <option selected>Choose...</option>
-                  <option>...</option>
+                  <option selected></option>
+                  <option></option>
                 </select>
               </div>
               <div class="form-group col-md-8">
@@ -260,7 +260,7 @@
               <table class="table">
                 <thead class="tabelas">
                   <tr>
-                    <th scope="col">Codigo</th>
+                    <th scope="col">Código</th>
                     <th scope="col">DDD</th>
                     <th scope="col">Numero</th>
                     <th scope="col">Ramal</th>
@@ -271,27 +271,19 @@
                 <tbody>
                   <tr>
                     <th scope="row">1</th>
-                    <td>coluna</td>
-                    <td>coluna</td>
-                    <td>coluna</td>
-                    <td>coluna</td>
-                    <td>coluna</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
                   </tr>
                   <tr>
                     <th scope="row">2</th>
-                    <td>coluna</td>
-                    <td>coluna</td>
-                    <td>coluna</td>
-                    <td>coluna</td>
-                    <td>coluna</td>
+                   
                   </tr>
                   <tr>
                     <th scope="row">3</th>
-                    <td>coluna</td>
-                    <td>coluna</td>
-                    <td>coluna</td>
-                    <td>coluna</td>
-                    <td>coluna</td>
+                   
                   </tr>
                 </tbody>
               </table>
