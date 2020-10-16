@@ -10,9 +10,11 @@
 
         function login($login, $senha) {
             $sql = "SELECT * FROM usuario WHERE login = ? AND senha = ?";
-
+            $db = new PDO("mysql:host=localhost;dbname=master-pedidos;charset=utf8mb4", "root", "");
+			$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+            
             try {
-                $stm = $this->db->prepare($sql);
+                $stm = $db->prepare($sql);
                 $stm->bindValue(1, $login);
                 $stm->bindValue(2, $senha);
                 $stm->execute();
