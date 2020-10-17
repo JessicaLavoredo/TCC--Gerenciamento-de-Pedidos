@@ -37,9 +37,9 @@
         }
 
         function buscarTodos() {
-            $tabela = get_class($this);
-            $sql = "SELECT * FROM ".$tabela;
-            $ret = $this->executar($sql);
+            $classe = get_class($this);
+            $sql = "SELECT * FROM ".$classe;
+            $ret = $this->executar($sql, $classe);
             return $ret;
         }
 

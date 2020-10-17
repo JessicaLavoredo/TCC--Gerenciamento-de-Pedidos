@@ -1,5 +1,5 @@
 <?php
-    class CategoriaTelefone {
+    class CategoriaTelefone extends CategoriaTelefoneData {
         private $idCategoriaTelefone;
         private $nome;
         private $descricao;
@@ -8,9 +8,9 @@
         function getNome() {return $this->nome;}
         function getDescricao() {return $this->descricao;}
 
-        function setIdCategoriaTelefone() {$this->idCategoriaTelefone = $idCategoriaTelefone;}
-        function setNome() {$this->nome = $nome;}
-        function setDescricao() {$this->descricao = $descricao;}
+        function setIdCategoriaTelefone($idCategoriaTelefone) {$this->idCategoriaTelefone = $idCategoriaTelefone;}
+        function setNome($nome) {$this->nome = $nome;}
+        function setDescricao($descricao) {$this->descricao = $descricao;}
 
         function __construct($idCategoriaTelefone="", $nome="", $descricao="") {
             $this->setIdCategoriaTelefone($idCategoriaTelefone);

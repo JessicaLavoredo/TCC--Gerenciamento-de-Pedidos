@@ -1,10 +1,5 @@
 <?php
-
-    class PessoaData extends conexao{
-
-        
-
+    class PessoaData extends BaseData{
 
     } // fim da classe
-
 ?>

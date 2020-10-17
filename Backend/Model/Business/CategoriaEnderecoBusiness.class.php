@@ -1,15 +1,7 @@
 <?php
-
-    class CategoriaEnderecoBusiness {
-
+    class CategoriaEnderecoBusiness extends BaseBusiness {
         function __construct() {
 
         }
-
-        function buscarTodos(){
-            return (New CategoriaEndereco())->buscarTodos();
-        }
-
     }
-
 ?>

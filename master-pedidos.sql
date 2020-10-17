@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 16-Out-2020 às 01:10
+-- Tempo de geração: 18-Out-2020 às 01:40
 -- Versão do servidor: 10.4.11-MariaDB
 -- versão do PHP: 7.4.2
 
@@ -25,41 +25,20 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `categoriaendereco`
+-- Estrutura da tabela `categoriaemail`
 --
 
-CREATE TABLE `categoriaendereco` (
-  `idCategoriaEndereco` int(11) NOT NULL,
+CREATE TABLE `categoriaemail` (
+  `IdCategoriaEmail` int(11) NOT NULL,
   `Nome` varchar(45) DEFAULT NULL,
   `Descricao` varchar(45) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Extraindo dados da tabela `categoriaendereco`
+-- Extraindo dados da tabela `categoriaemail`
 --
 
-INSERT INTO `categoriaendereco` (`idCategoriaEndereco`, `Nome`, `Descricao`) VALUES
-(1, 'Padrão', NULL),
-(2, 'Entrega', NULL),
-(3, 'Cobrança', NULL);
-
--- --------------------------------------------------------
-
---
--- Estrutura da tabela `categoria_email`
---
-
-CREATE TABLE `categoria_email` (
-  `idCategoria_Email` int(11) NOT NULL,
-  `Nome` varchar(45) DEFAULT NULL,
-  `Descricao` varchar(45) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Extraindo dados da tabela `categoria_email`
---
-
-INSERT INTO `categoria_email` (`idCategoria_Email`, `Nome`, `Descricao`) VALUES
+INSERT INTO `categoriaemail` (`IdCategoriaEmail`, `Nome`, `Descricao`) VALUES
 (1, 'Padrão', NULL),
 (2, 'Cobrança', NULL),
 (3, 'Nota Fiscal', NULL),
@@ -68,20 +47,41 @@ INSERT INTO `categoria_email` (`idCategoria_Email`, `Nome`, `Descricao`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `categoria_telefone`
+-- Estrutura da tabela `categoriaendereco`
 --
 
-CREATE TABLE `categoria_telefone` (
-  `idCategoria_Telefone` int(11) NOT NULL,
+CREATE TABLE `categoriaendereco` (
+  `IdCategoriaEndereco` int(11) NOT NULL,
   `Nome` varchar(45) DEFAULT NULL,
   `Descricao` varchar(45) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Extraindo dados da tabela `categoria_telefone`
+-- Extraindo dados da tabela `categoriaendereco`
 --
 
-INSERT INTO `categoria_telefone` (`idCategoria_Telefone`, `Nome`, `Descricao`) VALUES
+INSERT INTO `categoriaendereco` (`IdCategoriaEndereco`, `Nome`, `Descricao`) VALUES
+(1, 'Padrão', NULL),
+(2, 'Entrega', NULL),
+(3, 'Cobrança', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `categoriatelefone`
+--
+
+CREATE TABLE `categoriatelefone` (
+  `IdCategoriaTelefone` int(11) NOT NULL,
+  `Nome` varchar(45) DEFAULT NULL,
+  `Descricao` varchar(45) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `categoriatelefone`
+--
+
+INSERT INTO `categoriatelefone` (`IdCategoriaTelefone`, `Nome`, `Descricao`) VALUES
 (1, 'Padrão', NULL),
 (2, 'Comercial', NULL),
 (3, 'Residencial', NULL),
@@ -97,14 +97,14 @@ CREATE TABLE `cidade` (
   `idCidade` bigint(20) NOT NULL,
   `Nome` varchar(60) DEFAULT NULL,
   `Codigo_IBGE` int(11) DEFAULT NULL,
-  `idEstado` int(11) NOT NULL
+  `IdEstado` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `cidade`
 --
 
-INSERT INTO `cidade` (`idCidade`, `Nome`, `Codigo_IBGE`, `idEstado`) VALUES
+INSERT INTO `cidade` (`idCidade`, `Nome`, `Codigo_IBGE`, `IdEstado`) VALUES
 (1, 'ALTA FLORESTA D\'OESTE', 1100015, 1),
 (2, 'ARIQUEMES', 1100023, 1),
 (3, 'CABIXI', 1100031, 1),
@@ -1583,7 +1583,7 @@ INSERT INTO `cidade` (`idCidade`, `Nome`, `Codigo_IBGE`, `idEstado`) VALUES
 (1476, 'ANGELIM', 2601003, 13),
 (1477, 'ARAÇOIABA', 2601052, 13),
 (1478, 'ARARIPINA', 2601102, 13);
-INSERT INTO `cidade` (`idCidade`, `Nome`, `Codigo_IBGE`, `idEstado`) VALUES
+INSERT INTO `cidade` (`idCidade`, `Nome`, `Codigo_IBGE`, `IdEstado`) VALUES
 (1479, 'ARCOVERDE', 2601201, 13),
 (1480, 'BARRA DE GUABIRABA', 2601300, 13),
 (1481, 'BARREIROS', 2601409, 13),
@@ -3050,7 +3050,7 @@ INSERT INTO `cidade` (`idCidade`, `Nome`, `Codigo_IBGE`, `idEstado`) VALUES
 (2942, 'SANTO ANTÔNIO DO AMPARO', 3159902, 17),
 (2943, 'SANTO ANTÔNIO DO AVENTUREIRO', 3160009, 17),
 (2944, 'SANTO ANTÔNIO DO GRAMA', 3160108, 17);
-INSERT INTO `cidade` (`idCidade`, `Nome`, `Codigo_IBGE`, `idEstado`) VALUES
+INSERT INTO `cidade` (`idCidade`, `Nome`, `Codigo_IBGE`, `IdEstado`) VALUES
 (2945, 'SANTO ANTÔNIO DO ITAMBÉ', 3160207, 17),
 (2946, 'SANTO ANTÔNIO DO JACINTO', 3160306, 17),
 (2947, 'SANTO ANTÔNIO DO MONTE', 3160405, 17),
@@ -4493,7 +4493,7 @@ INSERT INTO `cidade` (`idCidade`, `Nome`, `Codigo_IBGE`, `idEstado`) VALUES
 (4384, 'CORUPÁ', 4204509, 22),
 (4385, 'CORREIA PINTO', 4204558, 22),
 (4386, 'CRICIÚMA', 4204608, 22);
-INSERT INTO `cidade` (`idCidade`, `Nome`, `Codigo_IBGE`, `idEstado`) VALUES
+INSERT INTO `cidade` (`idCidade`, `Nome`, `Codigo_IBGE`, `IdEstado`) VALUES
 (4387, 'CUNHA PORÃ', 4204707, 22),
 (4388, 'CUNHATAÍ', 4204756, 22),
 (4389, 'CURITIBANOS', 4204806, 22),
@@ -5688,10 +5688,10 @@ INSERT INTO `cidade` (`idCidade`, `Nome`, `Codigo_IBGE`, `idEstado`) VALUES
 --
 
 CREATE TABLE `email` (
-  `idEmail` bigint(20) NOT NULL,
-  `idPessoa` bigint(20) NOT NULL,
+  `IdEmail` bigint(20) NOT NULL,
+  `IdPessoa` bigint(20) NOT NULL,
   `Endereco` varchar(45) DEFAULT NULL,
-  `idCategoria_Email` int(11) NOT NULL,
+  `IdCategoriaEmail` int(11) NOT NULL,
   `Observacao` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -5702,13 +5702,13 @@ CREATE TABLE `email` (
 --
 
 CREATE TABLE `endereco` (
-  `idEndereco` bigint(20) NOT NULL,
-  `idPessoa` bigint(20) NOT NULL,
+  `IdEndereco` bigint(20) NOT NULL,
+  `IdPessoa` bigint(20) NOT NULL,
   `CEP` char(8) DEFAULT NULL,
   `Logradouro` varchar(45) DEFAULT NULL,
   `Bairro` varchar(45) DEFAULT NULL,
-  `idCidade` bigint(20) NOT NULL,
-  `idCategoriaEndereco` int(11) NOT NULL,
+  `IdCidade` bigint(20) NOT NULL,
+  `IdCategoriaEndereco` int(11) NOT NULL,
   `Observacao` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -5719,7 +5719,7 @@ CREATE TABLE `endereco` (
 --
 
 CREATE TABLE `estado` (
-  `idEstado` int(11) NOT NULL,
+  `IdEstado` int(11) NOT NULL,
   `Nome` varchar(50) DEFAULT NULL,
   `Sigla` char(2) DEFAULT NULL,
   `Regiao` varchar(45) DEFAULT NULL,
@@ -5730,7 +5730,7 @@ CREATE TABLE `estado` (
 -- Extraindo dados da tabela `estado`
 --
 
-INSERT INTO `estado` (`idEstado`, `Nome`, `Sigla`, `Regiao`, `Codigo_IBGE`) VALUES
+INSERT INTO `estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `Codigo_IBGE`) VALUES
 (1, 'RONDÔNIA', 'RO', 'NORTE', '11'),
 (2, 'ACRE', 'AC', 'NORTE', '12'),
 (3, 'AMAZONAS', 'AM', 'NORTE', '13'),
@@ -5762,63 +5762,63 @@ INSERT INTO `estado` (`idEstado`, `Nome`, `Sigla`, `Regiao`, `Codigo_IBGE`) VALU
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `forma_pagamento`
+-- Estrutura da tabela `formapagamento`
 --
 
-CREATE TABLE `forma_pagamento` (
-  `idForma_Pagamento` int(11) NOT NULL,
+CREATE TABLE `formapagamento` (
+  `IdFormaPagamento` int(11) NOT NULL,
   `Descritivo` varchar(45) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Extraindo dados da tabela `forma_pagamento`
+-- Extraindo dados da tabela `formapagamento`
 --
 
-INSERT INTO `forma_pagamento` (`idForma_Pagamento`, `Descritivo`) VALUES
+INSERT INTO `formapagamento` (`IdFormaPagamento`, `Descritivo`) VALUES
 (1, 'A vista');
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `historico_pedido`
+-- Estrutura da tabela `historicopedido`
 --
 
-CREATE TABLE `historico_pedido` (
-  `idHistorico_Pedido` bigint(20) NOT NULL,
-  `idPedido` bigint(20) NOT NULL,
-  `idStatus_Pedido` bigint(20) NOT NULL,
+CREATE TABLE `historicopedido` (
+  `IdHistoricoPedido` bigint(20) NOT NULL,
+  `IdPedido` bigint(20) NOT NULL,
+  `IdStatusPedido` bigint(20) NOT NULL,
   `Data_Movimentacao` datetime DEFAULT NULL,
-  `idUsuario_Movimentado_Por` bigint(20) NOT NULL
+  `IdUsuario_Movimentado_Por` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `lista_preco`
+-- Estrutura da tabela `listapreco`
 --
 
-CREATE TABLE `lista_preco` (
-  `idLista_Preco` int(11) NOT NULL,
+CREATE TABLE `listapreco` (
+  `IdListaPreco` int(11) NOT NULL,
   `Descritivo` varchar(45) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Extraindo dados da tabela `lista_preco`
+-- Extraindo dados da tabela `listapreco`
 --
 
-INSERT INTO `lista_preco` (`idLista_Preco`, `Descritivo`) VALUES
+INSERT INTO `listapreco` (`IdListaPreco`, `Descritivo`) VALUES
 (1, 'Padrão');
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `lista_preco_produto`
+-- Estrutura da tabela `listaprecoproduto`
 --
 
-CREATE TABLE `lista_preco_produto` (
-  `idLista_Preco_Produto` int(11) NOT NULL,
-  `idLista_Preco` int(11) NOT NULL,
-  `idProduto` bigint(20) NOT NULL,
+CREATE TABLE `listaprecoproduto` (
+  `IdListaPrecoProduto` int(11) NOT NULL,
+  `IdListaPreco` int(11) NOT NULL,
+  `IdProduto` bigint(20) NOT NULL,
   `Vista` decimal(10,0) DEFAULT NULL,
   `Prazo` decimal(10,0) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -5830,18 +5830,18 @@ CREATE TABLE `lista_preco_produto` (
 --
 
 CREATE TABLE `parcela` (
-  `idParcela` int(11) NOT NULL,
+  `IdParcela` int(11) NOT NULL,
   `Ordem` int(11) DEFAULT NULL,
   `Dias` int(11) DEFAULT NULL,
   `Peso` decimal(10,0) DEFAULT NULL,
-  `idForma_Pagamento` int(11) NOT NULL
+  `IdFormaPagamento` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `parcela`
 --
 
-INSERT INTO `parcela` (`idParcela`, `Ordem`, `Dias`, `Peso`, `idForma_Pagamento`) VALUES
+INSERT INTO `parcela` (`IdParcela`, `Ordem`, `Dias`, `Peso`, `IdFormaPagamento`) VALUES
 (1, 1, 1, '100', 1);
 
 -- --------------------------------------------------------
@@ -5851,24 +5851,24 @@ INSERT INTO `parcela` (`idParcela`, `Ordem`, `Dias`, `Peso`, `idForma_Pagamento`
 --
 
 CREATE TABLE `pedido` (
-  `idPedido` bigint(20) NOT NULL,
-  `idPessoa` bigint(20) NOT NULL,
-  `idForma_Pagamento` int(11) NOT NULL,
+  `IdPedido` bigint(20) NOT NULL,
+  `IdPessoa` bigint(20) NOT NULL,
+  `idFormaPagamento` int(11) NOT NULL,
   `Data_Pedido` datetime DEFAULT NULL,
-  `idStatus_Pedido` bigint(20) NOT NULL,
-  `idUsuario_Criado_Por` bigint(20) NOT NULL
+  `IdStatusPedido` bigint(20) NOT NULL,
+  `IdUsuario_Criado_Por` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `pedido_produto`
+-- Estrutura da tabela `pedidoproduto`
 --
 
-CREATE TABLE `pedido_produto` (
-  `idPedido_Produto` bigint(20) NOT NULL,
-  `idPedido` bigint(20) NOT NULL,
-  `idProduto` bigint(20) NOT NULL,
+CREATE TABLE `pedidoproduto` (
+  `IdPedidoProduto` bigint(20) NOT NULL,
+  `IdPedido` bigint(20) NOT NULL,
+  `IdProduto` bigint(20) NOT NULL,
   `Preco` decimal(10,0) DEFAULT NULL,
   `Quantidade` int(11) DEFAULT NULL,
   `Desconto` decimal(10,0) DEFAULT NULL
@@ -5881,7 +5881,7 @@ CREATE TABLE `pedido_produto` (
 --
 
 CREATE TABLE `perfil` (
-  `idPerfil` int(11) NOT NULL,
+  `IdPerfil` int(11) NOT NULL,
   `Nome` varchar(45) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -5889,7 +5889,7 @@ CREATE TABLE `perfil` (
 -- Extraindo dados da tabela `perfil`
 --
 
-INSERT INTO `perfil` (`idPerfil`, `Nome`) VALUES
+INSERT INTO `perfil` (`IdPerfil`, `Nome`) VALUES
 (1, 'Administrador'),
 (2, 'Gerente'),
 (3, 'Vendedor'),
@@ -5902,7 +5902,7 @@ INSERT INTO `perfil` (`idPerfil`, `Nome`) VALUES
 --
 
 CREATE TABLE `pessoa` (
-  `idPessoa` bigint(20) NOT NULL,
+  `IdPessoa` bigint(20) NOT NULL,
   `Tipo_Pessoa` char(1) DEFAULT NULL,
   `Nome_Razao` varchar(45) DEFAULT NULL,
   `Apelido_Fantasia` varchar(45) DEFAULT NULL,
@@ -5918,7 +5918,7 @@ CREATE TABLE `pessoa` (
 -- Extraindo dados da tabela `pessoa`
 --
 
-INSERT INTO `pessoa` (`idPessoa`, `Tipo_Pessoa`, `Nome_Razao`, `Apelido_Fantasia`, `CPF_CNPJ`, `RG_Inscricao`, `Data_Nascimento`, `Genero`, `Inativo`, `Data_Inclusao`) VALUES
+INSERT INTO `pessoa` (`IdPessoa`, `Tipo_Pessoa`, `Nome_Razao`, `Apelido_Fantasia`, `CPF_CNPJ`, `RG_Inscricao`, `Data_Nascimento`, `Genero`, `Inativo`, `Data_Inclusao`) VALUES
 (1, 'F', 'Administrador', 'Administrador', NULL, NULL, NULL, 'M', b'0', NULL);
 
 -- --------------------------------------------------------
@@ -5928,7 +5928,7 @@ INSERT INTO `pessoa` (`idPessoa`, `Tipo_Pessoa`, `Nome_Razao`, `Apelido_Fantasia
 --
 
 CREATE TABLE `produto` (
-  `idProduto` bigint(20) NOT NULL,
+  `IdProduto` bigint(20) NOT NULL,
   `Nome_Tecnico` varchar(45) DEFAULT NULL,
   `Nome_Comercial` varchar(45) DEFAULT NULL,
   `Codigo_Interno` varchar(20) DEFAULT NULL,
@@ -5938,11 +5938,11 @@ CREATE TABLE `produto` (
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `status_pedido`
+-- Estrutura da tabela `statuspedido`
 --
 
-CREATE TABLE `status_pedido` (
-  `idStatus_Pedido` bigint(20) NOT NULL,
+CREATE TABLE `statuspedido` (
+  `IdStatusPedido` bigint(20) NOT NULL,
   `Nome` varchar(45) DEFAULT NULL,
   `Descricao` varchar(45) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -5954,13 +5954,13 @@ CREATE TABLE `status_pedido` (
 --
 
 CREATE TABLE `telefone` (
-  `idTelefone` bigint(20) NOT NULL,
-  `idPessoa` bigint(20) NOT NULL,
+  `IdTelefone` bigint(20) NOT NULL,
+  `IdPessoa` bigint(20) NOT NULL,
   `DDI` varchar(5) DEFAULT NULL,
   `DDD` char(2) DEFAULT NULL,
   `Numero` char(9) DEFAULT NULL,
   `Ramal` varchar(5) DEFAULT NULL,
-  `idCategoria_Telefone` int(11) NOT NULL,
+  `IdCategoriaTelefone` int(11) NOT NULL,
   `Observacao` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -5971,18 +5971,18 @@ CREATE TABLE `telefone` (
 --
 
 CREATE TABLE `usuario` (
-  `idUsuario` bigint(20) NOT NULL,
-  `idPessoa` bigint(20) NOT NULL,
+  `IdUsuario` bigint(20) NOT NULL,
+  `IdPessoa` bigint(20) NOT NULL,
   `Login` varchar(15) DEFAULT NULL,
   `Senha` varchar(45) DEFAULT NULL,
-  `idPerfil` int(11) NOT NULL
+  `IdPerfil` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `usuario`
 --
 
-INSERT INTO `usuario` (`idUsuario`, `idPessoa`, `Login`, `Senha`, `idPerfil`) VALUES
+INSERT INTO `usuario` (`IdUsuario`, `IdPessoa`, `Login`, `Senha`, `IdPerfil`) VALUES
 (1, 1, 'Admin', 'Admin', 1);
 
 -- --------------------------------------------------------
@@ -5992,7 +5992,7 @@ INSERT INTO `usuario` (`idUsuario`, `idPessoa`, `Login`, `Senha`, `idPerfil`) VA
 --
 
 CREATE TABLE `vinculo` (
-  `idVinculo` int(11) NOT NULL,
+  `IdVinculo` int(11) NOT NULL,
   `Nome` varchar(45) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -6000,7 +6000,7 @@ CREATE TABLE `vinculo` (
 -- Extraindo dados da tabela `vinculo`
 --
 
-INSERT INTO `vinculo` (`idVinculo`, `Nome`) VALUES
+INSERT INTO `vinculo` (`IdVinculo`, `Nome`) VALUES
 (1, 'Funcionário'),
 (2, 'Cliente'),
 (3, 'Fornecedor'),
@@ -6009,13 +6009,13 @@ INSERT INTO `vinculo` (`idVinculo`, `Nome`) VALUES
 -- --------------------------------------------------------
 
 --
--- Estrutura da tabela `vinculo_pessoa`
+-- Estrutura da tabela `vinculopessoa`
 --
 
-CREATE TABLE `vinculo_pessoa` (
-  `idVinculo_Pessoa` int(11) NOT NULL,
-  `idVinculo` int(11) NOT NULL,
-  `idPessoa` bigint(20) NOT NULL
+CREATE TABLE `vinculopessoa` (
+  `IdVinculoPessoa` int(11) NOT NULL,
+  `IdVinculo` int(11) NOT NULL,
+  `IdPessoa` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -6023,182 +6023,182 @@ CREATE TABLE `vinculo_pessoa` (
 --
 
 --
+-- Índices para tabela `categoriaemail`
+--
+ALTER TABLE `categoriaemail`
+  ADD PRIMARY KEY (`IdCategoriaEmail`);
+
+--
 -- Índices para tabela `categoriaendereco`
 --
 ALTER TABLE `categoriaendereco`
-  ADD PRIMARY KEY (`idCategoriaEndereco`);
+  ADD PRIMARY KEY (`IdCategoriaEndereco`);
 
 --
--- Índices para tabela `categoria_email`
+-- Índices para tabela `categoriatelefone`
 --
-ALTER TABLE `categoria_email`
-  ADD PRIMARY KEY (`idCategoria_Email`);
-
---
--- Índices para tabela `categoria_telefone`
---
-ALTER TABLE `categoria_telefone`
-  ADD PRIMARY KEY (`idCategoria_Telefone`);
+ALTER TABLE `categoriatelefone`
+  ADD PRIMARY KEY (`IdCategoriaTelefone`);
 
 --
 -- Índices para tabela `cidade`
 --
 ALTER TABLE `cidade`
   ADD PRIMARY KEY (`idCidade`),
-  ADD KEY `fk_Cidade_Estado1` (`idEstado`);
+  ADD KEY `fk_Cidade_Estado1` (`IdEstado`);
 
 --
 -- Índices para tabela `email`
 --
 ALTER TABLE `email`
-  ADD PRIMARY KEY (`idEmail`),
-  ADD KEY `fk_Email_Pessoa1` (`idPessoa`),
-  ADD KEY `fk_Email_Categoria_Email1` (`idCategoria_Email`);
+  ADD PRIMARY KEY (`IdEmail`),
+  ADD KEY `fk_Email_Pessoa1` (`IdPessoa`),
+  ADD KEY `fk_Email_Categoria_Email1` (`IdCategoriaEmail`);
 
 --
 -- Índices para tabela `endereco`
 --
 ALTER TABLE `endereco`
-  ADD PRIMARY KEY (`idEndereco`),
-  ADD KEY `fk_Endereco_Pessoa` (`idPessoa`),
-  ADD KEY `fk_Endereco_Categoria_Endereco1` (`idCategoriaEndereco`),
-  ADD KEY `fk_Endereco_Cidade1` (`idCidade`);
+  ADD PRIMARY KEY (`IdEndereco`),
+  ADD KEY `fk_Endereco_Pessoa` (`IdPessoa`),
+  ADD KEY `fk_Endereco_Categoria_Endereco1` (`IdCategoriaEndereco`),
+  ADD KEY `fk_Endereco_Cidade1` (`IdCidade`);
 
 --
 -- Índices para tabela `estado`
 --
 ALTER TABLE `estado`
-  ADD PRIMARY KEY (`idEstado`);
+  ADD PRIMARY KEY (`IdEstado`);
 
 --
--- Índices para tabela `forma_pagamento`
+-- Índices para tabela `formapagamento`
 --
-ALTER TABLE `forma_pagamento`
-  ADD PRIMARY KEY (`idForma_Pagamento`);
+ALTER TABLE `formapagamento`
+  ADD PRIMARY KEY (`IdFormaPagamento`);
 
 --
--- Índices para tabela `historico_pedido`
+-- Índices para tabela `historicopedido`
 --
-ALTER TABLE `historico_pedido`
-  ADD PRIMARY KEY (`idHistorico_Pedido`),
-  ADD KEY `fk_Historico_Pedido_Status_Pedido1` (`idStatus_Pedido`),
-  ADD KEY `fk_Historico_Pedido_Usuario1` (`idUsuario_Movimentado_Por`),
-  ADD KEY `fk_Historico_Pedido_Pedido1` (`idPedido`);
+ALTER TABLE `historicopedido`
+  ADD PRIMARY KEY (`IdHistoricoPedido`),
+  ADD KEY `fk_Historico_Pedido_Status_Pedido1` (`IdStatusPedido`),
+  ADD KEY `fk_Historico_Pedido_Usuario1` (`IdUsuario_Movimentado_Por`),
+  ADD KEY `fk_Historico_Pedido_Pedido1` (`IdPedido`);
 
 --
--- Índices para tabela `lista_preco`
+-- Índices para tabela `listapreco`
 --
-ALTER TABLE `lista_preco`
-  ADD PRIMARY KEY (`idLista_Preco`);
+ALTER TABLE `listapreco`
+  ADD PRIMARY KEY (`IdListaPreco`);
 
 --
--- Índices para tabela `lista_preco_produto`
+-- Índices para tabela `listaprecoproduto`
 --
-ALTER TABLE `lista_preco_produto`
-  ADD PRIMARY KEY (`idLista_Preco_Produto`),
-  ADD KEY `fk_Lista_Preco_has_Produto_Lista_Preco1` (`idLista_Preco`),
-  ADD KEY `fk_Lista_Preco_has_Produto_Produto1` (`idProduto`);
+ALTER TABLE `listaprecoproduto`
+  ADD PRIMARY KEY (`IdListaPrecoProduto`),
+  ADD KEY `fk_Lista_Preco_has_Produto_Lista_Preco1` (`IdListaPreco`),
+  ADD KEY `fk_Lista_Preco_has_Produto_Produto1` (`IdProduto`);
 
 --
 -- Índices para tabela `parcela`
 --
 ALTER TABLE `parcela`
-  ADD PRIMARY KEY (`idParcela`),
-  ADD KEY `fk_Parcela_Forma_Pagamento1` (`idForma_Pagamento`);
+  ADD PRIMARY KEY (`IdParcela`),
+  ADD KEY `fk_Parcela_Forma_Pagamento1` (`IdFormaPagamento`);
 
 --
 -- Índices para tabela `pedido`
 --
 ALTER TABLE `pedido`
-  ADD PRIMARY KEY (`idPedido`),
-  ADD KEY `fk_Pedido_Pessoa1` (`idPessoa`),
-  ADD KEY `fk_Pedido_Forma_Pagamento1` (`idForma_Pagamento`),
-  ADD KEY `fk_Pedido_Status_Pedido1` (`idStatus_Pedido`),
-  ADD KEY `fk_Pedido_Usuario1` (`idUsuario_Criado_Por`);
+  ADD PRIMARY KEY (`IdPedido`),
+  ADD KEY `fk_Pedido_Pessoa1` (`IdPessoa`),
+  ADD KEY `fk_Pedido_Forma_Pagamento1` (`idFormaPagamento`),
+  ADD KEY `fk_Pedido_Status_Pedido1` (`IdStatusPedido`),
+  ADD KEY `fk_Pedido_Usuario1` (`IdUsuario_Criado_Por`);
 
 --
--- Índices para tabela `pedido_produto`
+-- Índices para tabela `pedidoproduto`
 --
-ALTER TABLE `pedido_produto`
-  ADD PRIMARY KEY (`idPedido_Produto`),
-  ADD KEY `fk_Pedido_has_Produto_Pedido1` (`idPedido`),
-  ADD KEY `fk_Pedido_has_Produto_Produto1` (`idProduto`);
+ALTER TABLE `pedidoproduto`
+  ADD PRIMARY KEY (`IdPedidoProduto`),
+  ADD KEY `fk_Pedido_has_Produto_Pedido1` (`IdPedido`),
+  ADD KEY `fk_Pedido_has_Produto_Produto1` (`IdProduto`);
 
 --
 -- Índices para tabela `perfil`
 --
 ALTER TABLE `perfil`
-  ADD PRIMARY KEY (`idPerfil`);
+  ADD PRIMARY KEY (`IdPerfil`);
 
 --
 -- Índices para tabela `pessoa`
 --
 ALTER TABLE `pessoa`
-  ADD PRIMARY KEY (`idPessoa`);
+  ADD PRIMARY KEY (`IdPessoa`);
 
 --
 -- Índices para tabela `produto`
 --
 ALTER TABLE `produto`
-  ADD PRIMARY KEY (`idProduto`);
+  ADD PRIMARY KEY (`IdProduto`);
 
 --
--- Índices para tabela `status_pedido`
+-- Índices para tabela `statuspedido`
 --
-ALTER TABLE `status_pedido`
-  ADD PRIMARY KEY (`idStatus_Pedido`);
+ALTER TABLE `statuspedido`
+  ADD PRIMARY KEY (`IdStatusPedido`);
 
 --
 -- Índices para tabela `telefone`
 --
 ALTER TABLE `telefone`
-  ADD PRIMARY KEY (`idTelefone`),
-  ADD KEY `fk_Telefone_Pessoa1` (`idPessoa`),
-  ADD KEY `fk_Telefone_Categoria_Telefone1` (`idCategoria_Telefone`);
+  ADD PRIMARY KEY (`IdTelefone`),
+  ADD KEY `fk_Telefone_Pessoa1` (`IdPessoa`),
+  ADD KEY `fk_Telefone_Categoria_Telefone1` (`IdCategoriaTelefone`);
 
 --
 -- Índices para tabela `usuario`
 --
 ALTER TABLE `usuario`
-  ADD PRIMARY KEY (`idUsuario`),
-  ADD KEY `fk_Usuario_Pessoa1` (`idPessoa`),
-  ADD KEY `fk_Usuario_Perfil1` (`idPerfil`);
+  ADD PRIMARY KEY (`IdUsuario`),
+  ADD KEY `fk_Usuario_Pessoa1` (`IdPessoa`),
+  ADD KEY `fk_Usuario_Perfil1` (`IdPerfil`);
 
 --
 -- Índices para tabela `vinculo`
 --
 ALTER TABLE `vinculo`
-  ADD PRIMARY KEY (`idVinculo`);
+  ADD PRIMARY KEY (`IdVinculo`);
 
 --
--- Índices para tabela `vinculo_pessoa`
+-- Índices para tabela `vinculopessoa`
 --
-ALTER TABLE `vinculo_pessoa`
-  ADD PRIMARY KEY (`idVinculo_Pessoa`),
-  ADD KEY `fk_Vinculo_has_Pessoa_Vinculo1` (`idVinculo`),
-  ADD KEY `fk_Vinculo_has_Pessoa_Pessoa1` (`idPessoa`);
+ALTER TABLE `vinculopessoa`
+  ADD PRIMARY KEY (`IdVinculoPessoa`),
+  ADD KEY `fk_Vinculo_has_Pessoa_Vinculo1` (`IdVinculo`),
+  ADD KEY `fk_Vinculo_has_Pessoa_Pessoa1` (`IdPessoa`);
 
 --
 -- AUTO_INCREMENT de tabelas despejadas
 --
 
 --
+-- AUTO_INCREMENT de tabela `categoriaemail`
+--
+ALTER TABLE `categoriaemail`
+  MODIFY `IdCategoriaEmail` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
 -- AUTO_INCREMENT de tabela `categoriaendereco`
 --
 ALTER TABLE `categoriaendereco`
-  MODIFY `idCategoriaEndereco` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `IdCategoriaEndereco` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
--- AUTO_INCREMENT de tabela `categoria_email`
+-- AUTO_INCREMENT de tabela `categoriatelefone`
 --
-ALTER TABLE `categoria_email`
-  MODIFY `idCategoria_Email` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
-
---
--- AUTO_INCREMENT de tabela `categoria_telefone`
---
-ALTER TABLE `categoria_telefone`
-  MODIFY `idCategoria_Telefone` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+ALTER TABLE `categoriatelefone`
+  MODIFY `IdCategoriaTelefone` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de tabela `cidade`
@@ -6210,103 +6210,103 @@ ALTER TABLE `cidade`
 -- AUTO_INCREMENT de tabela `email`
 --
 ALTER TABLE `email`
-  MODIFY `idEmail` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `IdEmail` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `endereco`
 --
 ALTER TABLE `endereco`
-  MODIFY `idEndereco` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `IdEndereco` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `forma_pagamento`
+-- AUTO_INCREMENT de tabela `formapagamento`
 --
-ALTER TABLE `forma_pagamento`
-  MODIFY `idForma_Pagamento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+ALTER TABLE `formapagamento`
+  MODIFY `IdFormaPagamento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT de tabela `historico_pedido`
+-- AUTO_INCREMENT de tabela `historicopedido`
 --
-ALTER TABLE `historico_pedido`
-  MODIFY `idHistorico_Pedido` bigint(20) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `historicopedido`
+  MODIFY `IdHistoricoPedido` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `lista_preco`
+-- AUTO_INCREMENT de tabela `listapreco`
 --
-ALTER TABLE `lista_preco`
-  MODIFY `idLista_Preco` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+ALTER TABLE `listapreco`
+  MODIFY `IdListaPreco` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
--- AUTO_INCREMENT de tabela `lista_preco_produto`
+-- AUTO_INCREMENT de tabela `listaprecoproduto`
 --
-ALTER TABLE `lista_preco_produto`
-  MODIFY `idLista_Preco_Produto` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `listaprecoproduto`
+  MODIFY `IdListaPrecoProduto` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `parcela`
 --
 ALTER TABLE `parcela`
-  MODIFY `idParcela` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `IdParcela` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `pedido`
 --
 ALTER TABLE `pedido`
-  MODIFY `idPedido` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `IdPedido` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `pedido_produto`
+-- AUTO_INCREMENT de tabela `pedidoproduto`
 --
-ALTER TABLE `pedido_produto`
-  MODIFY `idPedido_Produto` bigint(20) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `pedidoproduto`
+  MODIFY `IdPedidoProduto` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `perfil`
 --
 ALTER TABLE `perfil`
-  MODIFY `idPerfil` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `IdPerfil` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT de tabela `pessoa`
 --
 ALTER TABLE `pessoa`
-  MODIFY `idPessoa` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `IdPessoa` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `produto`
 --
 ALTER TABLE `produto`
-  MODIFY `idProduto` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `IdProduto` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
--- AUTO_INCREMENT de tabela `status_pedido`
+-- AUTO_INCREMENT de tabela `statuspedido`
 --
-ALTER TABLE `status_pedido`
-  MODIFY `idStatus_Pedido` bigint(20) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `statuspedido`
+  MODIFY `IdStatusPedido` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `telefone`
 --
 ALTER TABLE `telefone`
-  MODIFY `idTelefone` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `IdTelefone` bigint(20) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de tabela `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `idUsuario` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `IdUsuario` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `vinculo`
 --
 ALTER TABLE `vinculo`
-  MODIFY `idVinculo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `IdVinculo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
--- AUTO_INCREMENT de tabela `vinculo_pessoa`
+-- AUTO_INCREMENT de tabela `vinculopessoa`
 --
-ALTER TABLE `vinculo_pessoa`
-  MODIFY `idVinculo_Pessoa` int(11) NOT NULL AUTO_INCREMENT;
+ALTER TABLE `vinculopessoa`
+  MODIFY `IdVinculoPessoa` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- Restrições para despejos de tabelas
@@ -6316,80 +6316,80 @@ ALTER TABLE `vinculo_pessoa`
 -- Limitadores para a tabela `cidade`
 --
 ALTER TABLE `cidade`
-  ADD CONSTRAINT `fk_Cidade_Estado1` FOREIGN KEY (`idEstado`) REFERENCES `estado` (`idEstado`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_Cidade_Estado1` FOREIGN KEY (`IdEstado`) REFERENCES `estado` (`IdEstado`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Limitadores para a tabela `email`
 --
 ALTER TABLE `email`
-  ADD CONSTRAINT `fk_Email_Categoria_Email1` FOREIGN KEY (`idCategoria_Email`) REFERENCES `categoria_email` (`idCategoria_Email`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_Email_Pessoa1` FOREIGN KEY (`idPessoa`) REFERENCES `pessoa` (`idPessoa`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_Email_Categoria_Email1` FOREIGN KEY (`IdCategoriaEmail`) REFERENCES `categoriaemail` (`IdCategoriaEmail`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Email_Pessoa1` FOREIGN KEY (`IdPessoa`) REFERENCES `pessoa` (`IdPessoa`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Limitadores para a tabela `endereco`
 --
 ALTER TABLE `endereco`
-  ADD CONSTRAINT `fk_Endereco_Categoria_Endereco1` FOREIGN KEY (`idCategoriaEndereco`) REFERENCES `categoriaendereco` (`idCategoriaEndereco`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_Endereco_Cidade1` FOREIGN KEY (`idCidade`) REFERENCES `cidade` (`idCidade`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_Endereco_Pessoa` FOREIGN KEY (`idPessoa`) REFERENCES `pessoa` (`idPessoa`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_Endereco_Categoria_Endereco1` FOREIGN KEY (`IdCategoriaEndereco`) REFERENCES `categoriaendereco` (`IdCategoriaEndereco`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Endereco_Cidade1` FOREIGN KEY (`IdCidade`) REFERENCES `cidade` (`idCidade`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Endereco_Pessoa` FOREIGN KEY (`IdPessoa`) REFERENCES `pessoa` (`IdPessoa`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Limitadores para a tabela `historico_pedido`
+-- Limitadores para a tabela `historicopedido`
 --
-ALTER TABLE `historico_pedido`
-  ADD CONSTRAINT `fk_Historico_Pedido_Pedido1` FOREIGN KEY (`idPedido`) REFERENCES `pedido` (`idPedido`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_Historico_Pedido_Status_Pedido1` FOREIGN KEY (`idStatus_Pedido`) REFERENCES `status_pedido` (`idStatus_Pedido`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_Historico_Pedido_Usuario1` FOREIGN KEY (`idUsuario_Movimentado_Por`) REFERENCES `usuario` (`idUsuario`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `historicopedido`
+  ADD CONSTRAINT `fk_Historico_Pedido_Pedido1` FOREIGN KEY (`IdPedido`) REFERENCES `pedido` (`IdPedido`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Historico_Pedido_Status_Pedido1` FOREIGN KEY (`IdStatusPedido`) REFERENCES `statuspedido` (`IdStatusPedido`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Historico_Pedido_Usuario1` FOREIGN KEY (`IdUsuario_Movimentado_Por`) REFERENCES `usuario` (`IdUsuario`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Limitadores para a tabela `lista_preco_produto`
+-- Limitadores para a tabela `listaprecoproduto`
 --
-ALTER TABLE `lista_preco_produto`
-  ADD CONSTRAINT `fk_Lista_Preco_has_Produto_Lista_Preco1` FOREIGN KEY (`idLista_Preco`) REFERENCES `lista_preco` (`idLista_Preco`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_Lista_Preco_has_Produto_Produto1` FOREIGN KEY (`idProduto`) REFERENCES `produto` (`idProduto`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `listaprecoproduto`
+  ADD CONSTRAINT `fk_Lista_Preco_has_Produto_Lista_Preco1` FOREIGN KEY (`IdListaPreco`) REFERENCES `listapreco` (`IdListaPreco`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Lista_Preco_has_Produto_Produto1` FOREIGN KEY (`IdProduto`) REFERENCES `produto` (`IdProduto`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Limitadores para a tabela `parcela`
 --
 ALTER TABLE `parcela`
-  ADD CONSTRAINT `fk_Parcela_Forma_Pagamento1` FOREIGN KEY (`idForma_Pagamento`) REFERENCES `forma_pagamento` (`idForma_Pagamento`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_Parcela_Forma_Pagamento1` FOREIGN KEY (`IdFormaPagamento`) REFERENCES `formapagamento` (`IdFormaPagamento`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Limitadores para a tabela `pedido`
 --
 ALTER TABLE `pedido`
-  ADD CONSTRAINT `fk_Pedido_Forma_Pagamento1` FOREIGN KEY (`idForma_Pagamento`) REFERENCES `forma_pagamento` (`idForma_Pagamento`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_Pedido_Pessoa1` FOREIGN KEY (`idPessoa`) REFERENCES `pessoa` (`idPessoa`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_Pedido_Status_Pedido1` FOREIGN KEY (`idStatus_Pedido`) REFERENCES `status_pedido` (`idStatus_Pedido`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_Pedido_Usuario1` FOREIGN KEY (`idUsuario_Criado_Por`) REFERENCES `usuario` (`idUsuario`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_Pedido_Forma_Pagamento1` FOREIGN KEY (`idFormaPagamento`) REFERENCES `formapagamento` (`IdFormaPagamento`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Pedido_Pessoa1` FOREIGN KEY (`IdPessoa`) REFERENCES `pessoa` (`IdPessoa`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Pedido_Status_Pedido1` FOREIGN KEY (`IdStatusPedido`) REFERENCES `statuspedido` (`IdStatusPedido`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Pedido_Usuario1` FOREIGN KEY (`IdUsuario_Criado_Por`) REFERENCES `usuario` (`IdUsuario`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Limitadores para a tabela `pedido_produto`
+-- Limitadores para a tabela `pedidoproduto`
 --
-ALTER TABLE `pedido_produto`
-  ADD CONSTRAINT `fk_Pedido_has_Produto_Pedido1` FOREIGN KEY (`idPedido`) REFERENCES `pedido` (`idPessoa`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_Pedido_has_Produto_Produto1` FOREIGN KEY (`idProduto`) REFERENCES `produto` (`idProduto`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `pedidoproduto`
+  ADD CONSTRAINT `fk_Pedido_has_Produto_Pedido1` FOREIGN KEY (`IdPedido`) REFERENCES `pedido` (`IdPessoa`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Pedido_has_Produto_Produto1` FOREIGN KEY (`IdProduto`) REFERENCES `produto` (`IdProduto`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Limitadores para a tabela `telefone`
 --
 ALTER TABLE `telefone`
-  ADD CONSTRAINT `fk_Telefone_Categoria_Telefone1` FOREIGN KEY (`idCategoria_Telefone`) REFERENCES `categoria_telefone` (`idCategoria_Telefone`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_Telefone_Pessoa1` FOREIGN KEY (`idPessoa`) REFERENCES `pessoa` (`idPessoa`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_Telefone_Categoria_Telefone1` FOREIGN KEY (`IdCategoriaTelefone`) REFERENCES `categoriatelefone` (`IdCategoriaTelefone`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Telefone_Pessoa1` FOREIGN KEY (`IdPessoa`) REFERENCES `pessoa` (`IdPessoa`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Limitadores para a tabela `usuario`
 --
 ALTER TABLE `usuario`
-  ADD CONSTRAINT `fk_Usuario_Perfil1` FOREIGN KEY (`idPerfil`) REFERENCES `perfil` (`idPerfil`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_Usuario_Pessoa1` FOREIGN KEY (`idPessoa`) REFERENCES `pessoa` (`idPessoa`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+  ADD CONSTRAINT `fk_Usuario_Perfil1` FOREIGN KEY (`IdPerfil`) REFERENCES `perfil` (`IdPerfil`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Usuario_Pessoa1` FOREIGN KEY (`IdPessoa`) REFERENCES `pessoa` (`IdPessoa`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
--- Limitadores para a tabela `vinculo_pessoa`
+-- Limitadores para a tabela `vinculopessoa`
 --
-ALTER TABLE `vinculo_pessoa`
-  ADD CONSTRAINT `fk_Vinculo_has_Pessoa_Pessoa1` FOREIGN KEY (`idPessoa`) REFERENCES `pessoa` (`idPessoa`) ON DELETE NO ACTION ON UPDATE NO ACTION,
-  ADD CONSTRAINT `fk_Vinculo_has_Pessoa_Vinculo1` FOREIGN KEY (`idVinculo`) REFERENCES `vinculo` (`idVinculo`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+ALTER TABLE `vinculopessoa`
+  ADD CONSTRAINT `fk_Vinculo_has_Pessoa_Pessoa1` FOREIGN KEY (`IdPessoa`) REFERENCES `pessoa` (`IdPessoa`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Vinculo_has_Pessoa_Vinculo1` FOREIGN KEY (`IdVinculo`) REFERENCES `vinculo` (`IdVinculo`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

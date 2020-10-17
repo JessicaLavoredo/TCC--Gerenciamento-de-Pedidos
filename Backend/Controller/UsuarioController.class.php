@@ -1,6 +1,6 @@
 <?php
 
-    class UsuarioController {
+    class UsuarioController extends BaseController {
 
         function __construct(){
 
@@ -18,10 +18,6 @@
 
             // $objetos = array(New Usuario("1","1","teste","123","1"), New Usuario("2", "2", "teste2", "321", "1"));
             // return (New UsuarioData())->inserir($objetos);
-        }
-
-        function imprimirUsuarios() {
-            return (new UsuarioBusiness())->getUsuarioPorId(1);
         }
     }
 

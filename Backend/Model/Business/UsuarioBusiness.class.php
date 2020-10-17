@@ -1,7 +1,6 @@
 <?php
-    require_once "./Model/Data/usuarioData.class.php";
 
-    class UsuarioBusiness {
+    class UsuarioBusiness extends BaseBusiness {
 
         function getUsuarioPorId($idUsuario) {
             return (new usuarioData())->getUsuarioPorID($idUsuario);

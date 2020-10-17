@@ -1,13 +1,9 @@
 <?php
 
-    class CategoriaEnderecoController {
+    class CategoriaEnderecoController extends BaseController {
 
         function __construct() {
 
-        }
-
-        function listar(){
-            return (New CategoriaEnderecoBusiness())->buscarTodos();
         }
 
         function gravar($body=""){
