@@ -3,7 +3,10 @@
     require_once "autoload.php";
 
     header('Content-Type: application/json; charset: utf-8');
-
+	header("Access-Control-Allow-Headers: Authorization, Content-Type");
+	header("Access-Control-Allow-Origin: *");
+	header('content-type: application/json; charset=utf-8');
+	
     if (isset($_REQUEST['url'])) {
         $url = explode('/', $_REQUEST['url']);
         $classe = ucfirst(array_shift($url)).'Controller';

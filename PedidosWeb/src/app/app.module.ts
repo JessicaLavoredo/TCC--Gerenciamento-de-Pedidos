@@ -23,6 +23,7 @@ import { CadastroFormaPagamentoComponent } from './pages/cadastro-forma-pagament
 import { CadastroClienteComponent } from './pages/cadastro-cliente/cadastro-cliente.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxMaskModule, IConfig } from 'ngx-mask';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -51,6 +52,7 @@ import { NgxMaskModule, IConfig } from 'ngx-mask';
     FormsModule,
     NgbModule,
     NgxMaskModule.forRoot(),
+    HttpClientModule,
   ],
   providers: [],
   bootstrap: [AppComponent]

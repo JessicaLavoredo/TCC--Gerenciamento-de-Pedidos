@@ -1,30 +1,40 @@
+import { Usuario } from './../../usuario';
 import { Router } from '@angular/router';
 import { AccountService } from './../../services/account.service';
 import { Component, OnInit, NgModule } from '@angular/core';
+
 @Component({
   selector: 'app-login',
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
-  login = {
-    email: '',
-    Password: ''
-  };
+
+public usuario: Usuario = new Usuario();
+
 
   constructor( private accountService: AccountService, private router: Router) { }
+
 
   ngOnInit(): void {
   }
 
-  async onSubmit(){
-    try {
-      const result = await this.accountService.login(this.login);
-      console.log('login efetuado: ${result}');
-      this.router.navigate(['']);
-    }catch (error){
-      console.error(error);
-    }
-  }
+  // async onSubmit(){
+  //     this.accountService.login(this.usuario).subscribe( result => {
+  //         console.log(result);
+  //         window.localStorage.setItem('token', result.idPessoa);
+  //         this.router.navigate(['']);
+  //     });
+  //   }
 
+    
+  async onSubmit(){
+    try{
+       await  this.accountService.login(this.usuario);
+       console.log('Login efetuado');
+       this.router.navigate(['']);
+      }catch (error){
+        console.error(error);
+      }
+  }
 }
