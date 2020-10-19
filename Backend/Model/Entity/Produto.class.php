@@ -12,11 +12,11 @@
         function getCodigoInterno() {return $this->codigoInterno;}
         function getDescricao() {return $this->descricao;}
 
-        function setIdProduto() {$this->idProduto = $idProduto;}
-        function setNomeTecnico() {$this->nomeTecnico = $nomeTecnico;}
-        function setNomeComercial() {$this->nomeComercial = $nomeComercial;}
-        function setCodigoInterno() {$this->codigoInterno = $codigoInterno;}
-        function setDescricao() {$this->descricao = $descricao;}
+        function setIdProduto($idProduto) {$this->idProduto = $idProduto;}
+        function setNomeTecnico($nomeTecnico) {$this->nomeTecnico = $nomeTecnico;}
+        function setNomeComercial($nomeComercial) {$this->nomeComercial = $nomeComercial;}
+        function setCodigoInterno($codigoInterno) {$this->codigoInterno = $codigoInterno;}
+        function setDescricao($descricao) {$this->descricao = $descricao;}
 
         function __construct($idProduto="", $nomeTecnico="", $nomeComercial="", $codigoInterno="", $descricao="") {
             $this->setIdProduto($idProduto);

@@ -8,9 +8,9 @@
         function getIdVinculo() {return $this->idVinculo;}
         function getIdPessoa() {return $this->idPessoa;}
 
-        function setIdVinculoPessoa() {$this->idVinculoPessoa = $idVinculoPessoa;}
-        function setIdVinculo() {$this->idVinculo = $idVinculo;}
-        function setIdPessoa() {$this->idPessoa = $idPessoa;}
+        function setIdVinculoPessoa($idVinculoPessoa) {$this->idVinculoPessoa = $idVinculoPessoa;}
+        function setIdVinculo($idVinculo) {$this->idVinculo = $idVinculo;}
+        function setIdPessoa($idPessoa) {$this->idPessoa = $idPessoa;}
 
         function __construct($idVinculoPessoa="", $idVinculo="", $idPessoa="") {
             $this->setIdVinculoPessoa($idVinculoPessoa);

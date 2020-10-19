@@ -12,11 +12,11 @@
         function getDataMovimentacao() {return $this->dataMovimentacao;}
         function getIdUsuarioMovimentadoPor() {return $this->idUsuarioMovimentadoPor;}
 
-        function setIdHistoricoPedido() {$this->idHistoricoPedido = $idHistoricoPedido;}
-        function setIdPedido() {$this->idPedido = $idPedido;}
-        function setIdStatusPedido() {$this->idStatusPedido = $idStatusPedido;}
-        function setDataMovimentacao() {$this->dataMovimentacao = $dataMovimentacao;}
-        function setIdUsuarioMovimentadoPor() {$this->idUsuarioMovimentadoPor = $idUsuarioMovimentadoPor;}
+        function setIdHistoricoPedido($idHistoricoPedido) {$this->idHistoricoPedido = $idHistoricoPedido;}
+        function setIdPedido($idPedido) {$this->idPedido = $idPedido;}
+        function setIdStatusPedido($idStatusPedido) {$this->idStatusPedido = $idStatusPedido;}
+        function setDataMovimentacao($dataMovimentacao) {$this->dataMovimentacao = $dataMovimentacao;}
+        function setIdUsuarioMovimentadoPor($idUsuarioMovimentadoPor) {$this->idUsuarioMovimentadoPor = $idUsuarioMovimentadoPor;}
 
         function __construct($idHistoricoPedido="", $idPedido="", $idStatusPedido="", $dataMovimentacao="", $idUsuarioMovimentadoPor="") {
             $this->setIdHistoricoPedido($idHistoricoPedido);

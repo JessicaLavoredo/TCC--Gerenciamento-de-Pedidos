@@ -12,11 +12,11 @@
         function getPeso() {return $this->peso;}
         function getIdFormaPagamento() {return $this->idFormaPagamento;}
 
-        function setIdParcela() {$this->idParcela = $idParcela;}
-        function setOrdem() {$this->ordem = $ordem;}
-        function setDias() {$this->dias = $dias;}
-        function setPeso() {$this->peso = $peso;}
-        function setIdFormaPagamento() {$this->idFormaPagamento = $idFormaPagamento;}
+        function setIdParcela($idParcela) {$this->idParcela = $idParcela;}
+        function setOrdem($ordem) {$this->ordem = $ordem;}
+        function setDias($dias) {$this->dias = $dias;}
+        function setPeso($peso) {$this->peso = $peso;}
+        function setIdFormaPagamento($idFormaPagamento) {$this->idFormaPagamento = $idFormaPagamento;}
 
         function __construct($idParcela="", $ordem="", $dias="", $peso="", $idFormaPagamento="") {
             $this->setIdParcela($idParcela);

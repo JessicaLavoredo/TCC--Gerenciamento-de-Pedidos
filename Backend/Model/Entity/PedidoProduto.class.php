@@ -14,12 +14,12 @@
         function getQuantidade() {return $this->quantidade;}
         function getDesconto() {return $this->desconto;}
 
-        function setIdPedidoProduto() {$this->idPedidoProduto = $idPedidoProduto;}
-        function setIdPedido() {$this->idPedido = $idPedido;}
-        function setIdProduto() {$this->idProduto = $idProduto;}
-        function setPreco() {$this->preco = $preco;}
-        function setQuantidade() {$this->quantidade = $quantidade;}
-        function setDesconto() {$this->desconto = $desconto;}
+        function setIdPedidoProduto($idPedidoProduto) {$this->idPedidoProduto = $idPedidoProduto;}
+        function setIdPedido($idPedido) {$this->idPedido = $idPedido;}
+        function setIdProduto($idProduto) {$this->idProduto = $idProduto;}
+        function setPreco($preco) {$this->preco = $preco;}
+        function setQuantidade($quantidade) {$this->quantidade = $quantidade;}
+        function setDesconto($desconto) {$this->desconto = $desconto;}
         
         function __construct($idPedidoProduto="", $idPedido="", $idProduto="", $preco="", $quantidade="", $desconto="") {
             $this->setIdPedidoProduto($idPedidoProduto);

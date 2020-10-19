@@ -8,9 +8,9 @@
         function getNome() {return $this->nome;}
         function getDescricao() {return $this->descricao;}
 
-        function setIdStatusPedido() {$this->idStatusPedido = $idStatusPedido;}
-        function setNome() {$this->nome = $nome;}
-        function setDescricao() {$this->descricao = $descricao;}
+        function setIdStatusPedido($idStatusPedido) {$this->idStatusPedido = $idStatusPedido;}
+        function setNome($nome) {$this->nome = $nome;}
+        function setDescricao($descricao) {$this->descricao = $descricao;}
 
         function __construct($idStatusPedido="", $nome="", $descricao="") {
             $this->setIdStatusPedido($idStatusPedido);

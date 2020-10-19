@@ -12,11 +12,11 @@
         function getVista() {return $this->vista;}
         function getPrazo() {return $this->prazo;}
 
-        function setIdListaPrecoProduto() {$this->idListaPrecoProduto = $idListaPrecoProduto;}
-        function setIdListaPreco() {$this->idListaPreco = $idListaPreco;}
-        function setIdProduto() {$this->idProduto = $idProduto;}
-        function setVista() {$this->vista = $vista;}
-        function setPrazo() {$this->prazo = $prazo;}
+        function setIdListaPrecoProduto($idListaPrecoProduto) {$this->idListaPrecoProduto = $idListaPrecoProduto;}
+        function setIdListaPreco($idListaPreco) {$this->idListaPreco = $idListaPreco;}
+        function setIdProduto($idProduto) {$this->idProduto = $idProduto;}
+        function setVista($vista) {$this->vista = $vista;}
+        function setPrazo($prazo) {$this->prazo = $prazo;}
 
         function __construct($idListaPrecoProduto="", $idListaPreco="", $idProduto="", $vista="", $prazo="") {
             $this->setIdListaPrecoProduto($idListaPrecoProduto);

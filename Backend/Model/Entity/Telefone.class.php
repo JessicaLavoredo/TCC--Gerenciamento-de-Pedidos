@@ -18,14 +18,14 @@
         function getIdCategoriaTelefone() {return $this->idCategoriaTelefone;}
         function getObservacao() {return $this->observacao;}
 
-        function setIdTelefone() {$this->idTelefone = $idTelefone;}
-        function setIdPessoa() {$this->idPessoa = $idPessoa;}
-        function setDDI() {$this->dDI = $dDI;}
-        function setDDD() {$this->dDD = $dDD;}
-        function setNumero() {$this->numero = $numero;}
-        function setRamal() {$this->ramal = $ramal;}
-        function setIdCategoriaTelefone() {$this->idCategoriaTelefone = $idCategoriaTelefone;}
-        function setObservacao() {$this->observacao = $observacao;}
+        function setIdTelefone($idTelefone) {$this->idTelefone = $idTelefone;}
+        function setIdPessoa($idPessoa) {$this->idPessoa = $idPessoa;}
+        function setDDI($dDI) {$this->dDI = $dDI;}
+        function setDDD($dDD) {$this->dDD = $dDD;}
+        function setNumero($numero) {$this->numero = $numero;}
+        function setRamal($ramal) {$this->ramal = $ramal;}
+        function setIdCategoriaTelefone($idCategoriaTelefone) {$this->idCategoriaTelefone = $idCategoriaTelefone;}
+        function setObservacao($observacao) {$this->observacao = $observacao;}
 
         function __construct($idTelefone="", $idPessoa="", $dDI="", $dDD="", $numero="", $ramal="", $idCategoriaTelefone="", $observacao="") {
             $this->setIdTelefone($idTelefone);

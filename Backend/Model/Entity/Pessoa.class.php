@@ -22,16 +22,16 @@
         function getInativo() {return $this->inativo;}
         function getDataInclusao() {return $this->dataInclusao;}
 
-        function setIdPessoa() {$this->idPessoa = $idPessoa;}
-        function setTipoPessoa() {$this->tipoPessoa = $tipoPessoa;}
-        function setNomeRazao() {$this->nomeRazao = $nomeRazao;}
-        function setApelidoFantasia() {$this->apelidoFantasia = $apelidoFantasia;}
-        function setCPFCNPJ() {$this->cPFCNPJ = $cPFCNPJ;}
-        function setRGInscricao() {$this->rGInscricao = $rGInscricao;}
-        function setDataNascimento() {$this->dataNascimento = $dataNascimento;}
-        function setGenero() {$this->genero = $genero;}
-        function setInativo() {$this->inativo = $inativo;}
-        function setDataInclusao() {$this->dataInclusao = $dataInclusao;}
+        function setIdPessoa($idPessoa) {$this->idPessoa = $idPessoa;}
+        function setTipoPessoa($tipoPessoa) {$this->tipoPessoa = $tipoPessoa;}
+        function setNomeRazao($nomeRazao) {$this->nomeRazao = $nomeRazao;}
+        function setApelidoFantasia($apelidoFantasia) {$this->apelidoFantasia = $apelidoFantasia;}
+        function setCPFCNPJ($cPFCNPJ) {$this->cPFCNPJ = $cPFCNPJ;}
+        function setRGInscricao($rGInscricao) {$this->rGInscricao = $rGInscricao;}
+        function setDataNascimento($dataNascimento) {$this->dataNascimento = $dataNascimento;}
+        function setGenero($genero) {$this->genero = $genero;}
+        function setInativo($inativo) {$this->inativo = $inativo;}
+        function setDataInclusao($dataInclusao) {$this->dataInclusao = $dataInclusao;}
 
         function __construct($idPessoa="", $tipoPessoa="", $nomeRazao="", $apelidoFantasia="", $cPFCNPJ="", $rGInscricao="", $dataNascimento="", $genero="", $inativo="", $dataInclusao="") {
             $this->setIdPessoa($idPessoa);

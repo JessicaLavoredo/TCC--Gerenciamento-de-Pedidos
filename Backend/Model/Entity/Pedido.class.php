@@ -14,12 +14,12 @@
         function getIdStatusPedido() {return $this->idStatusPedido;}
         function getIdUsuarioCriadoPor() {return $this->idUsuarioCriadoPor;}
 
-        function setIdPedido() {$this->idPedido = $idPedido;}
-        function setIdPessoa() {$this->idPessoa = $idPessoa;}
-        function setIdFormaPagamento() {$this->idFormaPagamento = $idFormaPagamento;}
-        function setDataPedido() {$this->dataPedido = $dataPedido;}
-        function setIdStatusPedido() {$this->idStatusPedido = $idStatusPedido;}
-        function setIdUsuarioCriadoPor() {$this->idUsuarioCriadoPor = $idUsuarioCriadoPor;}
+        function setIdPedido($idPedido) {$this->idPedido = $idPedido;}
+        function setIdPessoa($idPessoa) {$this->idPessoa = $idPessoa;}
+        function setIdFormaPagamento($idFormaPagamento) {$this->idFormaPagamento = $idFormaPagamento;}
+        function setDataPedido($dataPedido) {$this->dataPedido = $dataPedido;}
+        function setIdStatusPedido($idStatusPedido) {$this->idStatusPedido = $idStatusPedido;}
+        function setIdUsuarioCriadoPor($idUsuarioCriadoPor) {$this->idUsuarioCriadoPor = $idUsuarioCriadoPor;}
         
         function __construct($idPedido="", $idPessoa="", $idFormaPagamento="", $dataPedido="", $idStatusPedido="", $idUsuarioCriadoPor="") {
             $this->setIdPedido($idPedido);

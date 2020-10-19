@@ -12,11 +12,11 @@
         function getIdCategoriaEmail() {return $this->idCategoriaEmail;}
         function getObservacao() {return $this->observacao;}
 
-        function setIdEmail() {$this->idEmail = $idEmail;}
-        function setIdPessoa() {$this->idPessoa = $idPessoa;}
-        function setEndereco() {$this->endereco = $endereco;}
-        function setIdCategoriaEmail() {$this->idCategoriaEmail = $idCategoriaEmail;}
-        function setObservacao() {$this->observacao = $observacao;}
+        function setIdEmail($idEmail) {$this->idEmail = $idEmail;}
+        function setIdPessoa($idPesso) {$this->idPessoa = $idPessoa;}
+        function setEndereco($endereco) {$this->endereco = $endereco;}
+        function setIdCategoriaEmail($idCategoriaEmail) {$this->idCategoriaEmail = $idCategoriaEmail;}
+        function setObservacao($observacao) {$this->observacao = $observacao;}
 
         function __construct($idEmail="", $idPessoa="", $endereco="", $idCategoriaEmail="", $observacao="") {
             $this->setIdEmail($idEmail);
