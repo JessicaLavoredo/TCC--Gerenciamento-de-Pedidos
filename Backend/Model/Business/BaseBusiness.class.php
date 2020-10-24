@@ -19,7 +19,9 @@
             $entidade = New $classe();
             foreach($propriedades as $prop){
                 $set = 'set'.$prop;
-                $entidade->$set($obj[$prop]);
+                if ($obj[$prop]){
+                    $entidade->$set($obj[$prop]);
+                }
             }
 
             return $entidade->gravar();

@@ -1,5 +1,5 @@
 <?php
-    class PefilData extends BaseData {
+    class PerfilData extends BaseData {
         
     }
 ?>
