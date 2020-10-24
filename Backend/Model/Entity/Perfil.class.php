@@ -1,5 +1,5 @@
 <?php
-    class Perfil{
+    class Perfil extends PerfilData {
         private $idPerfil;
         private $nome;
         

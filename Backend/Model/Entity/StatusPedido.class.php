@@ -1,5 +1,5 @@
 <?php
-    class StatusPedido{
+    class StatusPedido extends StatusPedidoData {
         private $idStatusPedido;
         private $nome;
         private $descricao;

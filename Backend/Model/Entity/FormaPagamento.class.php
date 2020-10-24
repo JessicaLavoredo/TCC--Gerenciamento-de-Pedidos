@@ -1,5 +1,5 @@
 <?php
-    class FormaPagamento{
+    class FormaPagamento extends FormaPagamentoData {
 
         private $idFormaPagamento;
         private $descritivo;

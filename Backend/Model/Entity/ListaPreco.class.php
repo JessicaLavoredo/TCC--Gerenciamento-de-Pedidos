@@ -1,5 +1,5 @@
 <?php
-    class ListaPreco{
+    class ListaPreco extends ListaPrecoData {
         private $idListaPreco;
         private $descritivo;
         

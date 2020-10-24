@@ -1,5 +1,5 @@
 <?php
-    class VinculoPessoa{
+    class VinculoPessoa extends VinculoPessoaData {
         private $idVinculoPessoa;
         private $idVinculo;
         private $idPessoa;

@@ -1,5 +1,5 @@
 <?php
-    class Cidade {
+    class Cidade extends CidadeData {
         private $idCidade;
         private $nome;
         private $estado;

@@ -1,5 +1,5 @@
 <?php
-    class Email{
+    class Email extends EmailData {
         private $idEmail;
         private $idPessoa;
         private $endereco;

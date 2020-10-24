@@ -1,5 +1,5 @@
 <?php
-    class Produto{
+    class Produto extends ProdutoData {
         private $idProduto;
         private $nomeTecnico;
         private $nomeComercial;

@@ -1,5 +1,5 @@
 <?php
-    class Pessoa{
+    class Pessoa extends PessoaData {
         private $idPessoa;
         private $tipoPessoa;
         private $nomeRazao;

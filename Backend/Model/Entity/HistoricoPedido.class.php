@@ -1,5 +1,5 @@
 <?php
-    class HistoricoPedido{
+    class HistoricoPedido extends HistoricoPedidoData {
         private $idHistoricoPedido;
         private $idPedido;
         private $idStatusPedido;

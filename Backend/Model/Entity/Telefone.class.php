@@ -1,5 +1,5 @@
 <?php
-    class Telefone{
+    class Telefone extends TelefoneData {
         private $idTelefone;
         private $idPessoa;
         private $dDI;

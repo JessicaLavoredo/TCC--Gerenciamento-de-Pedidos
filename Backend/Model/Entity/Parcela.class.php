@@ -1,5 +1,5 @@
 <?php
-    class Parcela{
+    class Parcela extends ParcelaData {
         private $idParcela;
         private $ordem;
         private $dias;

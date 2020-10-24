@@ -1,5 +1,5 @@
 <?php
-    class Endereco {
+    class Endereco extends EnderecoData {
         private $idEndereco;
         private $idPessoa;
         private $cep;

@@ -1,5 +1,5 @@
 <?php
-    class PedidoProduto{
+    class PedidoProduto extends PedidoProdutoData {
         private $idPedidoProduto;
         private $idPedido;
         private $idProduto;
@@ -13,6 +13,7 @@
         function getPreco() {return $this->preco;}
         function getQuantidade() {return $this->quantidade;}
         function getDesconto() {return $this->desconto;}
+        function getPrecoFinal() {return ($this->preco - $this->desconto);}
 
         function setIdPedidoProduto($idPedidoProduto) {$this->idPedidoProduto = $idPedidoProduto;}
         function setIdPedido($idPedido) {$this->idPedido = $idPedido;}

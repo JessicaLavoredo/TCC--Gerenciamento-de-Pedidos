@@ -1,5 +1,5 @@
 <?php
-    class Pedido{
+    class Pedido extends PedidoData {
         private $idPedido;
         private $idPessoa;
         private $idFormaPagamento;
