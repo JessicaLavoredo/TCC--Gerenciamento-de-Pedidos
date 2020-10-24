@@ -13,6 +13,7 @@
         function setDescricao($descricao) {$this->descricao = $descricao;}
 
         function __construct($idStatusPedido="", $nome="", $descricao="") {
+            parent::__construct();
             $this->setIdStatusPedido($idStatusPedido);
             $this->setNome($nome);
             $this->setDescricao($descricao);

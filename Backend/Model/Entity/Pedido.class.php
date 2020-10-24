@@ -22,6 +22,7 @@
         function setIdUsuarioCriadoPor($idUsuarioCriadoPor) {$this->idUsuarioCriadoPor = $idUsuarioCriadoPor;}
         
         function __construct($idPedido="", $idPessoa="", $idFormaPagamento="", $dataPedido="", $idStatusPedido="", $idUsuarioCriadoPor="") {
+            parent::__construct();
             $this->setIdPedido($idPedido);
             $this->setIdPessoa($idPessoa);
             $this->setIdFormaPagamento($idFormaPagamento);

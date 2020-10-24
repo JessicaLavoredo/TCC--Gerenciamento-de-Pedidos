@@ -19,6 +19,7 @@
         function setPais($pais) {$this->pais = $pais;}
 
         function __construct($idCidade="", $nome="", $estado="", $estadoSigla="", $pais="") {
+            parent::__construct();
             $this->setIdCidade($idCidade);
             $this->setNome($nome);
             $this->setEstado($estado);

@@ -19,6 +19,7 @@
         function setDescricao($descricao) {$this->descricao = $descricao;}
 
         function __construct($idProduto="", $nomeTecnico="", $nomeComercial="", $codigoInterno="", $descricao="") {
+            parent::__construct();
             $this->setIdProduto($idProduto);
             $this->setNomeTecnico($nomeTecnico);
             $this->setNomeComercial($nomeComercial);

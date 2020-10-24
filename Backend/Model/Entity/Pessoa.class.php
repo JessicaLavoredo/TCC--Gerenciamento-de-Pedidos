@@ -34,6 +34,7 @@
         function setDataInclusao($dataInclusao) {$this->dataInclusao = $dataInclusao;}
 
         function __construct($idPessoa="", $tipoPessoa="", $nomeRazao="", $apelidoFantasia="", $cPFCNPJ="", $rGInscricao="", $dataNascimento="", $genero="", $inativo="", $dataInclusao="") {
+            parent::__construct();
             $this->setIdPessoa($idPessoa);
             $this->setTipoPessoa($tipoPessoa);
             $this->setNomeRazao($nomeRazao);
