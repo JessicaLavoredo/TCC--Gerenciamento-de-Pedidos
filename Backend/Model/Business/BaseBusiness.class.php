@@ -19,7 +19,7 @@
             $entidade = New $classe();
             foreach($propriedades as $prop){
                 $set = 'set'.$prop;
-                if ($obj[$prop]){
+                if (isset($obj[$prop])){
                     $entidade->$set($obj[$prop]);
                 }
             }
