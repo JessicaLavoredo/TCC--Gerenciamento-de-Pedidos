@@ -10,6 +10,7 @@
         function setDescritivo($descritivo) {$this->descritivo = $descritivo;}
 
         function __construct($idListaPreco="", $descritivo="") {
+            parent::__construct();
             $this->setIdListaPreco($idListaPreco);
             $this->setDescritivo($descritivo);
         }            

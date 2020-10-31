@@ -19,6 +19,7 @@
         function setIdUsuarioMovimentadoPor($idUsuarioMovimentadoPor) {$this->idUsuarioMovimentadoPor = $idUsuarioMovimentadoPor;}
 
         function __construct($idHistoricoPedido="", $idPedido="", $idStatusPedido="", $dataMovimentacao="", $idUsuarioMovimentadoPor="") {
+            parent::__construct();
             $this->setIdHistoricoPedido($idHistoricoPedido);
             $this->setIdPedido($idPedido);
             $this->setIdStatusPedido($idStatusPedido);

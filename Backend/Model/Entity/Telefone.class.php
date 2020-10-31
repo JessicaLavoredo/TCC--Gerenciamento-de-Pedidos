@@ -28,6 +28,7 @@
         function setObservacao($observacao) {$this->observacao = $observacao;}
 
         function __construct($idTelefone="", $idPessoa="", $dDI="", $dDD="", $numero="", $ramal="", $idCategoriaTelefone="", $observacao="") {
+            parent::__construct();
             $this->setIdTelefone($idTelefone);
             $this->setIdPessoa($idPessoa);
             $this->setDDI($dDI);

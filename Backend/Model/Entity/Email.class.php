@@ -19,6 +19,7 @@
         function setObservacao($observacao) {$this->observacao = $observacao;}
 
         function __construct($idEmail="", $idPessoa="", $endereco="", $idCategoriaEmail="", $observacao="") {
+            parent::__construct();
             $this->setIdEmail($idEmail);
             $this->setIdPessoa($idPessoa);
             $this->setEndereco($endereco);

@@ -19,6 +19,7 @@
         function setIdFormaPagamento($idFormaPagamento) {$this->idFormaPagamento = $idFormaPagamento;}
 
         function __construct($idParcela="", $ordem="", $dias="", $peso="", $idFormaPagamento="") {
+            parent::__construct();
             $this->setIdParcela($idParcela);
             $this->setOrdem($ordem);
             $this->setDias($dias);

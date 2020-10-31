@@ -28,6 +28,7 @@
         function setObservacao($observacao) {$this->observacao = $observacao;}
 
         function __construct($idEndereco="", $idPessoa="", $cep="", $logradouro="", $bairro="", $idCidade="", $idCategoriaEndereco="", $observacao="") {
+            parent::__construct();
             $this->setIdEndereco($idEndereco);
             $this->setIdPessoa($idPessoa);
             $this->setCEP($cep);

@@ -23,6 +23,7 @@
         function setDesconto($desconto) {$this->desconto = $desconto;}
         
         function __construct($idPedidoProduto="", $idPedido="", $idProduto="", $preco="", $quantidade="", $desconto="") {
+            parent::__construct();
             $this->setIdPedidoProduto($idPedidoProduto);
             $this->setIdPedido($idPedido);
             $this->setIdProduto($idProduto);

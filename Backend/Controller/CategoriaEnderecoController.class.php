@@ -5,10 +5,6 @@
         function __construct() {
 
         }
-
-        function gravar($body=""){
-
-        }
     }
 
 ?>

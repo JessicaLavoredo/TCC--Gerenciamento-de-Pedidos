@@ -10,6 +10,7 @@
         function setNome($nome) {$this->nome = $nome;}
 
         function __construct($idVinculo="", $nome="") {
+            parent::__construct();
             $this->setIdVinculo($idVinculo);
             $this->setNome($nome);
         }
