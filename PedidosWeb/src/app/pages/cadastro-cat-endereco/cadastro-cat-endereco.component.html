@@ -8,15 +8,15 @@
         <div class="form-row">
             <div class="form-group col-md-2">
                 <label for="txtCodigo">Código</label>
-                <input type="text" class="form-control" id="txtCodigo">
+                <input type="text" class="form-control" id="txtCodigo" name="codigo" [(ngModel)]="categoria.IdCategoriaEndereco">
             </div>
             <div class="form-group col-md-5">
                 <label for="txtNome">Nome</label>
-                <input type="text" class="form-control" id="txtNome">
+                <input type="text" class="form-control" id="txtNome" name="nome" [(ngModel)]="categoria.Nome">
             </div>
             <div class="form-group col-md-5">
                 <label for="txtApelido">Descrição</label>
-                <input type="text" class="form-control" id="txtApelido">
+                <input type="text" class="form-control" id="txtDescricao" name="descricao" [(ngModel)]="categoria.Descricao">
             </div>
         </div>  
             <table class="table">
@@ -29,16 +29,16 @@
               </thead>
               <tbody>
                 <tr *ngFor="let categoria of categorias">
-                  <th scope="row">{{categoria.idCategoriaEndereco}}</th>
-                  <td>{{categoria.nome}}</td>
-                  <td>{{categoria.descricao}}</td>                 
+                  <th scope="row">{{categoria.IdCategoriaEndereco}}</th>
+                  <td>{{categoria.Nome}}</td>
+                  <td>{{categoria.Descricao}}</td>                 
                 </tr>                
               </tbody>
             </table>
      </div>           
  <app-footer>
     <span rodape>
-        <button type="button" class="btn btn-secondary ml-5 rounded-pill">Salvar</button>
+       <button type="button" (click)="Gravar()" class="btn btn-secondary ml-5 rounded-pill">Salvar</button>
         <button type="button" class="btn btn-secondary ml-5 rounded-pill">Novo</button>
     </span>
  </app-footer>

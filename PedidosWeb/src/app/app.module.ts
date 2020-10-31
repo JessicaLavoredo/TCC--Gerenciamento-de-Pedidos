@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-
+import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
 import { MenuComponent } from './Componentes/menu/menu.component';
 import { FooterComponent } from './Componentes/footer/footer.component';
@@ -24,6 +24,17 @@ import { CadastroClienteComponent } from './pages/cadastro-cliente/cadastro-clie
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxMaskModule, IConfig } from 'ngx-mask';
 import { HttpClientModule } from '@angular/common/http';
+import { RelatorioFuncionarioComponent } from './pages/relatorio-funcionario/relatorio-funcionario.component';
+import { RelatorioClienteComponent } from './pages/relatorio-cliente/relatorio-cliente.component';
+import { RelatorioPedidoComponent } from './pages/relatorio-pedido/relatorio-pedido.component';
+import { CadastroPedidoComponent } from './pages/cadastro-pedido/cadastro-pedido.component';
+import { CadastroVinculoEmpresaComponent } from './pages/cadastro-vinculo-empresa/cadastro-vinculo-empresa.component';
+import { RecuperarSenhaComponent } from './pages/recuperar-senha/recuperar-senha.component';
+import { MatIconModule } from '@angular/material/icon';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { MatRadioModule } from '@angular/material/radio';
+import { Ng2SmartTableModule } from 'ng2-smart-table';
+import { Ng2SearchPipeModule } from 'ng2-search-filter';
 
 @NgModule({
   declarations: [
@@ -44,7 +55,13 @@ import { HttpClientModule } from '@angular/common/http';
     CadastroProdutoComponent,
     CadastroListaPrecoComponent,
     CadastroFormaPagamentoComponent,
-    CadastroClienteComponent
+    CadastroClienteComponent,
+    RelatorioFuncionarioComponent,
+    RelatorioClienteComponent,
+    RelatorioPedidoComponent,
+    CadastroPedidoComponent,
+    CadastroVinculoEmpresaComponent,
+    RecuperarSenhaComponent,
   ],
   imports: [
     BrowserModule,
@@ -53,6 +70,12 @@ import { HttpClientModule } from '@angular/common/http';
     NgbModule,
     NgxMaskModule.forRoot(),
     HttpClientModule,
+    BrowserAnimationsModule,
+    MatIconModule,
+    MatCheckboxModule,
+    MatRadioModule,
+    Ng2SmartTableModule,
+    Ng2SearchPipeModule
   ],
   providers: [],
   bootstrap: [AppComponent]

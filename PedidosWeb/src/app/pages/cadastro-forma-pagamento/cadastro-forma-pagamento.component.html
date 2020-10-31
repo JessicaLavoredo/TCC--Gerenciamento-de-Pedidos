@@ -16,28 +16,20 @@
             </div>
            
         </div>  
-            <table class="table">
-              <thead class="tabelas">
-                <tr>
-                  <th scope="col">Código</th>
-                  <th scope="col">Descritivo</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope="row">1</th>
-                  <td></td>
-                  <td></td>                 
-                </tr>
-                <tr>
-                  <th scope="row">2</th>
-                  <td></td>
-                  <td></td>
-                 
-                </tr>
-               
-              </tbody>
-            </table>
+        <table class="table">
+          <thead class="tabelas">
+            <tr>
+              <th scope="col">Código</th>
+              <th scope="col">Descritivo</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let FormaPagamento of FormasPagamento">
+              <th scope="row">{{FormaPagamento.IdFormaPagamento}}</th>
+              <td>{{FormaPagamento.Descritivo}}</td>             
+            </tr>                
+          </tbody>
+        </table>
      </div>           
  <app-footer>
     <span rodape>

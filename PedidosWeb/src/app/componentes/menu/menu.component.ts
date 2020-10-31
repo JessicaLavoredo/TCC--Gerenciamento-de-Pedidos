@@ -10,6 +10,7 @@ import { AccountService } from 'src/app/services/account.service';
 
 export class MenuComponent {
   constructor( private accountService: AccountService, private router: Router) { }
+
   public sair(){
     try{
       window.localStorage.removeItem('token');
@@ -19,5 +20,4 @@ export class MenuComponent {
         console.error(error);
       }
   }
-
 }

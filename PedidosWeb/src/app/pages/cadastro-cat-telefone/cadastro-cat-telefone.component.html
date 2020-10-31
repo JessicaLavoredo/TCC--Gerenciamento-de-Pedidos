@@ -2,7 +2,6 @@
  <div class="TituloPagina">
    <span>Cadastro de Categoria de Telefone</span>
  </div>
-
 <form>
     <div class="container corpo">
         <div class="form-row">
@@ -18,34 +17,27 @@
                 <label for="txtApelido">Descrição</label>
                 <input type="text" class="form-control" id="txtApelido">
             </div>
-        </div>  
-            <table class="table">
-              <thead class="tabelas">
-                <tr>
-                  <th scope="col">Código</th>
-                  <th scope="col">Nome</th>
-                  <th scope="col">Descrição</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope="row">1</th>
-                  <td></td>
-                  <td></td>                 
-                </tr>
-                <tr>
-                  <th scope="row">2</th>
-                  <td></td>
-                  <td></td>
-                 
-                </tr>
-                <tr>
-                  <th scope="row">3</th>
-                  <td></td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
+        </div> 
+        <div class="form-row mt-5 mb-2">
+          <label for="txtCodigo" class="col-md-2">Pesquisa</label>
+          <input class="form-control col-md-10" type="text" name="search" [(ngModel)]="filter"> 
+        </div>
+        <table class="table">
+          <thead class="tabelas">
+            <tr>
+              <th scope="col">Código</th>
+              <th scope="col">Nome</th>
+              <th scope="col">Descrição</th>
+            </tr>
+          </thead>          
+          <tbody>             
+            <tr *ngFor="let categoria of categorias| filter:filter; let i = index">
+              <th scope="row">{{categoria.IdCategoriaTelefone}}</th>
+              <td>{{categoria.Nome}}</td>
+              <td>{{categoria.Descricao}}</td>                 
+            </tr>                
+          </tbody>
+        </table>
      </div>           
  <app-footer>
     <span rodape>

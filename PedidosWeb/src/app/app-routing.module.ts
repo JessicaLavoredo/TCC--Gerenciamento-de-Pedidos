@@ -1,3 +1,4 @@
+import { RelatorioFuncionarioComponent } from './pages/relatorio-funcionario/relatorio-funcionario.component';
 import { PageLogadaComponent } from './pages/page-logada/page-logada.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -17,6 +18,8 @@ import { HomeAdminComponent } from './pages/home-admin/home-admin.component';
 import { AuthenticationComponent } from './pages/authentication/authentication.component';
 import { LoginComponent } from './pages/login/login.component';
 import { AuthGuard } from './guard/account/auth.guard';
+import { RelatorioClienteComponent } from './pages/relatorio-cliente/relatorio-cliente.component';
+import { RelatorioPedidoComponent } from './pages/relatorio-pedido/relatorio-pedido.component';
 
 const routes: Routes = [
   { path: '', component: PageLogadaComponent ,
@@ -33,9 +36,12 @@ const routes: Routes = [
       { path: 'CadastroCliente', component: CadastroClienteComponent },
       { path: 'CadastroListaPreco', component: CadastroListaPrecoComponent },
       { path: 'CadastroFormaPagamento', component: CadastroFormaPagamentoComponent },
+      { path: 'RelatorioFuncionario', component: RelatorioFuncionarioComponent },
+      { path: 'RelatorioCliente', component: RelatorioClienteComponent },
+      { path: 'RelatorioPedidos', component: RelatorioPedidoComponent },
       { path: 'HomeAdmin', component: HomeAdminComponent }
     ],
-    canActivate: [AuthGuard]
+    // canActivate: [AuthGuard]
   },
   { path: '', component: AuthenticationComponent ,
   children: [
