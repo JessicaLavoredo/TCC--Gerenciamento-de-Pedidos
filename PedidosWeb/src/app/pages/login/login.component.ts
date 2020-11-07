@@ -1,4 +1,4 @@
-import { Usuario } from './../../usuario';
+import { Usuario } from '../../class/usuario';
 import { Router } from '@angular/router';
 import { AccountService } from './../../services/account.service';
 import { Component, OnInit, NgModule } from '@angular/core';
@@ -27,11 +27,10 @@ public usuario: Usuario = new Usuario();
   //     });
   //   }
 
-    
   async onSubmit(){
     try{
        await  this.accountService.login(this.usuario);
-       console.log('Login efetuado');
+       alert('logou');
        this.router.navigate(['']);
       }catch (error){
         console.error(error);

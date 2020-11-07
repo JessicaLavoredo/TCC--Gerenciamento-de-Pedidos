@@ -16,33 +16,20 @@
             </div>
            
         </div>  
-            <table class="table">
-              <thead class="tabelas">
-                <tr>
-                  <th scope="col">Código</th>
-                  <th scope="col">Nome</th>
-                  <th scope="col">Descrição</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <th scope="row">1</th>
-                  <td></td>
-                  <td></td>                 
-                </tr>
-                <tr>
-                  <th scope="row">2</th>
-                  <td></td>
-                  <td></td>
-                 
-                </tr>
-                <tr>
-                  <th scope="row">3</th>
-                  <td></td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>
+        <table class="table">
+          <thead class="tabelas">
+            <tr>
+              <th scope="col">Código</th>
+              <th scope="col">Nome</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let perfilUsuario of PerfisUsuario">
+              <th scope="row">{{perfilUsuario.IdPerfil}}</th>
+              <td>{{perfilUsuario.Nome}}</td>              
+            </tr>                
+          </tbody>
+        </table>
      </div>           
  <app-footer>
     <span rodape>
