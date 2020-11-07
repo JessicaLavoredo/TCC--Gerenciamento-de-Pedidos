@@ -1,34 +1,40 @@
 <?php
 
     require_once "autoload.php";
+    require_once "./Model/RestResponse.class.php";
 
     header('Content-Type: application/json; charset: utf-8');
     header("Access-Control-Allow-Headers: Authorization, Content-Type");
 	header("Access-Control-Allow-Origin: *");
 
-    if (isset($_REQUEST['url'])) {
-        $url = explode('/', $_REQUEST['url']);
-        $classe = ucfirst(array_shift($url)).'Controller';
-        $metodo = array_shift($url);
+    try {
 
-        switch($_SERVER['REQUEST_METHOD']) {
-            case "GET":
-                $parametros = $url;
-                break;
-            case "POST":
-                $json = file_get_contents("php://input");
-                $obj = json_decode($json,true);
-                $parametros = $obj;
-                break;
-            default: 
-                ;
-                break;
-        } 
+        if (isset($_REQUEST['url'])) {
+            $url = explode('/', $_REQUEST['url']);
+            $classe = ucfirst(array_shift($url)).'Controller';
+            $metodo = array_shift($url);
 
-        $ret = (New $classe())->$metodo($parametros);
-        return file_put_contents("php://output",json_encode($ret));
+            switch($_SERVER['REQUEST_METHOD']) {
+                case "GET":
+                    $parametros = $url;
+                    break;
+                case "POST":
+                    $json = file_get_contents("php://input");
+                    $obj = json_decode($json,true);
+                    $parametros = $obj;
+                    break;
+                default: 
+                    ;
+                    break;
+            } 
+
+            $ret = (New $classe())->$metodo($parametros);
+            return file_put_contents("php://output",json_encode($ret));
+        }
+
+    } catch (Exception $e) {
+        return New RestResponse(500, "Internal Server Error.", null);
     }
-
     // if (isset($_REQUEST)) {
     //     var_dump($json);
     //     var_dump($_REQUEST);

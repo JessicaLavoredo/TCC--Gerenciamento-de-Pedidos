@@ -7,24 +7,23 @@
         }
 
         function buscarTodos() {
-            $classe = str_ireplace('Business', '', get_class($this));
-            return (New $classe())->buscarTodos();
+            $classeData = str_ireplace('Business', 'Data', get_class($this));
+            return (New $classeData())->buscarTodos();
         }
 
-        function gravar($obj) {
-            $classe = str_ireplace('Business', '', get_class($this));
-            $propriedades = array_filter(get_class_methods($classe), function($x){if (strpos($x,'set') === 0){ return true;}});
-            $propriedades = array_map(function($x){return substr_replace($x,'',0,3);}, $propriedades);
+        function buscarTodosAtivos() {
+            $classeData = str_ireplace('Business', 'Data', get_class($this));
+            return (New $classeData())->buscarTodosAtivos();
+        }
 
-            $entidade = New $classe();
-            foreach($propriedades as $prop){
-                $set = 'set'.$prop;
-                if (isset($obj[$prop])){
-                    $entidade->$set($obj[$prop]);
-                }
-            }
+        function buscarPorId($id){
+            $classeData = str_ireplace('Business', 'Data', get_class($this));
+            return (New $classeData())->buscarPorId($id);
+        }
 
-            return $entidade->gravar();
+        function gravar($entidade = null) {
+            $classeData = str_ireplace('Business', 'Data', get_class($this));
+            return (New $classeData())->gravar($entidade);
         }
     }
 

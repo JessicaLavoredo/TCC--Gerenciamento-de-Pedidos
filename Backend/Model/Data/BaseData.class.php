@@ -6,33 +6,25 @@
             parent::__construct();
         }
 
-        function gravar() {
+        function gravar($entidade) {
             $sql = '';
-            $classe = get_class($this);
-            $propriedades = array_filter(get_class_methods($classe), function($x){if (strpos($x,'set') === 0){ return true;}});
-            $propriedades = array_map(function($x){return substr_replace($x,'',0,3);}, $propriedades);
             $valores = array();
-            foreach($propriedades as $prop){
-                $get = "get".$prop;
-                $valor = $this->$get();
-                $valor = (New Funcoes())->preparaDadoSql($valor);
-                $valores[$prop] = $valor;
-            }
+            $classe = get_class($entidade);
             $getId = "getId".$classe;
 
             // CASO O OBJETO A SER GRAVADO TENHA UM ID O REGISTRO SERÁ ALTERADO.
-            if ($this->$getId()) {
+            if ($entidade->$getId()) {
                 $sql = "UPDATE ".$classe."\n";
                 $sql .= "SET ";
-                foreach ($propriedades as $prop){
-                    $sql .= $prop." = ".$valores[$prop].", ";
+                foreach ($entidade as $chave => $valor){
+                    $sql .= $chave." = ".$valor.", ";
                 }
                 $sql = substr_replace($sql,"\n",-2);
                 $sql .= "WHERE Id".$classe." = ".$this->$getId();
             } else {
                 // CASO O OBJETO NÃO TENHA UM ID SERÁ INSERIDO UM NOVO REGISTRO.
-                $sql = "INSERT INTO ".$classe." (".join(", ",$propriedades).")\n";
-                $sql .= "VALUES (".join(", ",$valores).")";
+                $sql = "INSERT INTO ".$classe." (".join(", ", array_keys($entidade)).")\n";
+                $sql .= "VALUES (".join(", ", array_values($entidade)).")";
             }
 
             // $ret = $this->executar($sql, $classe);
@@ -47,14 +39,29 @@
         }
 
         function buscarTodos() {
-            $classe = get_class($this);
+            $classe = str_ireplace('Data', '', get_class($this));
             $sql = "SELECT * FROM ".$classe;
             $ret = $this->executar($sql, $classe);
             return $ret;
         }
 
-        function buscarPorId(){
+        function buscarTodosAtivos() {
+            $classe = str_ireplace('Data', '', get_class($this));
+            $propriedades = array_filter(get_class_methods($classe), function($x){if (strpos($x,'set') === 0){ return true;}});
+            if (count(array_filter($propriedades, function($x){if (stristr($x,'Inativo') !== false){return true;}})) > 0) { 
+                $sql = "SELECT * FROM ".$classe." WHERE Inativo = 0";
+                $ret = $this->executar($sql, $classe);
+            } else {
+                $ret = $this->buscarTodos();
+            }
+            return $ret;
+        }
 
+        function buscarPorId($id){
+            $classe = str_ireplace('Data', '', get_class($this));
+            $sql = "SELECT * FROM ".$classe." WHERE Id".$classe." = ".$id;
+            $ret = $this->executar($sql, $classe);
+            return $ret;
         }
 
     }

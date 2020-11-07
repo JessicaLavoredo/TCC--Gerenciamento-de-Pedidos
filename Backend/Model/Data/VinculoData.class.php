@@ -1,5 +1,5 @@
 <?php
-    class Vinculo extends Data {
+    class VinculoData extends BaseData {
         function __construct() {
             parent::__construct();
         }
