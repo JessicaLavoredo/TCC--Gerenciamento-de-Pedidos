@@ -8,23 +8,29 @@
 
         function gravar($entidade) {
             $sql = '';
-            $valores = array();
             $classe = get_class($entidade);
+            $propriedades = (New Funcoes())->getPropriedades($classe);
             $getId = "getId".$classe;
 
             // CASO O OBJETO A SER GRAVADO TENHA UM ID O REGISTRO SERÁ ALTERADO.
             if ($entidade->$getId()) {
                 $sql = "UPDATE ".$classe."\n";
                 $sql .= "SET ";
-                foreach ($entidade as $chave => $valor){
-                    $sql .= $chave." = ".$valor.", ";
+                foreach ($propriedades as $prop){
+                    $get = "get".$prop;
+                    $sql .= $prop." = ".(New Funcoes())->preparaDadoSql($entidade->$get()).", ";
                 }
                 $sql = substr_replace($sql,"\n",-2);
-                $sql .= "WHERE Id".$classe." = ".$this->$getId();
+                $sql .= "WHERE Id".$classe." = ".$entidade->$getId();
             } else {
                 // CASO O OBJETO NÃO TENHA UM ID SERÁ INSERIDO UM NOVO REGISTRO.
-                $sql = "INSERT INTO ".$classe." (".join(", ", array_keys($entidade)).")\n";
-                $sql .= "VALUES (".join(", ", array_values($entidade)).")";
+                $sql = "INSERT INTO ".$classe." (".join(", ", $propriedades).")\n";
+                $sql .= "VALUES (";
+                foreach ($propriedades as $prop){
+                    $get = "get".$prop;
+                    $sql .= (New Funcoes())->preparaDadoSql($entidade->$get()).", ";
+                }
+                $sql = substr_replace($sql,")\n",-2);
             }
 
             // $ret = $this->executar($sql, $classe);

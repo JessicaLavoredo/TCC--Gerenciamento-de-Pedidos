@@ -23,7 +23,9 @@
 
         function gravar($entidade = null) {
             $classeData = str_ireplace('Business', 'Data', get_class($this));
-            return (New $classeData())->gravar($entidade);
+            $data = New $classeData();
+            $ret = $data->gravar($entidade);
+            return $ret;
         }
     }
 

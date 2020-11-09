@@ -34,7 +34,6 @@
 			{
 				$this->db = new PDO("mysql:host=localhost;dbname=master-pedidos;charset=utf8mb4", "root", "");
 				$this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-				$this->db->setAttribute(PDO::ATTR_ORACLE_NULLS, PDO::NULL_NATURAL);
 				$stm = $this->db->prepare($sql);
 				$stm->execute();
 				$this->db = null;

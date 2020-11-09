@@ -24,7 +24,7 @@
                     case "object":
                         return null;
                     case "NULL":
-                        return null;
+                        return "null";
                     default:
                     throw New Exception("Invalid data type.");
                 }
