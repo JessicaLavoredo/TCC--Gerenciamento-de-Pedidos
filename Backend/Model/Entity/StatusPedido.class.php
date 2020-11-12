@@ -1,5 +1,5 @@
 <?php
-    class StatusPedido extends StatusPedidoData {
+    class StatusPedido {
         private $idStatusPedido;
         private $nome;
         private $descricao;
@@ -13,7 +13,6 @@
         function setDescricao($descricao) {$this->descricao = $descricao;}
 
         function __construct($idStatusPedido="", $nome="", $descricao="") {
-            parent::__construct();
             $this->setIdStatusPedido($idStatusPedido);
             $this->setNome($nome);
             $this->setDescricao($descricao);

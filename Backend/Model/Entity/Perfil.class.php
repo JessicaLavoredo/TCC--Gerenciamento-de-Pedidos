@@ -1,5 +1,5 @@
 <?php
-    class Perfil extends PerfilData {
+    class Perfil {
         private $idPerfil;
         private $nome;
         
@@ -10,7 +10,6 @@
         function setNome($nome) {$this->nome = $nome;}
 
         function __construct($idPerfil="", $nome="") {
-            parent::__construct();
             $this->setIdPerfil($idPerfil);
             $this->setNome($nome);
         }

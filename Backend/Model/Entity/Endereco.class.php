@@ -1,5 +1,5 @@
 <?php
-    class Endereco extends EnderecoData {
+    class Endereco {
         private $idEndereco;
         private $idPessoa;
         private $cep;
@@ -27,8 +27,7 @@
         function setIdCategoriaEndereco($idCategoriaEndereco) {$this->idCategoriaEndereco = $idCategoriaEndereco;}
         function setObservacao($observacao) {$this->observacao = $observacao;}
 
-        function __construct($idEndereco="", $idPessoa="", $cep="", $logradouro="", $bairro="", $idCidade="", $idCategoriaEndereco="", $observacao="") {
-            parent::__construct();
+        function __construct($idEndereco=null, $idPessoa=null, $cep=null, $logradouro=null, $bairro=null, $idCidade=null, $idCategoriaEndereco=null, $observacao=null) {
             $this->setIdEndereco($idEndereco);
             $this->setIdPessoa($idPessoa);
             $this->setCEP($cep);

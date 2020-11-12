@@ -19,7 +19,12 @@
                         return "'".$dado."'";
                     break;
                     case "array":
-                        return "'".join(",",string_replace($dado))."'";
+                        if(count($dado) > 0 && is_object($dado[0])){
+                            $ret = $dado;
+                        } else {
+                            $ret = "'".join(",",string_replace($dado))."'";
+                        }
+                        return $ret;
                     break;
                     case "object":
                         return null;

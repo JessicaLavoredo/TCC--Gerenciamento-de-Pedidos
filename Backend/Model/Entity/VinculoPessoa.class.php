@@ -1,5 +1,5 @@
 <?php
-    class VinculoPessoa extends VinculoPessoaData {
+    class VinculoPessoa {
         private $idVinculoPessoa;
         private $idVinculo;
         private $idPessoa;
@@ -13,7 +13,6 @@
         function setIdPessoa($idPessoa) {$this->idPessoa = $idPessoa;}
 
         function __construct($idVinculoPessoa="", $idVinculo="", $idPessoa="") {
-            parent::__construct();
             $this->setIdVinculoPessoa($idVinculoPessoa);
             $this->setIdVinculo($idVinculo);
             $this->setIdPessoa($idPessoa);

@@ -1,5 +1,5 @@
 <?php
-    class Vinculo extends VinculoData {
+    class Vinculo {
         private $idVinculo;
         private $nome;
 
@@ -10,7 +10,6 @@
         function setNome($nome) {$this->nome = $nome;}
 
         function __construct($idVinculo=null, $nome=null) {
-            parent::__construct();
             $this->setIdVinculo($idVinculo);
             $this->setNome($nome);
         }

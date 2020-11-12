@@ -1,5 +1,5 @@
 <?php
-    class ListaPrecoProduto extends ListaPrecoProdutoData {
+    class ListaPrecoProduto {
         private $idListaPrecoProduto;
         private $idListaPreco;
         private $idProduto;
@@ -19,7 +19,6 @@
         function setPrazo($prazo) {$this->prazo = $prazo;}
 
         function __construct($idListaPrecoProduto="", $idListaPreco="", $idProduto="", $vista="", $prazo="") {
-            parent::__construct();
             $this->setIdListaPrecoProduto($idListaPrecoProduto);
             $this->setIdListaPreco($idListaPreco);
             $this->setIdProduto($idProduto);

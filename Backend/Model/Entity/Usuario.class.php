@@ -1,5 +1,5 @@
 <?php
-    class Usuario extends UsuarioData {
+    class Usuario {
         private $idUsuario;
         private $idPessoa;
         private $login;
@@ -19,7 +19,6 @@
         function setIdPerfil($idPerfil) {$this->idPerfil = $idPerfil;}
 
         function __construct($idUsuario="", $idPessoa="", $login="", $senha="", $idPerfil="") {
-            parent::__construct();
             $this->setIdUsuario($idUsuario);
             $this->setIdPessoa($idPessoa);
             $this->setLogin($login);

@@ -39,42 +39,42 @@
         function setInativo($inativo) {$this->inativo = $inativo;}
         function setDataInclusao($dataInclusao) {$this->dataInclusao = $dataInclusao;}
         
-        function addEndereco(Endereco $endereco){
+        private function addEndereco(Endereco $endereco){
             $this->enderecos[] = $endereco;
         }
         function setEnderecos($enderecos) {
             $this->enderecos = array();
             if (isset($enderecos)){
-                array_walk($enderecos, function($x){
-                    $y = (New Funcoes())->criarEntidade('Endereco', $x);
-                    $this->addEndereco($y);
-                });
+                foreach ($enderecos as $endereco) {
+                    $entidade = (New Funcoes())->criarEntidade("Endereco", $endereco);
+                    $this->addEndereco($entidade);
+                }
             }
         }
         
-        function addTelefone(Telefone $telefone){
+        private function addTelefone(Telefone $telefone){
             $this->telefones[] = $telefone;
         }
         function setTelefones($telefones) {
             $this->telefones = array();
             if (isset($telefones)){
-                array_walk($telefones, function($x){
-                    $entidade = (New Funcoes())->criarEntidade('Telefone', $x);
-                    $this->addTelefone($y);
-                });
+                foreach ($telefones as $telefone){
+                    $entidade = (New Funcoes())->criarEntidade("Telefone", $telefone);
+                    $this->addTelefone($entidade);
+                }
             }
         }
 
-        function addEmail(Email $email){
+        private function addEmail(Email $email){
             $this->emails[] = $email;
         }
         function setEmails($emails) {
             $this->emails = array();
             if (isset($emails)){
-                array_walk($telefones, function($x){
-                    $entidade = (New Funcoes())->criarEntidade('Email', $x);
-                    $this->addEmail($y);
-                });
+                foreach ($emails as $email){
+                    $entidade = (New Funcoes())->criarEntidade("Email", $email);
+                    $this->addEmail($entidade);
+                }
             }
         }
 

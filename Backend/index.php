@@ -29,7 +29,8 @@
             } 
 
             $ret = (New $classe())->$metodo($parametros);
-            return file_put_contents("php://output",json_encode($ret));
+            $ret = file_put_contents("php://output",json_encode($ret));
+            return $ret;
         }
 
     } catch (Exception $e) {

@@ -1,5 +1,5 @@
 <?php
-    class Email extends EmailData {
+    class Email {
         private $idEmail;
         private $idPessoa;
         private $endereco;
@@ -13,13 +13,12 @@
         function getObservacao() {return $this->observacao;}
 
         function setIdEmail($idEmail) {$this->idEmail = $idEmail;}
-        function setIdPessoa($idPesso) {$this->idPessoa = $idPessoa;}
+        function setIdPessoa($idPessoa) {$this->idPessoa = $idPessoa;}
         function setEndereco($endereco) {$this->endereco = $endereco;}
         function setIdCategoriaEmail($idCategoriaEmail) {$this->idCategoriaEmail = $idCategoriaEmail;}
         function setObservacao($observacao) {$this->observacao = $observacao;}
 
-        function __construct($idEmail="", $idPessoa="", $endereco="", $idCategoriaEmail="", $observacao="") {
-            parent::__construct();
+        function __construct($idEmail=null, $idPessoa=null, $endereco=null, $idCategoriaEmail=null, $observacao=null) {
             $this->setIdEmail($idEmail);
             $this->setIdPessoa($idPessoa);
             $this->setEndereco($endereco);

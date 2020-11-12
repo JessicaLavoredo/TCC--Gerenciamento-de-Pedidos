@@ -1,5 +1,5 @@
 <?php
-    class FormaPagamento extends FormaPagamentoData {
+    class FormaPagamento {
 
         private $idFormaPagamento;
         private $descritivo;
@@ -11,7 +11,6 @@
         function setDescritivo($descritivo) {$this->descritivo = $descritivo;}
 
         function __construct($idFormaPagamento="", $descritivo="") {
-            parent::__construct();
             $this->setIdFormaPagamento($idFormaPagamento);
             $this->setDescritivo($descritivo);
         }            

@@ -1,5 +1,5 @@
 <?php
-    class CategoriaEndereco extends CategoriaEnderecoData {
+    class CategoriaEndereco {
         private $idCategoriaEndereco;
         private $nome;
         private $descricao;
@@ -13,7 +13,6 @@
         function setDescricao($descricao) {$this->descricao = $descricao;}
 
         function __construct($idCategoriaEndereco="", $nome="", $descricao="") {
-            parent::__construct();
             $this->setIdCategoriaEndereco($idCategoriaEndereco);
             $this->setNome($nome);
             $this->setDescricao($descricao);
