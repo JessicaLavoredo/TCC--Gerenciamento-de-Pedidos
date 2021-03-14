@@ -1,5 +1,5 @@
 <?php
-    class CategoriaEndereco {
+    class CategoriaEndereco extends BaseEntity {
         private $idCategoriaEndereco;
         private $nome;
         private $descricao;
@@ -12,7 +12,7 @@
         function setNome($nome) {$this->nome = $nome;}
         function setDescricao($descricao) {$this->descricao = $descricao;}
 
-        function __construct($idCategoriaEndereco="", $nome="", $descricao="") {
+        function __construct($idCategoriaEndereco=null, $nome=null, $descricao=null) {
             $this->setIdCategoriaEndereco($idCategoriaEndereco);
             $this->setNome($nome);
             $this->setDescricao($descricao);

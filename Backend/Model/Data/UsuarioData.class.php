@@ -1,45 +1,27 @@
 <?php
 
-    require_once "./Model/conexao.class.php";
-
     class UsuarioData extends BaseData {
 
         function __construct() {
             parent:: __construct();
         }
 
-        function login($login, $senha) {
-            $sql = "SELECT * FROM usuario WHERE login = ? AND senha = ?";
-            $db = new PDO("mysql:host=localhost;dbname=master-pedidos;charset=utf8mb4", "root", "");
-			$db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-            
-            try {
-                $stm = $db->prepare($sql);
-                $stm->bindValue(1, $login);
-                $stm->bindValue(2, $senha);
-                $stm->execute();
-                $this->db = null;
-                $resultado = $stm->fetchAll(PDO::FETCH_OBJ);
-                return $resultado;
-            } catch (Exception $e) {
-                die ($e->getMessage());
-            }
-        }
-
-        function getUsuarioPorId($idUsuario) {
-            $sql = "SELECT * ";
-            $sql .= "FROM usuario ";
-            $sql .= "WHERE idUsuario = ?";
+        function autenticarUsuario($usuario){
+            $sql = "SELECT * \n";
+            $sql.= "FROM usuario\n";
+            $sql.= "WHERE login = ?";
+            $sql.= "AND senha = ?";
 
             try {
                 $stm = $this->db->prepare($sql);
-                $stm->bindValue(1, $idUsuario);
+                $stm->bindValue(1, $usuario->getLogin());
+                $stm->bindValue(2, $usuario->getSenha());
                 $stm->execute();
                 $this->db = null;
-                $resultado = $stm->fetchAll(PDO::FETCH_OBJ);
+                $resultado = $stm->fetchAll();
                 return $resultado;
             } catch (Exception $e) {
-                die ($e->getMessage());
+                return "Erro: ".$e->getMessage();
             }
         }
 
@@ -61,23 +43,6 @@
             }
         }
         
-        function autenticarUsuario($usuario){
-            $sql += "SELECT idUsuario, idPessoa, idPerfil";
-            $sql += "FROM usuario";
-            $sql += "WHERE login = ?";
-            $sql += "AND senha = ?";
 
-            try {
-                $stm = $this->db->prepare($sql);
-                $stm->bindValue(1, $usuario->getLogn());
-                $stm->bindValue(2, $usuario->getSenha());
-                $stm->execute();
-                $this->db = null;
-                $resultado = $stm->fetchAll(PDO::FETCHOBJ);
-                return $resultado;
-            } catch (Exception $e) {
-                die ($e->getMessage());
-            }
-        }
     } // final da classe 
 ?>

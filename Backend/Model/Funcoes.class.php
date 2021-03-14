@@ -1,57 +1,26 @@
 <?php
-    class Funcoes {
+    abstract class Funcoes {
 
-        function preparaDadoSql($dado){
-            try {
-                $tipo = gettype($dado);
-
-                switch($tipo) {
-                    case "boolean":
-                        if ($dado === true) {return 1;} else {return 0;}
-                    break;
-                    case "integer":
-                        return $dado;
-                    break;
-                    case "double":
-                        return $dado;
-                    break;
-                    case "string":
-                        return "'".$dado."'";
-                    break;
-                    case "array":
-                        if(count($dado) > 0 && is_object($dado[0])){
-                            $ret = $dado;
-                        } else {
-                            $ret = "'".join(",",string_replace($dado))."'";
-                        }
-                        return $ret;
-                    break;
-                    case "object":
-                        return null;
-                    case "NULL":
-                        return "null";
-                    default:
-                    throw New Exception("Invalid data type.");
-                }
-            } catch (Exception $e) {
-                die ($e->getMessage());
-            }
+        static function array_remove(array $array, $valor){
+            $indiceRem = array_search($valor, $array);
+            unset($array[$indiceRem]);
+            return array_values($array);
         }
 
-        function getPropriedades($classe) {
+        static function getPropriedades($classe) {
             $propriedades = array_filter(get_class_methods($classe), function($x){if (strpos($x,'set') === 0){ return true;}});
-            $propriedades = array_map(function($x){return substr_replace($x,'',0,3);}, $propriedades);
+            $propriedades = array_map(function($x){return lcfirst(substr_replace($x,'',0,3));}, $propriedades);
             return $propriedades;
         }
 
-        function criarEntidade($classe, $objeto) {
+        static function criarEntidade(string $classe, $objeto) {
             $retorno = New $classe();
-            $metodosSet = array_filter(get_class_methods($classe), function($x){if (strpos($x,'set') === 0){ return true;}});
+            $propriedades = self::getPropriedades($classe);
 
-            foreach($metodosSet as $set){
-                $propriedade = substr_replace($set,'',0,3);
+            foreach($propriedades as $prop){
+                $set = 'set'.ucfirst($prop);
                 $chaves = array_keys($objeto);
-                $indice = array_search(strtoupper($propriedade), array_map(function($x){return strtoupper($x);}, $chaves));
+                $indice = array_search(strtoupper($prop), array_map(function($x){return strtoupper($x);}, $chaves));
 
                 if (gettype($indice) === "integer" && $indice >= 0) {
                     $retorno->$set($objeto[$chaves[$indice]]);
@@ -62,5 +31,6 @@
 
             return $retorno;
         }
+
     }
 ?>

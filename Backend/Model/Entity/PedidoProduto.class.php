@@ -1,5 +1,5 @@
 <?php
-    class PedidoProduto {
+    class PedidoProduto extends BaseEntity {
         private $idPedidoProduto;
         private $idPedido;
         private $idProduto;
@@ -22,7 +22,7 @@
         function setQuantidade($quantidade) {$this->quantidade = $quantidade;}
         function setDesconto($desconto) {$this->desconto = $desconto;}
         
-        function __construct($idPedidoProduto="", $idPedido="", $idProduto="", $preco="", $quantidade="", $desconto="") {
+        function __construct($idPedidoProduto=null, $idPedido=null, $idProduto=null, $preco=null, $quantidade=null, $desconto=null) {
             $this->setIdPedidoProduto($idPedidoProduto);
             $this->setIdPedido($idPedido);
             $this->setIdProduto($idProduto);

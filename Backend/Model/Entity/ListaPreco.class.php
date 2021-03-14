@@ -9,7 +9,7 @@
         function setIdListaPreco($idListaPreco) {$this->idListaPreco = $idListaPreco;}
         function setDescritivo($descritivo) {$this->descritivo = $descritivo;}
 
-        function __construct($idListaPreco="", $descritivo="") {
+        function __construct($idListaPreco=null, $descritivo=null) {
             $this->setIdListaPreco($idListaPreco);
             $this->setDescritivo($descritivo);
         }            

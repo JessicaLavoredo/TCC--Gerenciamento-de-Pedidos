@@ -1,5 +1,5 @@
 <?php
-    class HistoricoPedido {
+    class HistoricoPedido extends BaseEntity {
         private $idHistoricoPedido;
         private $idPedido;
         private $idStatusPedido;
@@ -18,7 +18,7 @@
         function setDataMovimentacao($dataMovimentacao) {$this->dataMovimentacao = $dataMovimentacao;}
         function setIdUsuarioMovimentadoPor($idUsuarioMovimentadoPor) {$this->idUsuarioMovimentadoPor = $idUsuarioMovimentadoPor;}
 
-        function __construct($idHistoricoPedido="", $idPedido="", $idStatusPedido="", $dataMovimentacao="", $idUsuarioMovimentadoPor="") {
+        function __construct($idHistoricoPedido=null, $idPedido=null, $idStatusPedido=null, $dataMovimentacao=null, $idUsuarioMovimentadoPor=null) {
             $this->setIdHistoricoPedido($idHistoricoPedido);
             $this->setIdPedido($idPedido);
             $this->setIdStatusPedido($idStatusPedido);

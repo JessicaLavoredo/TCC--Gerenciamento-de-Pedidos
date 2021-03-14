@@ -1,5 +1,5 @@
 <?php
-    class Perfil {
+    class Perfil extends BaseEntity {
         private $idPerfil;
         private $nome;
         
@@ -9,7 +9,7 @@
         function setIdPerfil($idPerfil) {$this->idPerfil = $idPerfil;}
         function setNome($nome) {$this->nome = $nome;}
 
-        function __construct($idPerfil="", $nome="") {
+        function __construct($idPerfil=null, $nome=null) {
             $this->setIdPerfil($idPerfil);
             $this->setNome($nome);
         }

@@ -1,6 +1,6 @@
 <?php
 
-    class BaseBusiness {
+    abstract class BaseBusiness {
 
         function __construct() {
 

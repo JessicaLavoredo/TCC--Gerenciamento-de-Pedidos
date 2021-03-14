@@ -1,5 +1,5 @@
 <?php
-    class Usuario {
+    class Usuario extends BaseEntity {
         private $idUsuario;
         private $idPessoa;
         private $login;
@@ -18,7 +18,7 @@
         function setSenha($senha) {$this->senha = $senha;}
         function setIdPerfil($idPerfil) {$this->idPerfil = $idPerfil;}
 
-        function __construct($idUsuario="", $idPessoa="", $login="", $senha="", $idPerfil="") {
+        function __construct($idUsuario=null, $idPessoa=null, $login=null, $senha=null, $idPerfil=null) {
             $this->setIdUsuario($idUsuario);
             $this->setIdPessoa($idPessoa);
             $this->setLogin($login);

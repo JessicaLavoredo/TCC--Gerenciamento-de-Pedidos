@@ -1,6191 +1,6407 @@
--- MySQL Workbench Forward Engineering
-
-SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0;
-SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0;
-SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
-
--- -----------------------------------------------------
--- Schema master-pedidos
--- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `master-pedidos` ;
-
--- -----------------------------------------------------
--- Schema master-pedidos
--- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `master-pedidos` DEFAULT CHARACTER SET utf8 ;
-USE `master-pedidos` ;
-
--- -----------------------------------------------------
--- Table `master-pedidos`.`Pessoa`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `master-pedidos`.`Pessoa` ;
-
-CREATE TABLE IF NOT EXISTS `master-pedidos`.`Pessoa` (
-  `IdPessoa` BIGINT NOT NULL AUTO_INCREMENT,
-  `TipoPessoa` CHAR(1) NULL,
-  `NomeRazao` VARCHAR(45) NULL,
-  `ApelidoFantasia` VARCHAR(45) NULL,
-  `CPFCNPJ` VARCHAR(14) NULL,
-  `RGInscricao` VARCHAR(14) NULL,
-  `DataNascimento` DATE NULL,
-  `Genero` CHAR(1) NULL,
-  `Inativo` BIT NULL,
-  `DataInclusao` DATETIME NULL,
-  PRIMARY KEY (`IdPessoa`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `master-pedidos`.`CategoriaEndereco`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `master-pedidos`.`CategoriaEndereco` ;
-
-CREATE TABLE IF NOT EXISTS `master-pedidos`.`CategoriaEndereco` (
-  `IdCategoriaEndereco` INT NOT NULL AUTO_INCREMENT,
-  `Nome` VARCHAR(45) NULL,
-  `Descricao` VARCHAR(45) NULL,
-  PRIMARY KEY (`IdCategoriaEndereco`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `master-pedidos`.`Estado`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `master-pedidos`.`Estado` ;
-
-CREATE TABLE IF NOT EXISTS `master-pedidos`.`Estado` (
-  `IdEstado` INT NOT NULL,
-  `Nome` VARCHAR(50) NULL,
-  `Sigla` CHAR(2) NULL,
-  `Regiao` VARCHAR(45) NULL,
-  `CodigoIBGE` VARCHAR(45) NULL,
-  PRIMARY KEY (`IdEstado`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `master-pedidos`.`Cidade`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `master-pedidos`.`Cidade` ;
-
-CREATE TABLE IF NOT EXISTS `master-pedidos`.`Cidade` (
-  `IdCidade` BIGINT NOT NULL AUTO_INCREMENT,
-  `Nome` VARCHAR(60) NULL,
-  `CodigoIBGE` INT NULL,
-  `IdEstado` INT NOT NULL,
-  PRIMARY KEY (`IdCidade`),
-  CONSTRAINT `fk_Cidade_Estado1`
-    FOREIGN KEY (`IdEstado`)
-    REFERENCES `master-pedidos`.`Estado` (`IdEstado`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `master-pedidos`.`Endereco`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `master-pedidos`.`Endereco` ;
-
-CREATE TABLE IF NOT EXISTS `master-pedidos`.`Endereco` (
-  `IdEndereco` BIGINT NOT NULL AUTO_INCREMENT,
-  `IdPessoa` BIGINT NOT NULL,
-  `CEP` CHAR(8) NULL,
-  `Logradouro` VARCHAR(45) NULL,
-  `Bairro` VARCHAR(45) NULL,
-  `IdCidade` BIGINT NOT NULL,
-  `IdCategoriaEndereco` INT NOT NULL,
-  `Observacao` TEXT NULL,
-  PRIMARY KEY (`IdEndereco`),
-  CONSTRAINT `fk_Endereco_Pessoa`
-    FOREIGN KEY (`IdPessoa`)
-    REFERENCES `master-pedidos`.`Pessoa` (`IdPessoa`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Endereco_Categoria_Endereco1`
-    FOREIGN KEY (`IdCategoriaEndereco`)
-    REFERENCES `master-pedidos`.`CategoriaEndereco` (`IdCategoriaEndereco`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Endereco_Cidade1`
-    FOREIGN KEY (`IdCidade`)
-    REFERENCES `master-pedidos`.`Cidade` (`IdCidade`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `master-pedidos`.`CategoriaTelefone`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `master-pedidos`.`CategoriaTelefone` ;
-
-CREATE TABLE IF NOT EXISTS `master-pedidos`.`CategoriaTelefone` (
-  `IdCategoriaTelefone` INT NOT NULL AUTO_INCREMENT,
-  `Nome` VARCHAR(45) NULL,
-  `Descricao` VARCHAR(45) NULL,
-  PRIMARY KEY (`IdCategoriaTelefone`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `master-pedidos`.`Telefone`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `master-pedidos`.`Telefone` ;
-
-CREATE TABLE IF NOT EXISTS `master-pedidos`.`Telefone` (
-  `IdTelefone` BIGINT NOT NULL AUTO_INCREMENT,
-  `IdPessoa` BIGINT NOT NULL,
-  `DDI` VARCHAR(5) NULL,
-  `DDD` CHAR(2) NULL,
-  `Numero` CHAR(9) NULL,
-  `Ramal` VARCHAR(5) NULL,
-  `IdCategoriaTelefone` INT NOT NULL,
-  `Observacao` TEXT NULL,
-  PRIMARY KEY (`IdTelefone`),
-  CONSTRAINT `fk_Telefone_Pessoa1`
-    FOREIGN KEY (`IdPessoa`)
-    REFERENCES `master-pedidos`.`Pessoa` (`IdPessoa`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Telefone_Categoria_Telefone1`
-    FOREIGN KEY (`IdCategoriaTelefone`)
-    REFERENCES `master-pedidos`.`CategoriaTelefone` (`IdCategoriaTelefone`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `master-pedidos`.`CategoriaEmail`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `master-pedidos`.`CategoriaEmail` ;
-
-CREATE TABLE IF NOT EXISTS `master-pedidos`.`CategoriaEmail` (
-  `IdCategoriaEmail` INT NOT NULL AUTO_INCREMENT,
-  `Nome` VARCHAR(45) NULL,
-  `Descricao` VARCHAR(45) NULL,
-  PRIMARY KEY (`IdCategoriaEmail`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `master-pedidos`.`Email`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `master-pedidos`.`Email` ;
-
-CREATE TABLE IF NOT EXISTS `master-pedidos`.`Email` (
-  `IdEmail` BIGINT NOT NULL AUTO_INCREMENT,
-  `IdPessoa` BIGINT NOT NULL,
-  `Endereco` VARCHAR(45) NULL,
-  `IdCategoriaEmail` INT NOT NULL,
-  `Observacao` TEXT NULL,
-  PRIMARY KEY (`IdEmail`),
-  CONSTRAINT `fk_Email_Pessoa1`
-    FOREIGN KEY (`IdPessoa`)
-    REFERENCES `master-pedidos`.`Pessoa` (`IdPessoa`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Email_Categoria_Email1`
-    FOREIGN KEY (`IdCategoriaEmail`)
-    REFERENCES `master-pedidos`.`CategoriaEmail` (`IdCategoriaEmail`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `master-pedidos`.`Perfil`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `master-pedidos`.`Perfil` ;
-
-CREATE TABLE IF NOT EXISTS `master-pedidos`.`Perfil` (
-  `IdPerfil` INT NOT NULL AUTO_INCREMENT,
-  `Nome` VARCHAR(45) NULL,
-  PRIMARY KEY (`IdPerfil`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `master-pedidos`.`Usuario`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `master-pedidos`.`Usuario` ;
-
-CREATE TABLE IF NOT EXISTS `master-pedidos`.`Usuario` (
-  `IdUsuario` BIGINT NOT NULL AUTO_INCREMENT,
-  `IdPessoa` BIGINT NOT NULL,
-  `Login` VARCHAR(15) NULL,
-  `Senha` VARCHAR(45) NULL,
-  `IdPerfil` INT NOT NULL,
-  PRIMARY KEY (`IdUsuario`),
-  CONSTRAINT `fk_Usuario_Pessoa1`
-    FOREIGN KEY (`IdPessoa`)
-    REFERENCES `master-pedidos`.`Pessoa` (`IdPessoa`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Usuario_Perfil1`
-    FOREIGN KEY (`IdPerfil`)
-    REFERENCES `master-pedidos`.`Perfil` (`IdPerfil`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `master-pedidos`.`Produto`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `master-pedidos`.`Produto` ;
-
-CREATE TABLE IF NOT EXISTS `master-pedidos`.`Produto` (
-  `IdProduto` BIGINT NOT NULL AUTO_INCREMENT,
-  `NomeTecnico` VARCHAR(45) NULL,
-  `NomeComercial` VARCHAR(45) NULL,
-  `CodigoInterno` VARCHAR(20) NULL,
-  `Descricao` VARCHAR(45) NULL,
-  PRIMARY KEY (`IdProduto`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `master-pedidos`.`FormaPagamento`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `master-pedidos`.`FormaPagamento` ;
-
-CREATE TABLE IF NOT EXISTS `master-pedidos`.`FormaPagamento` (
-  `IdFormaPagamento` INT NOT NULL AUTO_INCREMENT,
-  `Descritivo` VARCHAR(45) NULL,
-  PRIMARY KEY (`IdFormaPagamento`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `master-pedidos`.`StatusPedido`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `master-pedidos`.`StatusPedido` ;
-
-CREATE TABLE IF NOT EXISTS `master-pedidos`.`StatusPedido` (
-  `IdStatusPedido` BIGINT NOT NULL AUTO_INCREMENT,
-  `Nome` VARCHAR(45) NULL,
-  `Descricao` VARCHAR(45) NULL,
-  PRIMARY KEY (`IdStatusPedido`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `master-pedidos`.`Pedido`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `master-pedidos`.`Pedido` ;
-
-CREATE TABLE IF NOT EXISTS `master-pedidos`.`Pedido` (
-  `IdPedido` BIGINT NOT NULL AUTO_INCREMENT,
-  `IdPessoa` BIGINT NOT NULL,
-  `idFormaPagamento` INT NOT NULL,
-  `DataPedido` DATETIME NULL,
-  `IdStatusPedido` BIGINT NOT NULL,
-  `IdUsuarioCriadoPor` BIGINT NOT NULL,
-  PRIMARY KEY (`IdPedido`),
-  CONSTRAINT `fk_Pedido_Pessoa1`
-    FOREIGN KEY (`IdPessoa`)
-    REFERENCES `master-pedidos`.`Pessoa` (`IdPessoa`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Pedido_Forma_Pagamento1`
-    FOREIGN KEY (`idFormaPagamento`)
-    REFERENCES `master-pedidos`.`FormaPagamento` (`IdFormaPagamento`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Pedido_Status_Pedido1`
-    FOREIGN KEY (`IdStatusPedido`)
-    REFERENCES `master-pedidos`.`StatusPedido` (`IdStatusPedido`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Pedido_Usuario1`
-    FOREIGN KEY (`IdUsuarioCriadoPor`)
-    REFERENCES `master-pedidos`.`Usuario` (`IdUsuario`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `master-pedidos`.`ListaPreco`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `master-pedidos`.`ListaPreco` ;
-
-CREATE TABLE IF NOT EXISTS `master-pedidos`.`ListaPreco` (
-  `IdListaPreco` INT NOT NULL AUTO_INCREMENT,
-  `Descritivo` VARCHAR(45) NULL,
-  PRIMARY KEY (`IdListaPreco`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `master-pedidos`.`ListaPrecoProduto`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `master-pedidos`.`ListaPrecoProduto` ;
-
-CREATE TABLE IF NOT EXISTS `master-pedidos`.`ListaPrecoProduto` (
-  `IdListaPrecoProduto` INT NOT NULL AUTO_INCREMENT,
-  `IdListaPreco` INT NOT NULL,
-  `IdProduto` BIGINT NOT NULL,
-  `Vista` DECIMAL NULL,
-  `Prazo` DECIMAL NULL,
-  PRIMARY KEY (`IdListaPrecoProduto`),
-  CONSTRAINT `fk_Lista_Preco_has_Produto_Lista_Preco1`
-    FOREIGN KEY (`IdListaPreco`)
-    REFERENCES `master-pedidos`.`ListaPreco` (`IdListaPreco`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Lista_Preco_has_Produto_Produto1`
-    FOREIGN KEY (`IdProduto`)
-    REFERENCES `master-pedidos`.`Produto` (`IdProduto`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `master-pedidos`.`PedidoProduto`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `master-pedidos`.`PedidoProduto` ;
-
-CREATE TABLE IF NOT EXISTS `master-pedidos`.`PedidoProduto` (
-  `IdPedidoProduto` BIGINT NOT NULL AUTO_INCREMENT,
-  `IdPedido` BIGINT NOT NULL,
-  `IdProduto` BIGINT NOT NULL,
-  `Preco` DECIMAL NULL,
-  `Quantidade` INT NULL,
-  `Desconto` DECIMAL NULL,
-  PRIMARY KEY (`IdPedidoProduto`),
-  CONSTRAINT `fk_Pedido_has_Produto_Pedido1`
-    FOREIGN KEY (`IdPedido`)
-    REFERENCES `master-pedidos`.`Pedido` (`IdPessoa`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Pedido_has_Produto_Produto1`
-    FOREIGN KEY (`IdProduto`)
-    REFERENCES `master-pedidos`.`Produto` (`IdProduto`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `master-pedidos`.`Parcela`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `master-pedidos`.`Parcela` ;
-
-CREATE TABLE IF NOT EXISTS `master-pedidos`.`Parcela` (
-  `IdParcela` INT NOT NULL AUTO_INCREMENT,
-  `Ordem` INT NULL,
-  `Dias` INT NULL,
-  `Peso` DECIMAL NULL,
-  `IdFormaPagamento` INT NOT NULL,
-  PRIMARY KEY (`IdParcela`),
-  CONSTRAINT `fk_Parcela_Forma_Pagamento1`
-    FOREIGN KEY (`IdFormaPagamento`)
-    REFERENCES `master-pedidos`.`FormaPagamento` (`IdFormaPagamento`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `master-pedidos`.`HistoricoPedido`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `master-pedidos`.`HistoricoPedido` ;
-
-CREATE TABLE IF NOT EXISTS `master-pedidos`.`HistoricoPedido` (
-  `IdHistoricoPedido` BIGINT NOT NULL AUTO_INCREMENT,
-  `IdPedido` BIGINT NOT NULL,
-  `IdStatusPedido` BIGINT NOT NULL,
-  `DataMovimentacao` DATETIME NULL,
-  `IdUsuario_Movimentado_Por` BIGINT NOT NULL,
-  PRIMARY KEY (`IdHistoricoPedido`),
-  CONSTRAINT `fk_Historico_Pedido_Status_Pedido1`
-    FOREIGN KEY (`IdStatusPedido`)
-    REFERENCES `master-pedidos`.`StatusPedido` (`IdStatusPedido`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Historico_Pedido_Usuario1`
-    FOREIGN KEY (`IdUsuario_Movimentado_Por`)
-    REFERENCES `master-pedidos`.`Usuario` (`IdUsuario`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Historico_Pedido_Pedido1`
-    FOREIGN KEY (`IdPedido`)
-    REFERENCES `master-pedidos`.`Pedido` (`IdPedido`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `master-pedidos`.`Vinculo`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `master-pedidos`.`Vinculo` ;
-
-CREATE TABLE IF NOT EXISTS `master-pedidos`.`Vinculo` (
-  `IdVinculo` INT NOT NULL AUTO_INCREMENT,
-  `Nome` VARCHAR(45) NULL,
-  PRIMARY KEY (`IdVinculo`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
--- Table `master-pedidos`.`VinculoPessoa`
--- -----------------------------------------------------
-DROP TABLE IF EXISTS `master-pedidos`.`VinculoPessoa` ;
-
-CREATE TABLE IF NOT EXISTS `master-pedidos`.`VinculoPessoa` (
-  `IdVinculoPessoa` INT NOT NULL AUTO_INCREMENT,
-  `IdVinculo` INT NOT NULL,
-  `IdPessoa` BIGINT NOT NULL,
-  PRIMARY KEY (`IdVinculoPessoa`),
-  CONSTRAINT `fk_Vinculo_has_Pessoa_Vinculo1`
-    FOREIGN KEY (`IdVinculo`)
-    REFERENCES `master-pedidos`.`Vinculo` (`IdVinculo`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
-  CONSTRAINT `fk_Vinculo_has_Pessoa_Pessoa1`
-    FOREIGN KEY (`IdPessoa`)
-    REFERENCES `master-pedidos`.`Pessoa` (`IdPessoa`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
-ENGINE = InnoDB;
-
-
-SET SQL_MODE=@OLD_SQL_MODE;
-SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS;
-SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS;
-
--- -----------------------------------------------------
--- Data for table `master-pedidos`.`Pessoa`
--- -----------------------------------------------------
+-- phpMyAdmin SQL Dump
+-- version 5.0.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: 127.0.0.1
+-- Tempo de geração: 14-Mar-2021 às 19:11
+-- Versão do servidor: 10.4.11-MariaDB
+-- versão do PHP: 7.4.2
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+SET AUTOCOMMIT = 0;
 START TRANSACTION;
-USE `master-pedidos`;
-INSERT INTO `master-pedidos`.`Pessoa` (`IdPessoa`, `TipoPessoa`, `NomeRazao`, `ApelidoFantasia`, `CPFCNPJ`, `RGInscricao`, `DataNascimento`, `Genero`, `Inativo`, `DataInclusao`) VALUES (1, 'F', 'Administrador', 'Administrador', NULL, NULL, NULL, 'M', 0, NULL);
+SET time_zone = "+00:00";
 
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Banco de dados: `master-pedidos`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `categoriaemail`
+--
+
+CREATE TABLE `categoriaemail` (
+  `IdCategoriaEmail` int(11) NOT NULL,
+  `Nome` varchar(45) DEFAULT NULL,
+  `Descricao` varchar(45) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `categoriaemail`
+--
+
+INSERT INTO `categoriaemail` (`IdCategoriaEmail`, `Nome`, `Descricao`) VALUES
+(1, 'Padrão', NULL),
+(2, 'Cobrança', NULL),
+(3, 'Nota Fiscal', NULL),
+(4, 'Financeiro', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `categoriaendereco`
+--
+
+CREATE TABLE `categoriaendereco` (
+  `IdCategoriaEndereco` int(11) NOT NULL,
+  `Nome` varchar(45) DEFAULT NULL,
+  `Descricao` varchar(45) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `categoriaendereco`
+--
+
+INSERT INTO `categoriaendereco` (`IdCategoriaEndereco`, `Nome`, `Descricao`) VALUES
+(1, 'Padrão', NULL),
+(2, 'Entrega', NULL),
+(3, 'Cobrança', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `categoriatelefone`
+--
+
+CREATE TABLE `categoriatelefone` (
+  `IdCategoriaTelefone` int(11) NOT NULL,
+  `Nome` varchar(45) DEFAULT NULL,
+  `Descricao` varchar(45) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `categoriatelefone`
+--
+
+INSERT INTO `categoriatelefone` (`IdCategoriaTelefone`, `Nome`, `Descricao`) VALUES
+(1, 'Padrão', NULL),
+(2, 'Comercial', NULL),
+(3, 'Residencial', NULL),
+(4, 'Pessoal', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `cidade`
+--
+
+CREATE TABLE `cidade` (
+  `IdCidade` bigint(20) NOT NULL,
+  `Nome` varchar(60) DEFAULT NULL,
+  `CodigoIBGE` int(11) DEFAULT NULL,
+  `IdEstado` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `cidade`
+--
+
+INSERT INTO `cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES
+(1, 'ALTA FLORESTA D\'OESTE', 1100015, 1),
+(2, 'ARIQUEMES', 1100023, 1),
+(3, 'CABIXI', 1100031, 1),
+(4, 'CACOAL', 1100049, 1),
+(5, 'CEREJEIRAS', 1100056, 1),
+(6, 'COLORADO DO OESTE', 1100064, 1),
+(7, 'CORUMBIARA', 1100072, 1),
+(8, 'COSTA MARQUES', 1100080, 1),
+(9, 'ESPIGÃO D\'OESTE', 1100098, 1),
+(10, 'GUAJARÁ-MIRIM', 1100106, 1),
+(11, 'JARU', 1100114, 1),
+(12, 'JI-PARANÁ', 1100122, 1),
+(13, 'MACHADINHO D\'OESTE', 1100130, 1),
+(14, 'NOVA BRASILÂNDIA D\'OESTE', 1100148, 1),
+(15, 'OURO PRETO DO OESTE', 1100155, 1),
+(16, 'PIMENTA BUENO', 1100189, 1),
+(17, 'PORTO VELHO', 1100205, 1),
+(18, 'PRESIDENTE MÉDICI', 1100254, 1),
+(19, 'RIO CRESPO', 1100262, 1),
+(20, 'ROLIM DE MOURA', 1100288, 1),
+(21, 'SANTA LUZIA D\'OESTE', 1100296, 1),
+(22, 'VILHENA', 1100304, 1),
+(23, 'SÃO MIGUEL DO GUAPORÉ', 1100320, 1),
+(24, 'NOVA MAMORÉ', 1100338, 1),
+(25, 'ALVORADA D\'OESTE', 1100346, 1),
+(26, 'ALTO ALEGRE DOS PARECIS', 1100379, 1),
+(27, 'ALTO PARAÍSO', 1100403, 1),
+(28, 'BURITIS', 1100452, 1),
+(29, 'NOVO HORIZONTE DO OESTE', 1100502, 1),
+(30, 'CACAULÂNDIA', 1100601, 1),
+(31, 'CAMPO NOVO DE RONDÔNIA', 1100700, 1),
+(32, 'CANDEIAS DO JAMARI', 1100809, 1),
+(33, 'CASTANHEIRAS', 1100908, 1),
+(34, 'CHUPINGUAIA', 1100924, 1),
+(35, 'CUJUBIM', 1100940, 1),
+(36, 'GOVERNADOR JORGE TEIXEIRA', 1101005, 1),
+(37, 'ITAPUÃ DO OESTE', 1101104, 1),
+(38, 'MINISTRO ANDREAZZA', 1101203, 1),
+(39, 'MIRANTE DA SERRA', 1101302, 1),
+(40, 'MONTE NEGRO', 1101401, 1),
+(41, 'NOVA UNIÃO', 1101435, 1),
+(42, 'PARECIS', 1101450, 1),
+(43, 'PIMENTEIRAS DO OESTE', 1101468, 1),
+(44, 'PRIMAVERA DE RONDÔNIA', 1101476, 1),
+(45, 'SÃO FELIPE D\'OESTE', 1101484, 1),
+(46, 'SÃO FRANCISCO DO GUAPORÉ', 1101492, 1),
+(47, 'SERINGUEIRAS', 1101500, 1),
+(48, 'TEIXEIRÓPOLIS', 1101559, 1),
+(49, 'THEOBROMA', 1101609, 1),
+(50, 'URUPÁ', 1101708, 1),
+(51, 'VALE DO ANARI', 1101757, 1),
+(52, 'VALE DO PARAÍSO', 1101807, 1),
+(53, 'ACRELÂNDIA', 1200013, 2),
+(54, 'ASSIS BRASIL', 1200054, 2),
+(55, 'BRASILÉIA', 1200104, 2),
+(56, 'BUJARI', 1200138, 2),
+(57, 'CAPIXABA', 1200179, 2),
+(58, 'CRUZEIRO DO SUL', 1200203, 2),
+(59, 'EPITACIOLÂNDIA', 1200252, 2),
+(60, 'FEIJÓ', 1200302, 2),
+(61, 'JORDÃO', 1200328, 2),
+(62, 'MÂNCIO LIMA', 1200336, 2),
+(63, 'MANOEL URBANO', 1200344, 2),
+(64, 'MARECHAL THAUMATURGO', 1200351, 2),
+(65, 'PLÁCIDO DE CASTRO', 1200385, 2),
+(66, 'PORTO WALTER', 1200393, 2),
+(67, 'RIO BRANCO', 1200401, 2),
+(68, 'RODRIGUES ALVES', 1200427, 2),
+(69, 'SANTA ROSA DO PURUS', 1200435, 2),
+(70, 'SENADOR GUIOMARD', 1200450, 2),
+(71, 'SENA MADUREIRA', 1200500, 2),
+(72, 'TARAUACÁ', 1200609, 2),
+(73, 'XAPURI', 1200708, 2),
+(74, 'PORTO ACRE', 1200807, 2),
+(75, 'ALVARÃES', 1300029, 3),
+(76, 'AMATURÁ', 1300060, 3),
+(77, 'ANAMÃ', 1300086, 3),
+(78, 'ANORI', 1300102, 3),
+(79, 'APUÍ', 1300144, 3),
+(80, 'ATALAIA DO NORTE', 1300201, 3),
+(81, 'AUTAZES', 1300300, 3),
+(82, 'BARCELOS', 1300409, 3),
+(83, 'BARREIRINHA', 1300508, 3),
+(84, 'BENJAMIN CONSTANT', 1300607, 3),
+(85, 'BERURI', 1300631, 3),
+(86, 'BOA VISTA DO RAMOS', 1300680, 3),
+(87, 'BOCA DO ACRE', 1300706, 3),
+(88, 'BORBA', 1300805, 3),
+(89, 'CAAPIRANGA', 1300839, 3),
+(90, 'CANUTAMA', 1300904, 3),
+(91, 'CARAUARI', 1301001, 3),
+(92, 'CAREIRO', 1301100, 3),
+(93, 'CAREIRO DA VÁRZEA', 1301159, 3),
+(94, 'COARI', 1301209, 3),
+(95, 'CODAJÁS', 1301308, 3),
+(96, 'EIRUNEPÉ', 1301407, 3),
+(97, 'ENVIRA', 1301506, 3),
+(98, 'FONTE BOA', 1301605, 3),
+(99, 'GUAJARÁ', 1301654, 3),
+(100, 'HUMAITÁ', 1301704, 3),
+(101, 'IPIXUNA', 1301803, 3),
+(102, 'IRANDUBA', 1301852, 3),
+(103, 'ITACOATIARA', 1301902, 3),
+(104, 'ITAMARATI', 1301951, 3),
+(105, 'ITAPIRANGA', 1302009, 3),
+(106, 'JAPURÁ', 1302108, 3),
+(107, 'JURUÁ', 1302207, 3),
+(108, 'JUTAÍ', 1302306, 3),
+(109, 'LÁBREA', 1302405, 3),
+(110, 'MANACAPURU', 1302504, 3),
+(111, 'MANAQUIRI', 1302553, 3),
+(112, 'MANAUS', 1302603, 3),
+(113, 'MANICORÉ', 1302702, 3),
+(114, 'MARAÃ', 1302801, 3),
+(115, 'MAUÉS', 1302900, 3),
+(116, 'NHAMUNDÁ', 1303007, 3),
+(117, 'NOVA OLINDA DO NORTE', 1303106, 3),
+(118, 'NOVO AIRÃO', 1303205, 3),
+(119, 'NOVO ARIPUANÃ', 1303304, 3),
+(120, 'PARINTINS', 1303403, 3),
+(121, 'PAUINI', 1303502, 3),
+(122, 'PRESIDENTE FIGUEIREDO', 1303536, 3),
+(123, 'RIO PRETO DA EVA', 1303569, 3),
+(124, 'SANTA ISABEL DO RIO NEGRO', 1303601, 3),
+(125, 'SANTO ANTÔNIO DO IÇÁ', 1303700, 3),
+(126, 'SÃO GABRIEL DA CACHOEIRA', 1303809, 3),
+(127, 'SÃO PAULO DE OLIVENÇA', 1303908, 3),
+(128, 'SÃO SEBASTIÃO DO UATUMÃ', 1303957, 3),
+(129, 'SILVES', 1304005, 3),
+(130, 'TABATINGA', 1304062, 3),
+(131, 'TAPAUÁ', 1304104, 3),
+(132, 'TEFÉ', 1304203, 3),
+(133, 'TONANTINS', 1304237, 3),
+(134, 'UARINI', 1304260, 3),
+(135, 'URUCARÁ', 1304302, 3),
+(136, 'URUCURITUBA', 1304401, 3),
+(137, 'AMAJARI', 1400027, 4),
+(138, 'ALTO ALEGRE', 1400050, 4),
+(139, 'BOA VISTA', 1400100, 4),
+(140, 'BONFIM', 1400159, 4),
+(141, 'CANTÁ', 1400175, 4),
+(142, 'CARACARAÍ', 1400209, 4),
+(143, 'CAROEBE', 1400233, 4),
+(144, 'IRACEMA', 1400282, 4),
+(145, 'MUCAJAÍ', 1400308, 4),
+(146, 'NORMANDIA', 1400407, 4),
+(147, 'PACARAIMA', 1400456, 4),
+(148, 'RORAINÓPOLIS', 1400472, 4),
+(149, 'SÃO JOÃO DA BALIZA', 1400506, 4),
+(150, 'SÃO LUIZ', 1400605, 4),
+(151, 'UIRAMUTÃ', 1400704, 4),
+(152, 'ABAETETUBA', 1500107, 5),
+(153, 'ABEL FIGUEIREDO', 1500131, 5),
+(154, 'ACARÁ', 1500206, 5),
+(155, 'AFUÁ', 1500305, 5),
+(156, 'ÁGUA AZUL DO NORTE', 1500347, 5),
+(157, 'ALENQUER', 1500404, 5),
+(158, 'ALMEIRIM', 1500503, 5),
+(159, 'ALTAMIRA', 1500602, 5),
+(160, 'ANAJÁS', 1500701, 5),
+(161, 'ANANINDEUA', 1500800, 5),
+(162, 'ANAPU', 1500859, 5),
+(163, 'AUGUSTO CORRÊA', 1500909, 5),
+(164, 'AURORA DO PARÁ', 1500958, 5),
+(165, 'AVEIRO', 1501006, 5),
+(166, 'BAGRE', 1501105, 5),
+(167, 'BAIÃO', 1501204, 5),
+(168, 'BANNACH', 1501253, 5),
+(169, 'BARCARENA', 1501303, 5),
+(170, 'BELÉM', 1501402, 5),
+(171, 'BELTERRA', 1501451, 5),
+(172, 'BENEVIDES', 1501501, 5),
+(173, 'BOM JESUS DO TOCANTINS', 1501576, 5),
+(174, 'BONITO', 1501600, 5),
+(175, 'BRAGANÇA', 1501709, 5),
+(176, 'BRASIL NOVO', 1501725, 5),
+(177, 'BREJO GRANDE DO ARAGUAIA', 1501758, 5),
+(178, 'BREU BRANCO', 1501782, 5),
+(179, 'BREVES', 1501808, 5),
+(180, 'BUJARU', 1501907, 5),
+(181, 'CACHOEIRA DO PIRIÁ', 1501956, 5),
+(182, 'CACHOEIRA DO ARARI', 1502004, 5),
+(183, 'CAMETÁ', 1502103, 5),
+(184, 'CANAÃ DOS CARAJÁS', 1502152, 5),
+(185, 'CAPANEMA', 1502202, 5),
+(186, 'CAPITÃO POÇO', 1502301, 5),
+(187, 'CASTANHAL', 1502400, 5),
+(188, 'CHAVES', 1502509, 5),
+(189, 'COLARES', 1502608, 5),
+(190, 'CONCEIÇÃO DO ARAGUAIA', 1502707, 5),
+(191, 'CONCÓRDIA DO PARÁ', 1502756, 5),
+(192, 'CUMARU DO NORTE', 1502764, 5),
+(193, 'CURIONÓPOLIS', 1502772, 5),
+(194, 'CURRALINHO', 1502806, 5),
+(195, 'CURUÁ', 1502855, 5),
+(196, 'CURUÇÁ', 1502905, 5),
+(197, 'DOM ELISEU', 1502939, 5),
+(198, 'ELDORADO DO CARAJÁS', 1502954, 5),
+(199, 'FARO', 1503002, 5),
+(200, 'FLORESTA DO ARAGUAIA', 1503044, 5),
+(201, 'GARRAFÃO DO NORTE', 1503077, 5),
+(202, 'GOIANÉSIA DO PARÁ', 1503093, 5),
+(203, 'GURUPÁ', 1503101, 5),
+(204, 'IGARAPÉ-AÇU', 1503200, 5),
+(205, 'IGARAPÉ-MIRI', 1503309, 5),
+(206, 'INHANGAPI', 1503408, 5),
+(207, 'IPIXUNA DO PARÁ', 1503457, 5),
+(208, 'IRITUIA', 1503507, 5),
+(209, 'ITAITUBA', 1503606, 5),
+(210, 'ITUPIRANGA', 1503705, 5),
+(211, 'JACAREACANGA', 1503754, 5),
+(212, 'JACUNDÁ', 1503804, 5),
+(213, 'JURUTI', 1503903, 5),
+(214, 'LIMOEIRO DO AJURU', 1504000, 5),
+(215, 'MÃE DO RIO', 1504059, 5),
+(216, 'MAGALHÃES BARATA', 1504109, 5),
+(217, 'MARABÁ', 1504208, 5),
+(218, 'MARACANÃ', 1504307, 5),
+(219, 'MARAPANIM', 1504406, 5),
+(220, 'MARITUBA', 1504422, 5),
+(221, 'MEDICILÂNDIA', 1504455, 5),
+(222, 'MELGAÇO', 1504505, 5),
+(223, 'MOCAJUBA', 1504604, 5),
+(224, 'MOJU', 1504703, 5),
+(225, 'MOJUÍ DOS CAMPOS', 1504752, 5),
+(226, 'MONTE ALEGRE', 1504802, 5),
+(227, 'MUANÁ', 1504901, 5),
+(228, 'NOVA ESPERANÇA DO PIRIÁ', 1504950, 5),
+(229, 'NOVA IPIXUNA', 1504976, 5),
+(230, 'NOVA TIMBOTEUA', 1505007, 5),
+(231, 'NOVO PROGRESSO', 1505031, 5),
+(232, 'NOVO REPARTIMENTO', 1505064, 5),
+(233, 'ÓBIDOS', 1505106, 5),
+(234, 'OEIRAS DO PARÁ', 1505205, 5),
+(235, 'ORIXIMINÁ', 1505304, 5),
+(236, 'OURÉM', 1505403, 5),
+(237, 'OURILÂNDIA DO NORTE', 1505437, 5),
+(238, 'PACAJÁ', 1505486, 5),
+(239, 'PALESTINA DO PARÁ', 1505494, 5),
+(240, 'PARAGOMINAS', 1505502, 5),
+(241, 'PARAUAPEBAS', 1505536, 5),
+(242, 'PAU D\'ARCO', 1505551, 5),
+(243, 'PEIXE-BOI', 1505601, 5),
+(244, 'PIÇARRA', 1505635, 5),
+(245, 'PLACAS', 1505650, 5),
+(246, 'PONTA DE PEDRAS', 1505700, 5),
+(247, 'PORTEL', 1505809, 5),
+(248, 'PORTO DE MOZ', 1505908, 5),
+(249, 'PRAINHA', 1506005, 5),
+(250, 'PRIMAVERA', 1506104, 5),
+(251, 'QUATIPURU', 1506112, 5),
+(252, 'REDENÇÃO', 1506138, 5),
+(253, 'RIO MARIA', 1506161, 5),
+(254, 'RONDON DO PARÁ', 1506187, 5),
+(255, 'RURÓPOLIS', 1506195, 5),
+(256, 'SALINÓPOLIS', 1506203, 5),
+(257, 'SALVATERRA', 1506302, 5),
+(258, 'SANTA BÁRBARA DO PARÁ', 1506351, 5),
+(259, 'SANTA CRUZ DO ARARI', 1506401, 5),
+(260, 'SANTA IZABEL DO PARÁ', 1506500, 5),
+(261, 'SANTA LUZIA DO PARÁ', 1506559, 5),
+(262, 'SANTA MARIA DAS BARREIRAS', 1506583, 5),
+(263, 'SANTA MARIA DO PARÁ', 1506609, 5),
+(264, 'SANTANA DO ARAGUAIA', 1506708, 5),
+(265, 'SANTARÉM', 1506807, 5),
+(266, 'SANTARÉM NOVO', 1506906, 5),
+(267, 'SANTO ANTÔNIO DO TAUÁ', 1507003, 5),
+(268, 'SÃO CAETANO DE ODIVELAS', 1507102, 5),
+(269, 'SÃO DOMINGOS DO ARAGUAIA', 1507151, 5),
+(270, 'SÃO DOMINGOS DO CAPIM', 1507201, 5),
+(271, 'SÃO FÉLIX DO XINGU', 1507300, 5),
+(272, 'SÃO FRANCISCO DO PARÁ', 1507409, 5),
+(273, 'SÃO GERALDO DO ARAGUAIA', 1507458, 5),
+(274, 'SÃO JOÃO DA PONTA', 1507466, 5),
+(275, 'SÃO JOÃO DE PIRABAS', 1507474, 5),
+(276, 'SÃO JOÃO DO ARAGUAIA', 1507508, 5),
+(277, 'SÃO MIGUEL DO GUAMÁ', 1507607, 5),
+(278, 'SÃO SEBASTIÃO DA BOA VISTA', 1507706, 5),
+(279, 'SAPUCAIA', 1507755, 5),
+(280, 'SENADOR JOSÉ PORFÍRIO', 1507805, 5),
+(281, 'SOURE', 1507904, 5),
+(282, 'TAILÂNDIA', 1507953, 5),
+(283, 'TERRA ALTA', 1507961, 5),
+(284, 'TERRA SANTA', 1507979, 5),
+(285, 'TOMÉ-AÇU', 1508001, 5),
+(286, 'TRACUATEUA', 1508035, 5),
+(287, 'TRAIRÃO', 1508050, 5),
+(288, 'TUCUMÃ', 1508084, 5),
+(289, 'TUCURUÍ', 1508100, 5),
+(290, 'ULIANÓPOLIS', 1508126, 5),
+(291, 'URUARÁ', 1508159, 5),
+(292, 'VIGIA', 1508209, 5),
+(293, 'VISEU', 1508308, 5),
+(294, 'VITÓRIA DO XINGU', 1508357, 5),
+(295, 'XINGUARA', 1508407, 5),
+(296, 'SERRA DO NAVIO', 1600055, 6),
+(297, 'AMAPÁ', 1600105, 6),
+(298, 'PEDRA BRANCA DO AMAPARI', 1600154, 6),
+(299, 'CALÇOENE', 1600204, 6),
+(300, 'CUTIAS', 1600212, 6),
+(301, 'FERREIRA GOMES', 1600238, 6),
+(302, 'ITAUBAL', 1600253, 6),
+(303, 'LARANJAL DO JARI', 1600279, 6),
+(304, 'MACAPÁ', 1600303, 6),
+(305, 'MAZAGÃO', 1600402, 6),
+(306, 'OIAPOQUE', 1600501, 6),
+(307, 'PORTO GRANDE', 1600535, 6),
+(308, 'PRACUÚBA', 1600550, 6),
+(309, 'SANTANA', 1600600, 6),
+(310, 'TARTARUGALZINHO', 1600709, 6),
+(311, 'VITÓRIA DO JARI', 1600808, 6),
+(312, 'ABREULÂNDIA', 1700251, 7),
+(313, 'AGUIARNÓPOLIS', 1700301, 7),
+(314, 'ALIANÇA DO TOCANTINS', 1700350, 7),
+(315, 'ALMAS', 1700400, 7),
+(316, 'ALVORADA', 1700707, 7),
+(317, 'ANANÁS', 1701002, 7),
+(318, 'ANGICO', 1701051, 7),
+(319, 'APARECIDA DO RIO NEGRO', 1701101, 7),
+(320, 'ARAGOMINAS', 1701309, 7),
+(321, 'ARAGUACEMA', 1701903, 7),
+(322, 'ARAGUAÇU', 1702000, 7),
+(323, 'ARAGUAÍNA', 1702109, 7),
+(324, 'ARAGUANÃ', 1702158, 7),
+(325, 'ARAGUATINS', 1702208, 7),
+(326, 'ARAPOEMA', 1702307, 7),
+(327, 'ARRAIAS', 1702406, 7),
+(328, 'AUGUSTINÓPOLIS', 1702554, 7),
+(329, 'AURORA DO TOCANTINS', 1702703, 7),
+(330, 'AXIXÁ DO TOCANTINS', 1702901, 7),
+(331, 'BABAÇULÂNDIA', 1703008, 7),
+(332, 'BANDEIRANTES DO TOCANTINS', 1703057, 7),
+(333, 'BARRA DO OURO', 1703073, 7),
+(334, 'BARROLÂNDIA', 1703107, 7),
+(335, 'BERNARDO SAYÃO', 1703206, 7),
+(336, 'BOM JESUS DO TOCANTINS', 1703305, 7),
+(337, 'BRASILÂNDIA DO TOCANTINS', 1703602, 7),
+(338, 'BREJINHO DE NAZARÉ', 1703701, 7),
+(339, 'BURITI DO TOCANTINS', 1703800, 7),
+(340, 'CACHOEIRINHA', 1703826, 7),
+(341, 'CAMPOS LINDOS', 1703842, 7),
+(342, 'CARIRI DO TOCANTINS', 1703867, 7),
+(343, 'CARMOLÂNDIA', 1703883, 7),
+(344, 'CARRASCO BONITO', 1703891, 7),
+(345, 'CASEARA', 1703909, 7),
+(346, 'CENTENÁRIO', 1704105, 7),
+(347, 'CHAPADA DE AREIA', 1704600, 7),
+(348, 'CHAPADA DA NATIVIDADE', 1705102, 7),
+(349, 'COLINAS DO TOCANTINS', 1705508, 7),
+(350, 'COMBINADO', 1705557, 7),
+(351, 'CONCEIÇÃO DO TOCANTINS', 1705607, 7),
+(352, 'COUTO MAGALHÃES', 1706001, 7),
+(353, 'CRISTALÂNDIA', 1706100, 7),
+(354, 'CRIXÁS DO TOCANTINS', 1706258, 7),
+(355, 'DARCINÓPOLIS', 1706506, 7),
+(356, 'DIANÓPOLIS', 1707009, 7),
+(357, 'DIVINÓPOLIS DO TOCANTINS', 1707108, 7),
+(358, 'DOIS IRMÃOS DO TOCANTINS', 1707207, 7),
+(359, 'DUERÉ', 1707306, 7),
+(360, 'ESPERANTINA', 1707405, 7),
+(361, 'FÁTIMA', 1707553, 7),
+(362, 'FIGUEIRÓPOLIS', 1707652, 7),
+(363, 'FILADÉLFIA', 1707702, 7),
+(364, 'FORMOSO DO ARAGUAIA', 1708205, 7),
+(365, 'FORTALEZA DO TABOCÃO', 1708254, 7),
+(366, 'GOIANORTE', 1708304, 7),
+(367, 'GOIATINS', 1709005, 7),
+(368, 'GUARAÍ', 1709302, 7),
+(369, 'GURUPI', 1709500, 7),
+(370, 'IPUEIRAS', 1709807, 7),
+(371, 'ITACAJÁ', 1710508, 7),
+(372, 'ITAGUATINS', 1710706, 7),
+(373, 'ITAPIRATINS', 1710904, 7),
+(374, 'ITAPORÃ DO TOCANTINS', 1711100, 7),
+(375, 'JAÚ DO TOCANTINS', 1711506, 7),
+(376, 'JUARINA', 1711803, 7),
+(377, 'LAGOA DA CONFUSÃO', 1711902, 7),
+(378, 'LAGOA DO TOCANTINS', 1711951, 7),
+(379, 'LAJEADO', 1712009, 7),
+(380, 'LAVANDEIRA', 1712157, 7),
+(381, 'LIZARDA', 1712405, 7),
+(382, 'LUZINÓPOLIS', 1712454, 7),
+(383, 'MARIANÓPOLIS DO TOCANTINS', 1712504, 7),
+(384, 'MATEIROS', 1712702, 7),
+(385, 'MAURILÂNDIA DO TOCANTINS', 1712801, 7),
+(386, 'MIRACEMA DO TOCANTINS', 1713205, 7),
+(387, 'MIRANORTE', 1713304, 7),
+(388, 'MONTE DO CARMO', 1713601, 7),
+(389, 'MONTE SANTO DO TOCANTINS', 1713700, 7),
+(390, 'PALMEIRAS DO TOCANTINS', 1713809, 7),
+(391, 'MURICILÂNDIA', 1713957, 7),
+(392, 'NATIVIDADE', 1714203, 7),
+(393, 'NAZARÉ', 1714302, 7),
+(394, 'NOVA OLINDA', 1714880, 7),
+(395, 'NOVA ROSALÂNDIA', 1715002, 7),
+(396, 'NOVO ACORDO', 1715101, 7),
+(397, 'NOVO ALEGRE', 1715150, 7),
+(398, 'NOVO JARDIM', 1715259, 7),
+(399, 'OLIVEIRA DE FÁTIMA', 1715507, 7),
+(400, 'PALMEIRANTE', 1715705, 7),
+(401, 'PALMEIRÓPOLIS', 1715754, 7),
+(402, 'PARAÍSO DO TOCANTINS', 1716109, 7),
+(403, 'PARANÃ', 1716208, 7),
+(404, 'PAU D\'ARCO', 1716307, 7),
+(405, 'PEDRO AFONSO', 1716505, 7),
+(406, 'PEIXE', 1716604, 7),
+(407, 'PEQUIZEIRO', 1716653, 7),
+(408, 'COLMÉIA', 1716703, 7),
+(409, 'PINDORAMA DO TOCANTINS', 1717008, 7),
+(410, 'PIRAQUÊ', 1717206, 7),
+(411, 'PIUM', 1717503, 7),
+(412, 'PONTE ALTA DO BOM JESUS', 1717800, 7),
+(413, 'PONTE ALTA DO TOCANTINS', 1717909, 7),
+(414, 'PORTO ALEGRE DO TOCANTINS', 1718006, 7),
+(415, 'PORTO NACIONAL', 1718204, 7),
+(416, 'PRAIA NORTE', 1718303, 7),
+(417, 'PRESIDENTE KENNEDY', 1718402, 7),
+(418, 'PUGMIL', 1718451, 7),
+(419, 'RECURSOLÂNDIA', 1718501, 7),
+(420, 'RIACHINHO', 1718550, 7),
+(421, 'RIO DA CONCEIÇÃO', 1718659, 7),
+(422, 'RIO DOS BOIS', 1718709, 7),
+(423, 'RIO SONO', 1718758, 7),
+(424, 'SAMPAIO', 1718808, 7),
+(425, 'SANDOLÂNDIA', 1718840, 7),
+(426, 'SANTA FÉ DO ARAGUAIA', 1718865, 7),
+(427, 'SANTA MARIA DO TOCANTINS', 1718881, 7),
+(428, 'SANTA RITA DO TOCANTINS', 1718899, 7),
+(429, 'SANTA ROSA DO TOCANTINS', 1718907, 7),
+(430, 'SANTA TEREZA DO TOCANTINS', 1719004, 7),
+(431, 'SANTA TEREZINHA DO TOCANTINS', 1720002, 7),
+(432, 'SÃO BENTO DO TOCANTINS', 1720101, 7),
+(433, 'SÃO FÉLIX DO TOCANTINS', 1720150, 7),
+(434, 'SÃO MIGUEL DO TOCANTINS', 1720200, 7),
+(435, 'SÃO SALVADOR DO TOCANTINS', 1720259, 7),
+(436, 'SÃO SEBASTIÃO DO TOCANTINS', 1720309, 7),
+(437, 'SÃO VALÉRIO', 1720499, 7),
+(438, 'SILVANÓPOLIS', 1720655, 7),
+(439, 'SÍTIO NOVO DO TOCANTINS', 1720804, 7),
+(440, 'SUCUPIRA', 1720853, 7),
+(441, 'TAGUATINGA', 1720903, 7),
+(442, 'TAIPAS DO TOCANTINS', 1720937, 7),
+(443, 'TALISMÃ', 1720978, 7),
+(444, 'PALMAS', 1721000, 7),
+(445, 'TOCANTÍNIA', 1721109, 7),
+(446, 'TOCANTINÓPOLIS', 1721208, 7),
+(447, 'TUPIRAMA', 1721257, 7),
+(448, 'TUPIRATINS', 1721307, 7),
+(449, 'WANDERLÂNDIA', 1722081, 7),
+(450, 'XAMBIOÁ', 1722107, 7),
+(451, 'AÇAILÂNDIA', 2100055, 8),
+(452, 'AFONSO CUNHA', 2100105, 8),
+(453, 'ÁGUA DOCE DO MARANHÃO', 2100154, 8),
+(454, 'ALCÂNTARA', 2100204, 8),
+(455, 'ALDEIAS ALTAS', 2100303, 8),
+(456, 'ALTAMIRA DO MARANHÃO', 2100402, 8),
+(457, 'ALTO ALEGRE DO MARANHÃO', 2100436, 8),
+(458, 'ALTO ALEGRE DO PINDARÉ', 2100477, 8),
+(459, 'ALTO PARNAÍBA', 2100501, 8),
+(460, 'AMAPÁ DO MARANHÃO', 2100550, 8),
+(461, 'AMARANTE DO MARANHÃO', 2100600, 8),
+(462, 'ANAJATUBA', 2100709, 8),
+(463, 'ANAPURUS', 2100808, 8),
+(464, 'APICUM-AÇU', 2100832, 8),
+(465, 'ARAGUANÃ', 2100873, 8),
+(466, 'ARAIOSES', 2100907, 8),
+(467, 'ARAME', 2100956, 8),
+(468, 'ARARI', 2101004, 8),
+(469, 'AXIXÁ', 2101103, 8),
+(470, 'BACABAL', 2101202, 8),
+(471, 'BACABEIRA', 2101251, 8),
+(472, 'BACURI', 2101301, 8),
+(473, 'BACURITUBA', 2101350, 8),
+(474, 'BALSAS', 2101400, 8),
+(475, 'BARÃO DE GRAJAÚ', 2101509, 8),
+(476, 'BARRA DO CORDA', 2101608, 8),
+(477, 'BARREIRINHAS', 2101707, 8),
+(478, 'BELÁGUA', 2101731, 8),
+(479, 'BELA VISTA DO MARANHÃO', 2101772, 8),
+(480, 'BENEDITO LEITE', 2101806, 8),
+(481, 'BEQUIMÃO', 2101905, 8),
+(482, 'BERNARDO DO MEARIM', 2101939, 8),
+(483, 'BOA VISTA DO GURUPI', 2101970, 8),
+(484, 'BOM JARDIM', 2102002, 8),
+(485, 'BOM JESUS DAS SELVAS', 2102036, 8),
+(486, 'BOM LUGAR', 2102077, 8),
+(487, 'BREJO', 2102101, 8),
+(488, 'BREJO DE AREIA', 2102150, 8),
+(489, 'BURITI', 2102200, 8),
+(490, 'BURITI BRAVO', 2102309, 8),
+(491, 'BURITICUPU', 2102325, 8),
+(492, 'BURITIRANA', 2102358, 8),
+(493, 'CACHOEIRA GRANDE', 2102374, 8),
+(494, 'CAJAPIÓ', 2102408, 8),
+(495, 'CAJARI', 2102507, 8),
+(496, 'CAMPESTRE DO MARANHÃO', 2102556, 8),
+(497, 'CÂNDIDO MENDES', 2102606, 8),
+(498, 'CANTANHEDE', 2102705, 8),
+(499, 'CAPINZAL DO NORTE', 2102754, 8),
+(500, 'CAROLINA', 2102804, 8),
+(501, 'CARUTAPERA', 2102903, 8),
+(502, 'CAXIAS', 2103000, 8),
+(503, 'CEDRAL', 2103109, 8),
+(504, 'CENTRAL DO MARANHÃO', 2103125, 8),
+(505, 'CENTRO DO GUILHERME', 2103158, 8),
+(506, 'CENTRO NOVO DO MARANHÃO', 2103174, 8),
+(507, 'CHAPADINHA', 2103208, 8),
+(508, 'CIDELÂNDIA', 2103257, 8),
+(509, 'CODÓ', 2103307, 8),
+(510, 'COELHO NETO', 2103406, 8),
+(511, 'COLINAS', 2103505, 8),
+(512, 'CONCEIÇÃO DO LAGO-AÇU', 2103554, 8),
+(513, 'COROATÁ', 2103604, 8),
+(514, 'CURURUPU', 2103703, 8),
+(515, 'DAVINÓPOLIS', 2103752, 8),
+(516, 'DOM PEDRO', 2103802, 8),
+(517, 'DUQUE BACELAR', 2103901, 8),
+(518, 'ESPERANTINÓPOLIS', 2104008, 8),
+(519, 'ESTREITO', 2104057, 8),
+(520, 'FEIRA NOVA DO MARANHÃO', 2104073, 8),
+(521, 'FERNANDO FALCÃO', 2104081, 8),
+(522, 'FORMOSA DA SERRA NEGRA', 2104099, 8),
+(523, 'FORTALEZA DOS NOGUEIRAS', 2104107, 8),
+(524, 'FORTUNA', 2104206, 8),
+(525, 'GODOFREDO VIANA', 2104305, 8),
+(526, 'GONÇALVES DIAS', 2104404, 8),
+(527, 'GOVERNADOR ARCHER', 2104503, 8),
+(528, 'GOVERNADOR EDISON LOBÃO', 2104552, 8),
+(529, 'GOVERNADOR EUGÊNIO BARROS', 2104602, 8),
+(530, 'GOVERNADOR LUIZ ROCHA', 2104628, 8),
+(531, 'GOVERNADOR NEWTON BELLO', 2104651, 8),
+(532, 'GOVERNADOR NUNES FREIRE', 2104677, 8),
+(533, 'GRAÇA ARANHA', 2104701, 8),
+(534, 'GRAJAÚ', 2104800, 8),
+(535, 'GUIMARÃES', 2104909, 8),
+(536, 'HUMBERTO DE CAMPOS', 2105005, 8),
+(537, 'ICATU', 2105104, 8),
+(538, 'IGARAPÉ DO MEIO', 2105153, 8),
+(539, 'IGARAPÉ GRANDE', 2105203, 8),
+(540, 'IMPERATRIZ', 2105302, 8),
+(541, 'ITAIPAVA DO GRAJAÚ', 2105351, 8),
+(542, 'ITAPECURU MIRIM', 2105401, 8),
+(543, 'ITINGA DO MARANHÃO', 2105427, 8),
+(544, 'JATOBÁ', 2105450, 8),
+(545, 'JENIPAPO DOS VIEIRAS', 2105476, 8),
+(546, 'JOÃO LISBOA', 2105500, 8),
+(547, 'JOSELÂNDIA', 2105609, 8),
+(548, 'JUNCO DO MARANHÃO', 2105658, 8),
+(549, 'LAGO DA PEDRA', 2105708, 8),
+(550, 'LAGO DO JUNCO', 2105807, 8),
+(551, 'LAGO VERDE', 2105906, 8),
+(552, 'LAGOA DO MATO', 2105922, 8),
+(553, 'LAGO DOS RODRIGUES', 2105948, 8),
+(554, 'LAGOA GRANDE DO MARANHÃO', 2105963, 8),
+(555, 'LAJEADO NOVO', 2105989, 8),
+(556, 'LIMA CAMPOS', 2106003, 8),
+(557, 'LORETO', 2106102, 8),
+(558, 'LUÍS DOMINGUES', 2106201, 8),
+(559, 'MAGALHÃES DE ALMEIDA', 2106300, 8),
+(560, 'MARACAÇUMÉ', 2106326, 8),
+(561, 'MARAJÁ DO SENA', 2106359, 8),
+(562, 'MARANHÃOZINHO', 2106375, 8),
+(563, 'MATA ROMA', 2106409, 8),
+(564, 'MATINHA', 2106508, 8),
+(565, 'MATÕES', 2106607, 8),
+(566, 'MATÕES DO NORTE', 2106631, 8),
+(567, 'MILAGRES DO MARANHÃO', 2106672, 8),
+(568, 'MIRADOR', 2106706, 8),
+(569, 'MIRANDA DO NORTE', 2106755, 8),
+(570, 'MIRINZAL', 2106805, 8),
+(571, 'MONÇÃO', 2106904, 8),
+(572, 'MONTES ALTOS', 2107001, 8),
+(573, 'MORROS', 2107100, 8),
+(574, 'NINA RODRIGUES', 2107209, 8),
+(575, 'NOVA COLINAS', 2107258, 8),
+(576, 'NOVA IORQUE', 2107308, 8),
+(577, 'NOVA OLINDA DO MARANHÃO', 2107357, 8),
+(578, 'OLHO D\'ÁGUA DAS CUNHÃS', 2107407, 8),
+(579, 'OLINDA NOVA DO MARANHÃO', 2107456, 8),
+(580, 'PAÇO DO LUMIAR', 2107506, 8),
+(581, 'PALMEIRÂNDIA', 2107605, 8),
+(582, 'PARAIBANO', 2107704, 8),
+(583, 'PARNARAMA', 2107803, 8),
+(584, 'PASSAGEM FRANCA', 2107902, 8),
+(585, 'PASTOS BONS', 2108009, 8),
+(586, 'PAULINO NEVES', 2108058, 8),
+(587, 'PAULO RAMOS', 2108108, 8),
+(588, 'PEDREIRAS', 2108207, 8),
+(589, 'PEDRO DO ROSÁRIO', 2108256, 8),
+(590, 'PENALVA', 2108306, 8),
+(591, 'PERI MIRIM', 2108405, 8),
+(592, 'PERITORÓ', 2108454, 8),
+(593, 'PINDARÉ-MIRIM', 2108504, 8),
+(594, 'PINHEIRO', 2108603, 8),
+(595, 'PIO XII', 2108702, 8),
+(596, 'PIRAPEMAS', 2108801, 8),
+(597, 'POÇÃO DE PEDRAS', 2108900, 8),
+(598, 'PORTO FRANCO', 2109007, 8),
+(599, 'PORTO RICO DO MARANHÃO', 2109056, 8),
+(600, 'PRESIDENTE DUTRA', 2109106, 8),
+(601, 'PRESIDENTE JUSCELINO', 2109205, 8),
+(602, 'PRESIDENTE MÉDICI', 2109239, 8),
+(603, 'PRESIDENTE SARNEY', 2109270, 8),
+(604, 'PRESIDENTE VARGAS', 2109304, 8),
+(605, 'PRIMEIRA CRUZ', 2109403, 8),
+(606, 'RAPOSA', 2109452, 8),
+(607, 'RIACHÃO', 2109502, 8),
+(608, 'RIBAMAR FIQUENE', 2109551, 8),
+(609, 'ROSÁRIO', 2109601, 8),
+(610, 'SAMBAÍBA', 2109700, 8),
+(611, 'SANTA FILOMENA DO MARANHÃO', 2109759, 8),
+(612, 'SANTA HELENA', 2109809, 8),
+(613, 'SANTA INÊS', 2109908, 8),
+(614, 'SANTA LUZIA', 2110005, 8),
+(615, 'SANTA LUZIA DO PARUÁ', 2110039, 8),
+(616, 'SANTA QUITÉRIA DO MARANHÃO', 2110104, 8),
+(617, 'SANTA RITA', 2110203, 8),
+(618, 'SANTANA DO MARANHÃO', 2110237, 8),
+(619, 'SANTO AMARO DO MARANHÃO', 2110278, 8),
+(620, 'SANTO ANTÔNIO DOS LOPES', 2110302, 8),
+(621, 'SÃO BENEDITO DO RIO PRETO', 2110401, 8),
+(622, 'SÃO BENTO', 2110500, 8),
+(623, 'SÃO BERNARDO', 2110609, 8),
+(624, 'SÃO DOMINGOS DO AZEITÃO', 2110658, 8),
+(625, 'SÃO DOMINGOS DO MARANHÃO', 2110708, 8),
+(626, 'SÃO FÉLIX DE BALSAS', 2110807, 8),
+(627, 'SÃO FRANCISCO DO BREJÃO', 2110856, 8),
+(628, 'SÃO FRANCISCO DO MARANHÃO', 2110906, 8),
+(629, 'SÃO JOÃO BATISTA', 2111003, 8),
+(630, 'SÃO JOÃO DO CARÚ', 2111029, 8),
+(631, 'SÃO JOÃO DO PARAÍSO', 2111052, 8),
+(632, 'SÃO JOÃO DO SOTER', 2111078, 8),
+(633, 'SÃO JOÃO DOS PATOS', 2111102, 8),
+(634, 'SÃO JOSÉ DE RIBAMAR', 2111201, 8),
+(635, 'SÃO JOSÉ DOS BASÍLIOS', 2111250, 8),
+(636, 'SÃO LUÍS', 2111300, 8),
+(637, 'SÃO LUÍS GONZAGA DO MARANHÃO', 2111409, 8),
+(638, 'SÃO MATEUS DO MARANHÃO', 2111508, 8),
+(639, 'SÃO PEDRO DA ÁGUA BRANCA', 2111532, 8),
+(640, 'SÃO PEDRO DOS CRENTES', 2111573, 8),
+(641, 'SÃO RAIMUNDO DAS MANGABEIRAS', 2111607, 8),
+(642, 'SÃO RAIMUNDO DO DOCA BEZERRA', 2111631, 8),
+(643, 'SÃO ROBERTO', 2111672, 8),
+(644, 'SÃO VICENTE FERRER', 2111706, 8),
+(645, 'SATUBINHA', 2111722, 8),
+(646, 'SENADOR ALEXANDRE COSTA', 2111748, 8),
+(647, 'SENADOR LA ROCQUE', 2111763, 8),
+(648, 'SERRANO DO MARANHÃO', 2111789, 8),
+(649, 'SÍTIO NOVO', 2111805, 8),
+(650, 'SUCUPIRA DO NORTE', 2111904, 8),
+(651, 'SUCUPIRA DO RIACHÃO', 2111953, 8),
+(652, 'TASSO FRAGOSO', 2112001, 8),
+(653, 'TIMBIRAS', 2112100, 8),
+(654, 'TIMON', 2112209, 8),
+(655, 'TRIZIDELA DO VALE', 2112233, 8),
+(656, 'TUFILÂNDIA', 2112274, 8),
+(657, 'TUNTUM', 2112308, 8),
+(658, 'TURIAÇU', 2112407, 8),
+(659, 'TURILÂNDIA', 2112456, 8),
+(660, 'TUTÓIA', 2112506, 8),
+(661, 'URBANO SANTOS', 2112605, 8),
+(662, 'VARGEM GRANDE', 2112704, 8),
+(663, 'VIANA', 2112803, 8),
+(664, 'VILA NOVA DOS MARTÍRIOS', 2112852, 8),
+(665, 'VITÓRIA DO MEARIM', 2112902, 8),
+(666, 'VITORINO FREIRE', 2113009, 8),
+(667, 'ZÉ DOCA', 2114007, 8),
+(668, 'ACAUÃ', 2200053, 9),
+(669, 'AGRICOLÂNDIA', 2200103, 9),
+(670, 'ÁGUA BRANCA', 2200202, 9),
+(671, 'ALAGOINHA DO PIAUÍ', 2200251, 9),
+(672, 'ALEGRETE DO PIAUÍ', 2200277, 9),
+(673, 'ALTO LONGÁ', 2200301, 9),
+(674, 'ALTOS', 2200400, 9),
+(675, 'ALVORADA DO GURGUÉIA', 2200459, 9),
+(676, 'AMARANTE', 2200509, 9),
+(677, 'ANGICAL DO PIAUÍ', 2200608, 9),
+(678, 'ANÍSIO DE ABREU', 2200707, 9),
+(679, 'ANTÔNIO ALMEIDA', 2200806, 9),
+(680, 'AROAZES', 2200905, 9),
+(681, 'AROEIRAS DO ITAIM', 2200954, 9),
+(682, 'ARRAIAL', 2201002, 9),
+(683, 'ASSUNÇÃO DO PIAUÍ', 2201051, 9),
+(684, 'AVELINO LOPES', 2201101, 9),
+(685, 'BAIXA GRANDE DO RIBEIRO', 2201150, 9),
+(686, 'BARRA D\'ALCÂNTARA', 2201176, 9),
+(687, 'BARRAS', 2201200, 9),
+(688, 'BARREIRAS DO PIAUÍ', 2201309, 9),
+(689, 'BARRO DURO', 2201408, 9),
+(690, 'BATALHA', 2201507, 9),
+(691, 'BELA VISTA DO PIAUÍ', 2201556, 9),
+(692, 'BELÉM DO PIAUÍ', 2201572, 9),
+(693, 'BENEDITINOS', 2201606, 9),
+(694, 'BERTOLÍNIA', 2201705, 9),
+(695, 'BETÂNIA DO PIAUÍ', 2201739, 9),
+(696, 'BOA HORA', 2201770, 9),
+(697, 'BOCAINA', 2201804, 9),
+(698, 'BOM JESUS', 2201903, 9),
+(699, 'BOM PRINCÍPIO DO PIAUÍ', 2201919, 9),
+(700, 'BONFIM DO PIAUÍ', 2201929, 9),
+(701, 'BOQUEIRÃO DO PIAUÍ', 2201945, 9),
+(702, 'BRASILEIRA', 2201960, 9),
+(703, 'BREJO DO PIAUÍ', 2201988, 9),
+(704, 'BURITI DOS LOPES', 2202000, 9),
+(705, 'BURITI DOS MONTES', 2202026, 9),
+(706, 'CABECEIRAS DO PIAUÍ', 2202059, 9),
+(707, 'CAJAZEIRAS DO PIAUÍ', 2202075, 9),
+(708, 'CAJUEIRO DA PRAIA', 2202083, 9),
+(709, 'CALDEIRÃO GRANDE DO PIAUÍ', 2202091, 9),
+(710, 'CAMPINAS DO PIAUÍ', 2202109, 9),
+(711, 'CAMPO ALEGRE DO FIDALGO', 2202117, 9),
+(712, 'CAMPO GRANDE DO PIAUÍ', 2202133, 9),
+(713, 'CAMPO LARGO DO PIAUÍ', 2202174, 9),
+(714, 'CAMPO MAIOR', 2202208, 9),
+(715, 'CANAVIEIRA', 2202251, 9),
+(716, 'CANTO DO BURITI', 2202307, 9),
+(717, 'CAPITÃO DE CAMPOS', 2202406, 9),
+(718, 'CAPITÃO GERVÁSIO OLIVEIRA', 2202455, 9),
+(719, 'CARACOL', 2202505, 9),
+(720, 'CARAÚBAS DO PIAUÍ', 2202539, 9),
+(721, 'CARIDADE DO PIAUÍ', 2202554, 9),
+(722, 'CASTELO DO PIAUÍ', 2202604, 9),
+(723, 'CAXINGÓ', 2202653, 9),
+(724, 'COCAL', 2202703, 9),
+(725, 'COCAL DE TELHA', 2202711, 9),
+(726, 'COCAL DOS ALVES', 2202729, 9),
+(727, 'COIVARAS', 2202737, 9),
+(728, 'COLÔNIA DO GURGUÉIA', 2202752, 9),
+(729, 'COLÔNIA DO PIAUÍ', 2202778, 9),
+(730, 'CONCEIÇÃO DO CANINDÉ', 2202802, 9),
+(731, 'CORONEL JOSÉ DIAS', 2202851, 9),
+(732, 'CORRENTE', 2202901, 9),
+(733, 'CRISTALÂNDIA DO PIAUÍ', 2203008, 9),
+(734, 'CRISTINO CASTRO', 2203107, 9),
+(735, 'CURIMATÁ', 2203206, 9),
+(736, 'CURRAIS', 2203230, 9),
+(737, 'CURRALINHOS', 2203255, 9),
+(738, 'CURRAL NOVO DO PIAUÍ', 2203271, 9),
+(739, 'DEMERVAL LOBÃO', 2203305, 9),
+(740, 'DIRCEU ARCOVERDE', 2203354, 9),
+(741, 'DOM EXPEDITO LOPES', 2203404, 9),
+(742, 'DOMINGOS MOURÃO', 2203420, 9),
+(743, 'DOM INOCÊNCIO', 2203453, 9),
+(744, 'ELESBÃO VELOSO', 2203503, 9),
+(745, 'ELISEU MARTINS', 2203602, 9),
+(746, 'ESPERANTINA', 2203701, 9),
+(747, 'FARTURA DO PIAUÍ', 2203750, 9),
+(748, 'FLORES DO PIAUÍ', 2203800, 9),
+(749, 'FLORESTA DO PIAUÍ', 2203859, 9),
+(750, 'FLORIANO', 2203909, 9),
+(751, 'FRANCINÓPOLIS', 2204006, 9),
+(752, 'FRANCISCO AYRES', 2204105, 9),
+(753, 'FRANCISCO MACEDO', 2204154, 9),
+(754, 'FRANCISCO SANTOS', 2204204, 9),
+(755, 'FRONTEIRAS', 2204303, 9),
+(756, 'GEMINIANO', 2204352, 9),
+(757, 'GILBUÉS', 2204402, 9),
+(758, 'GUADALUPE', 2204501, 9),
+(759, 'GUARIBAS', 2204550, 9),
+(760, 'HUGO NAPOLEÃO', 2204600, 9),
+(761, 'ILHA GRANDE', 2204659, 9),
+(762, 'INHUMA', 2204709, 9),
+(763, 'IPIRANGA DO PIAUÍ', 2204808, 9),
+(764, 'ISAÍAS COELHO', 2204907, 9),
+(765, 'ITAINÓPOLIS', 2205003, 9),
+(766, 'ITAUEIRA', 2205102, 9),
+(767, 'JACOBINA DO PIAUÍ', 2205151, 9),
+(768, 'JAICÓS', 2205201, 9),
+(769, 'JARDIM DO MULATO', 2205250, 9),
+(770, 'JATOBÁ DO PIAUÍ', 2205276, 9),
+(771, 'JERUMENHA', 2205300, 9),
+(772, 'JOÃO COSTA', 2205359, 9),
+(773, 'JOAQUIM PIRES', 2205409, 9),
+(774, 'JOCA MARQUES', 2205458, 9),
+(775, 'JOSÉ DE FREITAS', 2205508, 9),
+(776, 'JUAZEIRO DO PIAUÍ', 2205516, 9),
+(777, 'JÚLIO BORGES', 2205524, 9),
+(778, 'JUREMA', 2205532, 9),
+(779, 'LAGOINHA DO PIAUÍ', 2205540, 9),
+(780, 'LAGOA ALEGRE', 2205557, 9),
+(781, 'LAGOA DO BARRO DO PIAUÍ', 2205565, 9),
+(782, 'LAGOA DE SÃO FRANCISCO', 2205573, 9),
+(783, 'LAGOA DO PIAUÍ', 2205581, 9),
+(784, 'LAGOA DO SÍTIO', 2205599, 9),
+(785, 'LANDRI SALES', 2205607, 9),
+(786, 'LUÍS CORREIA', 2205706, 9),
+(787, 'LUZILÂNDIA', 2205805, 9),
+(788, 'MADEIRO', 2205854, 9),
+(789, 'MANOEL EMÍDIO', 2205904, 9),
+(790, 'MARCOLÂNDIA', 2205953, 9),
+(791, 'MARCOS PARENTE', 2206001, 9),
+(792, 'MASSAPÊ DO PIAUÍ', 2206050, 9),
+(793, 'MATIAS OLÍMPIO', 2206100, 9),
+(794, 'MIGUEL ALVES', 2206209, 9),
+(795, 'MIGUEL LEÃO', 2206308, 9),
+(796, 'MILTON BRANDÃO', 2206357, 9),
+(797, 'MONSENHOR GIL', 2206407, 9),
+(798, 'MONSENHOR HIPÓLITO', 2206506, 9),
+(799, 'MONTE ALEGRE DO PIAUÍ', 2206605, 9),
+(800, 'MORRO CABEÇA NO TEMPO', 2206654, 9),
+(801, 'MORRO DO CHAPÉU DO PIAUÍ', 2206670, 9),
+(802, 'MURICI DOS PORTELAS', 2206696, 9),
+(803, 'NAZARÉ DO PIAUÍ', 2206704, 9),
+(804, 'NAZÁRIA', 2206720, 9),
+(805, 'NOSSA SENHORA DE NAZARÉ', 2206753, 9),
+(806, 'NOSSA SENHORA DOS REMÉDIOS', 2206803, 9),
+(807, 'NOVO ORIENTE DO PIAUÍ', 2206902, 9),
+(808, 'NOVO SANTO ANTÔNIO', 2206951, 9),
+(809, 'OEIRAS', 2207009, 9),
+(810, 'OLHO D\'ÁGUA DO PIAUÍ', 2207108, 9),
+(811, 'PADRE MARCOS', 2207207, 9),
+(812, 'PAES LANDIM', 2207306, 9),
+(813, 'PAJEÚ DO PIAUÍ', 2207355, 9),
+(814, 'PALMEIRA DO PIAUÍ', 2207405, 9),
+(815, 'PALMEIRAIS', 2207504, 9),
+(816, 'PAQUETÁ', 2207553, 9),
+(817, 'PARNAGUÁ', 2207603, 9),
+(818, 'PARNAÍBA', 2207702, 9),
+(819, 'PASSAGEM FRANCA DO PIAUÍ', 2207751, 9),
+(820, 'PATOS DO PIAUÍ', 2207777, 9),
+(821, 'PAU D\'ARCO DO PIAUÍ', 2207793, 9),
+(822, 'PAULISTANA', 2207801, 9),
+(823, 'PAVUSSU', 2207850, 9),
+(824, 'PEDRO II', 2207900, 9),
+(825, 'PEDRO LAURENTINO', 2207934, 9),
+(826, 'NOVA SANTA RITA', 2207959, 9),
+(827, 'PICOS', 2208007, 9),
+(828, 'PIMENTEIRAS', 2208106, 9),
+(829, 'PIO IX', 2208205, 9),
+(830, 'PIRACURUCA', 2208304, 9),
+(831, 'PIRIPIRI', 2208403, 9),
+(832, 'PORTO', 2208502, 9),
+(833, 'PORTO ALEGRE DO PIAUÍ', 2208551, 9),
+(834, 'PRATA DO PIAUÍ', 2208601, 9),
+(835, 'QUEIMADA NOVA', 2208650, 9),
+(836, 'REDENÇÃO DO GURGUÉIA', 2208700, 9),
+(837, 'REGENERAÇÃO', 2208809, 9),
+(838, 'RIACHO FRIO', 2208858, 9),
+(839, 'RIBEIRA DO PIAUÍ', 2208874, 9),
+(840, 'RIBEIRO GONÇALVES', 2208908, 9),
+(841, 'RIO GRANDE DO PIAUÍ', 2209005, 9),
+(842, 'SANTA CRUZ DO PIAUÍ', 2209104, 9),
+(843, 'SANTA CRUZ DOS MILAGRES', 2209153, 9),
+(844, 'SANTA FILOMENA', 2209203, 9),
+(845, 'SANTA LUZ', 2209302, 9),
+(846, 'SANTANA DO PIAUÍ', 2209351, 9),
+(847, 'SANTA ROSA DO PIAUÍ', 2209377, 9),
+(848, 'SANTO ANTÔNIO DE LISBOA', 2209401, 9),
+(849, 'SANTO ANTÔNIO DOS MILAGRES', 2209450, 9),
+(850, 'SANTO INÁCIO DO PIAUÍ', 2209500, 9),
+(851, 'SÃO BRAZ DO PIAUÍ', 2209559, 9),
+(852, 'SÃO FÉLIX DO PIAUÍ', 2209609, 9),
+(853, 'SÃO FRANCISCO DE ASSIS DO PIAUÍ', 2209658, 9),
+(854, 'SÃO FRANCISCO DO PIAUÍ', 2209708, 9),
+(855, 'SÃO GONÇALO DO GURGUÉIA', 2209757, 9),
+(856, 'SÃO GONÇALO DO PIAUÍ', 2209807, 9),
+(857, 'SÃO JOÃO DA CANABRAVA', 2209856, 9),
+(858, 'SÃO JOÃO DA FRONTEIRA', 2209872, 9),
+(859, 'SÃO JOÃO DA SERRA', 2209906, 9),
+(860, 'SÃO JOÃO DA VARJOTA', 2209955, 9),
+(861, 'SÃO JOÃO DO ARRAIAL', 2209971, 9),
+(862, 'SÃO JOÃO DO PIAUÍ', 2210003, 9),
+(863, 'SÃO JOSÉ DO DIVINO', 2210052, 9),
+(864, 'SÃO JOSÉ DO PEIXE', 2210102, 9),
+(865, 'SÃO JOSÉ DO PIAUÍ', 2210201, 9),
+(866, 'SÃO JULIÃO', 2210300, 9),
+(867, 'SÃO LOURENÇO DO PIAUÍ', 2210359, 9),
+(868, 'SÃO LUIS DO PIAUÍ', 2210375, 9),
+(869, 'SÃO MIGUEL DA BAIXA GRANDE', 2210383, 9),
+(870, 'SÃO MIGUEL DO FIDALGO', 2210391, 9),
+(871, 'SÃO MIGUEL DO TAPUIO', 2210409, 9),
+(872, 'SÃO PEDRO DO PIAUÍ', 2210508, 9),
+(873, 'SÃO RAIMUNDO NONATO', 2210607, 9),
+(874, 'SEBASTIÃO BARROS', 2210623, 9),
+(875, 'SEBASTIÃO LEAL', 2210631, 9),
+(876, 'SIGEFREDO PACHECO', 2210656, 9),
+(877, 'SIMÕES', 2210706, 9),
+(878, 'SIMPLÍCIO MENDES', 2210805, 9),
+(879, 'SOCORRO DO PIAUÍ', 2210904, 9),
+(880, 'SUSSUAPARA', 2210938, 9),
+(881, 'TAMBORIL DO PIAUÍ', 2210953, 9),
+(882, 'TANQUE DO PIAUÍ', 2210979, 9),
+(883, 'TERESINA', 2211001, 9),
+(884, 'UNIÃO', 2211100, 9),
+(885, 'URUÇUÍ', 2211209, 9),
+(886, 'VALENÇA DO PIAUÍ', 2211308, 9),
+(887, 'VÁRZEA BRANCA', 2211357, 9),
+(888, 'VÁRZEA GRANDE', 2211407, 9),
+(889, 'VERA MENDES', 2211506, 9),
+(890, 'VILA NOVA DO PIAUÍ', 2211605, 9),
+(891, 'WALL FERRAZ', 2211704, 9),
+(892, 'ABAIARA', 2300101, 10),
+(893, 'ACARAPE', 2300150, 10),
+(894, 'ACARAÚ', 2300200, 10),
+(895, 'ACOPIARA', 2300309, 10),
+(896, 'AIUABA', 2300408, 10),
+(897, 'ALCÂNTARAS', 2300507, 10),
+(898, 'ALTANEIRA', 2300606, 10),
+(899, 'ALTO SANTO', 2300705, 10),
+(900, 'AMONTADA', 2300754, 10),
+(901, 'ANTONINA DO NORTE', 2300804, 10),
+(902, 'APUIARÉS', 2300903, 10),
+(903, 'AQUIRAZ', 2301000, 10),
+(904, 'ARACATI', 2301109, 10),
+(905, 'ARACOIABA', 2301208, 10),
+(906, 'ARARENDÁ', 2301257, 10),
+(907, 'ARARIPE', 2301307, 10),
+(908, 'ARATUBA', 2301406, 10),
+(909, 'ARNEIROZ', 2301505, 10),
+(910, 'ASSARÉ', 2301604, 10),
+(911, 'AURORA', 2301703, 10),
+(912, 'BAIXIO', 2301802, 10),
+(913, 'BANABUIÚ', 2301851, 10),
+(914, 'BARBALHA', 2301901, 10),
+(915, 'BARREIRA', 2301950, 10),
+(916, 'BARRO', 2302008, 10),
+(917, 'BARROQUINHA', 2302057, 10),
+(918, 'BATURITÉ', 2302107, 10),
+(919, 'BEBERIBE', 2302206, 10),
+(920, 'BELA CRUZ', 2302305, 10),
+(921, 'BOA VIAGEM', 2302404, 10),
+(922, 'BREJO SANTO', 2302503, 10),
+(923, 'CAMOCIM', 2302602, 10),
+(924, 'CAMPOS SALES', 2302701, 10),
+(925, 'CANINDÉ', 2302800, 10),
+(926, 'CAPISTRANO', 2302909, 10),
+(927, 'CARIDADE', 2303006, 10),
+(928, 'CARIRÉ', 2303105, 10),
+(929, 'CARIRIAÇU', 2303204, 10),
+(930, 'CARIÚS', 2303303, 10),
+(931, 'CARNAUBAL', 2303402, 10),
+(932, 'CASCAVEL', 2303501, 10),
+(933, 'CATARINA', 2303600, 10),
+(934, 'CATUNDA', 2303659, 10),
+(935, 'CAUCAIA', 2303709, 10),
+(936, 'CEDRO', 2303808, 10),
+(937, 'CHAVAL', 2303907, 10),
+(938, 'CHORÓ', 2303931, 10),
+(939, 'CHOROZINHO', 2303956, 10),
+(940, 'COREAÚ', 2304004, 10),
+(941, 'CRATEÚS', 2304103, 10),
+(942, 'CRATO', 2304202, 10),
+(943, 'CROATÁ', 2304236, 10),
+(944, 'CRUZ', 2304251, 10),
+(945, 'DEPUTADO IRAPUAN PINHEIRO', 2304269, 10),
+(946, 'ERERÊ', 2304277, 10),
+(947, 'EUSÉBIO', 2304285, 10),
+(948, 'FARIAS BRITO', 2304301, 10),
+(949, 'FORQUILHA', 2304350, 10),
+(950, 'FORTALEZA', 2304400, 10),
+(951, 'FORTIM', 2304459, 10),
+(952, 'FRECHEIRINHA', 2304509, 10),
+(953, 'GENERAL SAMPAIO', 2304608, 10),
+(954, 'GRAÇA', 2304657, 10),
+(955, 'GRANJA', 2304707, 10),
+(956, 'GRANJEIRO', 2304806, 10),
+(957, 'GROAÍRAS', 2304905, 10),
+(958, 'GUAIÚBA', 2304954, 10),
+(959, 'GUARACIABA DO NORTE', 2305001, 10),
+(960, 'GUARAMIRANGA', 2305100, 10),
+(961, 'HIDROLÂNDIA', 2305209, 10),
+(962, 'HORIZONTE', 2305233, 10),
+(963, 'IBARETAMA', 2305266, 10),
+(964, 'IBIAPINA', 2305308, 10),
+(965, 'IBICUITINGA', 2305332, 10),
+(966, 'ICAPUÍ', 2305357, 10),
+(967, 'ICÓ', 2305407, 10),
+(968, 'IGUATU', 2305506, 10),
+(969, 'INDEPENDÊNCIA', 2305605, 10),
+(970, 'IPAPORANGA', 2305654, 10),
+(971, 'IPAUMIRIM', 2305704, 10),
+(972, 'IPU', 2305803, 10),
+(973, 'IPUEIRAS', 2305902, 10),
+(974, 'IRACEMA', 2306009, 10),
+(975, 'IRAUÇUBA', 2306108, 10),
+(976, 'ITAIÇABA', 2306207, 10),
+(977, 'ITAITINGA', 2306256, 10),
+(978, 'ITAPAJÉ', 2306306, 10),
+(979, 'ITAPIPOCA', 2306405, 10),
+(980, 'ITAPIÚNA', 2306504, 10),
+(981, 'ITAREMA', 2306553, 10),
+(982, 'ITATIRA', 2306603, 10),
+(983, 'JAGUARETAMA', 2306702, 10),
+(984, 'JAGUARIBARA', 2306801, 10),
+(985, 'JAGUARIBE', 2306900, 10),
+(986, 'JAGUARUANA', 2307007, 10),
+(987, 'JARDIM', 2307106, 10),
+(988, 'JATI', 2307205, 10),
+(989, 'JIJOCA DE JERICOACOARA', 2307254, 10),
+(990, 'JUAZEIRO DO NORTE', 2307304, 10),
+(991, 'JUCÁS', 2307403, 10),
+(992, 'LAVRAS DA MANGABEIRA', 2307502, 10),
+(993, 'LIMOEIRO DO NORTE', 2307601, 10),
+(994, 'MADALENA', 2307635, 10),
+(995, 'MARACANAÚ', 2307650, 10),
+(996, 'MARANGUAPE', 2307700, 10),
+(997, 'MARCO', 2307809, 10),
+(998, 'MARTINÓPOLE', 2307908, 10),
+(999, 'MASSAPÊ', 2308005, 10),
+(1000, 'MAURITI', 2308104, 10),
+(1001, 'MERUOCA', 2308203, 10),
+(1002, 'MILAGRES', 2308302, 10),
+(1003, 'MILHÃ', 2308351, 10),
+(1004, 'MIRAÍMA', 2308377, 10),
+(1005, 'MISSÃO VELHA', 2308401, 10),
+(1006, 'MOMBAÇA', 2308500, 10),
+(1007, 'MONSENHOR TABOSA', 2308609, 10),
+(1008, 'MORADA NOVA', 2308708, 10),
+(1009, 'MORAÚJO', 2308807, 10),
+(1010, 'MORRINHOS', 2308906, 10),
+(1011, 'MUCAMBO', 2309003, 10),
+(1012, 'MULUNGU', 2309102, 10),
+(1013, 'NOVA OLINDA', 2309201, 10),
+(1014, 'NOVA RUSSAS', 2309300, 10),
+(1015, 'NOVO ORIENTE', 2309409, 10),
+(1016, 'OCARA', 2309458, 10),
+(1017, 'ORÓS', 2309508, 10),
+(1018, 'PACAJUS', 2309607, 10),
+(1019, 'PACATUBA', 2309706, 10),
+(1020, 'PACOTI', 2309805, 10),
+(1021, 'PACUJÁ', 2309904, 10),
+(1022, 'PALHANO', 2310001, 10),
+(1023, 'PALMÁCIA', 2310100, 10),
+(1024, 'PARACURU', 2310209, 10),
+(1025, 'PARAIPABA', 2310258, 10),
+(1026, 'PARAMBU', 2310308, 10),
+(1027, 'PARAMOTI', 2310407, 10),
+(1028, 'PEDRA BRANCA', 2310506, 10),
+(1029, 'PENAFORTE', 2310605, 10),
+(1030, 'PENTECOSTE', 2310704, 10),
+(1031, 'PEREIRO', 2310803, 10),
+(1032, 'PINDORETAMA', 2310852, 10),
+(1033, 'PIQUET CARNEIRO', 2310902, 10),
+(1034, 'PIRES FERREIRA', 2310951, 10),
+(1035, 'PORANGA', 2311009, 10),
+(1036, 'PORTEIRAS', 2311108, 10),
+(1037, 'POTENGI', 2311207, 10),
+(1038, 'POTIRETAMA', 2311231, 10),
+(1039, 'QUITERIANÓPOLIS', 2311264, 10),
+(1040, 'QUIXADÁ', 2311306, 10),
+(1041, 'QUIXELÔ', 2311355, 10),
+(1042, 'QUIXERAMOBIM', 2311405, 10),
+(1043, 'QUIXERÉ', 2311504, 10),
+(1044, 'REDENÇÃO', 2311603, 10),
+(1045, 'RERIUTABA', 2311702, 10),
+(1046, 'RUSSAS', 2311801, 10),
+(1047, 'SABOEIRO', 2311900, 10),
+(1048, 'SALITRE', 2311959, 10),
+(1049, 'SANTANA DO ACARAÚ', 2312007, 10),
+(1050, 'SANTANA DO CARIRI', 2312106, 10),
+(1051, 'SANTA QUITÉRIA', 2312205, 10),
+(1052, 'SÃO BENEDITO', 2312304, 10),
+(1053, 'SÃO GONÇALO DO AMARANTE', 2312403, 10),
+(1054, 'SÃO JOÃO DO JAGUARIBE', 2312502, 10),
+(1055, 'SÃO LUÍS DO CURU', 2312601, 10),
+(1056, 'SENADOR POMPEU', 2312700, 10),
+(1057, 'SENADOR SÁ', 2312809, 10),
+(1058, 'SOBRAL', 2312908, 10),
+(1059, 'SOLONÓPOLE', 2313005, 10),
+(1060, 'TABULEIRO DO NORTE', 2313104, 10),
+(1061, 'TAMBORIL', 2313203, 10),
+(1062, 'TARRAFAS', 2313252, 10),
+(1063, 'TAUÁ', 2313302, 10),
+(1064, 'TEJUÇUOCA', 2313351, 10),
+(1065, 'TIANGUÁ', 2313401, 10),
+(1066, 'TRAIRI', 2313500, 10),
+(1067, 'TURURU', 2313559, 10),
+(1068, 'UBAJARA', 2313609, 10),
+(1069, 'UMARI', 2313708, 10),
+(1070, 'UMIRIM', 2313757, 10),
+(1071, 'URUBURETAMA', 2313807, 10),
+(1072, 'URUOCA', 2313906, 10),
+(1073, 'VARJOTA', 2313955, 10),
+(1074, 'VÁRZEA ALEGRE', 2314003, 10),
+(1075, 'VIÇOSA DO CEARÁ', 2314102, 10),
+(1076, 'ACARI', 2400109, 11),
+(1077, 'AÇU', 2400208, 11),
+(1078, 'AFONSO BEZERRA', 2400307, 11),
+(1079, 'ÁGUA NOVA', 2400406, 11),
+(1080, 'ALEXANDRIA', 2400505, 11),
+(1081, 'ALMINO AFONSO', 2400604, 11),
+(1082, 'ALTO DO RODRIGUES', 2400703, 11),
+(1083, 'ANGICOS', 2400802, 11),
+(1084, 'ANTÔNIO MARTINS', 2400901, 11),
+(1085, 'APODI', 2401008, 11),
+(1086, 'AREIA BRANCA', 2401107, 11),
+(1087, 'ARÊS', 2401206, 11),
+(1088, 'AUGUSTO SEVERO', 2401305, 11),
+(1089, 'BAÍA FORMOSA', 2401404, 11),
+(1090, 'BARAÚNA', 2401453, 11),
+(1091, 'BARCELONA', 2401503, 11),
+(1092, 'BENTO FERNANDES', 2401602, 11),
+(1093, 'BODÓ', 2401651, 11),
+(1094, 'BOM JESUS', 2401701, 11),
+(1095, 'BREJINHO', 2401800, 11),
+(1096, 'CAIÇARA DO NORTE', 2401859, 11),
+(1097, 'CAIÇARA DO RIO DO VENTO', 2401909, 11),
+(1098, 'CAICÓ', 2402006, 11),
+(1099, 'CAMPO REDONDO', 2402105, 11),
+(1100, 'CANGUARETAMA', 2402204, 11),
+(1101, 'CARAÚBAS', 2402303, 11),
+(1102, 'CARNAÚBA DOS DANTAS', 2402402, 11),
+(1103, 'CARNAUBAIS', 2402501, 11),
+(1104, 'CEARÁ-MIRIM', 2402600, 11),
+(1105, 'CERRO CORÁ', 2402709, 11),
+(1106, 'CORONEL EZEQUIEL', 2402808, 11),
+(1107, 'CORONEL JOÃO PESSOA', 2402907, 11),
+(1108, 'CRUZETA', 2403004, 11),
+(1109, 'CURRAIS NOVOS', 2403103, 11),
+(1110, 'DOUTOR SEVERIANO', 2403202, 11),
+(1111, 'PARNAMIRIM', 2403251, 11),
+(1112, 'ENCANTO', 2403301, 11),
+(1113, 'EQUADOR', 2403400, 11),
+(1114, 'ESPÍRITO SANTO', 2403509, 11),
+(1115, 'EXTREMOZ', 2403608, 11),
+(1116, 'FELIPE GUERRA', 2403707, 11),
+(1117, 'FERNANDO PEDROZA', 2403756, 11),
+(1118, 'FLORÂNIA', 2403806, 11),
+(1119, 'FRANCISCO DANTAS', 2403905, 11),
+(1120, 'FRUTUOSO GOMES', 2404002, 11),
+(1121, 'GALINHOS', 2404101, 11),
+(1122, 'GOIANINHA', 2404200, 11),
+(1123, 'GOVERNADOR DIX-SEPT ROSADO', 2404309, 11),
+(1124, 'GROSSOS', 2404408, 11),
+(1125, 'GUAMARÉ', 2404507, 11),
+(1126, 'IELMO MARINHO', 2404606, 11),
+(1127, 'IPANGUAÇU', 2404705, 11),
+(1128, 'IPUEIRA', 2404804, 11),
+(1129, 'ITAJÁ', 2404853, 11),
+(1130, 'ITAÚ', 2404903, 11),
+(1131, 'JAÇANÃ', 2405009, 11),
+(1132, 'JANDAÍRA', 2405108, 11),
+(1133, 'JANDUÍS', 2405207, 11),
+(1134, 'JANUÁRIO CICCO', 2405306, 11),
+(1135, 'JAPI', 2405405, 11),
+(1136, 'JARDIM DE ANGICOS', 2405504, 11),
+(1137, 'JARDIM DE PIRANHAS', 2405603, 11),
+(1138, 'JARDIM DO SERIDÓ', 2405702, 11),
+(1139, 'JOÃO CÂMARA', 2405801, 11),
+(1140, 'JOÃO DIAS', 2405900, 11),
+(1141, 'JOSÉ DA PENHA', 2406007, 11),
+(1142, 'JUCURUTU', 2406106, 11),
+(1143, 'JUNDIÁ', 2406155, 11),
+(1144, 'LAGOA D\'ANTA', 2406205, 11),
+(1145, 'LAGOA DE PEDRAS', 2406304, 11),
+(1146, 'LAGOA DE VELHOS', 2406403, 11),
+(1147, 'LAGOA NOVA', 2406502, 11),
+(1148, 'LAGOA SALGADA', 2406601, 11),
+(1149, 'LAJES', 2406700, 11),
+(1150, 'LAJES PINTADAS', 2406809, 11),
+(1151, 'LUCRÉCIA', 2406908, 11),
+(1152, 'LUÍS GOMES', 2407005, 11),
+(1153, 'MACAÍBA', 2407104, 11),
+(1154, 'MACAU', 2407203, 11),
+(1155, 'MAJOR SALES', 2407252, 11),
+(1156, 'MARCELINO VIEIRA', 2407302, 11),
+(1157, 'MARTINS', 2407401, 11),
+(1158, 'MAXARANGUAPE', 2407500, 11),
+(1159, 'MESSIAS TARGINO', 2407609, 11),
+(1160, 'MONTANHAS', 2407708, 11),
+(1161, 'MONTE ALEGRE', 2407807, 11),
+(1162, 'MONTE DAS GAMELEIRAS', 2407906, 11),
+(1163, 'MOSSORÓ', 2408003, 11),
+(1164, 'NATAL', 2408102, 11),
+(1165, 'NÍSIA FLORESTA', 2408201, 11),
+(1166, 'NOVA CRUZ', 2408300, 11),
+(1167, 'OLHO-D\'ÁGUA DO BORGES', 2408409, 11),
+(1168, 'OURO BRANCO', 2408508, 11),
+(1169, 'PARANÁ', 2408607, 11),
+(1170, 'PARAÚ', 2408706, 11),
+(1171, 'PARAZINHO', 2408805, 11),
+(1172, 'PARELHAS', 2408904, 11),
+(1173, 'RIO DO FOGO', 2408953, 11),
+(1174, 'PASSA E FICA', 2409100, 11),
+(1175, 'PASSAGEM', 2409209, 11),
+(1176, 'PATU', 2409308, 11),
+(1177, 'SANTA MARIA', 2409332, 11),
+(1178, 'PAU DOS FERROS', 2409407, 11),
+(1179, 'PEDRA GRANDE', 2409506, 11),
+(1180, 'PEDRA PRETA', 2409605, 11),
+(1181, 'PEDRO AVELINO', 2409704, 11),
+(1182, 'PEDRO VELHO', 2409803, 11),
+(1183, 'PENDÊNCIAS', 2409902, 11),
+(1184, 'PILÕES', 2410009, 11),
+(1185, 'POÇO BRANCO', 2410108, 11),
+(1186, 'PORTALEGRE', 2410207, 11),
+(1187, 'PORTO DO MANGUE', 2410256, 11),
+(1188, 'SERRA CAIADA', 2410306, 11),
+(1189, 'PUREZA', 2410405, 11),
+(1190, 'RAFAEL FERNANDES', 2410504, 11),
+(1191, 'RAFAEL GODEIRO', 2410603, 11),
+(1192, 'RIACHO DA CRUZ', 2410702, 11),
+(1193, 'RIACHO DE SANTANA', 2410801, 11),
+(1194, 'RIACHUELO', 2410900, 11),
+(1195, 'RODOLFO FERNANDES', 2411007, 11),
+(1196, 'TIBAU', 2411056, 11),
+(1197, 'RUY BARBOSA', 2411106, 11),
+(1198, 'SANTA CRUZ', 2411205, 11),
+(1199, 'SANTANA DO MATOS', 2411403, 11),
+(1200, 'SANTANA DO SERIDÓ', 2411429, 11),
+(1201, 'SANTO ANTÔNIO', 2411502, 11),
+(1202, 'SÃO BENTO DO NORTE', 2411601, 11),
+(1203, 'SÃO BENTO DO TRAIRÍ', 2411700, 11),
+(1204, 'SÃO FERNANDO', 2411809, 11),
+(1205, 'SÃO FRANCISCO DO OESTE', 2411908, 11),
+(1206, 'SÃO GONÇALO DO AMARANTE', 2412005, 11),
+(1207, 'SÃO JOÃO DO SABUGI', 2412104, 11),
+(1208, 'SÃO JOSÉ DE MIPIBU', 2412203, 11),
+(1209, 'SÃO JOSÉ DO CAMPESTRE', 2412302, 11),
+(1210, 'SÃO JOSÉ DO SERIDÓ', 2412401, 11),
+(1211, 'SÃO MIGUEL', 2412500, 11),
+(1212, 'SÃO MIGUEL DO GOSTOSO', 2412559, 11),
+(1213, 'SÃO PAULO DO POTENGI', 2412609, 11),
+(1214, 'SÃO PEDRO', 2412708, 11),
+(1215, 'SÃO RAFAEL', 2412807, 11),
+(1216, 'SÃO TOMÉ', 2412906, 11),
+(1217, 'SÃO VICENTE', 2413003, 11),
+(1218, 'SENADOR ELÓI DE SOUZA', 2413102, 11),
+(1219, 'SENADOR GEORGINO AVELINO', 2413201, 11),
+(1220, 'SERRA DE SÃO BENTO', 2413300, 11),
+(1221, 'SERRA DO MEL', 2413359, 11),
+(1222, 'SERRA NEGRA DO NORTE', 2413409, 11),
+(1223, 'SERRINHA', 2413508, 11),
+(1224, 'SERRINHA DOS PINTOS', 2413557, 11),
+(1225, 'SEVERIANO MELO', 2413607, 11),
+(1226, 'SÍTIO NOVO', 2413706, 11),
+(1227, 'TABOLEIRO GRANDE', 2413805, 11),
+(1228, 'TAIPU', 2413904, 11),
+(1229, 'TANGARÁ', 2414001, 11),
+(1230, 'TENENTE ANANIAS', 2414100, 11),
+(1231, 'TENENTE LAURENTINO CRUZ', 2414159, 11),
+(1232, 'TIBAU DO SUL', 2414209, 11),
+(1233, 'TIMBAÚBA DOS BATISTAS', 2414308, 11),
+(1234, 'TOUROS', 2414407, 11),
+(1235, 'TRIUNFO POTIGUAR', 2414456, 11),
+(1236, 'UMARIZAL', 2414506, 11),
+(1237, 'UPANEMA', 2414605, 11),
+(1238, 'VÁRZEA', 2414704, 11),
+(1239, 'VENHA-VER', 2414753, 11),
+(1240, 'VERA CRUZ', 2414803, 11),
+(1241, 'VIÇOSA', 2414902, 11),
+(1242, 'VILA FLOR', 2415008, 11),
+(1243, 'ÁGUA BRANCA', 2500106, 12),
+(1244, 'AGUIAR', 2500205, 12),
+(1245, 'ALAGOA GRANDE', 2500304, 12),
+(1246, 'ALAGOA NOVA', 2500403, 12),
+(1247, 'ALAGOINHA', 2500502, 12),
+(1248, 'ALCANTIL', 2500536, 12),
+(1249, 'ALGODÃO DE JANDAÍRA', 2500577, 12),
+(1250, 'ALHANDRA', 2500601, 12),
+(1251, 'SÃO JOÃO DO RIO DO PEIXE', 2500700, 12),
+(1252, 'AMPARO', 2500734, 12),
+(1253, 'APARECIDA', 2500775, 12),
+(1254, 'ARAÇAGI', 2500809, 12),
+(1255, 'ARARA', 2500908, 12),
+(1256, 'ARARUNA', 2501005, 12),
+(1257, 'AREIA', 2501104, 12),
+(1258, 'AREIA DE BARAÚNAS', 2501153, 12),
+(1259, 'AREIAL', 2501203, 12),
+(1260, 'AROEIRAS', 2501302, 12),
+(1261, 'ASSUNÇÃO', 2501351, 12),
+(1262, 'BAÍA DA TRAIÇÃO', 2501401, 12),
+(1263, 'BANANEIRAS', 2501500, 12),
+(1264, 'BARAÚNA', 2501534, 12),
+(1265, 'BARRA DE SANTANA', 2501575, 12),
+(1266, 'BARRA DE SANTA ROSA', 2501609, 12),
+(1267, 'BARRA DE SÃO MIGUEL', 2501708, 12),
+(1268, 'BAYEUX', 2501807, 12),
+(1269, 'BELÉM', 2501906, 12),
+(1270, 'BELÉM DO BREJO DO CRUZ', 2502003, 12),
+(1271, 'BERNARDINO BATISTA', 2502052, 12),
+(1272, 'BOA VENTURA', 2502102, 12),
+(1273, 'BOA VISTA', 2502151, 12),
+(1274, 'BOM JESUS', 2502201, 12),
+(1275, 'BOM SUCESSO', 2502300, 12),
+(1276, 'BONITO DE SANTA FÉ', 2502409, 12),
+(1277, 'BOQUEIRÃO', 2502508, 12),
+(1278, 'IGARACY', 2502607, 12),
+(1279, 'BORBOREMA', 2502706, 12),
+(1280, 'BREJO DO CRUZ', 2502805, 12),
+(1281, 'BREJO DOS SANTOS', 2502904, 12),
+(1282, 'CAAPORÃ', 2503001, 12),
+(1283, 'CABACEIRAS', 2503100, 12),
+(1284, 'CABEDELO', 2503209, 12),
+(1285, 'CACHOEIRA DOS ÍNDIOS', 2503308, 12),
+(1286, 'CACIMBA DE AREIA', 2503407, 12),
+(1287, 'CACIMBA DE DENTRO', 2503506, 12),
+(1288, 'CACIMBAS', 2503555, 12),
+(1289, 'CAIÇARA', 2503605, 12),
+(1290, 'CAJAZEIRAS', 2503704, 12),
+(1291, 'CAJAZEIRINHAS', 2503753, 12),
+(1292, 'CALDAS BRANDÃO', 2503803, 12),
+(1293, 'CAMALAÚ', 2503902, 12),
+(1294, 'CAMPINA GRANDE', 2504009, 12),
+(1295, 'CAPIM', 2504033, 12),
+(1296, 'CARAÚBAS', 2504074, 12),
+(1297, 'CARRAPATEIRA', 2504108, 12),
+(1298, 'CASSERENGUE', 2504157, 12),
+(1299, 'CATINGUEIRA', 2504207, 12),
+(1300, 'CATOLÉ DO ROCHA', 2504306, 12),
+(1301, 'CATURITÉ', 2504355, 12),
+(1302, 'CONCEIÇÃO', 2504405, 12),
+(1303, 'CONDADO', 2504504, 12),
+(1304, 'CONDE', 2504603, 12),
+(1305, 'CONGO', 2504702, 12),
+(1306, 'COREMAS', 2504801, 12),
+(1307, 'COXIXOLA', 2504850, 12),
+(1308, 'CRUZ DO ESPÍRITO SANTO', 2504900, 12),
+(1309, 'CUBATI', 2505006, 12),
+(1310, 'CUITÉ', 2505105, 12),
+(1311, 'CUITEGI', 2505204, 12),
+(1312, 'CUITÉ DE MAMANGUAPE', 2505238, 12),
+(1313, 'CURRAL DE CIMA', 2505279, 12),
+(1314, 'CURRAL VELHO', 2505303, 12),
+(1315, 'DAMIÃO', 2505352, 12),
+(1316, 'DESTERRO', 2505402, 12),
+(1317, 'VISTA SERRANA', 2505501, 12),
+(1318, 'DIAMANTE', 2505600, 12),
+(1319, 'DONA INÊS', 2505709, 12),
+(1320, 'DUAS ESTRADAS', 2505808, 12),
+(1321, 'EMAS', 2505907, 12),
+(1322, 'ESPERANÇA', 2506004, 12),
+(1323, 'FAGUNDES', 2506103, 12),
+(1324, 'FREI MARTINHO', 2506202, 12),
+(1325, 'GADO BRAVO', 2506251, 12),
+(1326, 'GUARABIRA', 2506301, 12),
+(1327, 'GURINHÉM', 2506400, 12),
+(1328, 'GURJÃO', 2506509, 12),
+(1329, 'IBIARA', 2506608, 12),
+(1330, 'IMACULADA', 2506707, 12),
+(1331, 'INGÁ', 2506806, 12),
+(1332, 'ITABAIANA', 2506905, 12),
+(1333, 'ITAPORANGA', 2507002, 12),
+(1334, 'ITAPOROROCA', 2507101, 12),
+(1335, 'ITATUBA', 2507200, 12),
+(1336, 'JACARAÚ', 2507309, 12),
+(1337, 'JERICÓ', 2507408, 12),
+(1338, 'JOÃO PESSOA', 2507507, 12),
+(1339, 'JUAREZ TÁVORA', 2507606, 12),
+(1340, 'JUAZEIRINHO', 2507705, 12),
+(1341, 'JUNCO DO SERIDÓ', 2507804, 12),
+(1342, 'JURIPIRANGA', 2507903, 12),
+(1343, 'JURU', 2508000, 12),
+(1344, 'LAGOA', 2508109, 12),
+(1345, 'LAGOA DE DENTRO', 2508208, 12),
+(1346, 'LAGOA SECA', 2508307, 12),
+(1347, 'LASTRO', 2508406, 12),
+(1348, 'LIVRAMENTO', 2508505, 12),
+(1349, 'LOGRADOURO', 2508554, 12),
+(1350, 'LUCENA', 2508604, 12),
+(1351, 'MÃE D\'ÁGUA', 2508703, 12),
+(1352, 'MALTA', 2508802, 12),
+(1353, 'MAMANGUAPE', 2508901, 12),
+(1354, 'MANAÍRA', 2509008, 12),
+(1355, 'MARCAÇÃO', 2509057, 12),
+(1356, 'MARI', 2509107, 12),
+(1357, 'MARIZÓPOLIS', 2509156, 12),
+(1358, 'MASSARANDUBA', 2509206, 12),
+(1359, 'MATARACA', 2509305, 12),
+(1360, 'MATINHAS', 2509339, 12),
+(1361, 'MATO GROSSO', 2509370, 12),
+(1362, 'MATURÉIA', 2509396, 12),
+(1363, 'MOGEIRO', 2509404, 12),
+(1364, 'MONTADAS', 2509503, 12),
+(1365, 'MONTE HOREBE', 2509602, 12),
+(1366, 'MONTEIRO', 2509701, 12),
+(1367, 'MULUNGU', 2509800, 12),
+(1368, 'NATUBA', 2509909, 12),
+(1369, 'NAZAREZINHO', 2510006, 12),
+(1370, 'NOVA FLORESTA', 2510105, 12),
+(1371, 'NOVA OLINDA', 2510204, 12),
+(1372, 'NOVA PALMEIRA', 2510303, 12),
+(1373, 'OLHO D\'ÁGUA', 2510402, 12),
+(1374, 'OLIVEDOS', 2510501, 12),
+(1375, 'OURO VELHO', 2510600, 12),
+(1376, 'PARARI', 2510659, 12),
+(1377, 'PASSAGEM', 2510709, 12),
+(1378, 'PATOS', 2510808, 12),
+(1379, 'PAULISTA', 2510907, 12),
+(1380, 'PEDRA BRANCA', 2511004, 12),
+(1381, 'PEDRA LAVRADA', 2511103, 12),
+(1382, 'PEDRAS DE FOGO', 2511202, 12),
+(1383, 'PIANCÓ', 2511301, 12),
+(1384, 'PICUÍ', 2511400, 12),
+(1385, 'PILAR', 2511509, 12),
+(1386, 'PILÕES', 2511608, 12),
+(1387, 'PILÕEZINHOS', 2511707, 12),
+(1388, 'PIRPIRITUBA', 2511806, 12),
+(1389, 'PITIMBU', 2511905, 12),
+(1390, 'POCINHOS', 2512002, 12),
+(1391, 'POÇO DANTAS', 2512036, 12),
+(1392, 'POÇO DE JOSÉ DE MOURA', 2512077, 12),
+(1393, 'POMBAL', 2512101, 12),
+(1394, 'PRATA', 2512200, 12),
+(1395, 'PRINCESA ISABEL', 2512309, 12),
+(1396, 'PUXINANÃ', 2512408, 12),
+(1397, 'QUEIMADAS', 2512507, 12),
+(1398, 'QUIXABA', 2512606, 12),
+(1399, 'REMÍGIO', 2512705, 12),
+(1400, 'PEDRO RÉGIS', 2512721, 12),
+(1401, 'RIACHÃO', 2512747, 12),
+(1402, 'RIACHÃO DO BACAMARTE', 2512754, 12),
+(1403, 'RIACHÃO DO POÇO', 2512762, 12),
+(1404, 'RIACHO DE SANTO ANTÔNIO', 2512788, 12),
+(1405, 'RIACHO DOS CAVALOS', 2512804, 12),
+(1406, 'RIO TINTO', 2512903, 12),
+(1407, 'SALGADINHO', 2513000, 12),
+(1408, 'SALGADO DE SÃO FÉLIX', 2513109, 12),
+(1409, 'SANTA CECÍLIA', 2513158, 12),
+(1410, 'SANTA CRUZ', 2513208, 12),
+(1411, 'SANTA HELENA', 2513307, 12),
+(1412, 'SANTA INÊS', 2513356, 12),
+(1413, 'SANTA LUZIA', 2513406, 12),
+(1414, 'SANTANA DE MANGUEIRA', 2513505, 12),
+(1415, 'SANTANA DOS GARROTES', 2513604, 12),
+(1416, 'JOCA CLAUDINO', 2513653, 12),
+(1417, 'SANTA RITA', 2513703, 12),
+(1418, 'SANTA TERESINHA', 2513802, 12),
+(1419, 'SANTO ANDRÉ', 2513851, 12),
+(1420, 'SÃO BENTO', 2513901, 12),
+(1421, 'SÃO BENTINHO', 2513927, 12),
+(1422, 'SÃO DOMINGOS DO CARIRI', 2513943, 12),
+(1423, 'SÃO DOMINGOS', 2513968, 12),
+(1424, 'SÃO FRANCISCO', 2513984, 12),
+(1425, 'SÃO JOÃO DO CARIRI', 2514008, 12),
+(1426, 'SÃO JOÃO DO TIGRE', 2514107, 12),
+(1427, 'SÃO JOSÉ DA LAGOA TAPADA', 2514206, 12),
+(1428, 'SÃO JOSÉ DE CAIANA', 2514305, 12),
+(1429, 'SÃO JOSÉ DE ESPINHARAS', 2514404, 12),
+(1430, 'SÃO JOSÉ DOS RAMOS', 2514453, 12),
+(1431, 'SÃO JOSÉ DE PIRANHAS', 2514503, 12),
+(1432, 'SÃO JOSÉ DE PRINCESA', 2514552, 12),
+(1433, 'SÃO JOSÉ DO BONFIM', 2514602, 12),
+(1434, 'SÃO JOSÉ DO BREJO DO CRUZ', 2514651, 12),
+(1435, 'SÃO JOSÉ DO SABUGI', 2514701, 12),
+(1436, 'SÃO JOSÉ DOS CORDEIROS', 2514800, 12),
+(1437, 'SÃO MAMEDE', 2514909, 12),
+(1438, 'SÃO MIGUEL DE TAIPU', 2515005, 12),
+(1439, 'SÃO SEBASTIÃO DE LAGOA DE ROÇA', 2515104, 12),
+(1440, 'SÃO SEBASTIÃO DO UMBUZEIRO', 2515203, 12),
+(1441, 'SAPÉ', 2515302, 12),
+(1442, 'SÃO VICENTE DO SERIDÓ', 2515401, 12),
+(1443, 'SERRA BRANCA', 2515500, 12),
+(1444, 'SERRA DA RAIZ', 2515609, 12),
+(1445, 'SERRA GRANDE', 2515708, 12),
+(1446, 'SERRA REDONDA', 2515807, 12),
+(1447, 'SERRARIA', 2515906, 12),
+(1448, 'SERTÃOZINHO', 2515930, 12),
+(1449, 'SOBRADO', 2515971, 12),
+(1450, 'SOLÂNEA', 2516003, 12),
+(1451, 'SOLEDADE', 2516102, 12),
+(1452, 'SOSSÊGO', 2516151, 12),
+(1453, 'SOUSA', 2516201, 12),
+(1454, 'SUMÉ', 2516300, 12),
+(1455, 'TACIMA', 2516409, 12),
+(1456, 'TAPEROÁ', 2516508, 12),
+(1457, 'TAVARES', 2516607, 12),
+(1458, 'TEIXEIRA', 2516706, 12),
+(1459, 'TENÓRIO', 2516755, 12),
+(1460, 'TRIUNFO', 2516805, 12),
+(1461, 'UIRAÚNA', 2516904, 12),
+(1462, 'UMBUZEIRO', 2517001, 12),
+(1463, 'VÁRZEA', 2517100, 12),
+(1464, 'VIEIRÓPOLIS', 2517209, 12),
+(1465, 'ZABELÊ', 2517407, 12),
+(1466, 'ABREU E LIMA', 2600054, 13),
+(1467, 'AFOGADOS DA INGAZEIRA', 2600104, 13),
+(1468, 'AFRÂNIO', 2600203, 13),
+(1469, 'AGRESTINA', 2600302, 13),
+(1470, 'ÁGUA PRETA', 2600401, 13),
+(1471, 'ÁGUAS BELAS', 2600500, 13),
+(1472, 'ALAGOINHA', 2600609, 13),
+(1473, 'ALIANÇA', 2600708, 13),
+(1474, 'ALTINHO', 2600807, 13),
+(1475, 'AMARAJI', 2600906, 13),
+(1476, 'ANGELIM', 2601003, 13),
+(1477, 'ARAÇOIABA', 2601052, 13),
+(1478, 'ARARIPINA', 2601102, 13);
+INSERT INTO `cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES
+(1479, 'ARCOVERDE', 2601201, 13),
+(1480, 'BARRA DE GUABIRABA', 2601300, 13),
+(1481, 'BARREIROS', 2601409, 13),
+(1482, 'BELÉM DE MARIA', 2601508, 13),
+(1483, 'BELÉM DO SÃO FRANCISCO', 2601607, 13),
+(1484, 'BELO JARDIM', 2601706, 13),
+(1485, 'BETÂNIA', 2601805, 13),
+(1486, 'BEZERROS', 2601904, 13),
+(1487, 'BODOCÓ', 2602001, 13),
+(1488, 'BOM CONSELHO', 2602100, 13),
+(1489, 'BOM JARDIM', 2602209, 13),
+(1490, 'BONITO', 2602308, 13),
+(1491, 'BREJÃO', 2602407, 13),
+(1492, 'BREJINHO', 2602506, 13),
+(1493, 'BREJO DA MADRE DE DEUS', 2602605, 13),
+(1494, 'BUENOS AIRES', 2602704, 13),
+(1495, 'BUÍQUE', 2602803, 13),
+(1496, 'CABO DE SANTO AGOSTINHO', 2602902, 13),
+(1497, 'CABROBÓ', 2603009, 13),
+(1498, 'CACHOEIRINHA', 2603108, 13),
+(1499, 'CAETÉS', 2603207, 13),
+(1500, 'CALÇADO', 2603306, 13),
+(1501, 'CALUMBI', 2603405, 13),
+(1502, 'CAMARAGIBE', 2603454, 13),
+(1503, 'CAMOCIM DE SÃO FÉLIX', 2603504, 13),
+(1504, 'CAMUTANGA', 2603603, 13),
+(1505, 'CANHOTINHO', 2603702, 13),
+(1506, 'CAPOEIRAS', 2603801, 13),
+(1507, 'CARNAÍBA', 2603900, 13),
+(1508, 'CARNAUBEIRA DA PENHA', 2603926, 13),
+(1509, 'CARPINA', 2604007, 13),
+(1510, 'CARUARU', 2604106, 13),
+(1511, 'CASINHAS', 2604155, 13),
+(1512, 'CATENDE', 2604205, 13),
+(1513, 'CEDRO', 2604304, 13),
+(1514, 'CHÃ DE ALEGRIA', 2604403, 13),
+(1515, 'CHÃ GRANDE', 2604502, 13),
+(1516, 'CONDADO', 2604601, 13),
+(1517, 'CORRENTES', 2604700, 13),
+(1518, 'CORTÊS', 2604809, 13),
+(1519, 'CUMARU', 2604908, 13),
+(1520, 'CUPIRA', 2605004, 13),
+(1521, 'CUSTÓDIA', 2605103, 13),
+(1522, 'DORMENTES', 2605152, 13),
+(1523, 'ESCADA', 2605202, 13),
+(1524, 'EXU', 2605301, 13),
+(1525, 'FEIRA NOVA', 2605400, 13),
+(1526, 'FERNANDO DE NORONHA', 2605459, 13),
+(1527, 'FERREIROS', 2605509, 13),
+(1528, 'FLORES', 2605608, 13),
+(1529, 'FLORESTA', 2605707, 13),
+(1530, 'FREI MIGUELINHO', 2605806, 13),
+(1531, 'GAMELEIRA', 2605905, 13),
+(1532, 'GARANHUNS', 2606002, 13),
+(1533, 'GLÓRIA DO GOITÁ', 2606101, 13),
+(1534, 'GOIANA', 2606200, 13),
+(1535, 'GRANITO', 2606309, 13),
+(1536, 'GRAVATÁ', 2606408, 13),
+(1537, 'IATI', 2606507, 13),
+(1538, 'IBIMIRIM', 2606606, 13),
+(1539, 'IBIRAJUBA', 2606705, 13),
+(1540, 'IGARASSU', 2606804, 13),
+(1541, 'IGUARACY', 2606903, 13),
+(1542, 'INAJÁ', 2607000, 13),
+(1543, 'INGAZEIRA', 2607109, 13),
+(1544, 'IPOJUCA', 2607208, 13),
+(1545, 'IPUBI', 2607307, 13),
+(1546, 'ITACURUBA', 2607406, 13),
+(1547, 'ITAÍBA', 2607505, 13),
+(1548, 'ILHA DE ITAMARACÁ', 2607604, 13),
+(1549, 'ITAMBÉ', 2607653, 13),
+(1550, 'ITAPETIM', 2607703, 13),
+(1551, 'ITAPISSUMA', 2607752, 13),
+(1552, 'ITAQUITINGA', 2607802, 13),
+(1553, 'JABOATÃO DOS GUARARAPES', 2607901, 13),
+(1554, 'JAQUEIRA', 2607950, 13),
+(1555, 'JATAÚBA', 2608008, 13),
+(1556, 'JATOBÁ', 2608057, 13),
+(1557, 'JOÃO ALFREDO', 2608107, 13),
+(1558, 'JOAQUIM NABUCO', 2608206, 13),
+(1559, 'JUCATI', 2608255, 13),
+(1560, 'JUPI', 2608305, 13),
+(1561, 'JUREMA', 2608404, 13),
+(1562, 'LAGOA DO CARRO', 2608453, 13),
+(1563, 'LAGOA DE ITAENGA', 2608503, 13),
+(1564, 'LAGOA DO OURO', 2608602, 13),
+(1565, 'LAGOA DOS GATOS', 2608701, 13),
+(1566, 'LAGOA GRANDE', 2608750, 13),
+(1567, 'LAJEDO', 2608800, 13),
+(1568, 'LIMOEIRO', 2608909, 13),
+(1569, 'MACAPARANA', 2609006, 13),
+(1570, 'MACHADOS', 2609105, 13),
+(1571, 'MANARI', 2609154, 13),
+(1572, 'MARAIAL', 2609204, 13),
+(1573, 'MIRANDIBA', 2609303, 13),
+(1574, 'MORENO', 2609402, 13),
+(1575, 'NAZARÉ DA MATA', 2609501, 13),
+(1576, 'OLINDA', 2609600, 13),
+(1577, 'OROBÓ', 2609709, 13),
+(1578, 'OROCÓ', 2609808, 13),
+(1579, 'OURICURI', 2609907, 13),
+(1580, 'PALMARES', 2610004, 13),
+(1581, 'PALMEIRINA', 2610103, 13),
+(1582, 'PANELAS', 2610202, 13),
+(1583, 'PARANATAMA', 2610301, 13),
+(1584, 'PARNAMIRIM', 2610400, 13),
+(1585, 'PASSIRA', 2610509, 13),
+(1586, 'PAUDALHO', 2610608, 13),
+(1587, 'PAULISTA', 2610707, 13),
+(1588, 'PEDRA', 2610806, 13),
+(1589, 'PESQUEIRA', 2610905, 13),
+(1590, 'PETROLÂNDIA', 2611002, 13),
+(1591, 'PETROLINA', 2611101, 13),
+(1592, 'POÇÃO', 2611200, 13),
+(1593, 'POMBOS', 2611309, 13),
+(1594, 'PRIMAVERA', 2611408, 13),
+(1595, 'QUIPAPÁ', 2611507, 13),
+(1596, 'QUIXABA', 2611533, 13),
+(1597, 'RECIFE', 2611606, 13),
+(1598, 'RIACHO DAS ALMAS', 2611705, 13),
+(1599, 'RIBEIRÃO', 2611804, 13),
+(1600, 'RIO FORMOSO', 2611903, 13),
+(1601, 'SAIRÉ', 2612000, 13),
+(1602, 'SALGADINHO', 2612109, 13),
+(1603, 'SALGUEIRO', 2612208, 13),
+(1604, 'SALOÁ', 2612307, 13),
+(1605, 'SANHARÓ', 2612406, 13),
+(1606, 'SANTA CRUZ', 2612455, 13),
+(1607, 'SANTA CRUZ DA BAIXA VERDE', 2612471, 13),
+(1608, 'SANTA CRUZ DO CAPIBARIBE', 2612505, 13),
+(1609, 'SANTA FILOMENA', 2612554, 13),
+(1610, 'SANTA MARIA DA BOA VISTA', 2612604, 13),
+(1611, 'SANTA MARIA DO CAMBUCÁ', 2612703, 13),
+(1612, 'SANTA TEREZINHA', 2612802, 13),
+(1613, 'SÃO BENEDITO DO SUL', 2612901, 13),
+(1614, 'SÃO BENTO DO UNA', 2613008, 13),
+(1615, 'SÃO CAITANO', 2613107, 13),
+(1616, 'SÃO JOÃO', 2613206, 13),
+(1617, 'SÃO JOAQUIM DO MONTE', 2613305, 13),
+(1618, 'SÃO JOSÉ DA COROA GRANDE', 2613404, 13),
+(1619, 'SÃO JOSÉ DO BELMONTE', 2613503, 13),
+(1620, 'SÃO JOSÉ DO EGITO', 2613602, 13),
+(1621, 'SÃO LOURENÇO DA MATA', 2613701, 13),
+(1622, 'SÃO VICENTE FERRER', 2613800, 13),
+(1623, 'SERRA TALHADA', 2613909, 13),
+(1624, 'SERRITA', 2614006, 13),
+(1625, 'SERTÂNIA', 2614105, 13),
+(1626, 'SIRINHAÉM', 2614204, 13),
+(1627, 'MOREILÂNDIA', 2614303, 13),
+(1628, 'SOLIDÃO', 2614402, 13),
+(1629, 'SURUBIM', 2614501, 13),
+(1630, 'TABIRA', 2614600, 13),
+(1631, 'TACAIMBÓ', 2614709, 13),
+(1632, 'TACARATU', 2614808, 13),
+(1633, 'TAMANDARÉ', 2614857, 13),
+(1634, 'TAQUARITINGA DO NORTE', 2615003, 13),
+(1635, 'TEREZINHA', 2615102, 13),
+(1636, 'TERRA NOVA', 2615201, 13),
+(1637, 'TIMBAÚBA', 2615300, 13),
+(1638, 'TORITAMA', 2615409, 13),
+(1639, 'TRACUNHAÉM', 2615508, 13),
+(1640, 'TRINDADE', 2615607, 13),
+(1641, 'TRIUNFO', 2615706, 13),
+(1642, 'TUPANATINGA', 2615805, 13),
+(1643, 'TUPARETAMA', 2615904, 13),
+(1644, 'VENTUROSA', 2616001, 13),
+(1645, 'VERDEJANTE', 2616100, 13),
+(1646, 'VERTENTE DO LÉRIO', 2616183, 13),
+(1647, 'VERTENTES', 2616209, 13),
+(1648, 'VICÊNCIA', 2616308, 13),
+(1649, 'VITÓRIA DE SANTO ANTÃO', 2616407, 13),
+(1650, 'XEXÉU', 2616506, 13),
+(1651, 'ÁGUA BRANCA', 2700102, 14),
+(1652, 'ANADIA', 2700201, 14),
+(1653, 'ARAPIRACA', 2700300, 14),
+(1654, 'ATALAIA', 2700409, 14),
+(1655, 'BARRA DE SANTO ANTÔNIO', 2700508, 14),
+(1656, 'BARRA DE SÃO MIGUEL', 2700607, 14),
+(1657, 'BATALHA', 2700706, 14),
+(1658, 'BELÉM', 2700805, 14),
+(1659, 'BELO MONTE', 2700904, 14),
+(1660, 'BOCA DA MATA', 2701001, 14),
+(1661, 'BRANQUINHA', 2701100, 14),
+(1662, 'CACIMBINHAS', 2701209, 14),
+(1663, 'CAJUEIRO', 2701308, 14),
+(1664, 'CAMPESTRE', 2701357, 14),
+(1665, 'CAMPO ALEGRE', 2701407, 14),
+(1666, 'CAMPO GRANDE', 2701506, 14),
+(1667, 'CANAPI', 2701605, 14),
+(1668, 'CAPELA', 2701704, 14),
+(1669, 'CARNEIROS', 2701803, 14),
+(1670, 'CHÃ PRETA', 2701902, 14),
+(1671, 'COITÉ DO NÓIA', 2702009, 14),
+(1672, 'COLÔNIA LEOPOLDINA', 2702108, 14),
+(1673, 'COQUEIRO SECO', 2702207, 14),
+(1674, 'CORURIPE', 2702306, 14),
+(1675, 'CRAÍBAS', 2702355, 14),
+(1676, 'DELMIRO GOUVEIA', 2702405, 14),
+(1677, 'DOIS RIACHOS', 2702504, 14),
+(1678, 'ESTRELA DE ALAGOAS', 2702553, 14),
+(1679, 'FEIRA GRANDE', 2702603, 14),
+(1680, 'FELIZ DESERTO', 2702702, 14),
+(1681, 'FLEXEIRAS', 2702801, 14),
+(1682, 'GIRAU DO PONCIANO', 2702900, 14),
+(1683, 'IBATEGUARA', 2703007, 14),
+(1684, 'IGACI', 2703106, 14),
+(1685, 'IGREJA NOVA', 2703205, 14),
+(1686, 'INHAPI', 2703304, 14),
+(1687, 'JACARÉ DOS HOMENS', 2703403, 14),
+(1688, 'JACUÍPE', 2703502, 14),
+(1689, 'JAPARATINGA', 2703601, 14),
+(1690, 'JARAMATAIA', 2703700, 14),
+(1691, 'JEQUIÁ DA PRAIA', 2703759, 14),
+(1692, 'JOAQUIM GOMES', 2703809, 14),
+(1693, 'JUNDIÁ', 2703908, 14),
+(1694, 'JUNQUEIRO', 2704005, 14),
+(1695, 'LAGOA DA CANOA', 2704104, 14),
+(1696, 'LIMOEIRO DE ANADIA', 2704203, 14),
+(1697, 'MACEIÓ', 2704302, 14),
+(1698, 'MAJOR ISIDORO', 2704401, 14),
+(1699, 'MARAGOGI', 2704500, 14),
+(1700, 'MARAVILHA', 2704609, 14),
+(1701, 'MARECHAL DEODORO', 2704708, 14),
+(1702, 'MARIBONDO', 2704807, 14),
+(1703, 'MAR VERMELHO', 2704906, 14),
+(1704, 'MATA GRANDE', 2705002, 14),
+(1705, 'MATRIZ DE CAMARAGIBE', 2705101, 14),
+(1706, 'MESSIAS', 2705200, 14),
+(1707, 'MINADOR DO NEGRÃO', 2705309, 14),
+(1708, 'MONTEIRÓPOLIS', 2705408, 14),
+(1709, 'MURICI', 2705507, 14),
+(1710, 'NOVO LINO', 2705606, 14),
+(1711, 'OLHO D\'ÁGUA DAS FLORES', 2705705, 14),
+(1712, 'OLHO D\'ÁGUA DO CASADO', 2705804, 14),
+(1713, 'OLHO D\'ÁGUA GRANDE', 2705903, 14),
+(1714, 'OLIVENÇA', 2706000, 14),
+(1715, 'OURO BRANCO', 2706109, 14),
+(1716, 'PALESTINA', 2706208, 14),
+(1717, 'PALMEIRA DOS ÍNDIOS', 2706307, 14),
+(1718, 'PÃO DE AÇÚCAR', 2706406, 14),
+(1719, 'PARICONHA', 2706422, 14),
+(1720, 'PARIPUEIRA', 2706448, 14),
+(1721, 'PASSO DE CAMARAGIBE', 2706505, 14),
+(1722, 'PAULO JACINTO', 2706604, 14),
+(1723, 'PENEDO', 2706703, 14),
+(1724, 'PIAÇABUÇU', 2706802, 14),
+(1725, 'PILAR', 2706901, 14),
+(1726, 'PINDOBA', 2707008, 14),
+(1727, 'PIRANHAS', 2707107, 14),
+(1728, 'POÇO DAS TRINCHEIRAS', 2707206, 14),
+(1729, 'PORTO CALVO', 2707305, 14),
+(1730, 'PORTO DE PEDRAS', 2707404, 14),
+(1731, 'PORTO REAL DO COLÉGIO', 2707503, 14),
+(1732, 'QUEBRANGULO', 2707602, 14),
+(1733, 'RIO LARGO', 2707701, 14),
+(1734, 'ROTEIRO', 2707800, 14),
+(1735, 'SANTA LUZIA DO NORTE', 2707909, 14),
+(1736, 'SANTANA DO IPANEMA', 2708006, 14),
+(1737, 'SANTANA DO MUNDAÚ', 2708105, 14),
+(1738, 'SÃO BRÁS', 2708204, 14),
+(1739, 'SÃO JOSÉ DA LAJE', 2708303, 14),
+(1740, 'SÃO JOSÉ DA TAPERA', 2708402, 14),
+(1741, 'SÃO LUÍS DO QUITUNDE', 2708501, 14),
+(1742, 'SÃO MIGUEL DOS CAMPOS', 2708600, 14),
+(1743, 'SÃO MIGUEL DOS MILAGRES', 2708709, 14),
+(1744, 'SÃO SEBASTIÃO', 2708808, 14),
+(1745, 'SATUBA', 2708907, 14),
+(1746, 'SENADOR RUI PALMEIRA', 2708956, 14),
+(1747, 'TANQUE D\'ARCA', 2709004, 14),
+(1748, 'TAQUARANA', 2709103, 14),
+(1749, 'TEOTÔNIO VILELA', 2709152, 14),
+(1750, 'TRAIPU', 2709202, 14),
+(1751, 'UNIÃO DOS PALMARES', 2709301, 14),
+(1752, 'VIÇOSA', 2709400, 14),
+(1753, 'AMPARO DE SÃO FRANCISCO', 2800100, 15),
+(1754, 'AQUIDABÃ', 2800209, 15),
+(1755, 'ARACAJU', 2800308, 15),
+(1756, 'ARAUÁ', 2800407, 15),
+(1757, 'AREIA BRANCA', 2800506, 15),
+(1758, 'BARRA DOS COQUEIROS', 2800605, 15),
+(1759, 'BOQUIM', 2800670, 15),
+(1760, 'BREJO GRANDE', 2800704, 15),
+(1761, 'CAMPO DO BRITO', 2801009, 15),
+(1762, 'CANHOBA', 2801108, 15),
+(1763, 'CANINDÉ DE SÃO FRANCISCO', 2801207, 15),
+(1764, 'CAPELA', 2801306, 15),
+(1765, 'CARIRA', 2801405, 15),
+(1766, 'CARMÓPOLIS', 2801504, 15),
+(1767, 'CEDRO DE SÃO JOÃO', 2801603, 15),
+(1768, 'CRISTINÁPOLIS', 2801702, 15),
+(1769, 'CUMBE', 2801900, 15),
+(1770, 'DIVINA PASTORA', 2802007, 15),
+(1771, 'ESTÂNCIA', 2802106, 15),
+(1772, 'FEIRA NOVA', 2802205, 15),
+(1773, 'FREI PAULO', 2802304, 15),
+(1774, 'GARARU', 2802403, 15),
+(1775, 'GENERAL MAYNARD', 2802502, 15),
+(1776, 'GRACHO CARDOSO', 2802601, 15),
+(1777, 'ILHA DAS FLORES', 2802700, 15),
+(1778, 'INDIAROBA', 2802809, 15),
+(1779, 'ITABAIANA', 2802908, 15),
+(1780, 'ITABAIANINHA', 2803005, 15),
+(1781, 'ITABI', 2803104, 15),
+(1782, 'ITAPORANGA D\'AJUDA', 2803203, 15),
+(1783, 'JAPARATUBA', 2803302, 15),
+(1784, 'JAPOATÃ', 2803401, 15),
+(1785, 'LAGARTO', 2803500, 15),
+(1786, 'LARANJEIRAS', 2803609, 15),
+(1787, 'MACAMBIRA', 2803708, 15),
+(1788, 'MALHADA DOS BOIS', 2803807, 15),
+(1789, 'MALHADOR', 2803906, 15),
+(1790, 'MARUIM', 2804003, 15),
+(1791, 'MOITA BONITA', 2804102, 15),
+(1792, 'MONTE ALEGRE DE SERGIPE', 2804201, 15),
+(1793, 'MURIBECA', 2804300, 15),
+(1794, 'NEÓPOLIS', 2804409, 15),
+(1795, 'NOSSA SENHORA APARECIDA', 2804458, 15),
+(1796, 'NOSSA SENHORA DA GLÓRIA', 2804508, 15),
+(1797, 'NOSSA SENHORA DAS DORES', 2804607, 15),
+(1798, 'NOSSA SENHORA DE LOURDES', 2804706, 15),
+(1799, 'NOSSA SENHORA DO SOCORRO', 2804805, 15),
+(1800, 'PACATUBA', 2804904, 15),
+(1801, 'PEDRA MOLE', 2805000, 15),
+(1802, 'PEDRINHAS', 2805109, 15),
+(1803, 'PINHÃO', 2805208, 15),
+(1804, 'PIRAMBU', 2805307, 15),
+(1805, 'POÇO REDONDO', 2805406, 15),
+(1806, 'POÇO VERDE', 2805505, 15),
+(1807, 'PORTO DA FOLHA', 2805604, 15),
+(1808, 'PROPRIÁ', 2805703, 15),
+(1809, 'RIACHÃO DO DANTAS', 2805802, 15),
+(1810, 'RIACHUELO', 2805901, 15),
+(1811, 'RIBEIRÓPOLIS', 2806008, 15),
+(1812, 'ROSÁRIO DO CATETE', 2806107, 15),
+(1813, 'SALGADO', 2806206, 15),
+(1814, 'SANTA LUZIA DO ITANHY', 2806305, 15),
+(1815, 'SANTANA DO SÃO FRANCISCO', 2806404, 15),
+(1816, 'SANTA ROSA DE LIMA', 2806503, 15),
+(1817, 'SANTO AMARO DAS BROTAS', 2806602, 15),
+(1818, 'SÃO CRISTÓVÃO', 2806701, 15),
+(1819, 'SÃO DOMINGOS', 2806800, 15),
+(1820, 'SÃO FRANCISCO', 2806909, 15),
+(1821, 'SÃO MIGUEL DO ALEIXO', 2807006, 15),
+(1822, 'SIMÃO DIAS', 2807105, 15),
+(1823, 'SIRIRI', 2807204, 15),
+(1824, 'TELHA', 2807303, 15),
+(1825, 'TOBIAS BARRETO', 2807402, 15),
+(1826, 'TOMAR DO GERU', 2807501, 15),
+(1827, 'UMBAÚBA', 2807600, 15),
+(1828, 'ABAÍRA', 2900108, 16),
+(1829, 'ABARÉ', 2900207, 16),
+(1830, 'ACAJUTIBA', 2900306, 16),
+(1831, 'ADUSTINA', 2900355, 16),
+(1832, 'ÁGUA FRIA', 2900405, 16),
+(1833, 'ÉRICO CARDOSO', 2900504, 16),
+(1834, 'AIQUARA', 2900603, 16),
+(1835, 'ALAGOINHAS', 2900702, 16),
+(1836, 'ALCOBAÇA', 2900801, 16),
+(1837, 'ALMADINA', 2900900, 16),
+(1838, 'AMARGOSA', 2901007, 16),
+(1839, 'AMÉLIA RODRIGUES', 2901106, 16),
+(1840, 'AMÉRICA DOURADA', 2901155, 16),
+(1841, 'ANAGÉ', 2901205, 16),
+(1842, 'ANDARAÍ', 2901304, 16),
+(1843, 'ANDORINHA', 2901353, 16),
+(1844, 'ANGICAL', 2901403, 16),
+(1845, 'ANGUERA', 2901502, 16),
+(1846, 'ANTAS', 2901601, 16),
+(1847, 'ANTÔNIO CARDOSO', 2901700, 16),
+(1848, 'ANTÔNIO GONÇALVES', 2901809, 16),
+(1849, 'APORÁ', 2901908, 16),
+(1850, 'APUAREMA', 2901957, 16),
+(1851, 'ARACATU', 2902005, 16),
+(1852, 'ARAÇAS', 2902054, 16),
+(1853, 'ARACI', 2902104, 16),
+(1854, 'ARAMARI', 2902203, 16),
+(1855, 'ARATACA', 2902252, 16),
+(1856, 'ARATUÍPE', 2902302, 16),
+(1857, 'AURELINO LEAL', 2902401, 16),
+(1858, 'BAIANÓPOLIS', 2902500, 16),
+(1859, 'BAIXA GRANDE', 2902609, 16),
+(1860, 'BANZAÊ', 2902658, 16),
+(1861, 'BARRA', 2902708, 16),
+(1862, 'BARRA DA ESTIVA', 2902807, 16),
+(1863, 'BARRA DO CHOÇA', 2902906, 16),
+(1864, 'BARRA DO MENDES', 2903003, 16),
+(1865, 'BARRA DO ROCHA', 2903102, 16),
+(1866, 'BARREIRAS', 2903201, 16),
+(1867, 'BARRO ALTO', 2903235, 16),
+(1868, 'BARROCAS', 2903276, 16),
+(1869, 'BARRO PRETO', 2903300, 16),
+(1870, 'BELMONTE', 2903409, 16),
+(1871, 'BELO CAMPO', 2903508, 16),
+(1872, 'BIRITINGA', 2903607, 16),
+(1873, 'BOA NOVA', 2903706, 16),
+(1874, 'BOA VISTA DO TUPIM', 2903805, 16),
+(1875, 'BOM JESUS DA LAPA', 2903904, 16),
+(1876, 'BOM JESUS DA SERRA', 2903953, 16),
+(1877, 'BONINAL', 2904001, 16),
+(1878, 'BONITO', 2904050, 16),
+(1879, 'BOQUIRA', 2904100, 16),
+(1880, 'BOTUPORÃ', 2904209, 16),
+(1881, 'BREJÕES', 2904308, 16),
+(1882, 'BREJOLÂNDIA', 2904407, 16),
+(1883, 'BROTAS DE MACAÚBAS', 2904506, 16),
+(1884, 'BRUMADO', 2904605, 16),
+(1885, 'BUERAREMA', 2904704, 16),
+(1886, 'BURITIRAMA', 2904753, 16),
+(1887, 'CAATIBA', 2904803, 16),
+(1888, 'CABACEIRAS DO PARAGUAÇU', 2904852, 16),
+(1889, 'CACHOEIRA', 2904902, 16),
+(1890, 'CACULÉ', 2905008, 16),
+(1891, 'CAÉM', 2905107, 16),
+(1892, 'CAETANOS', 2905156, 16),
+(1893, 'CAETITÉ', 2905206, 16),
+(1894, 'CAFARNAUM', 2905305, 16),
+(1895, 'CAIRU', 2905404, 16),
+(1896, 'CALDEIRÃO GRANDE', 2905503, 16),
+(1897, 'CAMACAN', 2905602, 16),
+(1898, 'CAMAÇARI', 2905701, 16),
+(1899, 'CAMAMU', 2905800, 16),
+(1900, 'CAMPO ALEGRE DE LOURDES', 2905909, 16),
+(1901, 'CAMPO FORMOSO', 2906006, 16),
+(1902, 'CANÁPOLIS', 2906105, 16),
+(1903, 'CANARANA', 2906204, 16),
+(1904, 'CANAVIEIRAS', 2906303, 16),
+(1905, 'CANDEAL', 2906402, 16),
+(1906, 'CANDEIAS', 2906501, 16),
+(1907, 'CANDIBA', 2906600, 16),
+(1908, 'CÂNDIDO SALES', 2906709, 16),
+(1909, 'CANSANÇÃO', 2906808, 16),
+(1910, 'CANUDOS', 2906824, 16),
+(1911, 'CAPELA DO ALTO ALEGRE', 2906857, 16),
+(1912, 'CAPIM GROSSO', 2906873, 16),
+(1913, 'CARAÍBAS', 2906899, 16),
+(1914, 'CARAVELAS', 2906907, 16),
+(1915, 'CARDEAL DA SILVA', 2907004, 16),
+(1916, 'CARINHANHA', 2907103, 16),
+(1917, 'CASA NOVA', 2907202, 16),
+(1918, 'CASTRO ALVES', 2907301, 16),
+(1919, 'CATOLÂNDIA', 2907400, 16),
+(1920, 'CATU', 2907509, 16),
+(1921, 'CATURAMA', 2907558, 16),
+(1922, 'CENTRAL', 2907608, 16),
+(1923, 'CHORROCHÓ', 2907707, 16),
+(1924, 'CÍCERO DANTAS', 2907806, 16),
+(1925, 'CIPÓ', 2907905, 16),
+(1926, 'COARACI', 2908002, 16),
+(1927, 'COCOS', 2908101, 16),
+(1928, 'CONCEIÇÃO DA FEIRA', 2908200, 16),
+(1929, 'CONCEIÇÃO DO ALMEIDA', 2908309, 16),
+(1930, 'CONCEIÇÃO DO COITÉ', 2908408, 16),
+(1931, 'CONCEIÇÃO DO JACUÍPE', 2908507, 16),
+(1932, 'CONDE', 2908606, 16),
+(1933, 'CONDEÚBA', 2908705, 16),
+(1934, 'CONTENDAS DO SINCORÁ', 2908804, 16),
+(1935, 'CORAÇÃO DE MARIA', 2908903, 16),
+(1936, 'CORDEIROS', 2909000, 16),
+(1937, 'CORIBE', 2909109, 16),
+(1938, 'CORONEL JOÃO SÁ', 2909208, 16),
+(1939, 'CORRENTINA', 2909307, 16),
+(1940, 'COTEGIPE', 2909406, 16),
+(1941, 'CRAVOLÂNDIA', 2909505, 16),
+(1942, 'CRISÓPOLIS', 2909604, 16),
+(1943, 'CRISTÓPOLIS', 2909703, 16),
+(1944, 'CRUZ DAS ALMAS', 2909802, 16),
+(1945, 'CURAÇÁ', 2909901, 16),
+(1946, 'DÁRIO MEIRA', 2910008, 16),
+(1947, 'DIAS D\'ÁVILA', 2910057, 16),
+(1948, 'DOM BASÍLIO', 2910107, 16),
+(1949, 'DOM MACEDO COSTA', 2910206, 16),
+(1950, 'ELÍSIO MEDRADO', 2910305, 16),
+(1951, 'ENCRUZILHADA', 2910404, 16),
+(1952, 'ENTRE RIOS', 2910503, 16),
+(1953, 'ESPLANADA', 2910602, 16),
+(1954, 'EUCLIDES DA CUNHA', 2910701, 16),
+(1955, 'EUNÁPOLIS', 2910727, 16),
+(1956, 'FÁTIMA', 2910750, 16),
+(1957, 'FEIRA DA MATA', 2910776, 16),
+(1958, 'FEIRA DE SANTANA', 2910800, 16),
+(1959, 'FILADÉLFIA', 2910859, 16),
+(1960, 'FIRMINO ALVES', 2910909, 16),
+(1961, 'FLORESTA AZUL', 2911006, 16),
+(1962, 'FORMOSA DO RIO PRETO', 2911105, 16),
+(1963, 'GANDU', 2911204, 16),
+(1964, 'GAVIÃO', 2911253, 16),
+(1965, 'GENTIO DO OURO', 2911303, 16),
+(1966, 'GLÓRIA', 2911402, 16),
+(1967, 'GONGOGI', 2911501, 16),
+(1968, 'GOVERNADOR MANGABEIRA', 2911600, 16),
+(1969, 'GUAJERU', 2911659, 16),
+(1970, 'GUANAMBI', 2911709, 16),
+(1971, 'GUARATINGA', 2911808, 16),
+(1972, 'HELIÓPOLIS', 2911857, 16),
+(1973, 'IAÇU', 2911907, 16),
+(1974, 'IBIASSUCÊ', 2912004, 16),
+(1975, 'IBICARAÍ', 2912103, 16),
+(1976, 'IBICOARA', 2912202, 16),
+(1977, 'IBICUÍ', 2912301, 16),
+(1978, 'IBIPEBA', 2912400, 16),
+(1979, 'IBIPITANGA', 2912509, 16),
+(1980, 'IBIQUERA', 2912608, 16),
+(1981, 'IBIRAPITANGA', 2912707, 16),
+(1982, 'IBIRAPUÃ', 2912806, 16),
+(1983, 'IBIRATAIA', 2912905, 16),
+(1984, 'IBITIARA', 2913002, 16),
+(1985, 'IBITITÁ', 2913101, 16),
+(1986, 'IBOTIRAMA', 2913200, 16),
+(1987, 'ICHU', 2913309, 16),
+(1988, 'IGAPORÃ', 2913408, 16),
+(1989, 'IGRAPIÚNA', 2913457, 16),
+(1990, 'IGUAÍ', 2913507, 16),
+(1991, 'ILHÉUS', 2913606, 16),
+(1992, 'INHAMBUPE', 2913705, 16),
+(1993, 'IPECAETÁ', 2913804, 16),
+(1994, 'IPIAÚ', 2913903, 16),
+(1995, 'IPIRÁ', 2914000, 16),
+(1996, 'IPUPIARA', 2914109, 16),
+(1997, 'IRAJUBA', 2914208, 16),
+(1998, 'IRAMAIA', 2914307, 16),
+(1999, 'IRAQUARA', 2914406, 16),
+(2000, 'IRARÁ', 2914505, 16),
+(2001, 'IRECÊ', 2914604, 16),
+(2002, 'ITABELA', 2914653, 16),
+(2003, 'ITABERABA', 2914703, 16),
+(2004, 'ITABUNA', 2914802, 16),
+(2005, 'ITACARÉ', 2914901, 16),
+(2006, 'ITAETÉ', 2915007, 16),
+(2007, 'ITAGI', 2915106, 16),
+(2008, 'ITAGIBÁ', 2915205, 16),
+(2009, 'ITAGIMIRIM', 2915304, 16),
+(2010, 'ITAGUAÇU DA BAHIA', 2915353, 16),
+(2011, 'ITAJU DO COLÔNIA', 2915403, 16),
+(2012, 'ITAJUÍPE', 2915502, 16),
+(2013, 'ITAMARAJU', 2915601, 16),
+(2014, 'ITAMARI', 2915700, 16),
+(2015, 'ITAMBÉ', 2915809, 16),
+(2016, 'ITANAGRA', 2915908, 16),
+(2017, 'ITANHÉM', 2916005, 16),
+(2018, 'ITAPARICA', 2916104, 16),
+(2019, 'ITAPÉ', 2916203, 16),
+(2020, 'ITAPEBI', 2916302, 16),
+(2021, 'ITAPETINGA', 2916401, 16),
+(2022, 'ITAPICURU', 2916500, 16),
+(2023, 'ITAPITANGA', 2916609, 16),
+(2024, 'ITAQUARA', 2916708, 16),
+(2025, 'ITARANTIM', 2916807, 16),
+(2026, 'ITATIM', 2916856, 16),
+(2027, 'ITIRUÇU', 2916906, 16),
+(2028, 'ITIÚBA', 2917003, 16),
+(2029, 'ITORORÓ', 2917102, 16),
+(2030, 'ITUAÇU', 2917201, 16),
+(2031, 'ITUBERÁ', 2917300, 16),
+(2032, 'IUIÚ', 2917334, 16),
+(2033, 'JABORANDI', 2917359, 16),
+(2034, 'JACARACI', 2917409, 16),
+(2035, 'JACOBINA', 2917508, 16),
+(2036, 'JAGUAQUARA', 2917607, 16),
+(2037, 'JAGUARARI', 2917706, 16),
+(2038, 'JAGUARIPE', 2917805, 16),
+(2039, 'JANDAÍRA', 2917904, 16),
+(2040, 'JEQUIÉ', 2918001, 16),
+(2041, 'JEREMOABO', 2918100, 16),
+(2042, 'JIQUIRIÇÁ', 2918209, 16),
+(2043, 'JITAÚNA', 2918308, 16),
+(2044, 'JOÃO DOURADO', 2918357, 16),
+(2045, 'JUAZEIRO', 2918407, 16),
+(2046, 'JUCURUÇU', 2918456, 16),
+(2047, 'JUSSARA', 2918506, 16),
+(2048, 'JUSSARI', 2918555, 16),
+(2049, 'JUSSIAPE', 2918605, 16),
+(2050, 'LAFAIETE COUTINHO', 2918704, 16),
+(2051, 'LAGOA REAL', 2918753, 16),
+(2052, 'LAJE', 2918803, 16),
+(2053, 'LAJEDÃO', 2918902, 16),
+(2054, 'LAJEDINHO', 2919009, 16),
+(2055, 'LAJEDO DO TABOCAL', 2919058, 16),
+(2056, 'LAMARÃO', 2919108, 16),
+(2057, 'LAPÃO', 2919157, 16),
+(2058, 'LAURO DE FREITAS', 2919207, 16),
+(2059, 'LENÇÓIS', 2919306, 16),
+(2060, 'LICÍNIO DE ALMEIDA', 2919405, 16),
+(2061, 'LIVRAMENTO DE NOSSA SENHORA', 2919504, 16),
+(2062, 'LUÍS EDUARDO MAGALHÃES', 2919553, 16),
+(2063, 'MACAJUBA', 2919603, 16),
+(2064, 'MACARANI', 2919702, 16),
+(2065, 'MACAÚBAS', 2919801, 16),
+(2066, 'MACURURÉ', 2919900, 16),
+(2067, 'MADRE DE DEUS', 2919926, 16),
+(2068, 'MAETINGA', 2919959, 16),
+(2069, 'MAIQUINIQUE', 2920007, 16),
+(2070, 'MAIRI', 2920106, 16),
+(2071, 'MALHADA', 2920205, 16),
+(2072, 'MALHADA DE PEDRAS', 2920304, 16),
+(2073, 'MANOEL VITORINO', 2920403, 16),
+(2074, 'MANSIDÃO', 2920452, 16),
+(2075, 'MARACÁS', 2920502, 16),
+(2076, 'MARAGOGIPE', 2920601, 16),
+(2077, 'MARAÚ', 2920700, 16),
+(2078, 'MARCIONÍLIO SOUZA', 2920809, 16),
+(2079, 'MASCOTE', 2920908, 16),
+(2080, 'MATA DE SÃO JOÃO', 2921005, 16),
+(2081, 'MATINA', 2921054, 16),
+(2082, 'MEDEIROS NETO', 2921104, 16),
+(2083, 'MIGUEL CALMON', 2921203, 16),
+(2084, 'MILAGRES', 2921302, 16),
+(2085, 'MIRANGABA', 2921401, 16),
+(2086, 'MIRANTE', 2921450, 16),
+(2087, 'MONTE SANTO', 2921500, 16),
+(2088, 'MORPARÁ', 2921609, 16),
+(2089, 'MORRO DO CHAPÉU', 2921708, 16),
+(2090, 'MORTUGABA', 2921807, 16),
+(2091, 'MUCUGÊ', 2921906, 16),
+(2092, 'MUCURI', 2922003, 16),
+(2093, 'MULUNGU DO MORRO', 2922052, 16),
+(2094, 'MUNDO NOVO', 2922102, 16),
+(2095, 'MUNIZ FERREIRA', 2922201, 16),
+(2096, 'MUQUÉM DE SÃO FRANCISCO', 2922250, 16),
+(2097, 'MURITIBA', 2922300, 16),
+(2098, 'MUTUÍPE', 2922409, 16),
+(2099, 'NAZARÉ', 2922508, 16),
+(2100, 'NILO PEÇANHA', 2922607, 16),
+(2101, 'NORDESTINA', 2922656, 16),
+(2102, 'NOVA CANAÃ', 2922706, 16),
+(2103, 'NOVA FÁTIMA', 2922730, 16),
+(2104, 'NOVA IBIÁ', 2922755, 16),
+(2105, 'NOVA ITARANA', 2922805, 16),
+(2106, 'NOVA REDENÇÃO', 2922854, 16),
+(2107, 'NOVA SOURE', 2922904, 16),
+(2108, 'NOVA VIÇOSA', 2923001, 16),
+(2109, 'NOVO HORIZONTE', 2923035, 16),
+(2110, 'NOVO TRIUNFO', 2923050, 16),
+(2111, 'OLINDINA', 2923100, 16),
+(2112, 'OLIVEIRA DOS BREJINHOS', 2923209, 16),
+(2113, 'OURIÇANGAS', 2923308, 16),
+(2114, 'OUROLÂNDIA', 2923357, 16),
+(2115, 'PALMAS DE MONTE ALTO', 2923407, 16),
+(2116, 'PALMEIRAS', 2923506, 16),
+(2117, 'PARAMIRIM', 2923605, 16),
+(2118, 'PARATINGA', 2923704, 16),
+(2119, 'PARIPIRANGA', 2923803, 16),
+(2120, 'PAU BRASIL', 2923902, 16),
+(2121, 'PAULO AFONSO', 2924009, 16),
+(2122, 'PÉ DE SERRA', 2924058, 16),
+(2123, 'PEDRÃO', 2924108, 16),
+(2124, 'PEDRO ALEXANDRE', 2924207, 16),
+(2125, 'PIATÃ', 2924306, 16),
+(2126, 'PILÃO ARCADO', 2924405, 16),
+(2127, 'PINDAÍ', 2924504, 16),
+(2128, 'PINDOBAÇU', 2924603, 16),
+(2129, 'PINTADAS', 2924652, 16),
+(2130, 'PIRAÍ DO NORTE', 2924678, 16),
+(2131, 'PIRIPÁ', 2924702, 16),
+(2132, 'PIRITIBA', 2924801, 16),
+(2133, 'PLANALTINO', 2924900, 16),
+(2134, 'PLANALTO', 2925006, 16),
+(2135, 'POÇÕES', 2925105, 16),
+(2136, 'POJUCA', 2925204, 16),
+(2137, 'PONTO NOVO', 2925253, 16),
+(2138, 'PORTO SEGURO', 2925303, 16),
+(2139, 'POTIRAGUÁ', 2925402, 16),
+(2140, 'PRADO', 2925501, 16),
+(2141, 'PRESIDENTE DUTRA', 2925600, 16),
+(2142, 'PRESIDENTE JÂNIO QUADROS', 2925709, 16),
+(2143, 'PRESIDENTE TANCREDO NEVES', 2925758, 16),
+(2144, 'QUEIMADAS', 2925808, 16),
+(2145, 'QUIJINGUE', 2925907, 16),
+(2146, 'QUIXABEIRA', 2925931, 16),
+(2147, 'RAFAEL JAMBEIRO', 2925956, 16),
+(2148, 'REMANSO', 2926004, 16),
+(2149, 'RETIROLÂNDIA', 2926103, 16),
+(2150, 'RIACHÃO DAS NEVES', 2926202, 16),
+(2151, 'RIACHÃO DO JACUÍPE', 2926301, 16),
+(2152, 'RIACHO DE SANTANA', 2926400, 16),
+(2153, 'RIBEIRA DO AMPARO', 2926509, 16),
+(2154, 'RIBEIRA DO POMBAL', 2926608, 16),
+(2155, 'RIBEIRÃO DO LARGO', 2926657, 16),
+(2156, 'RIO DE CONTAS', 2926707, 16),
+(2157, 'RIO DO ANTÔNIO', 2926806, 16),
+(2158, 'RIO DO PIRES', 2926905, 16),
+(2159, 'RIO REAL', 2927002, 16),
+(2160, 'RODELAS', 2927101, 16),
+(2161, 'RUY BARBOSA', 2927200, 16),
+(2162, 'SALINAS DA MARGARIDA', 2927309, 16),
+(2163, 'SALVADOR', 2927408, 16),
+(2164, 'SANTA BÁRBARA', 2927507, 16),
+(2165, 'SANTA BRÍGIDA', 2927606, 16),
+(2166, 'SANTA CRUZ CABRÁLIA', 2927705, 16),
+(2167, 'SANTA CRUZ DA VITÓRIA', 2927804, 16),
+(2168, 'SANTA INÊS', 2927903, 16),
+(2169, 'SANTALUZ', 2928000, 16),
+(2170, 'SANTA LUZIA', 2928059, 16),
+(2171, 'SANTA MARIA DA VITÓRIA', 2928109, 16),
+(2172, 'SANTANA', 2928208, 16),
+(2173, 'SANTANÓPOLIS', 2928307, 16),
+(2174, 'SANTA RITA DE CÁSSIA', 2928406, 16),
+(2175, 'SANTA TERESINHA', 2928505, 16),
+(2176, 'SANTO AMARO', 2928604, 16),
+(2177, 'SANTO ANTÔNIO DE JESUS', 2928703, 16),
+(2178, 'SANTO ESTÊVÃO', 2928802, 16),
+(2179, 'SÃO DESIDÉRIO', 2928901, 16),
+(2180, 'SÃO DOMINGOS', 2928950, 16),
+(2181, 'SÃO FÉLIX', 2929008, 16),
+(2182, 'SÃO FÉLIX DO CORIBE', 2929057, 16),
+(2183, 'SÃO FELIPE', 2929107, 16),
+(2184, 'SÃO FRANCISCO DO CONDE', 2929206, 16),
+(2185, 'SÃO GABRIEL', 2929255, 16),
+(2186, 'SÃO GONÇALO DOS CAMPOS', 2929305, 16),
+(2187, 'SÃO JOSÉ DA VITÓRIA', 2929354, 16),
+(2188, 'SÃO JOSÉ DO JACUÍPE', 2929370, 16),
+(2189, 'SÃO MIGUEL DAS MATAS', 2929404, 16),
+(2190, 'SÃO SEBASTIÃO DO PASSÉ', 2929503, 16),
+(2191, 'SAPEAÇU', 2929602, 16),
+(2192, 'SÁTIRO DIAS', 2929701, 16),
+(2193, 'SAUBARA', 2929750, 16),
+(2194, 'SAÚDE', 2929800, 16),
+(2195, 'SEABRA', 2929909, 16),
+(2196, 'SEBASTIÃO LARANJEIRAS', 2930006, 16),
+(2197, 'SENHOR DO BONFIM', 2930105, 16),
+(2198, 'SERRA DO RAMALHO', 2930154, 16),
+(2199, 'SENTO SÉ', 2930204, 16),
+(2200, 'SERRA DOURADA', 2930303, 16),
+(2201, 'SERRA PRETA', 2930402, 16),
+(2202, 'SERRINHA', 2930501, 16),
+(2203, 'SERROLÂNDIA', 2930600, 16),
+(2204, 'SIMÕES FILHO', 2930709, 16),
+(2205, 'SÍTIO DO MATO', 2930758, 16),
+(2206, 'SÍTIO DO QUINTO', 2930766, 16),
+(2207, 'SOBRADINHO', 2930774, 16),
+(2208, 'SOUTO SOARES', 2930808, 16),
+(2209, 'TABOCAS DO BREJO VELHO', 2930907, 16),
+(2210, 'TANHAÇU', 2931004, 16),
+(2211, 'TANQUE NOVO', 2931053, 16),
+(2212, 'TANQUINHO', 2931103, 16),
+(2213, 'TAPEROÁ', 2931202, 16),
+(2214, 'TAPIRAMUTÁ', 2931301, 16),
+(2215, 'TEIXEIRA DE FREITAS', 2931350, 16),
+(2216, 'TEODORO SAMPAIO', 2931400, 16),
+(2217, 'TEOFILÂNDIA', 2931509, 16),
+(2218, 'TEOLÂNDIA', 2931608, 16),
+(2219, 'TERRA NOVA', 2931707, 16),
+(2220, 'TREMEDAL', 2931806, 16),
+(2221, 'TUCANO', 2931905, 16),
+(2222, 'UAUÁ', 2932002, 16),
+(2223, 'UBAÍRA', 2932101, 16),
+(2224, 'UBAITABA', 2932200, 16),
+(2225, 'UBATÃ', 2932309, 16),
+(2226, 'UIBAÍ', 2932408, 16),
+(2227, 'UMBURANAS', 2932457, 16),
+(2228, 'UNA', 2932507, 16),
+(2229, 'URANDI', 2932606, 16),
+(2230, 'URUÇUCA', 2932705, 16),
+(2231, 'UTINGA', 2932804, 16),
+(2232, 'VALENÇA', 2932903, 16),
+(2233, 'VALENTE', 2933000, 16),
+(2234, 'VÁRZEA DA ROÇA', 2933059, 16),
+(2235, 'VÁRZEA DO POÇO', 2933109, 16),
+(2236, 'VÁRZEA NOVA', 2933158, 16),
+(2237, 'VARZEDO', 2933174, 16),
+(2238, 'VERA CRUZ', 2933208, 16),
+(2239, 'VEREDA', 2933257, 16),
+(2240, 'VITÓRIA DA CONQUISTA', 2933307, 16),
+(2241, 'WAGNER', 2933406, 16),
+(2242, 'WANDERLEY', 2933455, 16),
+(2243, 'WENCESLAU GUIMARÃES', 2933505, 16),
+(2244, 'XIQUE-XIQUE', 2933604, 16),
+(2245, 'ABADIA DOS DOURADOS', 3100104, 17),
+(2246, 'ABAETÉ', 3100203, 17),
+(2247, 'ABRE CAMPO', 3100302, 17),
+(2248, 'ACAIACA', 3100401, 17),
+(2249, 'AÇUCENA', 3100500, 17),
+(2250, 'ÁGUA BOA', 3100609, 17),
+(2251, 'ÁGUA COMPRIDA', 3100708, 17),
+(2252, 'AGUANIL', 3100807, 17),
+(2253, 'ÁGUAS FORMOSAS', 3100906, 17),
+(2254, 'ÁGUAS VERMELHAS', 3101003, 17),
+(2255, 'AIMORÉS', 3101102, 17),
+(2256, 'AIURUOCA', 3101201, 17),
+(2257, 'ALAGOA', 3101300, 17),
+(2258, 'ALBERTINA', 3101409, 17),
+(2259, 'ALÉM PARAÍBA', 3101508, 17),
+(2260, 'ALFENAS', 3101607, 17),
+(2261, 'ALFREDO VASCONCELOS', 3101631, 17),
+(2262, 'ALMENARA', 3101706, 17),
+(2263, 'ALPERCATA', 3101805, 17),
+(2264, 'ALPINÓPOLIS', 3101904, 17),
+(2265, 'ALTEROSA', 3102001, 17),
+(2266, 'ALTO CAPARAÓ', 3102050, 17),
+(2267, 'ALTO RIO DOCE', 3102100, 17),
+(2268, 'ALVARENGA', 3102209, 17),
+(2269, 'ALVINÓPOLIS', 3102308, 17),
+(2270, 'ALVORADA DE MINAS', 3102407, 17),
+(2271, 'AMPARO DO SERRA', 3102506, 17),
+(2272, 'ANDRADAS', 3102605, 17),
+(2273, 'CACHOEIRA DE PAJEÚ', 3102704, 17),
+(2274, 'ANDRELÂNDIA', 3102803, 17),
+(2275, 'ANGELÂNDIA', 3102852, 17),
+(2276, 'ANTÔNIO CARLOS', 3102902, 17),
+(2277, 'ANTÔNIO DIAS', 3103009, 17),
+(2278, 'ANTÔNIO PRADO DE MINAS', 3103108, 17),
+(2279, 'ARAÇAÍ', 3103207, 17),
+(2280, 'ARACITABA', 3103306, 17),
+(2281, 'ARAÇUAÍ', 3103405, 17),
+(2282, 'ARAGUARI', 3103504, 17),
+(2283, 'ARANTINA', 3103603, 17),
+(2284, 'ARAPONGA', 3103702, 17),
+(2285, 'ARAPORÃ', 3103751, 17),
+(2286, 'ARAPUÁ', 3103801, 17),
+(2287, 'ARAÚJOS', 3103900, 17),
+(2288, 'ARAXÁ', 3104007, 17),
+(2289, 'ARCEBURGO', 3104106, 17),
+(2290, 'ARCOS', 3104205, 17),
+(2291, 'AREADO', 3104304, 17),
+(2292, 'ARGIRITA', 3104403, 17),
+(2293, 'ARICANDUVA', 3104452, 17),
+(2294, 'ARINOS', 3104502, 17),
+(2295, 'ASTOLFO DUTRA', 3104601, 17),
+(2296, 'ATALÉIA', 3104700, 17),
+(2297, 'AUGUSTO DE LIMA', 3104809, 17),
+(2298, 'BAEPENDI', 3104908, 17),
+(2299, 'BALDIM', 3105004, 17),
+(2300, 'BAMBUÍ', 3105103, 17),
+(2301, 'BANDEIRA', 3105202, 17),
+(2302, 'BANDEIRA DO SUL', 3105301, 17),
+(2303, 'BARÃO DE COCAIS', 3105400, 17),
+(2304, 'BARÃO DE MONTE ALTO', 3105509, 17),
+(2305, 'BARBACENA', 3105608, 17),
+(2306, 'BARRA LONGA', 3105707, 17),
+(2307, 'BARROSO', 3105905, 17),
+(2308, 'BELA VISTA DE MINAS', 3106002, 17),
+(2309, 'BELMIRO BRAGA', 3106101, 17),
+(2310, 'BELO HORIZONTE', 3106200, 17),
+(2311, 'BELO ORIENTE', 3106309, 17),
+(2312, 'BELO VALE', 3106408, 17),
+(2313, 'BERILO', 3106507, 17),
+(2314, 'BERTÓPOLIS', 3106606, 17),
+(2315, 'BERIZAL', 3106655, 17),
+(2316, 'BETIM', 3106705, 17),
+(2317, 'BIAS FORTES', 3106804, 17),
+(2318, 'BICAS', 3106903, 17),
+(2319, 'BIQUINHAS', 3107000, 17),
+(2320, 'BOA ESPERANÇA', 3107109, 17),
+(2321, 'BOCAINA DE MINAS', 3107208, 17),
+(2322, 'BOCAIÚVA', 3107307, 17),
+(2323, 'BOM DESPACHO', 3107406, 17),
+(2324, 'BOM JARDIM DE MINAS', 3107505, 17),
+(2325, 'BOM JESUS DA PENHA', 3107604, 17),
+(2326, 'BOM JESUS DO AMPARO', 3107703, 17),
+(2327, 'BOM JESUS DO GALHO', 3107802, 17),
+(2328, 'BOM REPOUSO', 3107901, 17),
+(2329, 'BOM SUCESSO', 3108008, 17),
+(2330, 'BONFIM', 3108107, 17),
+(2331, 'BONFINÓPOLIS DE MINAS', 3108206, 17),
+(2332, 'BONITO DE MINAS', 3108255, 17),
+(2333, 'BORDA DA MATA', 3108305, 17),
+(2334, 'BOTELHOS', 3108404, 17),
+(2335, 'BOTUMIRIM', 3108503, 17),
+(2336, 'BRASILÂNDIA DE MINAS', 3108552, 17),
+(2337, 'BRASÍLIA DE MINAS', 3108602, 17),
+(2338, 'BRÁS PIRES', 3108701, 17),
+(2339, 'BRAÚNAS', 3108800, 17),
+(2340, 'BRAZÓPOLIS', 3108909, 17),
+(2341, 'BRUMADINHO', 3109006, 17),
+(2342, 'BUENO BRANDÃO', 3109105, 17),
+(2343, 'BUENÓPOLIS', 3109204, 17),
+(2344, 'BUGRE', 3109253, 17),
+(2345, 'BURITIS', 3109303, 17),
+(2346, 'BURITIZEIRO', 3109402, 17),
+(2347, 'CABECEIRA GRANDE', 3109451, 17),
+(2348, 'CABO VERDE', 3109501, 17),
+(2349, 'CACHOEIRA DA PRATA', 3109600, 17),
+(2350, 'CACHOEIRA DE MINAS', 3109709, 17),
+(2351, 'CACHOEIRA DOURADA', 3109808, 17),
+(2352, 'CAETANÓPOLIS', 3109907, 17),
+(2353, 'CAETÉ', 3110004, 17),
+(2354, 'CAIANA', 3110103, 17),
+(2355, 'CAJURI', 3110202, 17),
+(2356, 'CALDAS', 3110301, 17),
+(2357, 'CAMACHO', 3110400, 17),
+(2358, 'CAMANDUCAIA', 3110509, 17),
+(2359, 'CAMBUÍ', 3110608, 17),
+(2360, 'CAMBUQUIRA', 3110707, 17),
+(2361, 'CAMPANÁRIO', 3110806, 17),
+(2362, 'CAMPANHA', 3110905, 17),
+(2363, 'CAMPESTRE', 3111002, 17),
+(2364, 'CAMPINA VERDE', 3111101, 17),
+(2365, 'CAMPO AZUL', 3111150, 17),
+(2366, 'CAMPO BELO', 3111200, 17),
+(2367, 'CAMPO DO MEIO', 3111309, 17),
+(2368, 'CAMPO FLORIDO', 3111408, 17),
+(2369, 'CAMPOS ALTOS', 3111507, 17),
+(2370, 'CAMPOS GERAIS', 3111606, 17),
+(2371, 'CANAÃ', 3111705, 17),
+(2372, 'CANÁPOLIS', 3111804, 17),
+(2373, 'CANA VERDE', 3111903, 17),
+(2374, 'CANDEIAS', 3112000, 17),
+(2375, 'CANTAGALO', 3112059, 17),
+(2376, 'CAPARAÓ', 3112109, 17),
+(2377, 'CAPELA NOVA', 3112208, 17),
+(2378, 'CAPELINHA', 3112307, 17),
+(2379, 'CAPETINGA', 3112406, 17),
+(2380, 'CAPIM BRANCO', 3112505, 17),
+(2381, 'CAPINÓPOLIS', 3112604, 17),
+(2382, 'CAPITÃO ANDRADE', 3112653, 17),
+(2383, 'CAPITÃO ENÉAS', 3112703, 17),
+(2384, 'CAPITÓLIO', 3112802, 17),
+(2385, 'CAPUTIRA', 3112901, 17),
+(2386, 'CARAÍ', 3113008, 17),
+(2387, 'CARANAÍBA', 3113107, 17),
+(2388, 'CARANDAÍ', 3113206, 17),
+(2389, 'CARANGOLA', 3113305, 17),
+(2390, 'CARATINGA', 3113404, 17),
+(2391, 'CARBONITA', 3113503, 17),
+(2392, 'CAREAÇU', 3113602, 17),
+(2393, 'CARLOS CHAGAS', 3113701, 17),
+(2394, 'CARMÉSIA', 3113800, 17),
+(2395, 'CARMO DA CACHOEIRA', 3113909, 17),
+(2396, 'CARMO DA MATA', 3114006, 17),
+(2397, 'CARMO DE MINAS', 3114105, 17),
+(2398, 'CARMO DO CAJURU', 3114204, 17),
+(2399, 'CARMO DO PARANAÍBA', 3114303, 17),
+(2400, 'CARMO DO RIO CLARO', 3114402, 17),
+(2401, 'CARMÓPOLIS DE MINAS', 3114501, 17),
+(2402, 'CARNEIRINHO', 3114550, 17),
+(2403, 'CARRANCAS', 3114600, 17),
+(2404, 'CARVALHÓPOLIS', 3114709, 17),
+(2405, 'CARVALHOS', 3114808, 17),
+(2406, 'CASA GRANDE', 3114907, 17),
+(2407, 'CASCALHO RICO', 3115003, 17),
+(2408, 'CÁSSIA', 3115102, 17),
+(2409, 'CONCEIÇÃO DA BARRA DE MINAS', 3115201, 17),
+(2410, 'CATAGUASES', 3115300, 17),
+(2411, 'CATAS ALTAS', 3115359, 17),
+(2412, 'CATAS ALTAS DA NORUEGA', 3115409, 17),
+(2413, 'CATUJI', 3115458, 17),
+(2414, 'CATUTI', 3115474, 17),
+(2415, 'CAXAMBU', 3115508, 17),
+(2416, 'CEDRO DO ABAETÉ', 3115607, 17),
+(2417, 'CENTRAL DE MINAS', 3115706, 17),
+(2418, 'CENTRALINA', 3115805, 17),
+(2419, 'CHÁCARA', 3115904, 17),
+(2420, 'CHALÉ', 3116001, 17),
+(2421, 'CHAPADA DO NORTE', 3116100, 17),
+(2422, 'CHAPADA GAÚCHA', 3116159, 17),
+(2423, 'CHIADOR', 3116209, 17),
+(2424, 'CIPOTÂNEA', 3116308, 17),
+(2425, 'CLARAVAL', 3116407, 17),
+(2426, 'CLARO DOS POÇÕES', 3116506, 17),
+(2427, 'CLÁUDIO', 3116605, 17),
+(2428, 'COIMBRA', 3116704, 17),
+(2429, 'COLUNA', 3116803, 17),
+(2430, 'COMENDADOR GOMES', 3116902, 17),
+(2431, 'COMERCINHO', 3117009, 17),
+(2432, 'CONCEIÇÃO DA APARECIDA', 3117108, 17),
+(2433, 'CONCEIÇÃO DAS PEDRAS', 3117207, 17),
+(2434, 'CONCEIÇÃO DAS ALAGOAS', 3117306, 17),
+(2435, 'CONCEIÇÃO DE IPANEMA', 3117405, 17),
+(2436, 'CONCEIÇÃO DO MATO DENTRO', 3117504, 17),
+(2437, 'CONCEIÇÃO DO PARÁ', 3117603, 17),
+(2438, 'CONCEIÇÃO DO RIO VERDE', 3117702, 17),
+(2439, 'CONCEIÇÃO DOS OUROS', 3117801, 17),
+(2440, 'CÔNEGO MARINHO', 3117836, 17),
+(2441, 'CONFINS', 3117876, 17),
+(2442, 'CONGONHAL', 3117900, 17),
+(2443, 'CONGONHAS', 3118007, 17),
+(2444, 'CONGONHAS DO NORTE', 3118106, 17),
+(2445, 'CONQUISTA', 3118205, 17),
+(2446, 'CONSELHEIRO LAFAIETE', 3118304, 17),
+(2447, 'CONSELHEIRO PENA', 3118403, 17),
+(2448, 'CONSOLAÇÃO', 3118502, 17),
+(2449, 'CONTAGEM', 3118601, 17),
+(2450, 'COQUEIRAL', 3118700, 17),
+(2451, 'CORAÇÃO DE JESUS', 3118809, 17),
+(2452, 'CORDISBURGO', 3118908, 17),
+(2453, 'CORDISLÂNDIA', 3119005, 17),
+(2454, 'CORINTO', 3119104, 17),
+(2455, 'COROACI', 3119203, 17),
+(2456, 'COROMANDEL', 3119302, 17),
+(2457, 'CORONEL FABRICIANO', 3119401, 17),
+(2458, 'CORONEL MURTA', 3119500, 17),
+(2459, 'CORONEL PACHECO', 3119609, 17),
+(2460, 'CORONEL XAVIER CHAVES', 3119708, 17),
+(2461, 'CÓRREGO DANTA', 3119807, 17),
+(2462, 'CÓRREGO DO BOM JESUS', 3119906, 17),
+(2463, 'CÓRREGO FUNDO', 3119955, 17),
+(2464, 'CÓRREGO NOVO', 3120003, 17),
+(2465, 'COUTO DE MAGALHÃES DE MINAS', 3120102, 17),
+(2466, 'CRISÓLITA', 3120151, 17),
+(2467, 'CRISTAIS', 3120201, 17),
+(2468, 'CRISTÁLIA', 3120300, 17),
+(2469, 'CRISTIANO OTONI', 3120409, 17),
+(2470, 'CRISTINA', 3120508, 17),
+(2471, 'CRUCILÂNDIA', 3120607, 17),
+(2472, 'CRUZEIRO DA FORTALEZA', 3120706, 17),
+(2473, 'CRUZÍLIA', 3120805, 17),
+(2474, 'CUPARAQUE', 3120839, 17),
+(2475, 'CURRAL DE DENTRO', 3120870, 17),
+(2476, 'CURVELO', 3120904, 17),
+(2477, 'DATAS', 3121001, 17),
+(2478, 'DELFIM MOREIRA', 3121100, 17),
+(2479, 'DELFINÓPOLIS', 3121209, 17),
+(2480, 'DELTA', 3121258, 17),
+(2481, 'DESCOBERTO', 3121308, 17),
+(2482, 'DESTERRO DE ENTRE RIOS', 3121407, 17),
+(2483, 'DESTERRO DO MELO', 3121506, 17),
+(2484, 'DIAMANTINA', 3121605, 17),
+(2485, 'DIOGO DE VASCONCELOS', 3121704, 17),
+(2486, 'DIONÍSIO', 3121803, 17),
+(2487, 'DIVINÉSIA', 3121902, 17),
+(2488, 'DIVINO', 3122009, 17),
+(2489, 'DIVINO DAS LARANJEIRAS', 3122108, 17),
+(2490, 'DIVINOLÂNDIA DE MINAS', 3122207, 17),
+(2491, 'DIVINÓPOLIS', 3122306, 17),
+(2492, 'DIVISA ALEGRE', 3122355, 17),
+(2493, 'DIVISA NOVA', 3122405, 17),
+(2494, 'DIVISÓPOLIS', 3122454, 17),
+(2495, 'DOM BOSCO', 3122470, 17),
+(2496, 'DOM CAVATI', 3122504, 17),
+(2497, 'DOM JOAQUIM', 3122603, 17),
+(2498, 'DOM SILVÉRIO', 3122702, 17),
+(2499, 'DOM VIÇOSO', 3122801, 17),
+(2500, 'DONA EUSÉBIA', 3122900, 17),
+(2501, 'DORES DE CAMPOS', 3123007, 17),
+(2502, 'DORES DE GUANHÃES', 3123106, 17),
+(2503, 'DORES DO INDAIÁ', 3123205, 17),
+(2504, 'DORES DO TURVO', 3123304, 17),
+(2505, 'DORESÓPOLIS', 3123403, 17),
+(2506, 'DOURADOQUARA', 3123502, 17),
+(2507, 'DURANDÉ', 3123528, 17),
+(2508, 'ELÓI MENDES', 3123601, 17),
+(2509, 'ENGENHEIRO CALDAS', 3123700, 17),
+(2510, 'ENGENHEIRO NAVARRO', 3123809, 17),
+(2511, 'ENTRE FOLHAS', 3123858, 17),
+(2512, 'ENTRE RIOS DE MINAS', 3123908, 17),
+(2513, 'ERVÁLIA', 3124005, 17),
+(2514, 'ESMERALDAS', 3124104, 17),
+(2515, 'ESPERA FELIZ', 3124203, 17),
+(2516, 'ESPINOSA', 3124302, 17),
+(2517, 'ESPÍRITO SANTO DO DOURADO', 3124401, 17),
+(2518, 'ESTIVA', 3124500, 17),
+(2519, 'ESTRELA DALVA', 3124609, 17),
+(2520, 'ESTRELA DO INDAIÁ', 3124708, 17),
+(2521, 'ESTRELA DO SUL', 3124807, 17),
+(2522, 'EUGENÓPOLIS', 3124906, 17),
+(2523, 'EWBANK DA CÂMARA', 3125002, 17),
+(2524, 'EXTREMA', 3125101, 17),
+(2525, 'FAMA', 3125200, 17),
+(2526, 'FARIA LEMOS', 3125309, 17),
+(2527, 'FELÍCIO DOS SANTOS', 3125408, 17),
+(2528, 'SÃO GONÇALO DO RIO PRETO', 3125507, 17),
+(2529, 'FELISBURGO', 3125606, 17),
+(2530, 'FELIXLÂNDIA', 3125705, 17),
+(2531, 'FERNANDES TOURINHO', 3125804, 17),
+(2532, 'FERROS', 3125903, 17),
+(2533, 'FERVEDOURO', 3125952, 17),
+(2534, 'FLORESTAL', 3126000, 17),
+(2535, 'FORMIGA', 3126109, 17),
+(2536, 'FORMOSO', 3126208, 17),
+(2537, 'FORTALEZA DE MINAS', 3126307, 17),
+(2538, 'FORTUNA DE MINAS', 3126406, 17),
+(2539, 'FRANCISCO BADARÓ', 3126505, 17),
+(2540, 'FRANCISCO DUMONT', 3126604, 17),
+(2541, 'FRANCISCO SÁ', 3126703, 17),
+(2542, 'FRANCISCÓPOLIS', 3126752, 17),
+(2543, 'FREI GASPAR', 3126802, 17),
+(2544, 'FREI INOCÊNCIO', 3126901, 17),
+(2545, 'FREI LAGONEGRO', 3126950, 17),
+(2546, 'FRONTEIRA', 3127008, 17),
+(2547, 'FRONTEIRA DOS VALES', 3127057, 17),
+(2548, 'FRUTA DE LEITE', 3127073, 17),
+(2549, 'FRUTAL', 3127107, 17),
+(2550, 'FUNILÂNDIA', 3127206, 17),
+(2551, 'GALILÉIA', 3127305, 17),
+(2552, 'GAMELEIRAS', 3127339, 17),
+(2553, 'GLAUCILÂNDIA', 3127354, 17),
+(2554, 'GOIABEIRA', 3127370, 17),
+(2555, 'GOIANÁ', 3127388, 17),
+(2556, 'GONÇALVES', 3127404, 17),
+(2557, 'GONZAGA', 3127503, 17),
+(2558, 'GOUVEIA', 3127602, 17),
+(2559, 'GOVERNADOR VALADARES', 3127701, 17),
+(2560, 'GRÃO MOGOL', 3127800, 17),
+(2561, 'GRUPIARA', 3127909, 17),
+(2562, 'GUANHÃES', 3128006, 17),
+(2563, 'GUAPÉ', 3128105, 17),
+(2564, 'GUARACIABA', 3128204, 17),
+(2565, 'GUARACIAMA', 3128253, 17),
+(2566, 'GUARANÉSIA', 3128303, 17),
+(2567, 'GUARANI', 3128402, 17),
+(2568, 'GUARARÁ', 3128501, 17),
+(2569, 'GUARDA-MOR', 3128600, 17),
+(2570, 'GUAXUPÉ', 3128709, 17),
+(2571, 'GUIDOVAL', 3128808, 17),
+(2572, 'GUIMARÂNIA', 3128907, 17),
+(2573, 'GUIRICEMA', 3129004, 17),
+(2574, 'GURINHATÃ', 3129103, 17),
+(2575, 'HELIODORA', 3129202, 17),
+(2576, 'IAPU', 3129301, 17),
+(2577, 'IBERTIOGA', 3129400, 17),
+(2578, 'IBIÁ', 3129509, 17),
+(2579, 'IBIAÍ', 3129608, 17),
+(2580, 'IBIRACATU', 3129657, 17),
+(2581, 'IBIRACI', 3129707, 17),
+(2582, 'IBIRITÉ', 3129806, 17),
+(2583, 'IBITIÚRA DE MINAS', 3129905, 17),
+(2584, 'IBITURUNA', 3130002, 17),
+(2585, 'ICARAÍ DE MINAS', 3130051, 17),
+(2586, 'IGARAPÉ', 3130101, 17),
+(2587, 'IGARATINGA', 3130200, 17),
+(2588, 'IGUATAMA', 3130309, 17),
+(2589, 'IJACI', 3130408, 17),
+(2590, 'ILICÍNEA', 3130507, 17),
+(2591, 'IMBÉ DE MINAS', 3130556, 17),
+(2592, 'INCONFIDENTES', 3130606, 17),
+(2593, 'INDAIABIRA', 3130655, 17),
+(2594, 'INDIANÓPOLIS', 3130705, 17),
+(2595, 'INGAÍ', 3130804, 17),
+(2596, 'INHAPIM', 3130903, 17),
+(2597, 'INHAÚMA', 3131000, 17),
+(2598, 'INIMUTABA', 3131109, 17),
+(2599, 'IPABA', 3131158, 17),
+(2600, 'IPANEMA', 3131208, 17),
+(2601, 'IPATINGA', 3131307, 17),
+(2602, 'IPIAÇU', 3131406, 17),
+(2603, 'IPUIÚNA', 3131505, 17),
+(2604, 'IRAÍ DE MINAS', 3131604, 17),
+(2605, 'ITABIRA', 3131703, 17),
+(2606, 'ITABIRINHA', 3131802, 17),
+(2607, 'ITABIRITO', 3131901, 17),
+(2608, 'ITACAMBIRA', 3132008, 17),
+(2609, 'ITACARAMBI', 3132107, 17),
+(2610, 'ITAGUARA', 3132206, 17),
+(2611, 'ITAIPÉ', 3132305, 17),
+(2612, 'ITAJUBÁ', 3132404, 17),
+(2613, 'ITAMARANDIBA', 3132503, 17),
+(2614, 'ITAMARATI DE MINAS', 3132602, 17),
+(2615, 'ITAMBACURI', 3132701, 17),
+(2616, 'ITAMBÉ DO MATO DENTRO', 3132800, 17),
+(2617, 'ITAMOGI', 3132909, 17),
+(2618, 'ITAMONTE', 3133006, 17),
+(2619, 'ITANHANDU', 3133105, 17),
+(2620, 'ITANHOMI', 3133204, 17),
+(2621, 'ITAOBIM', 3133303, 17),
+(2622, 'ITAPAGIPE', 3133402, 17),
+(2623, 'ITAPECERICA', 3133501, 17),
+(2624, 'ITAPEVA', 3133600, 17),
+(2625, 'ITATIAIUÇU', 3133709, 17),
+(2626, 'ITAÚ DE MINAS', 3133758, 17),
+(2627, 'ITAÚNA', 3133808, 17),
+(2628, 'ITAVERAVA', 3133907, 17),
+(2629, 'ITINGA', 3134004, 17),
+(2630, 'ITUETA', 3134103, 17),
+(2631, 'ITUIUTABA', 3134202, 17),
+(2632, 'ITUMIRIM', 3134301, 17),
+(2633, 'ITURAMA', 3134400, 17),
+(2634, 'ITUTINGA', 3134509, 17),
+(2635, 'JABOTICATUBAS', 3134608, 17),
+(2636, 'JACINTO', 3134707, 17),
+(2637, 'JACUÍ', 3134806, 17),
+(2638, 'JACUTINGA', 3134905, 17),
+(2639, 'JAGUARAÇU', 3135001, 17),
+(2640, 'JAÍBA', 3135050, 17),
+(2641, 'JAMPRUCA', 3135076, 17),
+(2642, 'JANAÚBA', 3135100, 17),
+(2643, 'JANUÁRIA', 3135209, 17),
+(2644, 'JAPARAÍBA', 3135308, 17),
+(2645, 'JAPONVAR', 3135357, 17),
+(2646, 'JECEABA', 3135407, 17),
+(2647, 'JENIPAPO DE MINAS', 3135456, 17),
+(2648, 'JEQUERI', 3135506, 17),
+(2649, 'JEQUITAÍ', 3135605, 17),
+(2650, 'JEQUITIBÁ', 3135704, 17),
+(2651, 'JEQUITINHONHA', 3135803, 17),
+(2652, 'JESUÂNIA', 3135902, 17),
+(2653, 'JOAÍMA', 3136009, 17),
+(2654, 'JOANÉSIA', 3136108, 17),
+(2655, 'JOÃO MONLEVADE', 3136207, 17),
+(2656, 'JOÃO PINHEIRO', 3136306, 17),
+(2657, 'JOAQUIM FELÍCIO', 3136405, 17),
+(2658, 'JORDÂNIA', 3136504, 17),
+(2659, 'JOSÉ GONÇALVES DE MINAS', 3136520, 17),
+(2660, 'JOSÉ RAYDAN', 3136553, 17),
+(2661, 'JOSENÓPOLIS', 3136579, 17),
+(2662, 'NOVA UNIÃO', 3136603, 17),
+(2663, 'JUATUBA', 3136652, 17),
+(2664, 'JUIZ DE FORA', 3136702, 17),
+(2665, 'JURAMENTO', 3136801, 17),
+(2666, 'JURUAIA', 3136900, 17),
+(2667, 'JUVENÍLIA', 3136959, 17),
+(2668, 'LADAINHA', 3137007, 17),
+(2669, 'LAGAMAR', 3137106, 17),
+(2670, 'LAGOA DA PRATA', 3137205, 17),
+(2671, 'LAGOA DOS PATOS', 3137304, 17),
+(2672, 'LAGOA DOURADA', 3137403, 17),
+(2673, 'LAGOA FORMOSA', 3137502, 17),
+(2674, 'LAGOA GRANDE', 3137536, 17),
+(2675, 'LAGOA SANTA', 3137601, 17),
+(2676, 'LAJINHA', 3137700, 17),
+(2677, 'LAMBARI', 3137809, 17),
+(2678, 'LAMIM', 3137908, 17),
+(2679, 'LARANJAL', 3138005, 17),
+(2680, 'LASSANCE', 3138104, 17),
+(2681, 'LAVRAS', 3138203, 17),
+(2682, 'LEANDRO FERREIRA', 3138302, 17),
+(2683, 'LEME DO PRADO', 3138351, 17),
+(2684, 'LEOPOLDINA', 3138401, 17),
+(2685, 'LIBERDADE', 3138500, 17),
+(2686, 'LIMA DUARTE', 3138609, 17),
+(2687, 'LIMEIRA DO OESTE', 3138625, 17),
+(2688, 'LONTRA', 3138658, 17),
+(2689, 'LUISBURGO', 3138674, 17),
+(2690, 'LUISLÂNDIA', 3138682, 17),
+(2691, 'LUMINÁRIAS', 3138708, 17),
+(2692, 'LUZ', 3138807, 17),
+(2693, 'MACHACALIS', 3138906, 17),
+(2694, 'MACHADO', 3139003, 17),
+(2695, 'MADRE DE DEUS DE MINAS', 3139102, 17),
+(2696, 'MALACACHETA', 3139201, 17),
+(2697, 'MAMONAS', 3139250, 17),
+(2698, 'MANGA', 3139300, 17),
+(2699, 'MANHUAÇU', 3139409, 17),
+(2700, 'MANHUMIRIM', 3139508, 17),
+(2701, 'MANTENA', 3139607, 17),
+(2702, 'MARAVILHAS', 3139706, 17),
+(2703, 'MAR DE ESPANHA', 3139805, 17),
+(2704, 'MARIA DA FÉ', 3139904, 17),
+(2705, 'MARIANA', 3140001, 17),
+(2706, 'MARILAC', 3140100, 17),
+(2707, 'MÁRIO CAMPOS', 3140159, 17),
+(2708, 'MARIPÁ DE MINAS', 3140209, 17),
+(2709, 'MARLIÉRIA', 3140308, 17),
+(2710, 'MARMELÓPOLIS', 3140407, 17),
+(2711, 'MARTINHO CAMPOS', 3140506, 17),
+(2712, 'MARTINS SOARES', 3140530, 17),
+(2713, 'MATA VERDE', 3140555, 17),
+(2714, 'MATERLÂNDIA', 3140605, 17),
+(2715, 'MATEUS LEME', 3140704, 17),
+(2716, 'MATIAS BARBOSA', 3140803, 17),
+(2717, 'MATIAS CARDOSO', 3140852, 17),
+(2718, 'MATIPÓ', 3140902, 17),
+(2719, 'MATO VERDE', 3141009, 17),
+(2720, 'MATOZINHOS', 3141108, 17),
+(2721, 'MATUTINA', 3141207, 17),
+(2722, 'MEDEIROS', 3141306, 17),
+(2723, 'MEDINA', 3141405, 17),
+(2724, 'MENDES PIMENTEL', 3141504, 17),
+(2725, 'MERCÊS', 3141603, 17),
+(2726, 'MESQUITA', 3141702, 17),
+(2727, 'MINAS NOVAS', 3141801, 17),
+(2728, 'MINDURI', 3141900, 17),
+(2729, 'MIRABELA', 3142007, 17),
+(2730, 'MIRADOURO', 3142106, 17),
+(2731, 'MIRAÍ', 3142205, 17),
+(2732, 'MIRAVÂNIA', 3142254, 17),
+(2733, 'MOEDA', 3142304, 17),
+(2734, 'MOEMA', 3142403, 17),
+(2735, 'MONJOLOS', 3142502, 17),
+(2736, 'MONSENHOR PAULO', 3142601, 17),
+(2737, 'MONTALVÂNIA', 3142700, 17),
+(2738, 'MONTE ALEGRE DE MINAS', 3142809, 17),
+(2739, 'MONTE AZUL', 3142908, 17),
+(2740, 'MONTE BELO', 3143005, 17),
+(2741, 'MONTE CARMELO', 3143104, 17),
+(2742, 'MONTE FORMOSO', 3143153, 17),
+(2743, 'MONTE SANTO DE MINAS', 3143203, 17),
+(2744, 'MONTES CLAROS', 3143302, 17),
+(2745, 'MONTE SIÃO', 3143401, 17),
+(2746, 'MONTEZUMA', 3143450, 17),
+(2747, 'MORADA NOVA DE MINAS', 3143500, 17),
+(2748, 'MORRO DA GARÇA', 3143609, 17),
+(2749, 'MORRO DO PILAR', 3143708, 17),
+(2750, 'MUNHOZ', 3143807, 17),
+(2751, 'MURIAÉ', 3143906, 17),
+(2752, 'MUTUM', 3144003, 17),
+(2753, 'MUZAMBINHO', 3144102, 17),
+(2754, 'NACIP RAYDAN', 3144201, 17),
+(2755, 'NANUQUE', 3144300, 17),
+(2756, 'NAQUE', 3144359, 17),
+(2757, 'NATALÂNDIA', 3144375, 17),
+(2758, 'NATÉRCIA', 3144409, 17),
+(2759, 'NAZARENO', 3144508, 17),
+(2760, 'NEPOMUCENO', 3144607, 17),
+(2761, 'NINHEIRA', 3144656, 17),
+(2762, 'NOVA BELÉM', 3144672, 17),
+(2763, 'NOVA ERA', 3144706, 17),
+(2764, 'NOVA LIMA', 3144805, 17),
+(2765, 'NOVA MÓDICA', 3144904, 17),
+(2766, 'NOVA PONTE', 3145000, 17),
+(2767, 'NOVA PORTEIRINHA', 3145059, 17),
+(2768, 'NOVA RESENDE', 3145109, 17),
+(2769, 'NOVA SERRANA', 3145208, 17),
+(2770, 'NOVO CRUZEIRO', 3145307, 17),
+(2771, 'NOVO ORIENTE DE MINAS', 3145356, 17),
+(2772, 'NOVORIZONTE', 3145372, 17),
+(2773, 'OLARIA', 3145406, 17),
+(2774, 'OLHOS-D\'ÁGUA', 3145455, 17),
+(2775, 'OLÍMPIO NORONHA', 3145505, 17),
+(2776, 'OLIVEIRA', 3145604, 17),
+(2777, 'OLIVEIRA FORTES', 3145703, 17),
+(2778, 'ONÇA DE PITANGUI', 3145802, 17),
+(2779, 'ORATÓRIOS', 3145851, 17),
+(2780, 'ORIZÂNIA', 3145877, 17),
+(2781, 'OURO BRANCO', 3145901, 17),
+(2782, 'OURO FINO', 3146008, 17),
+(2783, 'OURO PRETO', 3146107, 17),
+(2784, 'OURO VERDE DE MINAS', 3146206, 17),
+(2785, 'PADRE CARVALHO', 3146255, 17),
+(2786, 'PADRE PARAÍSO', 3146305, 17),
+(2787, 'PAINEIRAS', 3146404, 17),
+(2788, 'PAINS', 3146503, 17),
+(2789, 'PAI PEDRO', 3146552, 17),
+(2790, 'PAIVA', 3146602, 17),
+(2791, 'PALMA', 3146701, 17),
+(2792, 'PALMÓPOLIS', 3146750, 17),
+(2793, 'PAPAGAIOS', 3146909, 17),
+(2794, 'PARACATU', 3147006, 17),
+(2795, 'PARÁ DE MINAS', 3147105, 17),
+(2796, 'PARAGUAÇU', 3147204, 17),
+(2797, 'PARAISÓPOLIS', 3147303, 17),
+(2798, 'PARAOPEBA', 3147402, 17),
+(2799, 'PASSABÉM', 3147501, 17),
+(2800, 'PASSA QUATRO', 3147600, 17),
+(2801, 'PASSA TEMPO', 3147709, 17),
+(2802, 'PASSA-VINTE', 3147808, 17),
+(2803, 'PASSOS', 3147907, 17),
+(2804, 'PATIS', 3147956, 17),
+(2805, 'PATOS DE MINAS', 3148004, 17),
+(2806, 'PATROCÍNIO', 3148103, 17),
+(2807, 'PATROCÍNIO DO MURIAÉ', 3148202, 17),
+(2808, 'PAULA CÂNDIDO', 3148301, 17),
+(2809, 'PAULISTAS', 3148400, 17),
+(2810, 'PAVÃO', 3148509, 17),
+(2811, 'PEÇANHA', 3148608, 17),
+(2812, 'PEDRA AZUL', 3148707, 17),
+(2813, 'PEDRA BONITA', 3148756, 17),
+(2814, 'PEDRA DO ANTA', 3148806, 17),
+(2815, 'PEDRA DO INDAIÁ', 3148905, 17),
+(2816, 'PEDRA DOURADA', 3149002, 17),
+(2817, 'PEDRALVA', 3149101, 17),
+(2818, 'PEDRAS DE MARIA DA CRUZ', 3149150, 17),
+(2819, 'PEDRINÓPOLIS', 3149200, 17),
+(2820, 'PEDRO LEOPOLDO', 3149309, 17),
+(2821, 'PEDRO TEIXEIRA', 3149408, 17),
+(2822, 'PEQUERI', 3149507, 17),
+(2823, 'PEQUI', 3149606, 17),
+(2824, 'PERDIGÃO', 3149705, 17),
+(2825, 'PERDIZES', 3149804, 17),
+(2826, 'PERDÕES', 3149903, 17),
+(2827, 'PERIQUITO', 3149952, 17),
+(2828, 'PESCADOR', 3150000, 17),
+(2829, 'PIAU', 3150109, 17),
+(2830, 'PIEDADE DE CARATINGA', 3150158, 17),
+(2831, 'PIEDADE DE PONTE NOVA', 3150208, 17),
+(2832, 'PIEDADE DO RIO GRANDE', 3150307, 17),
+(2833, 'PIEDADE DOS GERAIS', 3150406, 17),
+(2834, 'PIMENTA', 3150505, 17),
+(2835, 'PINGO-D\'ÁGUA', 3150539, 17),
+(2836, 'PINTÓPOLIS', 3150570, 17),
+(2837, 'PIRACEMA', 3150604, 17),
+(2838, 'PIRAJUBA', 3150703, 17),
+(2839, 'PIRANGA', 3150802, 17),
+(2840, 'PIRANGUÇU', 3150901, 17),
+(2841, 'PIRANGUINHO', 3151008, 17),
+(2842, 'PIRAPETINGA', 3151107, 17),
+(2843, 'PIRAPORA', 3151206, 17),
+(2844, 'PIRAÚBA', 3151305, 17),
+(2845, 'PITANGUI', 3151404, 17),
+(2846, 'PIUMHI', 3151503, 17),
+(2847, 'PLANURA', 3151602, 17),
+(2848, 'POÇO FUNDO', 3151701, 17),
+(2849, 'POÇOS DE CALDAS', 3151800, 17),
+(2850, 'POCRANE', 3151909, 17),
+(2851, 'POMPÉU', 3152006, 17),
+(2852, 'PONTE NOVA', 3152105, 17),
+(2853, 'PONTO CHIQUE', 3152131, 17),
+(2854, 'PONTO DOS VOLANTES', 3152170, 17),
+(2855, 'PORTEIRINHA', 3152204, 17),
+(2856, 'PORTO FIRME', 3152303, 17),
+(2857, 'POTÉ', 3152402, 17),
+(2858, 'POUSO ALEGRE', 3152501, 17),
+(2859, 'POUSO ALTO', 3152600, 17),
+(2860, 'PRADOS', 3152709, 17),
+(2861, 'PRATA', 3152808, 17),
+(2862, 'PRATÁPOLIS', 3152907, 17),
+(2863, 'PRATINHA', 3153004, 17),
+(2864, 'PRESIDENTE BERNARDES', 3153103, 17),
+(2865, 'PRESIDENTE JUSCELINO', 3153202, 17),
+(2866, 'PRESIDENTE KUBITSCHEK', 3153301, 17),
+(2867, 'PRESIDENTE OLEGÁRIO', 3153400, 17),
+(2868, 'ALTO JEQUITIBÁ', 3153509, 17),
+(2869, 'PRUDENTE DE MORAIS', 3153608, 17),
+(2870, 'QUARTEL GERAL', 3153707, 17),
+(2871, 'QUELUZITO', 3153806, 17),
+(2872, 'RAPOSOS', 3153905, 17),
+(2873, 'RAUL SOARES', 3154002, 17),
+(2874, 'RECREIO', 3154101, 17),
+(2875, 'REDUTO', 3154150, 17),
+(2876, 'RESENDE COSTA', 3154200, 17),
+(2877, 'RESPLENDOR', 3154309, 17),
+(2878, 'RESSAQUINHA', 3154408, 17),
+(2879, 'RIACHINHO', 3154457, 17),
+(2880, 'RIACHO DOS MACHADOS', 3154507, 17),
+(2881, 'RIBEIRÃO DAS NEVES', 3154606, 17),
+(2882, 'RIBEIRÃO VERMELHO', 3154705, 17),
+(2883, 'RIO ACIMA', 3154804, 17),
+(2884, 'RIO CASCA', 3154903, 17),
+(2885, 'RIO DOCE', 3155009, 17),
+(2886, 'RIO DO PRADO', 3155108, 17),
+(2887, 'RIO ESPERA', 3155207, 17),
+(2888, 'RIO MANSO', 3155306, 17),
+(2889, 'RIO NOVO', 3155405, 17),
+(2890, 'RIO PARANAÍBA', 3155504, 17),
+(2891, 'RIO PARDO DE MINAS', 3155603, 17),
+(2892, 'RIO PIRACICABA', 3155702, 17),
+(2893, 'RIO POMBA', 3155801, 17),
+(2894, 'RIO PRETO', 3155900, 17),
+(2895, 'RIO VERMELHO', 3156007, 17),
+(2896, 'RITÁPOLIS', 3156106, 17),
+(2897, 'ROCHEDO DE MINAS', 3156205, 17),
+(2898, 'RODEIRO', 3156304, 17),
+(2899, 'ROMARIA', 3156403, 17),
+(2900, 'ROSÁRIO DA LIMEIRA', 3156452, 17),
+(2901, 'RUBELITA', 3156502, 17),
+(2902, 'RUBIM', 3156601, 17),
+(2903, 'SABARÁ', 3156700, 17),
+(2904, 'SABINÓPOLIS', 3156809, 17),
+(2905, 'SACRAMENTO', 3156908, 17),
+(2906, 'SALINAS', 3157005, 17),
+(2907, 'SALTO DA DIVISA', 3157104, 17),
+(2908, 'SANTA BÁRBARA', 3157203, 17),
+(2909, 'SANTA BÁRBARA DO LESTE', 3157252, 17),
+(2910, 'SANTA BÁRBARA DO MONTE VERDE', 3157278, 17),
+(2911, 'SANTA BÁRBARA DO TUGÚRIO', 3157302, 17),
+(2912, 'SANTA CRUZ DE MINAS', 3157336, 17),
+(2913, 'SANTA CRUZ DE SALINAS', 3157377, 17),
+(2914, 'SANTA CRUZ DO ESCALVADO', 3157401, 17),
+(2915, 'SANTA EFIGÊNIA DE MINAS', 3157500, 17),
+(2916, 'SANTA FÉ DE MINAS', 3157609, 17),
+(2917, 'SANTA HELENA DE MINAS', 3157658, 17),
+(2918, 'SANTA JULIANA', 3157708, 17),
+(2919, 'SANTA LUZIA', 3157807, 17),
+(2920, 'SANTA MARGARIDA', 3157906, 17),
+(2921, 'SANTA MARIA DE ITABIRA', 3158003, 17),
+(2922, 'SANTA MARIA DO SALTO', 3158102, 17),
+(2923, 'SANTA MARIA DO SUAÇUÍ', 3158201, 17),
+(2924, 'SANTANA DA VARGEM', 3158300, 17),
+(2925, 'SANTANA DE CATAGUASES', 3158409, 17),
+(2926, 'SANTANA DE PIRAPAMA', 3158508, 17),
+(2927, 'SANTANA DO DESERTO', 3158607, 17),
+(2928, 'SANTANA DO GARAMBÉU', 3158706, 17),
+(2929, 'SANTANA DO JACARÉ', 3158805, 17),
+(2930, 'SANTANA DO MANHUAÇU', 3158904, 17),
+(2931, 'SANTANA DO PARAÍSO', 3158953, 17),
+(2932, 'SANTANA DO RIACHO', 3159001, 17),
+(2933, 'SANTANA DOS MONTES', 3159100, 17),
+(2934, 'SANTA RITA DE CALDAS', 3159209, 17),
+(2935, 'SANTA RITA DE JACUTINGA', 3159308, 17),
+(2936, 'SANTA RITA DE MINAS', 3159357, 17),
+(2937, 'SANTA RITA DE IBITIPOCA', 3159407, 17),
+(2938, 'SANTA RITA DO ITUETO', 3159506, 17),
+(2939, 'SANTA RITA DO SAPUCAÍ', 3159605, 17),
+(2940, 'SANTA ROSA DA SERRA', 3159704, 17),
+(2941, 'SANTA VITÓRIA', 3159803, 17),
+(2942, 'SANTO ANTÔNIO DO AMPARO', 3159902, 17),
+(2943, 'SANTO ANTÔNIO DO AVENTUREIRO', 3160009, 17),
+(2944, 'SANTO ANTÔNIO DO GRAMA', 3160108, 17);
+INSERT INTO `cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES
+(2945, 'SANTO ANTÔNIO DO ITAMBÉ', 3160207, 17),
+(2946, 'SANTO ANTÔNIO DO JACINTO', 3160306, 17),
+(2947, 'SANTO ANTÔNIO DO MONTE', 3160405, 17),
+(2948, 'SANTO ANTÔNIO DO RETIRO', 3160454, 17),
+(2949, 'SANTO ANTÔNIO DO RIO ABAIXO', 3160504, 17),
+(2950, 'SANTO HIPÓLITO', 3160603, 17),
+(2951, 'SANTOS DUMONT', 3160702, 17),
+(2952, 'SÃO BENTO ABADE', 3160801, 17),
+(2953, 'SÃO BRÁS DO SUAÇUÍ', 3160900, 17),
+(2954, 'SÃO DOMINGOS DAS DORES', 3160959, 17),
+(2955, 'SÃO DOMINGOS DO PRATA', 3161007, 17),
+(2956, 'SÃO FÉLIX DE MINAS', 3161056, 17),
+(2957, 'SÃO FRANCISCO', 3161106, 17),
+(2958, 'SÃO FRANCISCO DE PAULA', 3161205, 17),
+(2959, 'SÃO FRANCISCO DE SALES', 3161304, 17),
+(2960, 'SÃO FRANCISCO DO GLÓRIA', 3161403, 17),
+(2961, 'SÃO GERALDO', 3161502, 17),
+(2962, 'SÃO GERALDO DA PIEDADE', 3161601, 17),
+(2963, 'SÃO GERALDO DO BAIXIO', 3161650, 17),
+(2964, 'SÃO GONÇALO DO ABAETÉ', 3161700, 17),
+(2965, 'SÃO GONÇALO DO PARÁ', 3161809, 17),
+(2966, 'SÃO GONÇALO DO RIO ABAIXO', 3161908, 17),
+(2967, 'SÃO GONÇALO DO SAPUCAÍ', 3162005, 17),
+(2968, 'SÃO GOTARDO', 3162104, 17),
+(2969, 'SÃO JOÃO BATISTA DO GLÓRIA', 3162203, 17),
+(2970, 'SÃO JOÃO DA LAGOA', 3162252, 17),
+(2971, 'SÃO JOÃO DA MATA', 3162302, 17),
+(2972, 'SÃO JOÃO DA PONTE', 3162401, 17),
+(2973, 'SÃO JOÃO DAS MISSÕES', 3162450, 17),
+(2974, 'SÃO JOÃO DEL REI', 3162500, 17),
+(2975, 'SÃO JOÃO DO MANHUAÇU', 3162559, 17),
+(2976, 'SÃO JOÃO DO MANTENINHA', 3162575, 17),
+(2977, 'SÃO JOÃO DO ORIENTE', 3162609, 17),
+(2978, 'SÃO JOÃO DO PACUÍ', 3162658, 17),
+(2979, 'SÃO JOÃO DO PARAÍSO', 3162708, 17),
+(2980, 'SÃO JOÃO EVANGELISTA', 3162807, 17),
+(2981, 'SÃO JOÃO NEPOMUCENO', 3162906, 17),
+(2982, 'SÃO JOAQUIM DE BICAS', 3162922, 17),
+(2983, 'SÃO JOSÉ DA BARRA', 3162948, 17),
+(2984, 'SÃO JOSÉ DA LAPA', 3162955, 17),
+(2985, 'SÃO JOSÉ DA SAFIRA', 3163003, 17),
+(2986, 'SÃO JOSÉ DA VARGINHA', 3163102, 17),
+(2987, 'SÃO JOSÉ DO ALEGRE', 3163201, 17),
+(2988, 'SÃO JOSÉ DO DIVINO', 3163300, 17),
+(2989, 'SÃO JOSÉ DO GOIABAL', 3163409, 17),
+(2990, 'SÃO JOSÉ DO JACURI', 3163508, 17),
+(2991, 'SÃO JOSÉ DO MANTIMENTO', 3163607, 17),
+(2992, 'SÃO LOURENÇO', 3163706, 17),
+(2993, 'SÃO MIGUEL DO ANTA', 3163805, 17),
+(2994, 'SÃO PEDRO DA UNIÃO', 3163904, 17),
+(2995, 'SÃO PEDRO DOS FERROS', 3164001, 17),
+(2996, 'SÃO PEDRO DO SUAÇUÍ', 3164100, 17),
+(2997, 'SÃO ROMÃO', 3164209, 17),
+(2998, 'SÃO ROQUE DE MINAS', 3164308, 17),
+(2999, 'SÃO SEBASTIÃO DA BELA VISTA', 3164407, 17),
+(3000, 'SÃO SEBASTIÃO DA VARGEM ALEGRE', 3164431, 17),
+(3001, 'SÃO SEBASTIÃO DO ANTA', 3164472, 17),
+(3002, 'SÃO SEBASTIÃO DO MARANHÃO', 3164506, 17),
+(3003, 'SÃO SEBASTIÃO DO OESTE', 3164605, 17),
+(3004, 'SÃO SEBASTIÃO DO PARAÍSO', 3164704, 17),
+(3005, 'SÃO SEBASTIÃO DO RIO PRETO', 3164803, 17),
+(3006, 'SÃO SEBASTIÃO DO RIO VERDE', 3164902, 17),
+(3007, 'SÃO TIAGO', 3165008, 17),
+(3008, 'SÃO TOMÁS DE AQUINO', 3165107, 17),
+(3009, 'SÃO THOMÉ DAS LETRAS', 3165206, 17),
+(3010, 'SÃO VICENTE DE MINAS', 3165305, 17),
+(3011, 'SAPUCAÍ-MIRIM', 3165404, 17),
+(3012, 'SARDOÁ', 3165503, 17),
+(3013, 'SARZEDO', 3165537, 17),
+(3014, 'SETUBINHA', 3165552, 17),
+(3015, 'SEM-PEIXE', 3165560, 17),
+(3016, 'SENADOR AMARAL', 3165578, 17),
+(3017, 'SENADOR CORTES', 3165602, 17),
+(3018, 'SENADOR FIRMINO', 3165701, 17),
+(3019, 'SENADOR JOSÉ BENTO', 3165800, 17),
+(3020, 'SENADOR MODESTINO GONÇALVES', 3165909, 17),
+(3021, 'SENHORA DE OLIVEIRA', 3166006, 17),
+(3022, 'SENHORA DO PORTO', 3166105, 17),
+(3023, 'SENHORA DOS REMÉDIOS', 3166204, 17),
+(3024, 'SERICITA', 3166303, 17),
+(3025, 'SERITINGA', 3166402, 17),
+(3026, 'SERRA AZUL DE MINAS', 3166501, 17),
+(3027, 'SERRA DA SAUDADE', 3166600, 17),
+(3028, 'SERRA DOS AIMORÉS', 3166709, 17),
+(3029, 'SERRA DO SALITRE', 3166808, 17),
+(3030, 'SERRANIA', 3166907, 17),
+(3031, 'SERRANÓPOLIS DE MINAS', 3166956, 17),
+(3032, 'SERRANOS', 3167004, 17),
+(3033, 'SERRO', 3167103, 17),
+(3034, 'SETE LAGOAS', 3167202, 17),
+(3035, 'SILVEIRÂNIA', 3167301, 17),
+(3036, 'SILVIANÓPOLIS', 3167400, 17),
+(3037, 'SIMÃO PEREIRA', 3167509, 17),
+(3038, 'SIMONÉSIA', 3167608, 17),
+(3039, 'SOBRÁLIA', 3167707, 17),
+(3040, 'SOLEDADE DE MINAS', 3167806, 17),
+(3041, 'TABULEIRO', 3167905, 17),
+(3042, 'TAIOBEIRAS', 3168002, 17),
+(3043, 'TAPARUBA', 3168051, 17),
+(3044, 'TAPIRA', 3168101, 17),
+(3045, 'TAPIRAÍ', 3168200, 17),
+(3046, 'TAQUARAÇU DE MINAS', 3168309, 17),
+(3047, 'TARUMIRIM', 3168408, 17),
+(3048, 'TEIXEIRAS', 3168507, 17),
+(3049, 'TEÓFILO OTONI', 3168606, 17),
+(3050, 'TIMÓTEO', 3168705, 17),
+(3051, 'TIRADENTES', 3168804, 17),
+(3052, 'TIROS', 3168903, 17),
+(3053, 'TOCANTINS', 3169000, 17),
+(3054, 'TOCOS DO MOJI', 3169059, 17),
+(3055, 'TOLEDO', 3169109, 17),
+(3056, 'TOMBOS', 3169208, 17),
+(3057, 'TRÊS CORAÇÕES', 3169307, 17),
+(3058, 'TRÊS MARIAS', 3169356, 17),
+(3059, 'TRÊS PONTAS', 3169406, 17),
+(3060, 'TUMIRITINGA', 3169505, 17),
+(3061, 'TUPACIGUARA', 3169604, 17),
+(3062, 'TURMALINA', 3169703, 17),
+(3063, 'TURVOLÂNDIA', 3169802, 17),
+(3064, 'UBÁ', 3169901, 17),
+(3065, 'UBAÍ', 3170008, 17),
+(3066, 'UBAPORANGA', 3170057, 17),
+(3067, 'UBERABA', 3170107, 17),
+(3068, 'UBERLÂNDIA', 3170206, 17),
+(3069, 'UMBURATIBA', 3170305, 17),
+(3070, 'UNAÍ', 3170404, 17),
+(3071, 'UNIÃO DE MINAS', 3170438, 17),
+(3072, 'URUANA DE MINAS', 3170479, 17),
+(3073, 'URUCÂNIA', 3170503, 17),
+(3074, 'URUCUIA', 3170529, 17),
+(3075, 'VARGEM ALEGRE', 3170578, 17),
+(3076, 'VARGEM BONITA', 3170602, 17),
+(3077, 'VARGEM GRANDE DO RIO PARDO', 3170651, 17),
+(3078, 'VARGINHA', 3170701, 17),
+(3079, 'VARJÃO DE MINAS', 3170750, 17),
+(3080, 'VÁRZEA DA PALMA', 3170800, 17),
+(3081, 'VARZELÂNDIA', 3170909, 17),
+(3082, 'VAZANTE', 3171006, 17),
+(3083, 'VERDELÂNDIA', 3171030, 17),
+(3084, 'VEREDINHA', 3171071, 17),
+(3085, 'VERÍSSIMO', 3171105, 17),
+(3086, 'VERMELHO NOVO', 3171154, 17),
+(3087, 'VESPASIANO', 3171204, 17),
+(3088, 'VIÇOSA', 3171303, 17),
+(3089, 'VIEIRAS', 3171402, 17),
+(3090, 'MATHIAS LOBATO', 3171501, 17),
+(3091, 'VIRGEM DA LAPA', 3171600, 17),
+(3092, 'VIRGÍNIA', 3171709, 17),
+(3093, 'VIRGINÓPOLIS', 3171808, 17),
+(3094, 'VIRGOLÂNDIA', 3171907, 17),
+(3095, 'VISCONDE DO RIO BRANCO', 3172004, 17),
+(3096, 'VOLTA GRANDE', 3172103, 17),
+(3097, 'WENCESLAU BRAZ', 3172202, 17),
+(3098, 'AFONSO CLÁUDIO', 3200102, 18),
+(3099, 'ÁGUIA BRANCA', 3200136, 18),
+(3100, 'ÁGUA DOCE DO NORTE', 3200169, 18),
+(3101, 'ALEGRE', 3200201, 18),
+(3102, 'ALFREDO CHAVES', 3200300, 18),
+(3103, 'ALTO RIO NOVO', 3200359, 18),
+(3104, 'ANCHIETA', 3200409, 18),
+(3105, 'APIACÁ', 3200508, 18),
+(3106, 'ARACRUZ', 3200607, 18),
+(3107, 'ATILIO VIVACQUA', 3200706, 18),
+(3108, 'BAIXO GUANDU', 3200805, 18),
+(3109, 'BARRA DE SÃO FRANCISCO', 3200904, 18),
+(3110, 'BOA ESPERANÇA', 3201001, 18),
+(3111, 'BOM JESUS DO NORTE', 3201100, 18),
+(3112, 'BREJETUBA', 3201159, 18),
+(3113, 'CACHOEIRO DE ITAPEMIRIM', 3201209, 18),
+(3114, 'CARIACICA', 3201308, 18),
+(3115, 'CASTELO', 3201407, 18),
+(3116, 'COLATINA', 3201506, 18),
+(3117, 'CONCEIÇÃO DA BARRA', 3201605, 18),
+(3118, 'CONCEIÇÃO DO CASTELO', 3201704, 18),
+(3119, 'DIVINO DE SÃO LOURENÇO', 3201803, 18),
+(3120, 'DOMINGOS MARTINS', 3201902, 18),
+(3121, 'DORES DO RIO PRETO', 3202009, 18),
+(3122, 'ECOPORANGA', 3202108, 18),
+(3123, 'FUNDÃO', 3202207, 18),
+(3124, 'GOVERNADOR LINDENBERG', 3202256, 18),
+(3125, 'GUAÇUÍ', 3202306, 18),
+(3126, 'GUARAPARI', 3202405, 18),
+(3127, 'IBATIBA', 3202454, 18),
+(3128, 'IBIRAÇU', 3202504, 18),
+(3129, 'IBITIRAMA', 3202553, 18),
+(3130, 'ICONHA', 3202603, 18),
+(3131, 'IRUPI', 3202652, 18),
+(3132, 'ITAGUAÇU', 3202702, 18),
+(3133, 'ITAPEMIRIM', 3202801, 18),
+(3134, 'ITARANA', 3202900, 18),
+(3135, 'IÚNA', 3203007, 18),
+(3136, 'JAGUARÉ', 3203056, 18),
+(3137, 'JERÔNIMO MONTEIRO', 3203106, 18),
+(3138, 'JOÃO NEIVA', 3203130, 18),
+(3139, 'LARANJA DA TERRA', 3203163, 18),
+(3140, 'LINHARES', 3203205, 18),
+(3141, 'MANTENÓPOLIS', 3203304, 18),
+(3142, 'MARATAÍZES', 3203320, 18),
+(3143, 'MARECHAL FLORIANO', 3203346, 18),
+(3144, 'MARILÂNDIA', 3203353, 18),
+(3145, 'MIMOSO DO SUL', 3203403, 18),
+(3146, 'MONTANHA', 3203502, 18),
+(3147, 'MUCURICI', 3203601, 18),
+(3148, 'MUNIZ FREIRE', 3203700, 18),
+(3149, 'MUQUI', 3203809, 18),
+(3150, 'NOVA VENÉCIA', 3203908, 18),
+(3151, 'PANCAS', 3204005, 18),
+(3152, 'PEDRO CANÁRIO', 3204054, 18),
+(3153, 'PINHEIROS', 3204104, 18),
+(3154, 'PIÚMA', 3204203, 18),
+(3155, 'PONTO BELO', 3204252, 18),
+(3156, 'PRESIDENTE KENNEDY', 3204302, 18),
+(3157, 'RIO BANANAL', 3204351, 18),
+(3158, 'RIO NOVO DO SUL', 3204401, 18),
+(3159, 'SANTA LEOPOLDINA', 3204500, 18),
+(3160, 'SANTA MARIA DE JETIBÁ', 3204559, 18),
+(3161, 'SANTA TERESA', 3204609, 18),
+(3162, 'SÃO DOMINGOS DO NORTE', 3204658, 18),
+(3163, 'SÃO GABRIEL DA PALHA', 3204708, 18),
+(3164, 'SÃO JOSÉ DO CALÇADO', 3204807, 18),
+(3165, 'SÃO MATEUS', 3204906, 18),
+(3166, 'SÃO ROQUE DO CANAÃ', 3204955, 18),
+(3167, 'SERRA', 3205002, 18),
+(3168, 'SOORETAMA', 3205010, 18),
+(3169, 'VARGEM ALTA', 3205036, 18),
+(3170, 'VENDA NOVA DO IMIGRANTE', 3205069, 18),
+(3171, 'VIANA', 3205101, 18),
+(3172, 'VILA PAVÃO', 3205150, 18),
+(3173, 'VILA VALÉRIO', 3205176, 18),
+(3174, 'VILA VELHA', 3205200, 18),
+(3175, 'VITÓRIA', 3205309, 18),
+(3176, 'ANGRA DOS REIS', 3300100, 19),
+(3177, 'APERIBÉ', 3300159, 19),
+(3178, 'ARARUAMA', 3300209, 19),
+(3179, 'AREAL', 3300225, 19),
+(3180, 'ARMAÇÃO DOS BÚZIOS', 3300233, 19),
+(3181, 'ARRAIAL DO CABO', 3300258, 19),
+(3182, 'BARRA DO PIRAÍ', 3300308, 19),
+(3183, 'BARRA MANSA', 3300407, 19),
+(3184, 'BELFORD ROXO', 3300456, 19),
+(3185, 'BOM JARDIM', 3300506, 19),
+(3186, 'BOM JESUS DO ITABAPOANA', 3300605, 19),
+(3187, 'CABO FRIO', 3300704, 19),
+(3188, 'CACHOEIRAS DE MACACU', 3300803, 19),
+(3189, 'CAMBUCI', 3300902, 19),
+(3190, 'CARAPEBUS', 3300936, 19),
+(3191, 'COMENDADOR LEVY GASPARIAN', 3300951, 19),
+(3192, 'CAMPOS DOS GOYTACAZES', 3301009, 19),
+(3193, 'CANTAGALO', 3301108, 19),
+(3194, 'CARDOSO MOREIRA', 3301157, 19),
+(3195, 'CARMO', 3301207, 19),
+(3196, 'CASIMIRO DE ABREU', 3301306, 19),
+(3197, 'CONCEIÇÃO DE MACABU', 3301405, 19),
+(3198, 'CORDEIRO', 3301504, 19),
+(3199, 'DUAS BARRAS', 3301603, 19),
+(3200, 'DUQUE DE CAXIAS', 3301702, 19),
+(3201, 'ENGENHEIRO PAULO DE FRONTIN', 3301801, 19),
+(3202, 'GUAPIMIRIM', 3301850, 19),
+(3203, 'IGUABA GRANDE', 3301876, 19),
+(3204, 'ITABORAÍ', 3301900, 19),
+(3205, 'ITAGUAÍ', 3302007, 19),
+(3206, 'ITALVA', 3302056, 19),
+(3207, 'ITAOCARA', 3302106, 19),
+(3208, 'ITAPERUNA', 3302205, 19),
+(3209, 'ITATIAIA', 3302254, 19),
+(3210, 'JAPERI', 3302270, 19),
+(3211, 'LAJE DO MURIAÉ', 3302304, 19),
+(3212, 'MACAÉ', 3302403, 19),
+(3213, 'MACUCO', 3302452, 19),
+(3214, 'MAGÉ', 3302502, 19),
+(3215, 'MANGARATIBA', 3302601, 19),
+(3216, 'MARICÁ', 3302700, 19),
+(3217, 'MENDES', 3302809, 19),
+(3218, 'MESQUITA', 3302858, 19),
+(3219, 'MIGUEL PEREIRA', 3302908, 19),
+(3220, 'MIRACEMA', 3303005, 19),
+(3221, 'NATIVIDADE', 3303104, 19),
+(3222, 'NILÓPOLIS', 3303203, 19),
+(3223, 'NITERÓI', 3303302, 19),
+(3224, 'NOVA FRIBURGO', 3303401, 19),
+(3225, 'NOVA IGUAÇU', 3303500, 19),
+(3226, 'PARACAMBI', 3303609, 19),
+(3227, 'PARAÍBA DO SUL', 3303708, 19),
+(3228, 'PARATY', 3303807, 19),
+(3229, 'PATY DO ALFERES', 3303856, 19),
+(3230, 'PETRÓPOLIS', 3303906, 19),
+(3231, 'PINHEIRAL', 3303955, 19),
+(3232, 'PIRAÍ', 3304003, 19),
+(3233, 'PORCIÚNCULA', 3304102, 19),
+(3234, 'PORTO REAL', 3304110, 19),
+(3235, 'QUATIS', 3304128, 19),
+(3236, 'QUEIMADOS', 3304144, 19),
+(3237, 'QUISSAMÃ', 3304151, 19),
+(3238, 'RESENDE', 3304201, 19),
+(3239, 'RIO BONITO', 3304300, 19),
+(3240, 'RIO CLARO', 3304409, 19),
+(3241, 'RIO DAS FLORES', 3304508, 19),
+(3242, 'RIO DAS OSTRAS', 3304524, 19),
+(3243, 'RIO DE JANEIRO', 3304557, 19),
+(3244, 'SANTA MARIA MADALENA', 3304607, 19),
+(3245, 'SANTO ANTÔNIO DE PÁDUA', 3304706, 19),
+(3246, 'SÃO FRANCISCO DE ITABAPOANA', 3304755, 19),
+(3247, 'SÃO FIDÉLIS', 3304805, 19),
+(3248, 'SÃO GONÇALO', 3304904, 19),
+(3249, 'SÃO JOÃO DA BARRA', 3305000, 19),
+(3250, 'SÃO JOÃO DE MERITI', 3305109, 19),
+(3251, 'SÃO JOSÉ DE UBÁ', 3305133, 19),
+(3252, 'SÃO JOSÉ DO VALE DO RIO PRETO', 3305158, 19),
+(3253, 'SÃO PEDRO DA ALDEIA', 3305208, 19),
+(3254, 'SÃO SEBASTIÃO DO ALTO', 3305307, 19),
+(3255, 'SAPUCAIA', 3305406, 19),
+(3256, 'SAQUAREMA', 3305505, 19),
+(3257, 'SEROPÉDICA', 3305554, 19),
+(3258, 'SILVA JARDIM', 3305604, 19),
+(3259, 'SUMIDOURO', 3305703, 19),
+(3260, 'TANGUÁ', 3305752, 19),
+(3261, 'TERESÓPOLIS', 3305802, 19),
+(3262, 'TRAJANO DE MORAES', 3305901, 19),
+(3263, 'TRÊS RIOS', 3306008, 19),
+(3264, 'VALENÇA', 3306107, 19),
+(3265, 'VARRE-SAI', 3306156, 19),
+(3266, 'VASSOURAS', 3306206, 19),
+(3267, 'VOLTA REDONDA', 3306305, 19),
+(3268, 'ADAMANTINA', 3500105, 20),
+(3269, 'ADOLFO', 3500204, 20),
+(3270, 'AGUAÍ', 3500303, 20),
+(3271, 'ÁGUAS DA PRATA', 3500402, 20),
+(3272, 'ÁGUAS DE LINDÓIA', 3500501, 20),
+(3273, 'ÁGUAS DE SANTA BÁRBARA', 3500550, 20),
+(3274, 'ÁGUAS DE SÃO PEDRO', 3500600, 20),
+(3275, 'AGUDOS', 3500709, 20),
+(3276, 'ALAMBARI', 3500758, 20),
+(3277, 'ALFREDO MARCONDES', 3500808, 20),
+(3278, 'ALTAIR', 3500907, 20),
+(3279, 'ALTINÓPOLIS', 3501004, 20),
+(3280, 'ALTO ALEGRE', 3501103, 20),
+(3281, 'ALUMÍNIO', 3501152, 20),
+(3282, 'ÁLVARES FLORENCE', 3501202, 20),
+(3283, 'ÁLVARES MACHADO', 3501301, 20),
+(3284, 'ÁLVARO DE CARVALHO', 3501400, 20),
+(3285, 'ALVINLÂNDIA', 3501509, 20),
+(3286, 'AMERICANA', 3501608, 20),
+(3287, 'AMÉRICO BRASILIENSE', 3501707, 20),
+(3288, 'AMÉRICO DE CAMPOS', 3501806, 20),
+(3289, 'AMPARO', 3501905, 20),
+(3290, 'ANALÂNDIA', 3502002, 20),
+(3291, 'ANDRADINA', 3502101, 20),
+(3292, 'ANGATUBA', 3502200, 20),
+(3293, 'ANHEMBI', 3502309, 20),
+(3294, 'ANHUMAS', 3502408, 20),
+(3295, 'APARECIDA', 3502507, 20),
+(3296, 'APARECIDA D\'OESTE', 3502606, 20),
+(3297, 'APIAÍ', 3502705, 20),
+(3298, 'ARAÇARIGUAMA', 3502754, 20),
+(3299, 'ARAÇATUBA', 3502804, 20),
+(3300, 'ARAÇOIABA DA SERRA', 3502903, 20),
+(3301, 'ARAMINA', 3503000, 20),
+(3302, 'ARANDU', 3503109, 20),
+(3303, 'ARAPEÍ', 3503158, 20),
+(3304, 'ARARAQUARA', 3503208, 20),
+(3305, 'ARARAS', 3503307, 20),
+(3306, 'ARCO-ÍRIS', 3503356, 20),
+(3307, 'AREALVA', 3503406, 20),
+(3308, 'AREIAS', 3503505, 20),
+(3309, 'AREIÓPOLIS', 3503604, 20),
+(3310, 'ARIRANHA', 3503703, 20),
+(3311, 'ARTUR NOGUEIRA', 3503802, 20),
+(3312, 'ARUJÁ', 3503901, 20),
+(3313, 'ASPÁSIA', 3503950, 20),
+(3314, 'ASSIS', 3504008, 20),
+(3315, 'ATIBAIA', 3504107, 20),
+(3316, 'AURIFLAMA', 3504206, 20),
+(3317, 'AVAÍ', 3504305, 20),
+(3318, 'AVANHANDAVA', 3504404, 20),
+(3319, 'AVARÉ', 3504503, 20),
+(3320, 'BADY BASSITT', 3504602, 20),
+(3321, 'BALBINOS', 3504701, 20),
+(3322, 'BÁLSAMO', 3504800, 20),
+(3323, 'BANANAL', 3504909, 20),
+(3324, 'BARÃO DE ANTONINA', 3505005, 20),
+(3325, 'BARBOSA', 3505104, 20),
+(3326, 'BARIRI', 3505203, 20),
+(3327, 'BARRA BONITA', 3505302, 20),
+(3328, 'BARRA DO CHAPÉU', 3505351, 20),
+(3329, 'BARRA DO TURVO', 3505401, 20),
+(3330, 'BARRETOS', 3505500, 20),
+(3331, 'BARRINHA', 3505609, 20),
+(3332, 'BARUERI', 3505708, 20),
+(3333, 'BASTOS', 3505807, 20),
+(3334, 'BATATAIS', 3505906, 20),
+(3335, 'BAURU', 3506003, 20),
+(3336, 'BEBEDOURO', 3506102, 20),
+(3337, 'BENTO DE ABREU', 3506201, 20),
+(3338, 'BERNARDINO DE CAMPOS', 3506300, 20),
+(3339, 'BERTIOGA', 3506359, 20),
+(3340, 'BILAC', 3506409, 20),
+(3341, 'BIRIGUI', 3506508, 20),
+(3342, 'BIRITIBA-MIRIM', 3506607, 20),
+(3343, 'BOA ESPERANÇA DO SUL', 3506706, 20),
+(3344, 'BOCAINA', 3506805, 20),
+(3345, 'BOFETE', 3506904, 20),
+(3346, 'BOITUVA', 3507001, 20),
+(3347, 'BOM JESUS DOS PERDÕES', 3507100, 20),
+(3348, 'BOM SUCESSO DE ITARARÉ', 3507159, 20),
+(3349, 'BORÁ', 3507209, 20),
+(3350, 'BORACÉIA', 3507308, 20),
+(3351, 'BORBOREMA', 3507407, 20),
+(3352, 'BOREBI', 3507456, 20),
+(3353, 'BOTUCATU', 3507506, 20),
+(3354, 'BRAGANÇA PAULISTA', 3507605, 20),
+(3355, 'BRAÚNA', 3507704, 20),
+(3356, 'BREJO ALEGRE', 3507753, 20),
+(3357, 'BRODOWSKI', 3507803, 20),
+(3358, 'BROTAS', 3507902, 20),
+(3359, 'BURI', 3508009, 20),
+(3360, 'BURITAMA', 3508108, 20),
+(3361, 'BURITIZAL', 3508207, 20),
+(3362, 'CABRÁLIA PAULISTA', 3508306, 20),
+(3363, 'CABREÚVA', 3508405, 20),
+(3364, 'CAÇAPAVA', 3508504, 20),
+(3365, 'CACHOEIRA PAULISTA', 3508603, 20),
+(3366, 'CACONDE', 3508702, 20),
+(3367, 'CAFELÂNDIA', 3508801, 20),
+(3368, 'CAIABU', 3508900, 20),
+(3369, 'CAIEIRAS', 3509007, 20),
+(3370, 'CAIUÁ', 3509106, 20),
+(3371, 'CAJAMAR', 3509205, 20),
+(3372, 'CAJATI', 3509254, 20),
+(3373, 'CAJOBI', 3509304, 20),
+(3374, 'CAJURU', 3509403, 20),
+(3375, 'CAMPINA DO MONTE ALEGRE', 3509452, 20),
+(3376, 'CAMPINAS', 3509502, 20),
+(3377, 'CAMPO LIMPO PAULISTA', 3509601, 20),
+(3378, 'CAMPOS DO JORDÃO', 3509700, 20),
+(3379, 'CAMPOS NOVOS PAULISTA', 3509809, 20),
+(3380, 'CANANÉIA', 3509908, 20),
+(3381, 'CANAS', 3509957, 20),
+(3382, 'CÂNDIDO MOTA', 3510005, 20),
+(3383, 'CÂNDIDO RODRIGUES', 3510104, 20),
+(3384, 'CANITAR', 3510153, 20),
+(3385, 'CAPÃO BONITO', 3510203, 20),
+(3386, 'CAPELA DO ALTO', 3510302, 20),
+(3387, 'CAPIVARI', 3510401, 20),
+(3388, 'CARAGUATATUBA', 3510500, 20),
+(3389, 'CARAPICUÍBA', 3510609, 20),
+(3390, 'CARDOSO', 3510708, 20),
+(3391, 'CASA BRANCA', 3510807, 20),
+(3392, 'CÁSSIA DOS COQUEIROS', 3510906, 20),
+(3393, 'CASTILHO', 3511003, 20),
+(3394, 'CATANDUVA', 3511102, 20),
+(3395, 'CATIGUÁ', 3511201, 20),
+(3396, 'CEDRAL', 3511300, 20),
+(3397, 'CERQUEIRA CÉSAR', 3511409, 20),
+(3398, 'CERQUILHO', 3511508, 20),
+(3399, 'CESÁRIO LANGE', 3511607, 20),
+(3400, 'CHARQUEADA', 3511706, 20),
+(3401, 'CLEMENTINA', 3511904, 20),
+(3402, 'COLINA', 3512001, 20),
+(3403, 'COLÔMBIA', 3512100, 20),
+(3404, 'CONCHAL', 3512209, 20),
+(3405, 'CONCHAS', 3512308, 20),
+(3406, 'CORDEIRÓPOLIS', 3512407, 20),
+(3407, 'COROADOS', 3512506, 20),
+(3408, 'CORONEL MACEDO', 3512605, 20),
+(3409, 'CORUMBATAÍ', 3512704, 20),
+(3410, 'COSMÓPOLIS', 3512803, 20),
+(3411, 'COSMORAMA', 3512902, 20),
+(3412, 'COTIA', 3513009, 20),
+(3413, 'CRAVINHOS', 3513108, 20),
+(3414, 'CRISTAIS PAULISTA', 3513207, 20),
+(3415, 'CRUZÁLIA', 3513306, 20),
+(3416, 'CRUZEIRO', 3513405, 20),
+(3417, 'CUBATÃO', 3513504, 20),
+(3418, 'CUNHA', 3513603, 20),
+(3419, 'DESCALVADO', 3513702, 20),
+(3420, 'DIADEMA', 3513801, 20),
+(3421, 'DIRCE REIS', 3513850, 20),
+(3422, 'DIVINOLÂNDIA', 3513900, 20),
+(3423, 'DOBRADA', 3514007, 20),
+(3424, 'DOIS CÓRREGOS', 3514106, 20),
+(3425, 'DOLCINÓPOLIS', 3514205, 20),
+(3426, 'DOURADO', 3514304, 20),
+(3427, 'DRACENA', 3514403, 20),
+(3428, 'DUARTINA', 3514502, 20),
+(3429, 'DUMONT', 3514601, 20),
+(3430, 'ECHAPORÃ', 3514700, 20),
+(3431, 'ELDORADO', 3514809, 20),
+(3432, 'ELIAS FAUSTO', 3514908, 20),
+(3433, 'ELISIÁRIO', 3514924, 20),
+(3434, 'EMBAÚBA', 3514957, 20),
+(3435, 'EMBU DAS ARTES', 3515004, 20),
+(3436, 'EMBU-GUAÇU', 3515103, 20),
+(3437, 'EMILIANÓPOLIS', 3515129, 20),
+(3438, 'ENGENHEIRO COELHO', 3515152, 20),
+(3439, 'ESPÍRITO SANTO DO PINHAL', 3515186, 20),
+(3440, 'ESPÍRITO SANTO DO TURVO', 3515194, 20),
+(3441, 'ESTRELA D\'OESTE', 3515202, 20),
+(3442, 'ESTRELA DO NORTE', 3515301, 20),
+(3443, 'EUCLIDES DA CUNHA PAULISTA', 3515350, 20),
+(3444, 'FARTURA', 3515400, 20),
+(3445, 'FERNANDÓPOLIS', 3515509, 20),
+(3446, 'FERNANDO PRESTES', 3515608, 20),
+(3447, 'FERNÃO', 3515657, 20),
+(3448, 'FERRAZ DE VASCONCELOS', 3515707, 20),
+(3449, 'FLORA RICA', 3515806, 20),
+(3450, 'FLOREAL', 3515905, 20),
+(3451, 'FLÓRIDA PAULISTA', 3516002, 20),
+(3452, 'FLORÍNIA', 3516101, 20),
+(3453, 'FRANCA', 3516200, 20),
+(3454, 'FRANCISCO MORATO', 3516309, 20),
+(3455, 'FRANCO DA ROCHA', 3516408, 20),
+(3456, 'GABRIEL MONTEIRO', 3516507, 20),
+(3457, 'GÁLIA', 3516606, 20),
+(3458, 'GARÇA', 3516705, 20),
+(3459, 'GASTÃO VIDIGAL', 3516804, 20),
+(3460, 'GAVIÃO PEIXOTO', 3516853, 20),
+(3461, 'GENERAL SALGADO', 3516903, 20),
+(3462, 'GETULINA', 3517000, 20),
+(3463, 'GLICÉRIO', 3517109, 20),
+(3464, 'GUAIÇARA', 3517208, 20),
+(3465, 'GUAIMBÊ', 3517307, 20),
+(3466, 'GUAÍRA', 3517406, 20),
+(3467, 'GUAPIAÇU', 3517505, 20),
+(3468, 'GUAPIARA', 3517604, 20),
+(3469, 'GUARÁ', 3517703, 20),
+(3470, 'GUARAÇAÍ', 3517802, 20),
+(3471, 'GUARACI', 3517901, 20),
+(3472, 'GUARANI D\'OESTE', 3518008, 20),
+(3473, 'GUARANTÃ', 3518107, 20),
+(3474, 'GUARARAPES', 3518206, 20),
+(3475, 'GUARAREMA', 3518305, 20),
+(3476, 'GUARATINGUETÁ', 3518404, 20),
+(3477, 'GUAREÍ', 3518503, 20),
+(3478, 'GUARIBA', 3518602, 20),
+(3479, 'GUARUJÁ', 3518701, 20),
+(3480, 'GUARULHOS', 3518800, 20),
+(3481, 'GUATAPARÁ', 3518859, 20),
+(3482, 'GUZOLÂNDIA', 3518909, 20),
+(3483, 'HERCULÂNDIA', 3519006, 20),
+(3484, 'HOLAMBRA', 3519055, 20),
+(3485, 'HORTOLÂNDIA', 3519071, 20),
+(3486, 'IACANGA', 3519105, 20),
+(3487, 'IACRI', 3519204, 20),
+(3488, 'IARAS', 3519253, 20),
+(3489, 'IBATÉ', 3519303, 20),
+(3490, 'IBIRÁ', 3519402, 20),
+(3491, 'IBIRAREMA', 3519501, 20),
+(3492, 'IBITINGA', 3519600, 20),
+(3493, 'IBIÚNA', 3519709, 20),
+(3494, 'ICÉM', 3519808, 20),
+(3495, 'IEPÊ', 3519907, 20),
+(3496, 'IGARAÇU DO TIETÊ', 3520004, 20),
+(3497, 'IGARAPAVA', 3520103, 20),
+(3498, 'IGARATÁ', 3520202, 20),
+(3499, 'IGUAPE', 3520301, 20),
+(3500, 'ILHABELA', 3520400, 20),
+(3501, 'ILHA COMPRIDA', 3520426, 20),
+(3502, 'ILHA SOLTEIRA', 3520442, 20),
+(3503, 'INDAIATUBA', 3520509, 20),
+(3504, 'INDIANA', 3520608, 20),
+(3505, 'INDIAPORÃ', 3520707, 20),
+(3506, 'INÚBIA PAULISTA', 3520806, 20),
+(3507, 'IPAUSSU', 3520905, 20),
+(3508, 'IPERÓ', 3521002, 20),
+(3509, 'IPEÚNA', 3521101, 20),
+(3510, 'IPIGUÁ', 3521150, 20),
+(3511, 'IPORANGA', 3521200, 20),
+(3512, 'IPUÃ', 3521309, 20),
+(3513, 'IRACEMÁPOLIS', 3521408, 20),
+(3514, 'IRAPUÃ', 3521507, 20),
+(3515, 'IRAPURU', 3521606, 20),
+(3516, 'ITABERÁ', 3521705, 20),
+(3517, 'ITAÍ', 3521804, 20),
+(3518, 'ITAJOBI', 3521903, 20),
+(3519, 'ITAJU', 3522000, 20),
+(3520, 'ITANHAÉM', 3522109, 20),
+(3521, 'ITAÓCA', 3522158, 20),
+(3522, 'ITAPECERICA DA SERRA', 3522208, 20),
+(3523, 'ITAPETININGA', 3522307, 20),
+(3524, 'ITAPEVA', 3522406, 20),
+(3525, 'ITAPEVI', 3522505, 20),
+(3526, 'ITAPIRA', 3522604, 20),
+(3527, 'ITAPIRAPUÃ PAULISTA', 3522653, 20),
+(3528, 'ITÁPOLIS', 3522703, 20),
+(3529, 'ITAPORANGA', 3522802, 20),
+(3530, 'ITAPUÍ', 3522901, 20),
+(3531, 'ITAPURA', 3523008, 20),
+(3532, 'ITAQUAQUECETUBA', 3523107, 20),
+(3533, 'ITARARÉ', 3523206, 20),
+(3534, 'ITARIRI', 3523305, 20),
+(3535, 'ITATIBA', 3523404, 20),
+(3536, 'ITATINGA', 3523503, 20),
+(3537, 'ITIRAPINA', 3523602, 20),
+(3538, 'ITIRAPUÃ', 3523701, 20),
+(3539, 'ITOBI', 3523800, 20),
+(3540, 'ITU', 3523909, 20),
+(3541, 'ITUPEVA', 3524006, 20),
+(3542, 'ITUVERAVA', 3524105, 20),
+(3543, 'JABORANDI', 3524204, 20),
+(3544, 'JABOTICABAL', 3524303, 20),
+(3545, 'JACAREÍ', 3524402, 20),
+(3546, 'JACI', 3524501, 20),
+(3547, 'JACUPIRANGA', 3524600, 20),
+(3548, 'JAGUARIÚNA', 3524709, 20),
+(3549, 'JALES', 3524808, 20),
+(3550, 'JAMBEIRO', 3524907, 20),
+(3551, 'JANDIRA', 3525003, 20),
+(3552, 'JARDINÓPOLIS', 3525102, 20),
+(3553, 'JARINU', 3525201, 20),
+(3554, 'JAÚ', 3525300, 20),
+(3555, 'JERIQUARA', 3525409, 20),
+(3556, 'JOANÓPOLIS', 3525508, 20),
+(3557, 'JOÃO RAMALHO', 3525607, 20),
+(3558, 'JOSÉ BONIFÁCIO', 3525706, 20),
+(3559, 'JÚLIO MESQUITA', 3525805, 20),
+(3560, 'JUMIRIM', 3525854, 20),
+(3561, 'JUNDIAÍ', 3525904, 20),
+(3562, 'JUNQUEIRÓPOLIS', 3526001, 20),
+(3563, 'JUQUIÁ', 3526100, 20),
+(3564, 'JUQUITIBA', 3526209, 20),
+(3565, 'LAGOINHA', 3526308, 20),
+(3566, 'LARANJAL PAULISTA', 3526407, 20),
+(3567, 'LAVÍNIA', 3526506, 20),
+(3568, 'LAVRINHAS', 3526605, 20),
+(3569, 'LEME', 3526704, 20),
+(3570, 'LENÇÓIS PAULISTA', 3526803, 20),
+(3571, 'LIMEIRA', 3526902, 20),
+(3572, 'LINDÓIA', 3527009, 20),
+(3573, 'LINS', 3527108, 20),
+(3574, 'LORENA', 3527207, 20),
+(3575, 'LOURDES', 3527256, 20),
+(3576, 'LOUVEIRA', 3527306, 20),
+(3577, 'LUCÉLIA', 3527405, 20),
+(3578, 'LUCIANÓPOLIS', 3527504, 20),
+(3579, 'LUÍS ANTÔNIO', 3527603, 20),
+(3580, 'LUIZIÂNIA', 3527702, 20),
+(3581, 'LUPÉRCIO', 3527801, 20),
+(3582, 'LUTÉCIA', 3527900, 20),
+(3583, 'MACATUBA', 3528007, 20),
+(3584, 'MACAUBAL', 3528106, 20),
+(3585, 'MACEDÔNIA', 3528205, 20),
+(3586, 'MAGDA', 3528304, 20),
+(3587, 'MAIRINQUE', 3528403, 20),
+(3588, 'MAIRIPORÃ', 3528502, 20),
+(3589, 'MANDURI', 3528601, 20),
+(3590, 'MARABÁ PAULISTA', 3528700, 20),
+(3591, 'MARACAÍ', 3528809, 20),
+(3592, 'MARAPOAMA', 3528858, 20),
+(3593, 'MARIÁPOLIS', 3528908, 20),
+(3594, 'MARÍLIA', 3529005, 20),
+(3595, 'MARINÓPOLIS', 3529104, 20),
+(3596, 'MARTINÓPOLIS', 3529203, 20),
+(3597, 'MATÃO', 3529302, 20),
+(3598, 'MAUÁ', 3529401, 20),
+(3599, 'MENDONÇA', 3529500, 20),
+(3600, 'MERIDIANO', 3529609, 20),
+(3601, 'MESÓPOLIS', 3529658, 20),
+(3602, 'MIGUELÓPOLIS', 3529708, 20),
+(3603, 'MINEIROS DO TIETÊ', 3529807, 20),
+(3604, 'MIRACATU', 3529906, 20),
+(3605, 'MIRA ESTRELA', 3530003, 20),
+(3606, 'MIRANDÓPOLIS', 3530102, 20),
+(3607, 'MIRANTE DO PARANAPANEMA', 3530201, 20),
+(3608, 'MIRASSOL', 3530300, 20),
+(3609, 'MIRASSOLÂNDIA', 3530409, 20),
+(3610, 'MOCOCA', 3530508, 20),
+(3611, 'MOGI DAS CRUZES', 3530607, 20),
+(3612, 'MOGI GUAÇU', 3530706, 20),
+(3613, 'MOGI MIRIM', 3530805, 20),
+(3614, 'MOMBUCA', 3530904, 20),
+(3615, 'MONÇÕES', 3531001, 20),
+(3616, 'MONGAGUÁ', 3531100, 20),
+(3617, 'MONTE ALEGRE DO SUL', 3531209, 20),
+(3618, 'MONTE ALTO', 3531308, 20),
+(3619, 'MONTE APRAZÍVEL', 3531407, 20),
+(3620, 'MONTE AZUL PAULISTA', 3531506, 20),
+(3621, 'MONTE CASTELO', 3531605, 20),
+(3622, 'MONTEIRO LOBATO', 3531704, 20),
+(3623, 'MONTE MOR', 3531803, 20),
+(3624, 'MORRO AGUDO', 3531902, 20),
+(3625, 'MORUNGABA', 3532009, 20),
+(3626, 'MOTUCA', 3532058, 20),
+(3627, 'MURUTINGA DO SUL', 3532108, 20),
+(3628, 'NANTES', 3532157, 20),
+(3629, 'NARANDIBA', 3532207, 20),
+(3630, 'NATIVIDADE DA SERRA', 3532306, 20),
+(3631, 'NAZARÉ PAULISTA', 3532405, 20),
+(3632, 'NEVES PAULISTA', 3532504, 20),
+(3633, 'NHANDEARA', 3532603, 20),
+(3634, 'NIPOÃ', 3532702, 20),
+(3635, 'NOVA ALIANÇA', 3532801, 20),
+(3636, 'NOVA CAMPINA', 3532827, 20),
+(3637, 'NOVA CANAÃ PAULISTA', 3532843, 20),
+(3638, 'NOVA CASTILHO', 3532868, 20),
+(3639, 'NOVA EUROPA', 3532900, 20),
+(3640, 'NOVA GRANADA', 3533007, 20),
+(3641, 'NOVA GUATAPORANGA', 3533106, 20),
+(3642, 'NOVA INDEPENDÊNCIA', 3533205, 20),
+(3643, 'NOVAIS', 3533254, 20),
+(3644, 'NOVA LUZITÂNIA', 3533304, 20),
+(3645, 'NOVA ODESSA', 3533403, 20),
+(3646, 'NOVO HORIZONTE', 3533502, 20),
+(3647, 'NUPORANGA', 3533601, 20),
+(3648, 'OCAUÇU', 3533700, 20),
+(3649, 'ÓLEO', 3533809, 20),
+(3650, 'OLÍMPIA', 3533908, 20),
+(3651, 'ONDA VERDE', 3534005, 20),
+(3652, 'ORIENTE', 3534104, 20),
+(3653, 'ORINDIÚVA', 3534203, 20),
+(3654, 'ORLÂNDIA', 3534302, 20),
+(3655, 'OSASCO', 3534401, 20),
+(3656, 'OSCAR BRESSANE', 3534500, 20),
+(3657, 'OSVALDO CRUZ', 3534609, 20),
+(3658, 'OURINHOS', 3534708, 20),
+(3659, 'OUROESTE', 3534757, 20),
+(3660, 'OURO VERDE', 3534807, 20),
+(3661, 'PACAEMBU', 3534906, 20),
+(3662, 'PALESTINA', 3535002, 20),
+(3663, 'PALMARES PAULISTA', 3535101, 20),
+(3664, 'PALMEIRA D\'OESTE', 3535200, 20),
+(3665, 'PALMITAL', 3535309, 20),
+(3666, 'PANORAMA', 3535408, 20),
+(3667, 'PARAGUAÇU PAULISTA', 3535507, 20),
+(3668, 'PARAIBUNA', 3535606, 20),
+(3669, 'PARAÍSO', 3535705, 20),
+(3670, 'PARANAPANEMA', 3535804, 20),
+(3671, 'PARANAPUÃ', 3535903, 20),
+(3672, 'PARAPUÃ', 3536000, 20),
+(3673, 'PARDINHO', 3536109, 20),
+(3674, 'PARIQUERA-AÇU', 3536208, 20),
+(3675, 'PARISI', 3536257, 20),
+(3676, 'PATROCÍNIO PAULISTA', 3536307, 20),
+(3677, 'PAULICÉIA', 3536406, 20),
+(3678, 'PAULÍNIA', 3536505, 20),
+(3679, 'PAULISTÂNIA', 3536570, 20),
+(3680, 'PAULO DE FARIA', 3536604, 20),
+(3681, 'PEDERNEIRAS', 3536703, 20),
+(3682, 'PEDRA BELA', 3536802, 20),
+(3683, 'PEDRANÓPOLIS', 3536901, 20),
+(3684, 'PEDREGULHO', 3537008, 20),
+(3685, 'PEDREIRA', 3537107, 20),
+(3686, 'PEDRINHAS PAULISTA', 3537156, 20),
+(3687, 'PEDRO DE TOLEDO', 3537206, 20),
+(3688, 'PENÁPOLIS', 3537305, 20),
+(3689, 'PEREIRA BARRETO', 3537404, 20),
+(3690, 'PEREIRAS', 3537503, 20),
+(3691, 'PERUÍBE', 3537602, 20),
+(3692, 'PIACATU', 3537701, 20),
+(3693, 'PIEDADE', 3537800, 20),
+(3694, 'PILAR DO SUL', 3537909, 20),
+(3695, 'PINDAMONHANGABA', 3538006, 20),
+(3696, 'PINDORAMA', 3538105, 20),
+(3697, 'PINHALZINHO', 3538204, 20),
+(3698, 'PIQUEROBI', 3538303, 20),
+(3699, 'PIQUETE', 3538501, 20),
+(3700, 'PIRACAIA', 3538600, 20),
+(3701, 'PIRACICABA', 3538709, 20),
+(3702, 'PIRAJU', 3538808, 20),
+(3703, 'PIRAJUÍ', 3538907, 20),
+(3704, 'PIRANGI', 3539004, 20),
+(3705, 'PIRAPORA DO BOM JESUS', 3539103, 20),
+(3706, 'PIRAPOZINHO', 3539202, 20),
+(3707, 'PIRASSUNUNGA', 3539301, 20),
+(3708, 'PIRATININGA', 3539400, 20),
+(3709, 'PITANGUEIRAS', 3539509, 20),
+(3710, 'PLANALTO', 3539608, 20),
+(3711, 'PLATINA', 3539707, 20),
+(3712, 'POÁ', 3539806, 20),
+(3713, 'POLONI', 3539905, 20),
+(3714, 'POMPÉIA', 3540002, 20),
+(3715, 'PONGAÍ', 3540101, 20),
+(3716, 'PONTAL', 3540200, 20),
+(3717, 'PONTALINDA', 3540259, 20),
+(3718, 'PONTES GESTAL', 3540309, 20),
+(3719, 'POPULINA', 3540408, 20),
+(3720, 'PORANGABA', 3540507, 20),
+(3721, 'PORTO FELIZ', 3540606, 20),
+(3722, 'PORTO FERREIRA', 3540705, 20),
+(3723, 'POTIM', 3540754, 20),
+(3724, 'POTIRENDABA', 3540804, 20),
+(3725, 'PRACINHA', 3540853, 20),
+(3726, 'PRADÓPOLIS', 3540903, 20),
+(3727, 'PRAIA GRANDE', 3541000, 20),
+(3728, 'PRATÂNIA', 3541059, 20),
+(3729, 'PRESIDENTE ALVES', 3541109, 20),
+(3730, 'PRESIDENTE BERNARDES', 3541208, 20),
+(3731, 'PRESIDENTE EPITÁCIO', 3541307, 20),
+(3732, 'PRESIDENTE PRUDENTE', 3541406, 20),
+(3733, 'PRESIDENTE VENCESLAU', 3541505, 20),
+(3734, 'PROMISSÃO', 3541604, 20),
+(3735, 'QUADRA', 3541653, 20),
+(3736, 'QUATÁ', 3541703, 20),
+(3737, 'QUEIROZ', 3541802, 20),
+(3738, 'QUELUZ', 3541901, 20),
+(3739, 'QUINTANA', 3542008, 20),
+(3740, 'RAFARD', 3542107, 20),
+(3741, 'RANCHARIA', 3542206, 20),
+(3742, 'REDENÇÃO DA SERRA', 3542305, 20),
+(3743, 'REGENTE FEIJÓ', 3542404, 20),
+(3744, 'REGINÓPOLIS', 3542503, 20),
+(3745, 'REGISTRO', 3542602, 20),
+(3746, 'RESTINGA', 3542701, 20),
+(3747, 'RIBEIRA', 3542800, 20),
+(3748, 'RIBEIRÃO BONITO', 3542909, 20),
+(3749, 'RIBEIRÃO BRANCO', 3543006, 20),
+(3750, 'RIBEIRÃO CORRENTE', 3543105, 20),
+(3751, 'RIBEIRÃO DO SUL', 3543204, 20),
+(3752, 'RIBEIRÃO DOS ÍNDIOS', 3543238, 20),
+(3753, 'RIBEIRÃO GRANDE', 3543253, 20),
+(3754, 'RIBEIRÃO PIRES', 3543303, 20),
+(3755, 'RIBEIRÃO PRETO', 3543402, 20),
+(3756, 'RIVERSUL', 3543501, 20),
+(3757, 'RIFAINA', 3543600, 20),
+(3758, 'RINCÃO', 3543709, 20),
+(3759, 'RINÓPOLIS', 3543808, 20),
+(3760, 'RIO CLARO', 3543907, 20),
+(3761, 'RIO DAS PEDRAS', 3544004, 20),
+(3762, 'RIO GRANDE DA SERRA', 3544103, 20),
+(3763, 'RIOLÂNDIA', 3544202, 20),
+(3764, 'ROSANA', 3544251, 20),
+(3765, 'ROSEIRA', 3544301, 20),
+(3766, 'RUBIÁCEA', 3544400, 20),
+(3767, 'RUBINÉIA', 3544509, 20),
+(3768, 'SABINO', 3544608, 20),
+(3769, 'SAGRES', 3544707, 20),
+(3770, 'SALES', 3544806, 20),
+(3771, 'SALES OLIVEIRA', 3544905, 20),
+(3772, 'SALESÓPOLIS', 3545001, 20),
+(3773, 'SALMOURÃO', 3545100, 20),
+(3774, 'SALTINHO', 3545159, 20),
+(3775, 'SALTO', 3545209, 20),
+(3776, 'SALTO DE PIRAPORA', 3545308, 20),
+(3777, 'SALTO GRANDE', 3545407, 20),
+(3778, 'SANDOVALINA', 3545506, 20),
+(3779, 'SANTA ADÉLIA', 3545605, 20),
+(3780, 'SANTA ALBERTINA', 3545704, 20),
+(3781, 'SANTA BÁRBARA D\'OESTE', 3545803, 20),
+(3782, 'SANTA BRANCA', 3546009, 20),
+(3783, 'SANTA CLARA D\'OESTE', 3546108, 20),
+(3784, 'SANTA CRUZ DA CONCEIÇÃO', 3546207, 20),
+(3785, 'SANTA CRUZ DA ESPERANÇA', 3546256, 20),
+(3786, 'SANTA CRUZ DAS PALMEIRAS', 3546306, 20),
+(3787, 'SANTA CRUZ DO RIO PARDO', 3546405, 20),
+(3788, 'SANTA ERNESTINA', 3546504, 20),
+(3789, 'SANTA FÉ DO SUL', 3546603, 20),
+(3790, 'SANTA GERTRUDES', 3546702, 20),
+(3791, 'SANTA ISABEL', 3546801, 20),
+(3792, 'SANTA LÚCIA', 3546900, 20),
+(3793, 'SANTA MARIA DA SERRA', 3547007, 20),
+(3794, 'SANTA MERCEDES', 3547106, 20),
+(3795, 'SANTANA DA PONTE PENSA', 3547205, 20),
+(3796, 'SANTANA DE PARNAÍBA', 3547304, 20),
+(3797, 'SANTA RITA D\'OESTE', 3547403, 20),
+(3798, 'SANTA RITA DO PASSA QUATRO', 3547502, 20),
+(3799, 'SANTA ROSA DE VITERBO', 3547601, 20),
+(3800, 'SANTA SALETE', 3547650, 20),
+(3801, 'SANTO ANASTÁCIO', 3547700, 20),
+(3802, 'SANTO ANDRÉ', 3547809, 20),
+(3803, 'SANTO ANTÔNIO DA ALEGRIA', 3547908, 20),
+(3804, 'SANTO ANTÔNIO DE POSSE', 3548005, 20),
+(3805, 'SANTO ANTÔNIO DO ARACANGUÁ', 3548054, 20),
+(3806, 'SANTO ANTÔNIO DO JARDIM', 3548104, 20),
+(3807, 'SANTO ANTÔNIO DO PINHAL', 3548203, 20),
+(3808, 'SANTO EXPEDITO', 3548302, 20),
+(3809, 'SANTÓPOLIS DO AGUAPEÍ', 3548401, 20),
+(3810, 'SANTOS', 3548500, 20),
+(3811, 'SÃO BENTO DO SAPUCAÍ', 3548609, 20),
+(3812, 'SÃO BERNARDO DO CAMPO', 3548708, 20),
+(3813, 'SÃO CAETANO DO SUL', 3548807, 20),
+(3814, 'SÃO CARLOS', 3548906, 20),
+(3815, 'SÃO FRANCISCO', 3549003, 20),
+(3816, 'SÃO JOÃO DA BOA VISTA', 3549102, 20),
+(3817, 'SÃO JOÃO DAS DUAS PONTES', 3549201, 20),
+(3818, 'SÃO JOÃO DE IRACEMA', 3549250, 20),
+(3819, 'SÃO JOÃO DO PAU D\'ALHO', 3549300, 20),
+(3820, 'SÃO JOAQUIM DA BARRA', 3549409, 20),
+(3821, 'SÃO JOSÉ DA BELA VISTA', 3549508, 20),
+(3822, 'SÃO JOSÉ DO BARREIRO', 3549607, 20),
+(3823, 'SÃO JOSÉ DO RIO PARDO', 3549706, 20),
+(3824, 'SÃO JOSÉ DO RIO PRETO', 3549805, 20),
+(3825, 'SÃO JOSÉ DOS CAMPOS', 3549904, 20),
+(3826, 'SÃO LOURENÇO DA SERRA', 3549953, 20),
+(3827, 'SÃO LUÍS DO PARAITINGA', 3550001, 20),
+(3828, 'SÃO MANUEL', 3550100, 20),
+(3829, 'SÃO MIGUEL ARCANJO', 3550209, 20),
+(3830, 'SÃO PAULO', 3550308, 20),
+(3831, 'SÃO PEDRO', 3550407, 20),
+(3832, 'SÃO PEDRO DO TURVO', 3550506, 20),
+(3833, 'SÃO ROQUE', 3550605, 20),
+(3834, 'SÃO SEBASTIÃO', 3550704, 20),
+(3835, 'SÃO SEBASTIÃO DA GRAMA', 3550803, 20),
+(3836, 'SÃO SIMÃO', 3550902, 20),
+(3837, 'SÃO VICENTE', 3551009, 20),
+(3838, 'SARAPUÍ', 3551108, 20),
+(3839, 'SARUTAIÁ', 3551207, 20),
+(3840, 'SEBASTIANÓPOLIS DO SUL', 3551306, 20),
+(3841, 'SERRA AZUL', 3551405, 20),
+(3842, 'SERRANA', 3551504, 20),
+(3843, 'SERRA NEGRA', 3551603, 20),
+(3844, 'SERTÃOZINHO', 3551702, 20),
+(3845, 'SETE BARRAS', 3551801, 20),
+(3846, 'SEVERÍNIA', 3551900, 20),
+(3847, 'SILVEIRAS', 3552007, 20),
+(3848, 'SOCORRO', 3552106, 20),
+(3849, 'SOROCABA', 3552205, 20),
+(3850, 'SUD MENNUCCI', 3552304, 20),
+(3851, 'SUMARÉ', 3552403, 20),
+(3852, 'SUZANO', 3552502, 20),
+(3853, 'SUZANÁPOLIS', 3552551, 20),
+(3854, 'TABAPUÃ', 3552601, 20),
+(3855, 'TABATINGA', 3552700, 20),
+(3856, 'TABOÃO DA SERRA', 3552809, 20),
+(3857, 'TACIBA', 3552908, 20),
+(3858, 'TAGUAÍ', 3553005, 20),
+(3859, 'TAIAÇU', 3553104, 20),
+(3860, 'TAIÚVA', 3553203, 20),
+(3861, 'TAMBAÚ', 3553302, 20),
+(3862, 'TANABI', 3553401, 20),
+(3863, 'TAPIRAÍ', 3553500, 20),
+(3864, 'TAPIRATIBA', 3553609, 20),
+(3865, 'TAQUARAL', 3553658, 20),
+(3866, 'TAQUARITINGA', 3553708, 20),
+(3867, 'TAQUARITUBA', 3553807, 20),
+(3868, 'TAQUARIVAÍ', 3553856, 20),
+(3869, 'TARABAI', 3553906, 20),
+(3870, 'TARUMÃ', 3553955, 20),
+(3871, 'TATUÍ', 3554003, 20),
+(3872, 'TAUBATÉ', 3554102, 20),
+(3873, 'TEJUPÁ', 3554201, 20),
+(3874, 'TEODORO SAMPAIO', 3554300, 20),
+(3875, 'TERRA ROXA', 3554409, 20),
+(3876, 'TIETÊ', 3554508, 20),
+(3877, 'TIMBURI', 3554607, 20),
+(3878, 'TORRE DE PEDRA', 3554656, 20),
+(3879, 'TORRINHA', 3554706, 20),
+(3880, 'TRABIJU', 3554755, 20),
+(3881, 'TREMEMBÉ', 3554805, 20),
+(3882, 'TRÊS FRONTEIRAS', 3554904, 20),
+(3883, 'TUIUTI', 3554953, 20),
+(3884, 'TUPÃ', 3555000, 20),
+(3885, 'TUPI PAULISTA', 3555109, 20),
+(3886, 'TURIÚBA', 3555208, 20),
+(3887, 'TURMALINA', 3555307, 20),
+(3888, 'UBARANA', 3555356, 20),
+(3889, 'UBATUBA', 3555406, 20),
+(3890, 'UBIRAJARA', 3555505, 20),
+(3891, 'UCHOA', 3555604, 20),
+(3892, 'UNIÃO PAULISTA', 3555703, 20),
+(3893, 'URÂNIA', 3555802, 20),
+(3894, 'URU', 3555901, 20),
+(3895, 'URUPÊS', 3556008, 20),
+(3896, 'VALENTIM GENTIL', 3556107, 20),
+(3897, 'VALINHOS', 3556206, 20),
+(3898, 'VALPARAÍSO', 3556305, 20),
+(3899, 'VARGEM', 3556354, 20),
+(3900, 'VARGEM GRANDE DO SUL', 3556404, 20),
+(3901, 'VARGEM GRANDE PAULISTA', 3556453, 20),
+(3902, 'VÁRZEA PAULISTA', 3556503, 20),
+(3903, 'VERA CRUZ', 3556602, 20),
+(3904, 'VINHEDO', 3556701, 20),
+(3905, 'VIRADOURO', 3556800, 20),
+(3906, 'VISTA ALEGRE DO ALTO', 3556909, 20),
+(3907, 'VITÓRIA BRASIL', 3556958, 20),
+(3908, 'VOTORANTIM', 3557006, 20),
+(3909, 'VOTUPORANGA', 3557105, 20),
+(3910, 'ZACARIAS', 3557154, 20),
+(3911, 'CHAVANTES', 3557204, 20),
+(3912, 'ESTIVA GERBI', 3557303, 20),
+(3913, 'ABATIÁ', 4100103, 21),
+(3914, 'ADRIANÓPOLIS', 4100202, 21),
+(3915, 'AGUDOS DO SUL', 4100301, 21),
+(3916, 'ALMIRANTE TAMANDARÉ', 4100400, 21),
+(3917, 'ALTAMIRA DO PARANÁ', 4100459, 21),
+(3918, 'ALTÔNIA', 4100509, 21),
+(3919, 'ALTO PARANÁ', 4100608, 21),
+(3920, 'ALTO PIQUIRI', 4100707, 21),
+(3921, 'ALVORADA DO SUL', 4100806, 21),
+(3922, 'AMAPORÃ', 4100905, 21),
+(3923, 'AMPÉRE', 4101002, 21),
+(3924, 'ANAHY', 4101051, 21),
+(3925, 'ANDIRÁ', 4101101, 21),
+(3926, 'ÂNGULO', 4101150, 21),
+(3927, 'ANTONINA', 4101200, 21),
+(3928, 'ANTÔNIO OLINTO', 4101309, 21),
+(3929, 'APUCARANA', 4101408, 21),
+(3930, 'ARAPONGAS', 4101507, 21),
+(3931, 'ARAPOTI', 4101606, 21),
+(3932, 'ARAPUÃ', 4101655, 21),
+(3933, 'ARARUNA', 4101705, 21),
+(3934, 'ARAUCÁRIA', 4101804, 21),
+(3935, 'ARIRANHA DO IVAÍ', 4101853, 21),
+(3936, 'ASSAÍ', 4101903, 21),
+(3937, 'ASSIS CHATEAUBRIAND', 4102000, 21),
+(3938, 'ASTORGA', 4102109, 21),
+(3939, 'ATALAIA', 4102208, 21),
+(3940, 'BALSA NOVA', 4102307, 21),
+(3941, 'BANDEIRANTES', 4102406, 21),
+(3942, 'BARBOSA FERRAZ', 4102505, 21),
+(3943, 'BARRACÃO', 4102604, 21),
+(3944, 'BARRA DO JACARÉ', 4102703, 21),
+(3945, 'BELA VISTA DA CAROBA', 4102752, 21),
+(3946, 'BELA VISTA DO PARAÍSO', 4102802, 21),
+(3947, 'BITURUNA', 4102901, 21),
+(3948, 'BOA ESPERANÇA', 4103008, 21),
+(3949, 'BOA ESPERANÇA DO IGUAÇU', 4103024, 21),
+(3950, 'BOA VENTURA DE SÃO ROQUE', 4103040, 21),
+(3951, 'BOA VISTA DA APARECIDA', 4103057, 21),
+(3952, 'BOCAIÚVA DO SUL', 4103107, 21),
+(3953, 'BOM JESUS DO SUL', 4103156, 21),
+(3954, 'BOM SUCESSO', 4103206, 21),
+(3955, 'BOM SUCESSO DO SUL', 4103222, 21),
+(3956, 'BORRAZÓPOLIS', 4103305, 21),
+(3957, 'BRAGANEY', 4103354, 21),
+(3958, 'BRASILÂNDIA DO SUL', 4103370, 21),
+(3959, 'CAFEARA', 4103404, 21),
+(3960, 'CAFELÂNDIA', 4103453, 21),
+(3961, 'CAFEZAL DO SUL', 4103479, 21),
+(3962, 'CALIFÓRNIA', 4103503, 21),
+(3963, 'CAMBARÁ', 4103602, 21),
+(3964, 'CAMBÉ', 4103701, 21),
+(3965, 'CAMBIRA', 4103800, 21),
+(3966, 'CAMPINA DA LAGOA', 4103909, 21),
+(3967, 'CAMPINA DO SIMÃO', 4103958, 21),
+(3968, 'CAMPINA GRANDE DO SUL', 4104006, 21),
+(3969, 'CAMPO BONITO', 4104055, 21),
+(3970, 'CAMPO DO TENENTE', 4104105, 21),
+(3971, 'CAMPO LARGO', 4104204, 21),
+(3972, 'CAMPO MAGRO', 4104253, 21),
+(3973, 'CAMPO MOURÃO', 4104303, 21),
+(3974, 'CÂNDIDO DE ABREU', 4104402, 21),
+(3975, 'CANDÓI', 4104428, 21),
+(3976, 'CANTAGALO', 4104451, 21),
+(3977, 'CAPANEMA', 4104501, 21),
+(3978, 'CAPITÃO LEÔNIDAS MARQUES', 4104600, 21),
+(3979, 'CARAMBEÍ', 4104659, 21),
+(3980, 'CARLÓPOLIS', 4104709, 21),
+(3981, 'CASCAVEL', 4104808, 21),
+(3982, 'CASTRO', 4104907, 21),
+(3983, 'CATANDUVAS', 4105003, 21),
+(3984, 'CENTENÁRIO DO SUL', 4105102, 21),
+(3985, 'CERRO AZUL', 4105201, 21),
+(3986, 'CÉU AZUL', 4105300, 21),
+(3987, 'CHOPINZINHO', 4105409, 21),
+(3988, 'CIANORTE', 4105508, 21),
+(3989, 'CIDADE GAÚCHA', 4105607, 21),
+(3990, 'CLEVELÂNDIA', 4105706, 21),
+(3991, 'COLOMBO', 4105805, 21),
+(3992, 'COLORADO', 4105904, 21),
+(3993, 'CONGONHINHAS', 4106001, 21),
+(3994, 'CONSELHEIRO MAIRINCK', 4106100, 21),
+(3995, 'CONTENDA', 4106209, 21),
+(3996, 'CORBÉLIA', 4106308, 21),
+(3997, 'CORNÉLIO PROCÓPIO', 4106407, 21),
+(3998, 'CORONEL DOMINGOS SOARES', 4106456, 21),
+(3999, 'CORONEL VIVIDA', 4106506, 21),
+(4000, 'CORUMBATAÍ DO SUL', 4106555, 21),
+(4001, 'CRUZEIRO DO IGUAÇU', 4106571, 21),
+(4002, 'CRUZEIRO DO OESTE', 4106605, 21),
+(4003, 'CRUZEIRO DO SUL', 4106704, 21),
+(4004, 'CRUZ MACHADO', 4106803, 21),
+(4005, 'CRUZMALTINA', 4106852, 21),
+(4006, 'CURITIBA', 4106902, 21),
+(4007, 'CURIÚVA', 4107009, 21),
+(4008, 'DIAMANTE DO NORTE', 4107108, 21),
+(4009, 'DIAMANTE DO SUL', 4107124, 21),
+(4010, 'DIAMANTE D\'OESTE', 4107157, 21),
+(4011, 'DOIS VIZINHOS', 4107207, 21),
+(4012, 'DOURADINA', 4107256, 21),
+(4013, 'DOUTOR CAMARGO', 4107306, 21),
+(4014, 'ENÉAS MARQUES', 4107405, 21),
+(4015, 'ENGENHEIRO BELTRÃO', 4107504, 21),
+(4016, 'ESPERANÇA NOVA', 4107520, 21),
+(4017, 'ENTRE RIOS DO OESTE', 4107538, 21),
+(4018, 'ESPIGÃO ALTO DO IGUAÇU', 4107546, 21),
+(4019, 'FAROL', 4107553, 21),
+(4020, 'FAXINAL', 4107603, 21),
+(4021, 'FAZENDA RIO GRANDE', 4107652, 21),
+(4022, 'FÊNIX', 4107702, 21),
+(4023, 'FERNANDES PINHEIRO', 4107736, 21),
+(4024, 'FIGUEIRA', 4107751, 21),
+(4025, 'FLORAÍ', 4107801, 21),
+(4026, 'FLOR DA SERRA DO SUL', 4107850, 21),
+(4027, 'FLORESTA', 4107900, 21),
+(4028, 'FLORESTÓPOLIS', 4108007, 21),
+(4029, 'FLÓRIDA', 4108106, 21),
+(4030, 'FORMOSA DO OESTE', 4108205, 21),
+(4031, 'FOZ DO IGUAÇU', 4108304, 21),
+(4032, 'FRANCISCO ALVES', 4108320, 21),
+(4033, 'FRANCISCO BELTRÃO', 4108403, 21),
+(4034, 'FOZ DO JORDÃO', 4108452, 21),
+(4035, 'GENERAL CARNEIRO', 4108502, 21),
+(4036, 'GODOY MOREIRA', 4108551, 21),
+(4037, 'GOIOERÊ', 4108601, 21),
+(4038, 'GOIOXIM', 4108650, 21),
+(4039, 'GRANDES RIOS', 4108700, 21),
+(4040, 'GUAÍRA', 4108809, 21),
+(4041, 'GUAIRAÇÁ', 4108908, 21),
+(4042, 'GUAMIRANGA', 4108957, 21),
+(4043, 'GUAPIRAMA', 4109005, 21),
+(4044, 'GUAPOREMA', 4109104, 21),
+(4045, 'GUARACI', 4109203, 21),
+(4046, 'GUARANIAÇU', 4109302, 21),
+(4047, 'GUARAPUAVA', 4109401, 21),
+(4048, 'GUARAQUEÇABA', 4109500, 21),
+(4049, 'GUARATUBA', 4109609, 21),
+(4050, 'HONÓRIO SERPA', 4109658, 21),
+(4051, 'IBAITI', 4109708, 21),
+(4052, 'IBEMA', 4109757, 21),
+(4053, 'IBIPORÃ', 4109807, 21),
+(4054, 'ICARAÍMA', 4109906, 21),
+(4055, 'IGUARAÇU', 4110003, 21),
+(4056, 'IGUATU', 4110052, 21),
+(4057, 'IMBAÚ', 4110078, 21),
+(4058, 'IMBITUVA', 4110102, 21),
+(4059, 'INÁCIO MARTINS', 4110201, 21),
+(4060, 'INAJÁ', 4110300, 21),
+(4061, 'INDIANÓPOLIS', 4110409, 21),
+(4062, 'IPIRANGA', 4110508, 21),
+(4063, 'IPORÃ', 4110607, 21),
+(4064, 'IRACEMA DO OESTE', 4110656, 21),
+(4065, 'IRATI', 4110706, 21),
+(4066, 'IRETAMA', 4110805, 21),
+(4067, 'ITAGUAJÉ', 4110904, 21),
+(4068, 'ITAIPULÂNDIA', 4110953, 21),
+(4069, 'ITAMBARACÁ', 4111001, 21),
+(4070, 'ITAMBÉ', 4111100, 21),
+(4071, 'ITAPEJARA D\'OESTE', 4111209, 21),
+(4072, 'ITAPERUÇU', 4111258, 21),
+(4073, 'ITAÚNA DO SUL', 4111308, 21),
+(4074, 'IVAÍ', 4111407, 21),
+(4075, 'IVAIPORÃ', 4111506, 21),
+(4076, 'IVATÉ', 4111555, 21),
+(4077, 'IVATUBA', 4111605, 21),
+(4078, 'JABOTI', 4111704, 21),
+(4079, 'JACAREZINHO', 4111803, 21),
+(4080, 'JAGUAPITÃ', 4111902, 21),
+(4081, 'JAGUARIAÍVA', 4112009, 21),
+(4082, 'JANDAIA DO SUL', 4112108, 21),
+(4083, 'JANIÓPOLIS', 4112207, 21),
+(4084, 'JAPIRA', 4112306, 21),
+(4085, 'JAPURÁ', 4112405, 21),
+(4086, 'JARDIM ALEGRE', 4112504, 21),
+(4087, 'JARDIM OLINDA', 4112603, 21),
+(4088, 'JATAIZINHO', 4112702, 21),
+(4089, 'JESUÍTAS', 4112751, 21),
+(4090, 'JOAQUIM TÁVORA', 4112801, 21),
+(4091, 'JUNDIAÍ DO SUL', 4112900, 21),
+(4092, 'JURANDA', 4112959, 21),
+(4093, 'JUSSARA', 4113007, 21),
+(4094, 'KALORÉ', 4113106, 21),
+(4095, 'LAPA', 4113205, 21),
+(4096, 'LARANJAL', 4113254, 21),
+(4097, 'LARANJEIRAS DO SUL', 4113304, 21),
+(4098, 'LEÓPOLIS', 4113403, 21),
+(4099, 'LIDIANÓPOLIS', 4113429, 21),
+(4100, 'LINDOESTE', 4113452, 21),
+(4101, 'LOANDA', 4113502, 21),
+(4102, 'LOBATO', 4113601, 21),
+(4103, 'LONDRINA', 4113700, 21),
+(4104, 'LUIZIANA', 4113734, 21),
+(4105, 'LUNARDELLI', 4113759, 21),
+(4106, 'LUPIONÓPOLIS', 4113809, 21),
+(4107, 'MALLET', 4113908, 21),
+(4108, 'MAMBORÊ', 4114005, 21),
+(4109, 'MANDAGUAÇU', 4114104, 21),
+(4110, 'MANDAGUARI', 4114203, 21),
+(4111, 'MANDIRITUBA', 4114302, 21),
+(4112, 'MANFRINÓPOLIS', 4114351, 21),
+(4113, 'MANGUEIRINHA', 4114401, 21),
+(4114, 'MANOEL RIBAS', 4114500, 21),
+(4115, 'MARECHAL CÂNDIDO RONDON', 4114609, 21),
+(4116, 'MARIA HELENA', 4114708, 21),
+(4117, 'MARIALVA', 4114807, 21),
+(4118, 'MARILÂNDIA DO SUL', 4114906, 21),
+(4119, 'MARILENA', 4115002, 21),
+(4120, 'MARILUZ', 4115101, 21),
+(4121, 'MARINGÁ', 4115200, 21),
+(4122, 'MARIÓPOLIS', 4115309, 21),
+(4123, 'MARIPÁ', 4115358, 21),
+(4124, 'MARMELEIRO', 4115408, 21),
+(4125, 'MARQUINHO', 4115457, 21),
+(4126, 'MARUMBI', 4115507, 21),
+(4127, 'MATELÂNDIA', 4115606, 21),
+(4128, 'MATINHOS', 4115705, 21),
+(4129, 'MATO RICO', 4115739, 21),
+(4130, 'MAUÁ DA SERRA', 4115754, 21),
+(4131, 'MEDIANEIRA', 4115804, 21),
+(4132, 'MERCEDES', 4115853, 21),
+(4133, 'MIRADOR', 4115903, 21),
+(4134, 'MIRASELVA', 4116000, 21),
+(4135, 'MISSAL', 4116059, 21),
+(4136, 'MOREIRA SALES', 4116109, 21),
+(4137, 'MORRETES', 4116208, 21),
+(4138, 'MUNHOZ DE MELO', 4116307, 21),
+(4139, 'NOSSA SENHORA DAS GRAÇAS', 4116406, 21),
+(4140, 'NOVA ALIANÇA DO IVAÍ', 4116505, 21),
+(4141, 'NOVA AMÉRICA DA COLINA', 4116604, 21),
+(4142, 'NOVA AURORA', 4116703, 21),
+(4143, 'NOVA CANTU', 4116802, 21),
+(4144, 'NOVA ESPERANÇA', 4116901, 21),
+(4145, 'NOVA ESPERANÇA DO SUDOESTE', 4116950, 21),
+(4146, 'NOVA FÁTIMA', 4117008, 21),
+(4147, 'NOVA LARANJEIRAS', 4117057, 21),
+(4148, 'NOVA LONDRINA', 4117107, 21),
+(4149, 'NOVA OLÍMPIA', 4117206, 21),
+(4150, 'NOVA SANTA BÁRBARA', 4117214, 21),
+(4151, 'NOVA SANTA ROSA', 4117222, 21),
+(4152, 'NOVA PRATA DO IGUAÇU', 4117255, 21),
+(4153, 'NOVA TEBAS', 4117271, 21),
+(4154, 'NOVO ITACOLOMI', 4117297, 21),
+(4155, 'ORTIGUEIRA', 4117305, 21),
+(4156, 'OURIZONA', 4117404, 21),
+(4157, 'OURO VERDE DO OESTE', 4117453, 21),
+(4158, 'PAIÇANDU', 4117503, 21),
+(4159, 'PALMAS', 4117602, 21),
+(4160, 'PALMEIRA', 4117701, 21),
+(4161, 'PALMITAL', 4117800, 21),
+(4162, 'PALOTINA', 4117909, 21),
+(4163, 'PARAÍSO DO NORTE', 4118006, 21),
+(4164, 'PARANACITY', 4118105, 21),
+(4165, 'PARANAGUÁ', 4118204, 21),
+(4166, 'PARANAPOEMA', 4118303, 21),
+(4167, 'PARANAVAÍ', 4118402, 21),
+(4168, 'PATO BRAGADO', 4118451, 21),
+(4169, 'PATO BRANCO', 4118501, 21),
+(4170, 'PAULA FREITAS', 4118600, 21),
+(4171, 'PAULO FRONTIN', 4118709, 21),
+(4172, 'PEABIRU', 4118808, 21),
+(4173, 'PEROBAL', 4118857, 21),
+(4174, 'PÉROLA', 4118907, 21),
+(4175, 'PÉROLA D\'OESTE', 4119004, 21),
+(4176, 'PIÊN', 4119103, 21),
+(4177, 'PINHAIS', 4119152, 21),
+(4178, 'PINHALÃO', 4119202, 21),
+(4179, 'PINHAL DE SÃO BENTO', 4119251, 21),
+(4180, 'PINHÃO', 4119301, 21),
+(4181, 'PIRAÍ DO SUL', 4119400, 21),
+(4182, 'PIRAQUARA', 4119509, 21),
+(4183, 'PITANGA', 4119608, 21),
+(4184, 'PITANGUEIRAS', 4119657, 21),
+(4185, 'PLANALTINA DO PARANÁ', 4119707, 21),
+(4186, 'PLANALTO', 4119806, 21),
+(4187, 'PONTA GROSSA', 4119905, 21),
+(4188, 'PONTAL DO PARANÁ', 4119954, 21),
+(4189, 'PORECATU', 4120002, 21),
+(4190, 'PORTO AMAZONAS', 4120101, 21),
+(4191, 'PORTO BARREIRO', 4120150, 21),
+(4192, 'PORTO RICO', 4120200, 21),
+(4193, 'PORTO VITÓRIA', 4120309, 21),
+(4194, 'PRADO FERREIRA', 4120333, 21),
+(4195, 'PRANCHITA', 4120358, 21),
+(4196, 'PRESIDENTE CASTELO BRANCO', 4120408, 21),
+(4197, 'PRIMEIRO DE MAIO', 4120507, 21),
+(4198, 'PRUDENTÓPOLIS', 4120606, 21),
+(4199, 'QUARTO CENTENÁRIO', 4120655, 21),
+(4200, 'QUATIGUÁ', 4120705, 21),
+(4201, 'QUATRO BARRAS', 4120804, 21),
+(4202, 'QUATRO PONTES', 4120853, 21),
+(4203, 'QUEDAS DO IGUAÇU', 4120903, 21),
+(4204, 'QUERÊNCIA DO NORTE', 4121000, 21),
+(4205, 'QUINTA DO SOL', 4121109, 21),
+(4206, 'QUITANDINHA', 4121208, 21),
+(4207, 'RAMILÂNDIA', 4121257, 21),
+(4208, 'RANCHO ALEGRE', 4121307, 21),
+(4209, 'RANCHO ALEGRE D\'OESTE', 4121356, 21),
+(4210, 'REALEZA', 4121406, 21),
+(4211, 'REBOUÇAS', 4121505, 21),
+(4212, 'RENASCENÇA', 4121604, 21),
+(4213, 'RESERVA', 4121703, 21),
+(4214, 'RESERVA DO IGUAÇU', 4121752, 21),
+(4215, 'RIBEIRÃO CLARO', 4121802, 21),
+(4216, 'RIBEIRÃO DO PINHAL', 4121901, 21),
+(4217, 'RIO AZUL', 4122008, 21),
+(4218, 'RIO BOM', 4122107, 21),
+(4219, 'RIO BONITO DO IGUAÇU', 4122156, 21),
+(4220, 'RIO BRANCO DO IVAÍ', 4122172, 21),
+(4221, 'RIO BRANCO DO SUL', 4122206, 21),
+(4222, 'RIO NEGRO', 4122305, 21),
+(4223, 'ROLÂNDIA', 4122404, 21),
+(4224, 'RONCADOR', 4122503, 21),
+(4225, 'RONDON', 4122602, 21),
+(4226, 'ROSÁRIO DO IVAÍ', 4122651, 21),
+(4227, 'SABÁUDIA', 4122701, 21),
+(4228, 'SALGADO FILHO', 4122800, 21),
+(4229, 'SALTO DO ITARARÉ', 4122909, 21),
+(4230, 'SALTO DO LONTRA', 4123006, 21),
+(4231, 'SANTA AMÉLIA', 4123105, 21),
+(4232, 'SANTA CECÍLIA DO PAVÃO', 4123204, 21),
+(4233, 'SANTA CRUZ DE MONTE CASTELO', 4123303, 21),
+(4234, 'SANTA FÉ', 4123402, 21),
+(4235, 'SANTA HELENA', 4123501, 21),
+(4236, 'SANTA INÊS', 4123600, 21),
+(4237, 'SANTA ISABEL DO IVAÍ', 4123709, 21),
+(4238, 'SANTA IZABEL DO OESTE', 4123808, 21),
+(4239, 'SANTA LÚCIA', 4123824, 21),
+(4240, 'SANTA MARIA DO OESTE', 4123857, 21),
+(4241, 'SANTA MARIANA', 4123907, 21),
+(4242, 'SANTA MÔNICA', 4123956, 21),
+(4243, 'SANTANA DO ITARARÉ', 4124004, 21),
+(4244, 'SANTA TEREZA DO OESTE', 4124020, 21),
+(4245, 'SANTA TEREZINHA DE ITAIPU', 4124053, 21),
+(4246, 'SANTO ANTÔNIO DA PLATINA', 4124103, 21),
+(4247, 'SANTO ANTÔNIO DO CAIUÁ', 4124202, 21),
+(4248, 'SANTO ANTÔNIO DO PARAÍSO', 4124301, 21),
+(4249, 'SANTO ANTÔNIO DO SUDOESTE', 4124400, 21),
+(4250, 'SANTO INÁCIO', 4124509, 21),
+(4251, 'SÃO CARLOS DO IVAÍ', 4124608, 21),
+(4252, 'SÃO JERÔNIMO DA SERRA', 4124707, 21),
+(4253, 'SÃO JOÃO', 4124806, 21),
+(4254, 'SÃO JOÃO DO CAIUÁ', 4124905, 21),
+(4255, 'SÃO JOÃO DO IVAÍ', 4125001, 21),
+(4256, 'SÃO JOÃO DO TRIUNFO', 4125100, 21),
+(4257, 'SÃO JORGE D\'OESTE', 4125209, 21),
+(4258, 'SÃO JORGE DO IVAÍ', 4125308, 21),
+(4259, 'SÃO JORGE DO PATROCÍNIO', 4125357, 21),
+(4260, 'SÃO JOSÉ DA BOA VISTA', 4125407, 21),
+(4261, 'SÃO JOSÉ DAS PALMEIRAS', 4125456, 21),
+(4262, 'SÃO JOSÉ DOS PINHAIS', 4125506, 21),
+(4263, 'SÃO MANOEL DO PARANÁ', 4125555, 21),
+(4264, 'SÃO MATEUS DO SUL', 4125605, 21),
+(4265, 'SÃO MIGUEL DO IGUAÇU', 4125704, 21),
+(4266, 'SÃO PEDRO DO IGUAÇU', 4125753, 21),
+(4267, 'SÃO PEDRO DO IVAÍ', 4125803, 21),
+(4268, 'SÃO PEDRO DO PARANÁ', 4125902, 21),
+(4269, 'SÃO SEBASTIÃO DA AMOREIRA', 4126009, 21),
+(4270, 'SÃO TOMÉ', 4126108, 21),
+(4271, 'SAPOPEMA', 4126207, 21),
+(4272, 'SARANDI', 4126256, 21),
+(4273, 'SAUDADE DO IGUAÇU', 4126272, 21),
+(4274, 'SENGÉS', 4126306, 21),
+(4275, 'SERRANÓPOLIS DO IGUAÇU', 4126355, 21),
+(4276, 'SERTANEJA', 4126405, 21),
+(4277, 'SERTANÓPOLIS', 4126504, 21),
+(4278, 'SIQUEIRA CAMPOS', 4126603, 21),
+(4279, 'SULINA', 4126652, 21),
+(4280, 'TAMARANA', 4126678, 21),
+(4281, 'TAMBOARA', 4126702, 21),
+(4282, 'TAPEJARA', 4126801, 21),
+(4283, 'TAPIRA', 4126900, 21),
+(4284, 'TEIXEIRA SOARES', 4127007, 21),
+(4285, 'TELÊMACO BORBA', 4127106, 21),
+(4286, 'TERRA BOA', 4127205, 21),
+(4287, 'TERRA RICA', 4127304, 21),
+(4288, 'TERRA ROXA', 4127403, 21),
+(4289, 'TIBAGI', 4127502, 21),
+(4290, 'TIJUCAS DO SUL', 4127601, 21),
+(4291, 'TOLEDO', 4127700, 21),
+(4292, 'TOMAZINA', 4127809, 21),
+(4293, 'TRÊS BARRAS DO PARANÁ', 4127858, 21),
+(4294, 'TUNAS DO PARANÁ', 4127882, 21),
+(4295, 'TUNEIRAS DO OESTE', 4127908, 21),
+(4296, 'TUPÃSSI', 4127957, 21),
+(4297, 'TURVO', 4127965, 21),
+(4298, 'UBIRATÃ', 4128005, 21),
+(4299, 'UMUARAMA', 4128104, 21),
+(4300, 'UNIÃO DA VITÓRIA', 4128203, 21),
+(4301, 'UNIFLOR', 4128302, 21),
+(4302, 'URAÍ', 4128401, 21),
+(4303, 'WENCESLAU BRAZ', 4128500, 21),
+(4304, 'VENTANIA', 4128534, 21),
+(4305, 'VERA CRUZ DO OESTE', 4128559, 21),
+(4306, 'VERÊ', 4128609, 21),
+(4307, 'ALTO PARAÍSO', 4128625, 21),
+(4308, 'DOUTOR ULYSSES', 4128633, 21),
+(4309, 'VIRMOND', 4128658, 21),
+(4310, 'VITORINO', 4128708, 21),
+(4311, 'XAMBRÊ', 4128807, 21),
+(4312, 'ABDON BATISTA', 4200051, 22),
+(4313, 'ABELARDO LUZ', 4200101, 22),
+(4314, 'AGROLÂNDIA', 4200200, 22),
+(4315, 'AGRONÔMICA', 4200309, 22),
+(4316, 'ÁGUA DOCE', 4200408, 22),
+(4317, 'ÁGUAS DE CHAPECÓ', 4200507, 22),
+(4318, 'ÁGUAS FRIAS', 4200556, 22),
+(4319, 'ÁGUAS MORNAS', 4200606, 22),
+(4320, 'ALFREDO WAGNER', 4200705, 22),
+(4321, 'ALTO BELA VISTA', 4200754, 22),
+(4322, 'ANCHIETA', 4200804, 22),
+(4323, 'ANGELINA', 4200903, 22),
+(4324, 'ANITA GARIBALDI', 4201000, 22),
+(4325, 'ANITÁPOLIS', 4201109, 22),
+(4326, 'ANTÔNIO CARLOS', 4201208, 22),
+(4327, 'APIÚNA', 4201257, 22),
+(4328, 'ARABUTÃ', 4201273, 22),
+(4329, 'ARAQUARI', 4201307, 22),
+(4330, 'ARARANGUÁ', 4201406, 22),
+(4331, 'ARMAZÉM', 4201505, 22),
+(4332, 'ARROIO TRINTA', 4201604, 22),
+(4333, 'ARVOREDO', 4201653, 22),
+(4334, 'ASCURRA', 4201703, 22),
+(4335, 'ATALANTA', 4201802, 22),
+(4336, 'AURORA', 4201901, 22),
+(4337, 'BALNEÁRIO ARROIO DO SILVA', 4201950, 22),
+(4338, 'BALNEÁRIO CAMBORIÚ', 4202008, 22),
+(4339, 'BALNEÁRIO BARRA DO SUL', 4202057, 22),
+(4340, 'BALNEÁRIO GAIVOTA', 4202073, 22),
+(4341, 'BANDEIRANTE', 4202081, 22),
+(4342, 'BARRA BONITA', 4202099, 22),
+(4343, 'BARRA VELHA', 4202107, 22),
+(4344, 'BELA VISTA DO TOLDO', 4202131, 22),
+(4345, 'BELMONTE', 4202156, 22),
+(4346, 'BENEDITO NOVO', 4202206, 22),
+(4347, 'BIGUAÇU', 4202305, 22),
+(4348, 'BLUMENAU', 4202404, 22),
+(4349, 'BOCAINA DO SUL', 4202438, 22),
+(4350, 'BOMBINHAS', 4202453, 22),
+(4351, 'BOM JARDIM DA SERRA', 4202503, 22),
+(4352, 'BOM JESUS', 4202537, 22),
+(4353, 'BOM JESUS DO OESTE', 4202578, 22),
+(4354, 'BOM RETIRO', 4202602, 22),
+(4355, 'BOTUVERÁ', 4202701, 22),
+(4356, 'BRAÇO DO NORTE', 4202800, 22),
+(4357, 'BRAÇO DO TROMBUDO', 4202859, 22),
+(4358, 'BRUNÓPOLIS', 4202875, 22),
+(4359, 'BRUSQUE', 4202909, 22),
+(4360, 'CAÇADOR', 4203006, 22),
+(4361, 'CAIBI', 4203105, 22),
+(4362, 'CALMON', 4203154, 22),
+(4363, 'CAMBORIÚ', 4203204, 22),
+(4364, 'CAPÃO ALTO', 4203253, 22),
+(4365, 'CAMPO ALEGRE', 4203303, 22),
+(4366, 'CAMPO BELO DO SUL', 4203402, 22),
+(4367, 'CAMPO ERÊ', 4203501, 22),
+(4368, 'CAMPOS NOVOS', 4203600, 22),
+(4369, 'CANELINHA', 4203709, 22),
+(4370, 'CANOINHAS', 4203808, 22),
+(4371, 'CAPINZAL', 4203907, 22),
+(4372, 'CAPIVARI DE BAIXO', 4203956, 22),
+(4373, 'CATANDUVAS', 4204004, 22),
+(4374, 'CAXAMBU DO SUL', 4204103, 22),
+(4375, 'CELSO RAMOS', 4204152, 22),
+(4376, 'CERRO NEGRO', 4204178, 22),
+(4377, 'CHAPADÃO DO LAGEADO', 4204194, 22),
+(4378, 'CHAPECÓ', 4204202, 22),
+(4379, 'COCAL DO SUL', 4204251, 22),
+(4380, 'CONCÓRDIA', 4204301, 22),
+(4381, 'CORDILHEIRA ALTA', 4204350, 22),
+(4382, 'CORONEL FREITAS', 4204400, 22),
+(4383, 'CORONEL MARTINS', 4204459, 22),
+(4384, 'CORUPÁ', 4204509, 22),
+(4385, 'CORREIA PINTO', 4204558, 22),
+(4386, 'CRICIÚMA', 4204608, 22);
+INSERT INTO `cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES
+(4387, 'CUNHA PORÃ', 4204707, 22),
+(4388, 'CUNHATAÍ', 4204756, 22),
+(4389, 'CURITIBANOS', 4204806, 22),
+(4390, 'DESCANSO', 4204905, 22),
+(4391, 'DIONÍSIO CERQUEIRA', 4205001, 22),
+(4392, 'DONA EMMA', 4205100, 22),
+(4393, 'DOUTOR PEDRINHO', 4205159, 22),
+(4394, 'ENTRE RIOS', 4205175, 22),
+(4395, 'ERMO', 4205191, 22),
+(4396, 'ERVAL VELHO', 4205209, 22),
+(4397, 'FAXINAL DOS GUEDES', 4205308, 22),
+(4398, 'FLOR DO SERTÃO', 4205357, 22),
+(4399, 'FLORIANÓPOLIS', 4205407, 22),
+(4400, 'FORMOSA DO SUL', 4205431, 22),
+(4401, 'FORQUILHINHA', 4205456, 22),
+(4402, 'FRAIBURGO', 4205506, 22),
+(4403, 'FREI ROGÉRIO', 4205555, 22),
+(4404, 'GALVÃO', 4205605, 22),
+(4405, 'GAROPABA', 4205704, 22),
+(4406, 'GARUVA', 4205803, 22),
+(4407, 'GASPAR', 4205902, 22),
+(4408, 'GOVERNADOR CELSO RAMOS', 4206009, 22),
+(4409, 'GRÃO PARÁ', 4206108, 22),
+(4410, 'GRAVATAL', 4206207, 22),
+(4411, 'GUABIRUBA', 4206306, 22),
+(4412, 'GUARACIABA', 4206405, 22),
+(4413, 'GUARAMIRIM', 4206504, 22),
+(4414, 'GUARUJÁ DO SUL', 4206603, 22),
+(4415, 'GUATAMBÚ', 4206652, 22),
+(4416, 'HERVAL D\'OESTE', 4206702, 22),
+(4417, 'IBIAM', 4206751, 22),
+(4418, 'IBICARÉ', 4206801, 22),
+(4419, 'IBIRAMA', 4206900, 22),
+(4420, 'IÇARA', 4207007, 22),
+(4421, 'ILHOTA', 4207106, 22),
+(4422, 'IMARUÍ', 4207205, 22),
+(4423, 'IMBITUBA', 4207304, 22),
+(4424, 'IMBUIA', 4207403, 22),
+(4425, 'INDAIAL', 4207502, 22),
+(4426, 'IOMERÊ', 4207577, 22),
+(4427, 'IPIRA', 4207601, 22),
+(4428, 'IPORÃ DO OESTE', 4207650, 22),
+(4429, 'IPUAÇU', 4207684, 22),
+(4430, 'IPUMIRIM', 4207700, 22),
+(4431, 'IRACEMINHA', 4207759, 22),
+(4432, 'IRANI', 4207809, 22),
+(4433, 'IRATI', 4207858, 22),
+(4434, 'IRINEÓPOLIS', 4207908, 22),
+(4435, 'ITÁ', 4208005, 22),
+(4436, 'ITAIÓPOLIS', 4208104, 22),
+(4437, 'ITAJAÍ', 4208203, 22),
+(4438, 'ITAPEMA', 4208302, 22),
+(4439, 'ITAPIRANGA', 4208401, 22),
+(4440, 'ITAPOÁ', 4208450, 22),
+(4441, 'ITUPORANGA', 4208500, 22),
+(4442, 'JABORÁ', 4208609, 22),
+(4443, 'JACINTO MACHADO', 4208708, 22),
+(4444, 'JAGUARUNA', 4208807, 22),
+(4445, 'JARAGUÁ DO SUL', 4208906, 22),
+(4446, 'JARDINÓPOLIS', 4208955, 22),
+(4447, 'JOAÇABA', 4209003, 22),
+(4448, 'JOINVILLE', 4209102, 22),
+(4449, 'JOSÉ BOITEUX', 4209151, 22),
+(4450, 'JUPIÁ', 4209177, 22),
+(4451, 'LACERDÓPOLIS', 4209201, 22),
+(4452, 'LAGES', 4209300, 22),
+(4453, 'LAGUNA', 4209409, 22),
+(4454, 'LAJEADO GRANDE', 4209458, 22),
+(4455, 'LAURENTINO', 4209508, 22),
+(4456, 'LAURO MULLER', 4209607, 22),
+(4457, 'LEBON RÉGIS', 4209706, 22),
+(4458, 'LEOBERTO LEAL', 4209805, 22),
+(4459, 'LINDÓIA DO SUL', 4209854, 22),
+(4460, 'LONTRAS', 4209904, 22),
+(4461, 'LUIZ ALVES', 4210001, 22),
+(4462, 'LUZERNA', 4210035, 22),
+(4463, 'MACIEIRA', 4210050, 22),
+(4464, 'MAFRA', 4210100, 22),
+(4465, 'MAJOR GERCINO', 4210209, 22),
+(4466, 'MAJOR VIEIRA', 4210308, 22),
+(4467, 'MARACAJÁ', 4210407, 22),
+(4468, 'MARAVILHA', 4210506, 22),
+(4469, 'MAREMA', 4210555, 22),
+(4470, 'MASSARANDUBA', 4210605, 22),
+(4471, 'MATOS COSTA', 4210704, 22),
+(4472, 'MELEIRO', 4210803, 22),
+(4473, 'MIRIM DOCE', 4210852, 22),
+(4474, 'MODELO', 4210902, 22),
+(4475, 'MONDAÍ', 4211009, 22),
+(4476, 'MONTE CARLO', 4211058, 22),
+(4477, 'MONTE CASTELO', 4211108, 22),
+(4478, 'MORRO DA FUMAÇA', 4211207, 22),
+(4479, 'MORRO GRANDE', 4211256, 22),
+(4480, 'NAVEGANTES', 4211306, 22),
+(4481, 'NOVA ERECHIM', 4211405, 22),
+(4482, 'NOVA ITABERABA', 4211454, 22),
+(4483, 'NOVA TRENTO', 4211504, 22),
+(4484, 'NOVA VENEZA', 4211603, 22),
+(4485, 'NOVO HORIZONTE', 4211652, 22),
+(4486, 'ORLEANS', 4211702, 22),
+(4487, 'OTACÍLIO COSTA', 4211751, 22),
+(4488, 'OURO', 4211801, 22),
+(4489, 'OURO VERDE', 4211850, 22),
+(4490, 'PAIAL', 4211876, 22),
+(4491, 'PAINEL', 4211892, 22),
+(4492, 'PALHOÇA', 4211900, 22),
+(4493, 'PALMA SOLA', 4212007, 22),
+(4494, 'PALMEIRA', 4212056, 22),
+(4495, 'PALMITOS', 4212106, 22),
+(4496, 'PAPANDUVA', 4212205, 22),
+(4497, 'PARAÍSO', 4212239, 22),
+(4498, 'PASSO DE TORRES', 4212254, 22),
+(4499, 'PASSOS MAIA', 4212270, 22),
+(4500, 'PAULO LOPES', 4212304, 22),
+(4501, 'PEDRAS GRANDES', 4212403, 22),
+(4502, 'PENHA', 4212502, 22),
+(4503, 'PERITIBA', 4212601, 22),
+(4504, 'PESCARIA BRAVA', 4212650, 22),
+(4505, 'PETROLÂNDIA', 4212700, 22),
+(4506, 'BALNEÁRIO PIÇARRAS', 4212809, 22),
+(4507, 'PINHALZINHO', 4212908, 22),
+(4508, 'PINHEIRO PRETO', 4213005, 22),
+(4509, 'PIRATUBA', 4213104, 22),
+(4510, 'PLANALTO ALEGRE', 4213153, 22),
+(4511, 'POMERODE', 4213203, 22),
+(4512, 'PONTE ALTA', 4213302, 22),
+(4513, 'PONTE ALTA DO NORTE', 4213351, 22),
+(4514, 'PONTE SERRADA', 4213401, 22),
+(4515, 'PORTO BELO', 4213500, 22),
+(4516, 'PORTO UNIÃO', 4213609, 22),
+(4517, 'POUSO REDONDO', 4213708, 22),
+(4518, 'PRAIA GRANDE', 4213807, 22),
+(4519, 'PRESIDENTE CASTELLO BRANCO', 4213906, 22),
+(4520, 'PRESIDENTE GETÚLIO', 4214003, 22),
+(4521, 'PRESIDENTE NEREU', 4214102, 22),
+(4522, 'PRINCESA', 4214151, 22),
+(4523, 'QUILOMBO', 4214201, 22),
+(4524, 'RANCHO QUEIMADO', 4214300, 22),
+(4525, 'RIO DAS ANTAS', 4214409, 22),
+(4526, 'RIO DO CAMPO', 4214508, 22),
+(4527, 'RIO DO OESTE', 4214607, 22),
+(4528, 'RIO DOS CEDROS', 4214706, 22),
+(4529, 'RIO DO SUL', 4214805, 22),
+(4530, 'RIO FORTUNA', 4214904, 22),
+(4531, 'RIO NEGRINHO', 4215000, 22),
+(4532, 'RIO RUFINO', 4215059, 22),
+(4533, 'RIQUEZA', 4215075, 22),
+(4534, 'RODEIO', 4215109, 22),
+(4535, 'ROMELÂNDIA', 4215208, 22),
+(4536, 'SALETE', 4215307, 22),
+(4537, 'SALTINHO', 4215356, 22),
+(4538, 'SALTO VELOSO', 4215406, 22),
+(4539, 'SANGÃO', 4215455, 22),
+(4540, 'SANTA CECÍLIA', 4215505, 22),
+(4541, 'SANTA HELENA', 4215554, 22),
+(4542, 'SANTA ROSA DE LIMA', 4215604, 22),
+(4543, 'SANTA ROSA DO SUL', 4215653, 22),
+(4544, 'SANTA TEREZINHA', 4215679, 22),
+(4545, 'SANTA TEREZINHA DO PROGRESSO', 4215687, 22),
+(4546, 'SANTIAGO DO SUL', 4215695, 22),
+(4547, 'SANTO AMARO DA IMPERATRIZ', 4215703, 22),
+(4548, 'SÃO BERNARDINO', 4215752, 22),
+(4549, 'SÃO BENTO DO SUL', 4215802, 22),
+(4550, 'SÃO BONIFÁCIO', 4215901, 22),
+(4551, 'SÃO CARLOS', 4216008, 22),
+(4552, 'SÃO CRISTOVÃO DO SUL', 4216057, 22),
+(4553, 'SÃO DOMINGOS', 4216107, 22),
+(4554, 'SÃO FRANCISCO DO SUL', 4216206, 22),
+(4555, 'SÃO JOÃO DO OESTE', 4216255, 22),
+(4556, 'SÃO JOÃO BATISTA', 4216305, 22),
+(4557, 'SÃO JOÃO DO ITAPERIÚ', 4216354, 22),
+(4558, 'SÃO JOÃO DO SUL', 4216404, 22),
+(4559, 'SÃO JOAQUIM', 4216503, 22),
+(4560, 'SÃO JOSÉ', 4216602, 22),
+(4561, 'SÃO JOSÉ DO CEDRO', 4216701, 22),
+(4562, 'SÃO JOSÉ DO CERRITO', 4216800, 22),
+(4563, 'SÃO LOURENÇO DO OESTE', 4216909, 22),
+(4564, 'SÃO LUDGERO', 4217006, 22),
+(4565, 'SÃO MARTINHO', 4217105, 22),
+(4566, 'SÃO MIGUEL DA BOA VISTA', 4217154, 22),
+(4567, 'SÃO MIGUEL DO OESTE', 4217204, 22),
+(4568, 'SÃO PEDRO DE ALCÂNTARA', 4217253, 22),
+(4569, 'SAUDADES', 4217303, 22),
+(4570, 'SCHROEDER', 4217402, 22),
+(4571, 'SEARA', 4217501, 22),
+(4572, 'SERRA ALTA', 4217550, 22),
+(4573, 'SIDERÓPOLIS', 4217600, 22),
+(4574, 'SOMBRIO', 4217709, 22),
+(4575, 'SUL BRASIL', 4217758, 22),
+(4576, 'TAIÓ', 4217808, 22),
+(4577, 'TANGARÁ', 4217907, 22),
+(4578, 'TIGRINHOS', 4217956, 22),
+(4579, 'TIJUCAS', 4218004, 22),
+(4580, 'TIMBÉ DO SUL', 4218103, 22),
+(4581, 'TIMBÓ', 4218202, 22),
+(4582, 'TIMBÓ GRANDE', 4218251, 22),
+(4583, 'TRÊS BARRAS', 4218301, 22),
+(4584, 'TREVISO', 4218350, 22),
+(4585, 'TREZE DE MAIO', 4218400, 22),
+(4586, 'TREZE TÍLIAS', 4218509, 22),
+(4587, 'TROMBUDO CENTRAL', 4218608, 22),
+(4588, 'TUBARÃO', 4218707, 22),
+(4589, 'TUNÁPOLIS', 4218756, 22),
+(4590, 'TURVO', 4218806, 22),
+(4591, 'UNIÃO DO OESTE', 4218855, 22),
+(4592, 'URUBICI', 4218905, 22),
+(4593, 'URUPEMA', 4218954, 22),
+(4594, 'URUSSANGA', 4219002, 22),
+(4595, 'VARGEÃO', 4219101, 22),
+(4596, 'VARGEM', 4219150, 22),
+(4597, 'VARGEM BONITA', 4219176, 22),
+(4598, 'VIDAL RAMOS', 4219200, 22),
+(4599, 'VIDEIRA', 4219309, 22),
+(4600, 'VITOR MEIRELES', 4219358, 22),
+(4601, 'WITMARSUM', 4219408, 22),
+(4602, 'XANXERÊ', 4219507, 22),
+(4603, 'XAVANTINA', 4219606, 22),
+(4604, 'XAXIM', 4219705, 22),
+(4605, 'ZORTÉA', 4219853, 22),
+(4606, 'BALNEÁRIO RINCÃO', 4220000, 22),
+(4607, 'LAGOA MIRIM', 4300001, 23),
+(4608, 'LAGOA DOS PATOS', 4300002, 23),
+(4609, 'ACEGUÁ', 4300034, 23),
+(4610, 'ÁGUA SANTA', 4300059, 23),
+(4611, 'AGUDO', 4300109, 23),
+(4612, 'AJURICABA', 4300208, 23),
+(4613, 'ALECRIM', 4300307, 23),
+(4614, 'ALEGRETE', 4300406, 23),
+(4615, 'ALEGRIA', 4300455, 23),
+(4616, 'ALMIRANTE TAMANDARÉ DO SUL', 4300471, 23),
+(4617, 'ALPESTRE', 4300505, 23),
+(4618, 'ALTO ALEGRE', 4300554, 23),
+(4619, 'ALTO FELIZ', 4300570, 23),
+(4620, 'ALVORADA', 4300604, 23),
+(4621, 'AMARAL FERRADOR', 4300638, 23),
+(4622, 'AMETISTA DO SUL', 4300646, 23),
+(4623, 'ANDRÉ DA ROCHA', 4300661, 23),
+(4624, 'ANTA GORDA', 4300703, 23),
+(4625, 'ANTÔNIO PRADO', 4300802, 23),
+(4626, 'ARAMBARÉ', 4300851, 23),
+(4627, 'ARARICÁ', 4300877, 23),
+(4628, 'ARATIBA', 4300901, 23),
+(4629, 'ARROIO DO MEIO', 4301008, 23),
+(4630, 'ARROIO DO SAL', 4301057, 23),
+(4631, 'ARROIO DO PADRE', 4301073, 23),
+(4632, 'ARROIO DOS RATOS', 4301107, 23),
+(4633, 'ARROIO DO TIGRE', 4301206, 23),
+(4634, 'ARROIO GRANDE', 4301305, 23),
+(4635, 'ARVOREZINHA', 4301404, 23),
+(4636, 'AUGUSTO PESTANA', 4301503, 23),
+(4637, 'ÁUREA', 4301552, 23),
+(4638, 'BAGÉ', 4301602, 23),
+(4639, 'BALNEÁRIO PINHAL', 4301636, 23),
+(4640, 'BARÃO', 4301651, 23),
+(4641, 'BARÃO DE COTEGIPE', 4301701, 23),
+(4642, 'BARÃO DO TRIUNFO', 4301750, 23),
+(4643, 'BARRACÃO', 4301800, 23),
+(4644, 'BARRA DO GUARITA', 4301859, 23),
+(4645, 'BARRA DO QUARAÍ', 4301875, 23),
+(4646, 'BARRA DO RIBEIRO', 4301909, 23),
+(4647, 'BARRA DO RIO AZUL', 4301925, 23),
+(4648, 'BARRA FUNDA', 4301958, 23),
+(4649, 'BARROS CASSAL', 4302006, 23),
+(4650, 'BENJAMIN CONSTANT DO SUL', 4302055, 23),
+(4651, 'BENTO GONÇALVES', 4302105, 23),
+(4652, 'BOA VISTA DAS MISSÕES', 4302154, 23),
+(4653, 'BOA VISTA DO BURICÁ', 4302204, 23),
+(4654, 'BOA VISTA DO CADEADO', 4302220, 23),
+(4655, 'BOA VISTA DO INCRA', 4302238, 23),
+(4656, 'BOA VISTA DO SUL', 4302253, 23),
+(4657, 'BOM JESUS', 4302303, 23),
+(4658, 'BOM PRINCÍPIO', 4302352, 23),
+(4659, 'BOM PROGRESSO', 4302378, 23),
+(4660, 'BOM RETIRO DO SUL', 4302402, 23),
+(4661, 'BOQUEIRÃO DO LEÃO', 4302451, 23),
+(4662, 'BOSSOROCA', 4302501, 23),
+(4663, 'BOZANO', 4302584, 23),
+(4664, 'BRAGA', 4302600, 23),
+(4665, 'BROCHIER', 4302659, 23),
+(4666, 'BUTIÁ', 4302709, 23),
+(4667, 'CAÇAPAVA DO SUL', 4302808, 23),
+(4668, 'CACEQUI', 4302907, 23),
+(4669, 'CACHOEIRA DO SUL', 4303004, 23),
+(4670, 'CACHOEIRINHA', 4303103, 23),
+(4671, 'CACIQUE DOBLE', 4303202, 23),
+(4672, 'CAIBATÉ', 4303301, 23),
+(4673, 'CAIÇARA', 4303400, 23),
+(4674, 'CAMAQUÃ', 4303509, 23),
+(4675, 'CAMARGO', 4303558, 23),
+(4676, 'CAMBARÁ DO SUL', 4303608, 23),
+(4677, 'CAMPESTRE DA SERRA', 4303673, 23),
+(4678, 'CAMPINA DAS MISSÕES', 4303707, 23),
+(4679, 'CAMPINAS DO SUL', 4303806, 23),
+(4680, 'CAMPO BOM', 4303905, 23),
+(4681, 'CAMPO NOVO', 4304002, 23),
+(4682, 'CAMPOS BORGES', 4304101, 23),
+(4683, 'CANDELÁRIA', 4304200, 23),
+(4684, 'CÂNDIDO GODÓI', 4304309, 23),
+(4685, 'CANDIOTA', 4304358, 23),
+(4686, 'CANELA', 4304408, 23),
+(4687, 'CANGUÇU', 4304507, 23),
+(4688, 'CANOAS', 4304606, 23),
+(4689, 'CANUDOS DO VALE', 4304614, 23),
+(4690, 'CAPÃO BONITO DO SUL', 4304622, 23),
+(4691, 'CAPÃO DA CANOA', 4304630, 23),
+(4692, 'CAPÃO DO CIPÓ', 4304655, 23),
+(4693, 'CAPÃO DO LEÃO', 4304663, 23),
+(4694, 'CAPIVARI DO SUL', 4304671, 23),
+(4695, 'CAPELA DE SANTANA', 4304689, 23),
+(4696, 'CAPITÃO', 4304697, 23),
+(4697, 'CARAZINHO', 4304705, 23),
+(4698, 'CARAÁ', 4304713, 23),
+(4699, 'CARLOS BARBOSA', 4304804, 23),
+(4700, 'CARLOS GOMES', 4304853, 23),
+(4701, 'CASCA', 4304903, 23),
+(4702, 'CASEIROS', 4304952, 23),
+(4703, 'CATUÍPE', 4305009, 23),
+(4704, 'CAXIAS DO SUL', 4305108, 23),
+(4705, 'CENTENÁRIO', 4305116, 23),
+(4706, 'CERRITO', 4305124, 23),
+(4707, 'CERRO BRANCO', 4305132, 23),
+(4708, 'CERRO GRANDE', 4305157, 23),
+(4709, 'CERRO GRANDE DO SUL', 4305173, 23),
+(4710, 'CERRO LARGO', 4305207, 23),
+(4711, 'CHAPADA', 4305306, 23),
+(4712, 'CHARQUEADAS', 4305355, 23),
+(4713, 'CHARRUA', 4305371, 23),
+(4714, 'CHIAPETTA', 4305405, 23),
+(4715, 'CHUÍ', 4305439, 23),
+(4716, 'CHUVISCA', 4305447, 23),
+(4717, 'CIDREIRA', 4305454, 23),
+(4718, 'CIRÍACO', 4305504, 23),
+(4719, 'COLINAS', 4305587, 23),
+(4720, 'COLORADO', 4305603, 23),
+(4721, 'CONDOR', 4305702, 23),
+(4722, 'CONSTANTINA', 4305801, 23),
+(4723, 'COQUEIRO BAIXO', 4305835, 23),
+(4724, 'COQUEIROS DO SUL', 4305850, 23),
+(4725, 'CORONEL BARROS', 4305871, 23),
+(4726, 'CORONEL BICACO', 4305900, 23),
+(4727, 'CORONEL PILAR', 4305934, 23),
+(4728, 'COTIPORÃ', 4305959, 23),
+(4729, 'COXILHA', 4305975, 23),
+(4730, 'CRISSIUMAL', 4306007, 23),
+(4731, 'CRISTAL', 4306056, 23),
+(4732, 'CRISTAL DO SUL', 4306072, 23),
+(4733, 'CRUZ ALTA', 4306106, 23),
+(4734, 'CRUZALTENSE', 4306130, 23),
+(4735, 'CRUZEIRO DO SUL', 4306205, 23),
+(4736, 'DAVID CANABARRO', 4306304, 23),
+(4737, 'DERRUBADAS', 4306320, 23),
+(4738, 'DEZESSEIS DE NOVEMBRO', 4306353, 23),
+(4739, 'DILERMANDO DE AGUIAR', 4306379, 23),
+(4740, 'DOIS IRMÃOS', 4306403, 23),
+(4741, 'DOIS IRMÃOS DAS MISSÕES', 4306429, 23),
+(4742, 'DOIS LAJEADOS', 4306452, 23),
+(4743, 'DOM FELICIANO', 4306502, 23),
+(4744, 'DOM PEDRO DE ALCÂNTARA', 4306551, 23),
+(4745, 'DOM PEDRITO', 4306601, 23),
+(4746, 'DONA FRANCISCA', 4306700, 23),
+(4747, 'DOUTOR MAURÍCIO CARDOSO', 4306734, 23),
+(4748, 'DOUTOR RICARDO', 4306759, 23),
+(4749, 'ELDORADO DO SUL', 4306767, 23),
+(4750, 'ENCANTADO', 4306809, 23),
+(4751, 'ENCRUZILHADA DO SUL', 4306908, 23),
+(4752, 'ENGENHO VELHO', 4306924, 23),
+(4753, 'ENTRE-IJUÍS', 4306932, 23),
+(4754, 'ENTRE RIOS DO SUL', 4306957, 23),
+(4755, 'EREBANGO', 4306973, 23),
+(4756, 'ERECHIM', 4307005, 23),
+(4757, 'ERNESTINA', 4307054, 23),
+(4758, 'HERVAL', 4307104, 23),
+(4759, 'ERVAL GRANDE', 4307203, 23),
+(4760, 'ERVAL SECO', 4307302, 23),
+(4761, 'ESMERALDA', 4307401, 23),
+(4762, 'ESPERANÇA DO SUL', 4307450, 23),
+(4763, 'ESPUMOSO', 4307500, 23),
+(4764, 'ESTAÇÃO', 4307559, 23),
+(4765, 'ESTÂNCIA VELHA', 4307609, 23),
+(4766, 'ESTEIO', 4307708, 23),
+(4767, 'ESTRELA', 4307807, 23),
+(4768, 'ESTRELA VELHA', 4307815, 23),
+(4769, 'EUGÊNIO DE CASTRO', 4307831, 23),
+(4770, 'FAGUNDES VARELA', 4307864, 23),
+(4771, 'FARROUPILHA', 4307906, 23),
+(4772, 'FAXINAL DO SOTURNO', 4308003, 23),
+(4773, 'FAXINALZINHO', 4308052, 23),
+(4774, 'FAZENDA VILANOVA', 4308078, 23),
+(4775, 'FELIZ', 4308102, 23),
+(4776, 'FLORES DA CUNHA', 4308201, 23),
+(4777, 'FLORIANO PEIXOTO', 4308250, 23),
+(4778, 'FONTOURA XAVIER', 4308300, 23),
+(4779, 'FORMIGUEIRO', 4308409, 23),
+(4780, 'FORQUETINHA', 4308433, 23),
+(4781, 'FORTALEZA DOS VALOS', 4308458, 23),
+(4782, 'FREDERICO WESTPHALEN', 4308508, 23),
+(4783, 'GARIBALDI', 4308607, 23),
+(4784, 'GARRUCHOS', 4308656, 23),
+(4785, 'GAURAMA', 4308706, 23),
+(4786, 'GENERAL CÂMARA', 4308805, 23),
+(4787, 'GENTIL', 4308854, 23),
+(4788, 'GETÚLIO VARGAS', 4308904, 23),
+(4789, 'GIRUÁ', 4309001, 23),
+(4790, 'GLORINHA', 4309050, 23),
+(4791, 'GRAMADO', 4309100, 23),
+(4792, 'GRAMADO DOS LOUREIROS', 4309126, 23),
+(4793, 'GRAMADO XAVIER', 4309159, 23),
+(4794, 'GRAVATAÍ', 4309209, 23),
+(4795, 'GUABIJU', 4309258, 23),
+(4796, 'GUAÍBA', 4309308, 23),
+(4797, 'GUAPORÉ', 4309407, 23),
+(4798, 'GUARANI DAS MISSÕES', 4309506, 23),
+(4799, 'HARMONIA', 4309555, 23),
+(4800, 'HERVEIRAS', 4309571, 23),
+(4801, 'HORIZONTINA', 4309605, 23),
+(4802, 'HULHA NEGRA', 4309654, 23),
+(4803, 'HUMAITÁ', 4309704, 23),
+(4804, 'IBARAMA', 4309753, 23),
+(4805, 'IBIAÇÁ', 4309803, 23),
+(4806, 'IBIRAIARAS', 4309902, 23),
+(4807, 'IBIRAPUITÃ', 4309951, 23),
+(4808, 'IBIRUBÁ', 4310009, 23),
+(4809, 'IGREJINHA', 4310108, 23),
+(4810, 'IJUÍ', 4310207, 23),
+(4811, 'ILÓPOLIS', 4310306, 23),
+(4812, 'IMBÉ', 4310330, 23),
+(4813, 'IMIGRANTE', 4310363, 23),
+(4814, 'INDEPENDÊNCIA', 4310405, 23),
+(4815, 'INHACORÁ', 4310413, 23),
+(4816, 'IPÊ', 4310439, 23),
+(4817, 'IPIRANGA DO SUL', 4310462, 23),
+(4818, 'IRAÍ', 4310504, 23),
+(4819, 'ITAARA', 4310538, 23),
+(4820, 'ITACURUBI', 4310553, 23),
+(4821, 'ITAPUCA', 4310579, 23),
+(4822, 'ITAQUI', 4310603, 23),
+(4823, 'ITATI', 4310652, 23),
+(4824, 'ITATIBA DO SUL', 4310702, 23),
+(4825, 'IVORÁ', 4310751, 23),
+(4826, 'IVOTI', 4310801, 23),
+(4827, 'JABOTICABA', 4310850, 23),
+(4828, 'JACUIZINHO', 4310876, 23),
+(4829, 'JACUTINGA', 4310900, 23),
+(4830, 'JAGUARÃO', 4311007, 23),
+(4831, 'JAGUARI', 4311106, 23),
+(4832, 'JAQUIRANA', 4311122, 23),
+(4833, 'JARI', 4311130, 23),
+(4834, 'JÓIA', 4311155, 23),
+(4835, 'JÚLIO DE CASTILHOS', 4311205, 23),
+(4836, 'LAGOA BONITA DO SUL', 4311239, 23),
+(4837, 'LAGOÃO', 4311254, 23),
+(4838, 'LAGOA DOS TRÊS CANTOS', 4311270, 23),
+(4839, 'LAGOA VERMELHA', 4311304, 23),
+(4840, 'LAJEADO', 4311403, 23),
+(4841, 'LAJEADO DO BUGRE', 4311429, 23),
+(4842, 'LAVRAS DO SUL', 4311502, 23),
+(4843, 'LIBERATO SALZANO', 4311601, 23),
+(4844, 'LINDOLFO COLLOR', 4311627, 23),
+(4845, 'LINHA NOVA', 4311643, 23),
+(4846, 'MACHADINHO', 4311700, 23),
+(4847, 'MAÇAMBARÁ', 4311718, 23),
+(4848, 'MAMPITUBA', 4311734, 23),
+(4849, 'MANOEL VIANA', 4311759, 23),
+(4850, 'MAQUINÉ', 4311775, 23),
+(4851, 'MARATÁ', 4311791, 23),
+(4852, 'MARAU', 4311809, 23),
+(4853, 'MARCELINO RAMOS', 4311908, 23),
+(4854, 'MARIANA PIMENTEL', 4311981, 23),
+(4855, 'MARIANO MORO', 4312005, 23),
+(4856, 'MARQUES DE SOUZA', 4312054, 23),
+(4857, 'MATA', 4312104, 23),
+(4858, 'MATO CASTELHANO', 4312138, 23),
+(4859, 'MATO LEITÃO', 4312153, 23),
+(4860, 'MATO QUEIMADO', 4312179, 23),
+(4861, 'MAXIMILIANO DE ALMEIDA', 4312203, 23),
+(4862, 'MINAS DO LEÃO', 4312252, 23),
+(4863, 'MIRAGUAÍ', 4312302, 23),
+(4864, 'MONTAURI', 4312351, 23),
+(4865, 'MONTE ALEGRE DOS CAMPOS', 4312377, 23),
+(4866, 'MONTE BELO DO SUL', 4312385, 23),
+(4867, 'MONTENEGRO', 4312401, 23),
+(4868, 'MORMAÇO', 4312427, 23),
+(4869, 'MORRINHOS DO SUL', 4312443, 23),
+(4870, 'MORRO REDONDO', 4312450, 23),
+(4871, 'MORRO REUTER', 4312476, 23),
+(4872, 'MOSTARDAS', 4312500, 23),
+(4873, 'MUÇUM', 4312609, 23),
+(4874, 'MUITOS CAPÕES', 4312617, 23),
+(4875, 'MULITERNO', 4312625, 23),
+(4876, 'NÃO-ME-TOQUE', 4312658, 23),
+(4877, 'NICOLAU VERGUEIRO', 4312674, 23),
+(4878, 'NONOAI', 4312708, 23),
+(4879, 'NOVA ALVORADA', 4312757, 23),
+(4880, 'NOVA ARAÇÁ', 4312807, 23),
+(4881, 'NOVA BASSANO', 4312906, 23),
+(4882, 'NOVA BOA VISTA', 4312955, 23),
+(4883, 'NOVA BRÉSCIA', 4313003, 23),
+(4884, 'NOVA CANDELÁRIA', 4313011, 23),
+(4885, 'NOVA ESPERANÇA DO SUL', 4313037, 23),
+(4886, 'NOVA HARTZ', 4313060, 23),
+(4887, 'NOVA PÁDUA', 4313086, 23),
+(4888, 'NOVA PALMA', 4313102, 23),
+(4889, 'NOVA PETRÓPOLIS', 4313201, 23),
+(4890, 'NOVA PRATA', 4313300, 23),
+(4891, 'NOVA RAMADA', 4313334, 23),
+(4892, 'NOVA ROMA DO SUL', 4313359, 23),
+(4893, 'NOVA SANTA RITA', 4313375, 23),
+(4894, 'NOVO CABRAIS', 4313391, 23),
+(4895, 'NOVO HAMBURGO', 4313409, 23),
+(4896, 'NOVO MACHADO', 4313425, 23),
+(4897, 'NOVO TIRADENTES', 4313441, 23),
+(4898, 'NOVO XINGU', 4313466, 23),
+(4899, 'NOVO BARREIRO', 4313490, 23),
+(4900, 'OSÓRIO', 4313508, 23),
+(4901, 'PAIM FILHO', 4313607, 23),
+(4902, 'PALMARES DO SUL', 4313656, 23),
+(4903, 'PALMEIRA DAS MISSÕES', 4313706, 23),
+(4904, 'PALMITINHO', 4313805, 23),
+(4905, 'PANAMBI', 4313904, 23),
+(4906, 'PANTANO GRANDE', 4313953, 23),
+(4907, 'PARAÍ', 4314001, 23),
+(4908, 'PARAÍSO DO SUL', 4314027, 23),
+(4909, 'PARECI NOVO', 4314035, 23),
+(4910, 'PAROBÉ', 4314050, 23),
+(4911, 'PASSA SETE', 4314068, 23),
+(4912, 'PASSO DO SOBRADO', 4314076, 23),
+(4913, 'PASSO FUNDO', 4314100, 23),
+(4914, 'PAULO BENTO', 4314134, 23),
+(4915, 'PAVERAMA', 4314159, 23),
+(4916, 'PEDRAS ALTAS', 4314175, 23),
+(4917, 'PEDRO OSÓRIO', 4314209, 23),
+(4918, 'PEJUÇARA', 4314308, 23),
+(4919, 'PELOTAS', 4314407, 23),
+(4920, 'PICADA CAFÉ', 4314423, 23),
+(4921, 'PINHAL', 4314456, 23),
+(4922, 'PINHAL DA SERRA', 4314464, 23),
+(4923, 'PINHAL GRANDE', 4314472, 23),
+(4924, 'PINHEIRINHO DO VALE', 4314498, 23),
+(4925, 'PINHEIRO MACHADO', 4314506, 23),
+(4926, 'PINTO BANDEIRA', 4314548, 23),
+(4927, 'PIRAPÓ', 4314555, 23),
+(4928, 'PIRATINI', 4314605, 23),
+(4929, 'PLANALTO', 4314704, 23),
+(4930, 'POÇO DAS ANTAS', 4314753, 23),
+(4931, 'PONTÃO', 4314779, 23),
+(4932, 'PONTE PRETA', 4314787, 23),
+(4933, 'PORTÃO', 4314803, 23),
+(4934, 'PORTO ALEGRE', 4314902, 23),
+(4935, 'PORTO LUCENA', 4315008, 23),
+(4936, 'PORTO MAUÁ', 4315057, 23),
+(4937, 'PORTO VERA CRUZ', 4315073, 23),
+(4938, 'PORTO XAVIER', 4315107, 23),
+(4939, 'POUSO NOVO', 4315131, 23),
+(4940, 'PRESIDENTE LUCENA', 4315149, 23),
+(4941, 'PROGRESSO', 4315156, 23),
+(4942, 'PROTÁSIO ALVES', 4315172, 23),
+(4943, 'PUTINGA', 4315206, 23),
+(4944, 'QUARAÍ', 4315305, 23),
+(4945, 'QUATRO IRMÃOS', 4315313, 23),
+(4946, 'QUEVEDOS', 4315321, 23),
+(4947, 'QUINZE DE NOVEMBRO', 4315354, 23),
+(4948, 'REDENTORA', 4315404, 23),
+(4949, 'RELVADO', 4315453, 23),
+(4950, 'RESTINGA SECA', 4315503, 23),
+(4951, 'RIO DOS ÍNDIOS', 4315552, 23),
+(4952, 'RIO GRANDE', 4315602, 23),
+(4953, 'RIO PARDO', 4315701, 23),
+(4954, 'RIOZINHO', 4315750, 23),
+(4955, 'ROCA SALES', 4315800, 23),
+(4956, 'RODEIO BONITO', 4315909, 23),
+(4957, 'ROLADOR', 4315958, 23),
+(4958, 'ROLANTE', 4316006, 23),
+(4959, 'RONDA ALTA', 4316105, 23),
+(4960, 'RONDINHA', 4316204, 23),
+(4961, 'ROQUE GONZALES', 4316303, 23),
+(4962, 'ROSÁRIO DO SUL', 4316402, 23),
+(4963, 'SAGRADA FAMÍLIA', 4316428, 23),
+(4964, 'SALDANHA MARINHO', 4316436, 23),
+(4965, 'SALTO DO JACUÍ', 4316451, 23),
+(4966, 'SALVADOR DAS MISSÕES', 4316477, 23),
+(4967, 'SALVADOR DO SUL', 4316501, 23),
+(4968, 'SANANDUVA', 4316600, 23),
+(4969, 'SANTA BÁRBARA DO SUL', 4316709, 23),
+(4970, 'SANTA CECÍLIA DO SUL', 4316733, 23),
+(4971, 'SANTA CLARA DO SUL', 4316758, 23),
+(4972, 'SANTA CRUZ DO SUL', 4316808, 23),
+(4973, 'SANTA MARIA', 4316907, 23),
+(4974, 'SANTA MARIA DO HERVAL', 4316956, 23),
+(4975, 'SANTA MARGARIDA DO SUL', 4316972, 23),
+(4976, 'SANTANA DA BOA VISTA', 4317004, 23),
+(4977, 'SANT\'ANA DO LIVRAMENTO', 4317103, 23),
+(4978, 'SANTA ROSA', 4317202, 23),
+(4979, 'SANTA TEREZA', 4317251, 23),
+(4980, 'SANTA VITÓRIA DO PALMAR', 4317301, 23),
+(4981, 'SANTIAGO', 4317400, 23),
+(4982, 'SANTO ÂNGELO', 4317509, 23),
+(4983, 'SANTO ANTÔNIO DO PALMA', 4317558, 23),
+(4984, 'SANTO ANTÔNIO DA PATRULHA', 4317608, 23),
+(4985, 'SANTO ANTÔNIO DAS MISSÕES', 4317707, 23),
+(4986, 'SANTO ANTÔNIO DO PLANALTO', 4317756, 23),
+(4987, 'SANTO AUGUSTO', 4317806, 23),
+(4988, 'SANTO CRISTO', 4317905, 23),
+(4989, 'SANTO EXPEDITO DO SUL', 4317954, 23),
+(4990, 'SÃO BORJA', 4318002, 23),
+(4991, 'SÃO DOMINGOS DO SUL', 4318051, 23),
+(4992, 'SÃO FRANCISCO DE ASSIS', 4318101, 23),
+(4993, 'SÃO FRANCISCO DE PAULA', 4318200, 23),
+(4994, 'SÃO GABRIEL', 4318309, 23),
+(4995, 'SÃO JERÔNIMO', 4318408, 23),
+(4996, 'SÃO JOÃO DA URTIGA', 4318424, 23),
+(4997, 'SÃO JOÃO DO POLÊSINE', 4318432, 23),
+(4998, 'SÃO JORGE', 4318440, 23),
+(4999, 'SÃO JOSÉ DAS MISSÕES', 4318457, 23),
+(5000, 'SÃO JOSÉ DO HERVAL', 4318465, 23),
+(5001, 'SÃO JOSÉ DO HORTÊNCIO', 4318481, 23),
+(5002, 'SÃO JOSÉ DO INHACORÁ', 4318499, 23),
+(5003, 'SÃO JOSÉ DO NORTE', 4318507, 23),
+(5004, 'SÃO JOSÉ DO OURO', 4318606, 23),
+(5005, 'SÃO JOSÉ DO SUL', 4318614, 23),
+(5006, 'SÃO JOSÉ DOS AUSENTES', 4318622, 23),
+(5007, 'SÃO LEOPOLDO', 4318705, 23),
+(5008, 'SÃO LOURENÇO DO SUL', 4318804, 23),
+(5009, 'SÃO LUIZ GONZAGA', 4318903, 23),
+(5010, 'SÃO MARCOS', 4319000, 23),
+(5011, 'SÃO MARTINHO', 4319109, 23),
+(5012, 'SÃO MARTINHO DA SERRA', 4319125, 23),
+(5013, 'SÃO MIGUEL DAS MISSÕES', 4319158, 23),
+(5014, 'SÃO NICOLAU', 4319208, 23),
+(5015, 'SÃO PAULO DAS MISSÕES', 4319307, 23),
+(5016, 'SÃO PEDRO DA SERRA', 4319356, 23),
+(5017, 'SÃO PEDRO DAS MISSÕES', 4319364, 23),
+(5018, 'SÃO PEDRO DO BUTIÁ', 4319372, 23),
+(5019, 'SÃO PEDRO DO SUL', 4319406, 23),
+(5020, 'SÃO SEBASTIÃO DO CAÍ', 4319505, 23),
+(5021, 'SÃO SEPÉ', 4319604, 23),
+(5022, 'SÃO VALENTIM', 4319703, 23),
+(5023, 'SÃO VALENTIM DO SUL', 4319711, 23),
+(5024, 'SÃO VALÉRIO DO SUL', 4319737, 23),
+(5025, 'SÃO VENDELINO', 4319752, 23),
+(5026, 'SÃO VICENTE DO SUL', 4319802, 23),
+(5027, 'SAPIRANGA', 4319901, 23),
+(5028, 'SAPUCAIA DO SUL', 4320008, 23),
+(5029, 'SARANDI', 4320107, 23),
+(5030, 'SEBERI', 4320206, 23),
+(5031, 'SEDE NOVA', 4320230, 23),
+(5032, 'SEGREDO', 4320263, 23),
+(5033, 'SELBACH', 4320305, 23),
+(5034, 'SENADOR SALGADO FILHO', 4320321, 23),
+(5035, 'SENTINELA DO SUL', 4320354, 23),
+(5036, 'SERAFINA CORRÊA', 4320404, 23),
+(5037, 'SÉRIO', 4320453, 23),
+(5038, 'SERTÃO', 4320503, 23),
+(5039, 'SERTÃO SANTANA', 4320552, 23),
+(5040, 'SETE DE SETEMBRO', 4320578, 23),
+(5041, 'SEVERIANO DE ALMEIDA', 4320602, 23),
+(5042, 'SILVEIRA MARTINS', 4320651, 23),
+(5043, 'SINIMBU', 4320677, 23),
+(5044, 'SOBRADINHO', 4320701, 23),
+(5045, 'SOLEDADE', 4320800, 23),
+(5046, 'TABAÍ', 4320859, 23),
+(5047, 'TAPEJARA', 4320909, 23),
+(5048, 'TAPERA', 4321006, 23),
+(5049, 'TAPES', 4321105, 23),
+(5050, 'TAQUARA', 4321204, 23),
+(5051, 'TAQUARI', 4321303, 23),
+(5052, 'TAQUARUÇU DO SUL', 4321329, 23),
+(5053, 'TAVARES', 4321352, 23),
+(5054, 'TENENTE PORTELA', 4321402, 23),
+(5055, 'TERRA DE AREIA', 4321436, 23),
+(5056, 'TEUTÔNIA', 4321451, 23),
+(5057, 'TIO HUGO', 4321469, 23),
+(5058, 'TIRADENTES DO SUL', 4321477, 23),
+(5059, 'TOROPI', 4321493, 23),
+(5060, 'TORRES', 4321501, 23),
+(5061, 'TRAMANDAÍ', 4321600, 23),
+(5062, 'TRAVESSEIRO', 4321626, 23),
+(5063, 'TRÊS ARROIOS', 4321634, 23),
+(5064, 'TRÊS CACHOEIRAS', 4321667, 23),
+(5065, 'TRÊS COROAS', 4321709, 23),
+(5066, 'TRÊS DE MAIO', 4321808, 23),
+(5067, 'TRÊS FORQUILHAS', 4321832, 23),
+(5068, 'TRÊS PALMEIRAS', 4321857, 23),
+(5069, 'TRÊS PASSOS', 4321907, 23),
+(5070, 'TRINDADE DO SUL', 4321956, 23),
+(5071, 'TRIUNFO', 4322004, 23),
+(5072, 'TUCUNDUVA', 4322103, 23),
+(5073, 'TUNAS', 4322152, 23),
+(5074, 'TUPANCI DO SUL', 4322186, 23),
+(5075, 'TUPANCIRETÃ', 4322202, 23),
+(5076, 'TUPANDI', 4322251, 23),
+(5077, 'TUPARENDI', 4322301, 23),
+(5078, 'TURUÇU', 4322327, 23),
+(5079, 'UBIRETAMA', 4322343, 23),
+(5080, 'UNIÃO DA SERRA', 4322350, 23),
+(5081, 'UNISTALDA', 4322376, 23),
+(5082, 'URUGUAIANA', 4322400, 23),
+(5083, 'VACARIA', 4322509, 23),
+(5084, 'VALE VERDE', 4322525, 23),
+(5085, 'VALE DO SOL', 4322533, 23),
+(5086, 'VALE REAL', 4322541, 23),
+(5087, 'VANINI', 4322558, 23),
+(5088, 'VENÂNCIO AIRES', 4322608, 23),
+(5089, 'VERA CRUZ', 4322707, 23),
+(5090, 'VERANÓPOLIS', 4322806, 23),
+(5091, 'VESPASIANO CORREA', 4322855, 23),
+(5092, 'VIADUTOS', 4322905, 23),
+(5093, 'VIAMÃO', 4323002, 23),
+(5094, 'VICENTE DUTRA', 4323101, 23),
+(5095, 'VICTOR GRAEFF', 4323200, 23),
+(5096, 'VILA FLORES', 4323309, 23),
+(5097, 'VILA LÂNGARO', 4323358, 23),
+(5098, 'VILA MARIA', 4323408, 23),
+(5099, 'VILA NOVA DO SUL', 4323457, 23),
+(5100, 'VISTA ALEGRE', 4323507, 23),
+(5101, 'VISTA ALEGRE DO PRATA', 4323606, 23),
+(5102, 'VISTA GAÚCHA', 4323705, 23),
+(5103, 'VITÓRIA DAS MISSÕES', 4323754, 23),
+(5104, 'WESTFALIA', 4323770, 23),
+(5105, 'XANGRI-LÁ', 4323804, 23),
+(5106, 'ÁGUA CLARA', 5000203, 24),
+(5107, 'ALCINÓPOLIS', 5000252, 24),
+(5108, 'AMAMBAI', 5000609, 24),
+(5109, 'ANASTÁCIO', 5000708, 24),
+(5110, 'ANAURILÂNDIA', 5000807, 24),
+(5111, 'ANGÉLICA', 5000856, 24),
+(5112, 'ANTÔNIO JOÃO', 5000906, 24),
+(5113, 'APARECIDA DO TABOADO', 5001003, 24),
+(5114, 'AQUIDAUANA', 5001102, 24),
+(5115, 'ARAL MOREIRA', 5001243, 24),
+(5116, 'BANDEIRANTES', 5001508, 24),
+(5117, 'BATAGUASSU', 5001904, 24),
+(5118, 'BATAYPORÃ', 5002001, 24),
+(5119, 'BELA VISTA', 5002100, 24),
+(5120, 'BODOQUENA', 5002159, 24),
+(5121, 'BONITO', 5002209, 24),
+(5122, 'BRASILÂNDIA', 5002308, 24),
+(5123, 'CAARAPÓ', 5002407, 24),
+(5124, 'CAMAPUÃ', 5002605, 24),
+(5125, 'CAMPO GRANDE', 5002704, 24),
+(5126, 'CARACOL', 5002803, 24),
+(5127, 'CASSILÂNDIA', 5002902, 24),
+(5128, 'CHAPADÃO DO SUL', 5002951, 24),
+(5129, 'CORGUINHO', 5003108, 24),
+(5130, 'CORONEL SAPUCAIA', 5003157, 24),
+(5131, 'CORUMBÁ', 5003207, 24),
+(5132, 'COSTA RICA', 5003256, 24),
+(5133, 'COXIM', 5003306, 24),
+(5134, 'DEODÁPOLIS', 5003454, 24),
+(5135, 'DOIS IRMÃOS DO BURITI', 5003488, 24),
+(5136, 'DOURADINA', 5003504, 24),
+(5137, 'DOURADOS', 5003702, 24),
+(5138, 'ELDORADO', 5003751, 24),
+(5139, 'FÁTIMA DO SUL', 5003801, 24),
+(5140, 'FIGUEIRÃO', 5003900, 24),
+(5141, 'GLÓRIA DE DOURADOS', 5004007, 24),
+(5142, 'GUIA LOPES DA LAGUNA', 5004106, 24),
+(5143, 'IGUATEMI', 5004304, 24),
+(5144, 'INOCÊNCIA', 5004403, 24),
+(5145, 'ITAPORÃ', 5004502, 24),
+(5146, 'ITAQUIRAÍ', 5004601, 24),
+(5147, 'IVINHEMA', 5004700, 24),
+(5148, 'JAPORÃ', 5004809, 24),
+(5149, 'JARAGUARI', 5004908, 24),
+(5150, 'JARDIM', 5005004, 24),
+(5151, 'JATEÍ', 5005103, 24),
+(5152, 'JUTI', 5005152, 24),
+(5153, 'LADÁRIO', 5005202, 24),
+(5154, 'LAGUNA CARAPÃ', 5005251, 24),
+(5155, 'MARACAJU', 5005400, 24),
+(5156, 'MIRANDA', 5005608, 24),
+(5157, 'MUNDO NOVO', 5005681, 24),
+(5158, 'NAVIRAÍ', 5005707, 24),
+(5159, 'NIOAQUE', 5005806, 24),
+(5160, 'NOVA ALVORADA DO SUL', 5006002, 24),
+(5161, 'NOVA ANDRADINA', 5006200, 24),
+(5162, 'NOVO HORIZONTE DO SUL', 5006259, 24),
+(5163, 'PARAÍSO DAS ÁGUAS', 5006275, 24),
+(5164, 'PARANAÍBA', 5006309, 24),
+(5165, 'PARANHOS', 5006358, 24),
+(5166, 'PEDRO GOMES', 5006408, 24),
+(5167, 'PONTA PORÃ', 5006606, 24),
+(5168, 'PORTO MURTINHO', 5006903, 24),
+(5169, 'RIBAS DO RIO PARDO', 5007109, 24),
+(5170, 'RIO BRILHANTE', 5007208, 24),
+(5171, 'RIO NEGRO', 5007307, 24),
+(5172, 'RIO VERDE DE MATO GROSSO', 5007406, 24),
+(5173, 'ROCHEDO', 5007505, 24),
+(5174, 'SANTA RITA DO PARDO', 5007554, 24),
+(5175, 'SÃO GABRIEL DO OESTE', 5007695, 24),
+(5176, 'SETE QUEDAS', 5007703, 24),
+(5177, 'SELVÍRIA', 5007802, 24),
+(5178, 'SIDROLÂNDIA', 5007901, 24),
+(5179, 'SONORA', 5007935, 24),
+(5180, 'TACURU', 5007950, 24),
+(5181, 'TAQUARUSSU', 5007976, 24),
+(5182, 'TERENOS', 5008008, 24),
+(5183, 'TRÊS LAGOAS', 5008305, 24),
+(5184, 'VICENTINA', 5008404, 24),
+(5185, 'ACORIZAL', 5100102, 25),
+(5186, 'ÁGUA BOA', 5100201, 25),
+(5187, 'ALTA FLORESTA', 5100250, 25),
+(5188, 'ALTO ARAGUAIA', 5100300, 25),
+(5189, 'ALTO BOA VISTA', 5100359, 25),
+(5190, 'ALTO GARÇAS', 5100409, 25),
+(5191, 'ALTO PARAGUAI', 5100508, 25),
+(5192, 'ALTO TAQUARI', 5100607, 25),
+(5193, 'APIACÁS', 5100805, 25),
+(5194, 'ARAGUAIANA', 5101001, 25),
+(5195, 'ARAGUAINHA', 5101209, 25),
+(5196, 'ARAPUTANGA', 5101258, 25),
+(5197, 'ARENÁPOLIS', 5101308, 25),
+(5198, 'ARIPUANÃ', 5101407, 25),
+(5199, 'BARÃO DE MELGAÇO', 5101605, 25),
+(5200, 'BARRA DO BUGRES', 5101704, 25),
+(5201, 'BARRA DO GARÇAS', 5101803, 25),
+(5202, 'BOM JESUS DO ARAGUAIA', 5101852, 25),
+(5203, 'BRASNORTE', 5101902, 25),
+(5204, 'CÁCERES', 5102504, 25),
+(5205, 'CAMPINÁPOLIS', 5102603, 25),
+(5206, 'CAMPO NOVO DO PARECIS', 5102637, 25),
+(5207, 'CAMPO VERDE', 5102678, 25),
+(5208, 'CAMPOS DE JÚLIO', 5102686, 25),
+(5209, 'CANABRAVA DO NORTE', 5102694, 25),
+(5210, 'CANARANA', 5102702, 25),
+(5211, 'CARLINDA', 5102793, 25),
+(5212, 'CASTANHEIRA', 5102850, 25),
+(5213, 'CHAPADA DOS GUIMARÃES', 5103007, 25),
+(5214, 'CLÁUDIA', 5103056, 25),
+(5215, 'COCALINHO', 5103106, 25),
+(5216, 'COLÍDER', 5103205, 25),
+(5217, 'COLNIZA', 5103254, 25),
+(5218, 'COMODORO', 5103304, 25),
+(5219, 'CONFRESA', 5103353, 25),
+(5220, 'CONQUISTA D\'OESTE', 5103361, 25),
+(5221, 'COTRIGUAÇU', 5103379, 25),
+(5222, 'CUIABÁ', 5103403, 25),
+(5223, 'CURVELÂNDIA', 5103437, 25),
+(5224, 'DENISE', 5103452, 25),
+(5225, 'DIAMANTINO', 5103502, 25),
+(5226, 'DOM AQUINO', 5103601, 25),
+(5227, 'FELIZ NATAL', 5103700, 25),
+(5228, 'FIGUEIRÓPOLIS D\'OESTE', 5103809, 25),
+(5229, 'GAÚCHA DO NORTE', 5103858, 25),
+(5230, 'GENERAL CARNEIRO', 5103908, 25),
+(5231, 'GLÓRIA D\'OESTE', 5103957, 25),
+(5232, 'GUARANTÃ DO NORTE', 5104104, 25),
+(5233, 'GUIRATINGA', 5104203, 25),
+(5234, 'INDIAVAÍ', 5104500, 25),
+(5235, 'IPIRANGA DO NORTE', 5104526, 25),
+(5236, 'ITANHANGÁ', 5104542, 25),
+(5237, 'ITAÚBA', 5104559, 25),
+(5238, 'ITIQUIRA', 5104609, 25),
+(5239, 'JACIARA', 5104807, 25),
+(5240, 'JANGADA', 5104906, 25),
+(5241, 'JAURU', 5105002, 25),
+(5242, 'JUARA', 5105101, 25),
+(5243, 'JUÍNA', 5105150, 25),
+(5244, 'JURUENA', 5105176, 25),
+(5245, 'JUSCIMEIRA', 5105200, 25),
+(5246, 'LAMBARI D\'OESTE', 5105234, 25),
+(5247, 'LUCAS DO RIO VERDE', 5105259, 25),
+(5248, 'LUCIARA', 5105309, 25),
+(5249, 'VILA BELA DA SANTÍSSIMA TRINDADE', 5105507, 25),
+(5250, 'MARCELÂNDIA', 5105580, 25),
+(5251, 'MATUPÁ', 5105606, 25),
+(5252, 'MIRASSOL D\'OESTE', 5105622, 25),
+(5253, 'NOBRES', 5105903, 25),
+(5254, 'NORTELÂNDIA', 5106000, 25),
+(5255, 'NOSSA SENHORA DO LIVRAMENTO', 5106109, 25),
+(5256, 'NOVA BANDEIRANTES', 5106158, 25),
+(5257, 'NOVA NAZARÉ', 5106174, 25),
+(5258, 'NOVA LACERDA', 5106182, 25),
+(5259, 'NOVA SANTA HELENA', 5106190, 25),
+(5260, 'NOVA BRASILÂNDIA', 5106208, 25),
+(5261, 'NOVA CANAÃ DO NORTE', 5106216, 25),
+(5262, 'NOVA MUTUM', 5106224, 25),
+(5263, 'NOVA OLÍMPIA', 5106232, 25),
+(5264, 'NOVA UBIRATÃ', 5106240, 25),
+(5265, 'NOVA XAVANTINA', 5106257, 25),
+(5266, 'NOVO MUNDO', 5106265, 25),
+(5267, 'NOVO HORIZONTE DO NORTE', 5106273, 25),
+(5268, 'NOVO SÃO JOAQUIM', 5106281, 25),
+(5269, 'PARANAÍTA', 5106299, 25),
+(5270, 'PARANATINGA', 5106307, 25),
+(5271, 'NOVO SANTO ANTÔNIO', 5106315, 25),
+(5272, 'PEDRA PRETA', 5106372, 25),
+(5273, 'PEIXOTO DE AZEVEDO', 5106422, 25),
+(5274, 'PLANALTO DA SERRA', 5106455, 25),
+(5275, 'POCONÉ', 5106505, 25),
+(5276, 'PONTAL DO ARAGUAIA', 5106653, 25),
+(5277, 'PONTE BRANCA', 5106703, 25),
+(5278, 'PONTES E LACERDA', 5106752, 25),
+(5279, 'PORTO ALEGRE DO NORTE', 5106778, 25),
+(5280, 'PORTO DOS GAÚCHOS', 5106802, 25),
+(5281, 'PORTO ESPERIDIÃO', 5106828, 25),
+(5282, 'PORTO ESTRELA', 5106851, 25),
+(5283, 'POXORÉU', 5107008, 25),
+(5284, 'PRIMAVERA DO LESTE', 5107040, 25),
+(5285, 'QUERÊNCIA', 5107065, 25),
+(5286, 'SÃO JOSÉ DOS QUATRO MARCOS', 5107107, 25),
+(5287, 'RESERVA DO CABAÇAL', 5107156, 25),
+(5288, 'RIBEIRÃO CASCALHEIRA', 5107180, 25),
+(5289, 'RIBEIRÃOZINHO', 5107198, 25),
+(5290, 'RIO BRANCO', 5107206, 25),
+(5291, 'SANTA CARMEM', 5107248, 25),
+(5292, 'SANTO AFONSO', 5107263, 25),
+(5293, 'SÃO JOSÉ DO POVO', 5107297, 25),
+(5294, 'SÃO JOSÉ DO RIO CLARO', 5107305, 25),
+(5295, 'SÃO JOSÉ DO XINGU', 5107354, 25),
+(5296, 'SÃO PEDRO DA CIPA', 5107404, 25),
+(5297, 'RONDOLÂNDIA', 5107578, 25),
+(5298, 'RONDONÓPOLIS', 5107602, 25),
+(5299, 'ROSÁRIO OESTE', 5107701, 25),
+(5300, 'SANTA CRUZ DO XINGU', 5107743, 25),
+(5301, 'SALTO DO CÉU', 5107750, 25),
+(5302, 'SANTA RITA DO TRIVELATO', 5107768, 25),
+(5303, 'SANTA TEREZINHA', 5107776, 25),
+(5304, 'SANTO ANTÔNIO DO LESTE', 5107792, 25),
+(5305, 'SANTO ANTÔNIO DO LEVERGER', 5107800, 25),
+(5306, 'SÃO FÉLIX DO ARAGUAIA', 5107859, 25),
+(5307, 'SAPEZAL', 5107875, 25),
+(5308, 'SERRA NOVA DOURADA', 5107883, 25),
+(5309, 'SINOP', 5107909, 25),
+(5310, 'SORRISO', 5107925, 25),
+(5311, 'TABAPORÃ', 5107941, 25),
+(5312, 'TANGARÁ DA SERRA', 5107958, 25),
+(5313, 'TAPURAH', 5108006, 25),
+(5314, 'TERRA NOVA DO NORTE', 5108055, 25),
+(5315, 'TESOURO', 5108105, 25),
+(5316, 'TORIXORÉU', 5108204, 25),
+(5317, 'UNIÃO DO SUL', 5108303, 25),
+(5318, 'VALE DE SÃO DOMINGOS', 5108352, 25),
+(5319, 'VÁRZEA GRANDE', 5108402, 25),
+(5320, 'VERA', 5108501, 25),
+(5321, 'VILA RICA', 5108600, 25),
+(5322, 'NOVA GUARITA', 5108808, 25),
+(5323, 'NOVA MARILÂNDIA', 5108857, 25),
+(5324, 'NOVA MARINGÁ', 5108907, 25),
+(5325, 'NOVA MONTE VERDE', 5108956, 25),
+(5326, 'ABADIA DE GOIÁS', 5200050, 26),
+(5327, 'ABADIÂNIA', 5200100, 26),
+(5328, 'ACREÚNA', 5200134, 26),
+(5329, 'ADELÂNDIA', 5200159, 26),
+(5330, 'ÁGUA FRIA DE GOIÁS', 5200175, 26),
+(5331, 'ÁGUA LIMPA', 5200209, 26),
+(5332, 'ÁGUAS LINDAS DE GOIÁS', 5200258, 26),
+(5333, 'ALEXÂNIA', 5200308, 26),
+(5334, 'ALOÂNDIA', 5200506, 26),
+(5335, 'ALTO HORIZONTE', 5200555, 26),
+(5336, 'ALTO PARAÍSO DE GOIÁS', 5200605, 26),
+(5337, 'ALVORADA DO NORTE', 5200803, 26),
+(5338, 'AMARALINA', 5200829, 26),
+(5339, 'AMERICANO DO BRASIL', 5200852, 26),
+(5340, 'AMORINÓPOLIS', 5200902, 26),
+(5341, 'ANÁPOLIS', 5201108, 26),
+(5342, 'ANHANGUERA', 5201207, 26),
+(5343, 'ANICUNS', 5201306, 26),
+(5344, 'APARECIDA DE GOIÂNIA', 5201405, 26),
+(5345, 'APARECIDA DO RIO DOCE', 5201454, 26),
+(5346, 'APORÉ', 5201504, 26),
+(5347, 'ARAÇU', 5201603, 26),
+(5348, 'ARAGARÇAS', 5201702, 26),
+(5349, 'ARAGOIÂNIA', 5201801, 26),
+(5350, 'ARAGUAPAZ', 5202155, 26),
+(5351, 'ARENÓPOLIS', 5202353, 26),
+(5352, 'ARUANÃ', 5202502, 26),
+(5353, 'AURILÂNDIA', 5202601, 26),
+(5354, 'AVELINÓPOLIS', 5202809, 26),
+(5355, 'BALIZA', 5203104, 26),
+(5356, 'BARRO ALTO', 5203203, 26),
+(5357, 'BELA VISTA DE GOIÁS', 5203302, 26),
+(5358, 'BOM JARDIM DE GOIÁS', 5203401, 26),
+(5359, 'BOM JESUS DE GOIÁS', 5203500, 26),
+(5360, 'BONFINÓPOLIS', 5203559, 26),
+(5361, 'BONÓPOLIS', 5203575, 26),
+(5362, 'BRAZABRANTES', 5203609, 26),
+(5363, 'BRITÂNIA', 5203807, 26),
+(5364, 'BURITI ALEGRE', 5203906, 26),
+(5365, 'BURITI DE GOIÁS', 5203939, 26),
+(5366, 'BURITINÓPOLIS', 5203962, 26),
+(5367, 'CABECEIRAS', 5204003, 26),
+(5368, 'CACHOEIRA ALTA', 5204102, 26),
+(5369, 'CACHOEIRA DE GOIÁS', 5204201, 26),
+(5370, 'CACHOEIRA DOURADA', 5204250, 26),
+(5371, 'CAÇU', 5204300, 26),
+(5372, 'CAIAPÔNIA', 5204409, 26),
+(5373, 'CALDAS NOVAS', 5204508, 26),
+(5374, 'CALDAZINHA', 5204557, 26),
+(5375, 'CAMPESTRE DE GOIÁS', 5204607, 26),
+(5376, 'CAMPINAÇU', 5204656, 26),
+(5377, 'CAMPINORTE', 5204706, 26),
+(5378, 'CAMPO ALEGRE DE GOIÁS', 5204805, 26),
+(5379, 'CAMPO LIMPO DE GOIÁS', 5204854, 26),
+(5380, 'CAMPOS BELOS', 5204904, 26),
+(5381, 'CAMPOS VERDES', 5204953, 26),
+(5382, 'CARMO DO RIO VERDE', 5205000, 26),
+(5383, 'CASTELÂNDIA', 5205059, 26),
+(5384, 'CATALÃO', 5205109, 26),
+(5385, 'CATURAÍ', 5205208, 26),
+(5386, 'CAVALCANTE', 5205307, 26),
+(5387, 'CERES', 5205406, 26),
+(5388, 'CEZARINA', 5205455, 26),
+(5389, 'CHAPADÃO DO CÉU', 5205471, 26),
+(5390, 'CIDADE OCIDENTAL', 5205497, 26),
+(5391, 'COCALZINHO DE GOIÁS', 5205513, 26),
+(5392, 'COLINAS DO SUL', 5205521, 26),
+(5393, 'CÓRREGO DO OURO', 5205703, 26),
+(5394, 'CORUMBÁ DE GOIÁS', 5205802, 26),
+(5395, 'CORUMBAÍBA', 5205901, 26),
+(5396, 'CRISTALINA', 5206206, 26),
+(5397, 'CRISTIANÓPOLIS', 5206305, 26),
+(5398, 'CRIXÁS', 5206404, 26),
+(5399, 'CROMÍNIA', 5206503, 26),
+(5400, 'CUMARI', 5206602, 26),
+(5401, 'DAMIANÓPOLIS', 5206701, 26),
+(5402, 'DAMOLÂNDIA', 5206800, 26),
+(5403, 'DAVINÓPOLIS', 5206909, 26),
+(5404, 'DIORAMA', 5207105, 26),
+(5405, 'DOVERLÂNDIA', 5207253, 26),
+(5406, 'EDEALINA', 5207352, 26),
+(5407, 'EDÉIA', 5207402, 26),
+(5408, 'ESTRELA DO NORTE', 5207501, 26),
+(5409, 'FAINA', 5207535, 26),
+(5410, 'FAZENDA NOVA', 5207600, 26),
+(5411, 'FIRMINÓPOLIS', 5207808, 26),
+(5412, 'FLORES DE GOIÁS', 5207907, 26),
+(5413, 'FORMOSA', 5208004, 26),
+(5414, 'FORMOSO', 5208103, 26),
+(5415, 'GAMELEIRA DE GOIÁS', 5208152, 26),
+(5416, 'DIVINÓPOLIS DE GOIÁS', 5208301, 26),
+(5417, 'GOIANÁPOLIS', 5208400, 26),
+(5418, 'GOIANDIRA', 5208509, 26),
+(5419, 'GOIANÉSIA', 5208608, 26),
+(5420, 'GOIÂNIA', 5208707, 26),
+(5421, 'GOIANIRA', 5208806, 26),
+(5422, 'GOIÁS', 5208905, 26),
+(5423, 'GOIATUBA', 5209101, 26),
+(5424, 'GOUVELÂNDIA', 5209150, 26),
+(5425, 'GUAPÓ', 5209200, 26),
+(5426, 'GUARAÍTA', 5209291, 26),
+(5427, 'GUARANI DE GOIÁS', 5209408, 26),
+(5428, 'GUARINOS', 5209457, 26),
+(5429, 'HEITORAÍ', 5209606, 26),
+(5430, 'HIDROLÂNDIA', 5209705, 26),
+(5431, 'HIDROLINA', 5209804, 26),
+(5432, 'IACIARA', 5209903, 26),
+(5433, 'INACIOLÂNDIA', 5209937, 26),
+(5434, 'INDIARA', 5209952, 26),
+(5435, 'INHUMAS', 5210000, 26),
+(5436, 'IPAMERI', 5210109, 26),
+(5437, 'IPIRANGA DE GOIÁS', 5210158, 26),
+(5438, 'IPORÁ', 5210208, 26),
+(5439, 'ISRAELÂNDIA', 5210307, 26),
+(5440, 'ITABERAÍ', 5210406, 26),
+(5441, 'ITAGUARI', 5210562, 26),
+(5442, 'ITAGUARU', 5210604, 26),
+(5443, 'ITAJÁ', 5210802, 26),
+(5444, 'ITAPACI', 5210901, 26),
+(5445, 'ITAPIRAPUÃ', 5211008, 26),
+(5446, 'ITAPURANGA', 5211206, 26),
+(5447, 'ITARUMÃ', 5211305, 26),
+(5448, 'ITAUÇU', 5211404, 26),
+(5449, 'ITUMBIARA', 5211503, 26),
+(5450, 'IVOLÂNDIA', 5211602, 26),
+(5451, 'JANDAIA', 5211701, 26),
+(5452, 'JARAGUÁ', 5211800, 26),
+(5453, 'JATAÍ', 5211909, 26),
+(5454, 'JAUPACI', 5212006, 26),
+(5455, 'JESÚPOLIS', 5212055, 26),
+(5456, 'JOVIÂNIA', 5212105, 26),
+(5457, 'JUSSARA', 5212204, 26),
+(5458, 'LAGOA SANTA', 5212253, 26),
+(5459, 'LEOPOLDO DE BULHÕES', 5212303, 26),
+(5460, 'LUZIÂNIA', 5212501, 26),
+(5461, 'MAIRIPOTABA', 5212600, 26),
+(5462, 'MAMBAÍ', 5212709, 26),
+(5463, 'MARA ROSA', 5212808, 26),
+(5464, 'MARZAGÃO', 5212907, 26),
+(5465, 'MATRINCHÃ', 5212956, 26),
+(5466, 'MAURILÂNDIA', 5213004, 26),
+(5467, 'MIMOSO DE GOIÁS', 5213053, 26),
+(5468, 'MINAÇU', 5213087, 26),
+(5469, 'MINEIROS', 5213103, 26),
+(5470, 'MOIPORÁ', 5213400, 26),
+(5471, 'MONTE ALEGRE DE GOIÁS', 5213509, 26),
+(5472, 'MONTES CLAROS DE GOIÁS', 5213707, 26),
+(5473, 'MONTIVIDIU', 5213756, 26),
+(5474, 'MONTIVIDIU DO NORTE', 5213772, 26),
+(5475, 'MORRINHOS', 5213806, 26),
+(5476, 'MORRO AGUDO DE GOIÁS', 5213855, 26),
+(5477, 'MOSSÂMEDES', 5213905, 26),
+(5478, 'MOZARLÂNDIA', 5214002, 26),
+(5479, 'MUNDO NOVO', 5214051, 26),
+(5480, 'MUTUNÓPOLIS', 5214101, 26),
+(5481, 'NAZÁRIO', 5214408, 26),
+(5482, 'NERÓPOLIS', 5214507, 26),
+(5483, 'NIQUELÂNDIA', 5214606, 26),
+(5484, 'NOVA AMÉRICA', 5214705, 26),
+(5485, 'NOVA AURORA', 5214804, 26),
+(5486, 'NOVA CRIXÁS', 5214838, 26),
+(5487, 'NOVA GLÓRIA', 5214861, 26),
+(5488, 'NOVA IGUAÇU DE GOIÁS', 5214879, 26),
+(5489, 'NOVA ROMA', 5214903, 26),
+(5490, 'NOVA VENEZA', 5215009, 26),
+(5491, 'NOVO BRASIL', 5215207, 26),
+(5492, 'NOVO GAMA', 5215231, 26),
+(5493, 'NOVO PLANALTO', 5215256, 26),
+(5494, 'ORIZONA', 5215306, 26),
+(5495, 'OURO VERDE DE GOIÁS', 5215405, 26),
+(5496, 'OUVIDOR', 5215504, 26),
+(5497, 'PADRE BERNARDO', 5215603, 26),
+(5498, 'PALESTINA DE GOIÁS', 5215652, 26),
+(5499, 'PALMEIRAS DE GOIÁS', 5215702, 26),
+(5500, 'PALMELO', 5215801, 26),
+(5501, 'PALMINÓPOLIS', 5215900, 26),
+(5502, 'PANAMÁ', 5216007, 26),
+(5503, 'PARANAIGUARA', 5216304, 26),
+(5504, 'PARAÚNA', 5216403, 26),
+(5505, 'PEROLÂNDIA', 5216452, 26),
+(5506, 'PETROLINA DE GOIÁS', 5216809, 26),
+(5507, 'PILAR DE GOIÁS', 5216908, 26),
+(5508, 'PIRACANJUBA', 5217104, 26),
+(5509, 'PIRANHAS', 5217203, 26),
+(5510, 'PIRENÓPOLIS', 5217302, 26),
+(5511, 'PIRES DO RIO', 5217401, 26),
+(5512, 'PLANALTINA', 5217609, 26),
+(5513, 'PONTALINA', 5217708, 26),
+(5514, 'PORANGATU', 5218003, 26),
+(5515, 'PORTEIRÃO', 5218052, 26),
+(5516, 'PORTELÂNDIA', 5218102, 26),
+(5517, 'POSSE', 5218300, 26),
+(5518, 'PROFESSOR JAMIL', 5218391, 26),
+(5519, 'QUIRINÓPOLIS', 5218508, 26),
+(5520, 'RIALMA', 5218607, 26),
+(5521, 'RIANÁPOLIS', 5218706, 26),
+(5522, 'RIO QUENTE', 5218789, 26),
+(5523, 'RIO VERDE', 5218805, 26),
+(5524, 'RUBIATABA', 5218904, 26),
+(5525, 'SANCLERLÂNDIA', 5219001, 26),
+(5526, 'SANTA BÁRBARA DE GOIÁS', 5219100, 26),
+(5527, 'SANTA CRUZ DE GOIÁS', 5219209, 26),
+(5528, 'SANTA FÉ DE GOIÁS', 5219258, 26),
+(5529, 'SANTA HELENA DE GOIÁS', 5219308, 26),
+(5530, 'SANTA ISABEL', 5219357, 26),
+(5531, 'SANTA RITA DO ARAGUAIA', 5219407, 26),
+(5532, 'SANTA RITA DO NOVO DESTINO', 5219456, 26),
+(5533, 'SANTA ROSA DE GOIÁS', 5219506, 26),
+(5534, 'SANTA TEREZA DE GOIÁS', 5219605, 26),
+(5535, 'SANTA TEREZINHA DE GOIÁS', 5219704, 26),
+(5536, 'SANTO ANTÔNIO DA BARRA', 5219712, 26),
+(5537, 'SANTO ANTÔNIO DE GOIÁS', 5219738, 26),
+(5538, 'SANTO ANTÔNIO DO DESCOBERTO', 5219753, 26),
+(5539, 'SÃO DOMINGOS', 5219803, 26),
+(5540, 'SÃO FRANCISCO DE GOIÁS', 5219902, 26),
+(5541, 'SÃO JOÃO D\'ALIANÇA', 5220009, 26),
+(5542, 'SÃO JOÃO DA PARAÚNA', 5220058, 26),
+(5543, 'SÃO LUÍS DE MONTES BELOS', 5220108, 26),
+(5544, 'SÃO LUÍZ DO NORTE', 5220157, 26),
+(5545, 'SÃO MIGUEL DO ARAGUAIA', 5220207, 26),
+(5546, 'SÃO MIGUEL DO PASSA QUATRO', 5220264, 26),
+(5547, 'SÃO PATRÍCIO', 5220280, 26),
+(5548, 'SÃO SIMÃO', 5220405, 26),
+(5549, 'SENADOR CANEDO', 5220454, 26),
+(5550, 'SERRANÓPOLIS', 5220504, 26),
+(5551, 'SILVÂNIA', 5220603, 26),
+(5552, 'SIMOLÂNDIA', 5220686, 26),
+(5553, 'SÍTIO D\'ABADIA', 5220702, 26),
+(5554, 'TAQUARAL DE GOIÁS', 5221007, 26),
+(5555, 'TERESINA DE GOIÁS', 5221080, 26),
+(5556, 'TEREZÓPOLIS DE GOIÁS', 5221197, 26),
+(5557, 'TRÊS RANCHOS', 5221304, 26),
+(5558, 'TRINDADE', 5221403, 26),
+(5559, 'TROMBAS', 5221452, 26),
+(5560, 'TURVÂNIA', 5221502, 26),
+(5561, 'TURVELÂNDIA', 5221551, 26),
+(5562, 'UIRAPURU', 5221577, 26),
+(5563, 'URUAÇU', 5221601, 26),
+(5564, 'URUANA', 5221700, 26),
+(5565, 'URUTAÍ', 5221809, 26),
+(5566, 'VALPARAÍSO DE GOIÁS', 5221858, 26),
+(5567, 'VARJÃO', 5221908, 26),
+(5568, 'VIANÓPOLIS', 5222005, 26),
+(5569, 'VICENTINÓPOLIS', 5222054, 26),
+(5570, 'VILA BOA', 5222203, 26),
+(5571, 'VILA PROPÍCIO', 5222302, 26),
+(5572, 'BRASÍLIA', 5300108, 27);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `email`
+--
+
+CREATE TABLE `email` (
+  `IdEmail` bigint(20) NOT NULL,
+  `IdPessoa` bigint(20) NOT NULL,
+  `Endereco` varchar(45) DEFAULT NULL,
+  `IdCategoriaEmail` int(11) NOT NULL,
+  `Observacao` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `endereco`
+--
+
+CREATE TABLE `endereco` (
+  `IdEndereco` bigint(20) NOT NULL,
+  `IdPessoa` bigint(20) NOT NULL,
+  `CEP` char(8) DEFAULT NULL,
+  `Logradouro` varchar(45) DEFAULT NULL,
+  `Numero` varchar(8) DEFAULT NULL,
+  `Bairro` varchar(45) DEFAULT NULL,
+  `IdCidade` bigint(20) NOT NULL,
+  `IdCategoriaEndereco` int(11) NOT NULL,
+  `Observacao` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `estado`
+--
+
+CREATE TABLE `estado` (
+  `IdEstado` int(11) NOT NULL,
+  `Nome` varchar(50) DEFAULT NULL,
+  `Sigla` char(2) DEFAULT NULL,
+  `Regiao` varchar(45) DEFAULT NULL,
+  `CodigoIBGE` varchar(45) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `estado`
+--
+
+INSERT INTO `estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES
+(1, 'RONDÔNIA', 'RO', 'NORTE', '11'),
+(2, 'ACRE', 'AC', 'NORTE', '12'),
+(3, 'AMAZONAS', 'AM', 'NORTE', '13'),
+(4, 'RORAIMA', 'RR', 'NORTE', '14'),
+(5, 'PARÁ', 'PA', 'NORTE', '15'),
+(6, 'AMAPÁ', 'AM', 'NORTE', '16'),
+(7, 'TOCANTINS', 'TO', 'NORTE', '17'),
+(8, 'MARANHÃO', 'MA', 'NORDESTE', '21'),
+(9, 'PIAUÍ', 'PI', 'NORDESTE', '22'),
+(10, 'CEARÁ', 'CE', 'NORDESTE', '23'),
+(11, 'RIO GRANDE DO NORTE', 'RN', 'NORDESTE', '24'),
+(12, 'PARAÍBA', 'PB', 'NORDESTE', '25'),
+(13, 'PERNAMBUCO', 'PE', 'NORDESTE', '26'),
+(14, 'ALAGOAS', 'AL', 'NORDESTE', '27'),
+(15, 'SERGIPE', 'SE', 'NORDESTE', '28'),
+(16, 'BAHIA', 'BA', 'NORDESTE', '29'),
+(17, 'MINAS GERAIS', 'MG', 'SUDESTE', '31'),
+(18, 'ESPÍRITO SANTO', 'ES', 'SUDESTE', '32'),
+(19, 'RIO DE JANEIRO', 'RJ', 'SUDESTE', '33'),
+(20, 'SÃO PAULO', 'SP', 'SUDESTE', '35'),
+(21, 'PARANÁ', 'PR', 'SUL', '41'),
+(22, 'SANTA CATARINA', 'SC', 'SUL', '42'),
+(23, 'RIO GRANDE DO SUL', 'RS', 'SUL', '43'),
+(24, 'MATO GROSSO DO SUL', 'MS', 'CENTRO-OESTE', '50'),
+(25, 'MATO GROSSO', 'MT', 'CENTRO-OESTE', '51'),
+(26, 'GOIÁS', 'GO', 'CENTRO-OESTE', '52'),
+(27, 'DISTRITO FEDERAL', 'DF', 'CENTRO-OESTE', '53');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `formapagamento`
+--
+
+CREATE TABLE `formapagamento` (
+  `IdFormaPagamento` int(11) NOT NULL,
+  `Descritivo` varchar(45) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `formapagamento`
+--
+
+INSERT INTO `formapagamento` (`IdFormaPagamento`, `Descritivo`) VALUES
+(1, 'A vista');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `historicopedido`
+--
+
+CREATE TABLE `historicopedido` (
+  `IdHistoricoPedido` bigint(20) NOT NULL,
+  `IdPedido` bigint(20) NOT NULL,
+  `IdStatusPedido` bigint(20) NOT NULL,
+  `DataMovimentacao` datetime DEFAULT NULL,
+  `IdUsuarioMovimentadoPor` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `listapreco`
+--
+
+CREATE TABLE `listapreco` (
+  `IdListaPreco` int(11) NOT NULL,
+  `Descritivo` varchar(45) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `listapreco`
+--
+
+INSERT INTO `listapreco` (`IdListaPreco`, `Descritivo`) VALUES
+(1, 'Padrão');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `listaprecoproduto`
+--
+
+CREATE TABLE `listaprecoproduto` (
+  `IdListaPrecoProduto` int(11) NOT NULL,
+  `IdListaPreco` int(11) NOT NULL,
+  `IdProduto` bigint(20) NOT NULL,
+  `Vista` decimal(18,5) DEFAULT NULL,
+  `Prazo` decimal(18,5) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `parcela`
+--
+
+CREATE TABLE `parcela` (
+  `IdParcela` int(11) NOT NULL,
+  `Ordem` int(11) DEFAULT NULL,
+  `Dias` int(11) DEFAULT NULL,
+  `Peso` decimal(18,5) DEFAULT NULL,
+  `IdFormaPagamento` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `parcela`
+--
+
+INSERT INTO `parcela` (`IdParcela`, `Ordem`, `Dias`, `Peso`, `IdFormaPagamento`) VALUES
+(1, 1, 1, '100.00000', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `pedido`
+--
+
+CREATE TABLE `pedido` (
+  `IdPedido` bigint(20) NOT NULL,
+  `IdPessoa` bigint(20) NOT NULL,
+  `IdFormaPagamento` int(11) NOT NULL,
+  `IdUsuarioCriadoPor` bigint(20) NOT NULL,
+  `DataPedido` datetime DEFAULT NULL,
+  `Total` decimal(18,5) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `pedidoproduto`
+--
+
+CREATE TABLE `pedidoproduto` (
+  `IdPedidoProduto` bigint(20) NOT NULL,
+  `IdPedido` bigint(20) NOT NULL,
+  `IdProduto` bigint(20) NOT NULL,
+  `Preco` decimal(18,5) DEFAULT NULL,
+  `Quantidade` int(11) DEFAULT NULL,
+  `Desconto` decimal(18,5) DEFAULT NULL,
+  `PedidoProdutocol` varchar(45) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `perfil`
+--
+
+CREATE TABLE `perfil` (
+  `IdPerfil` int(11) NOT NULL,
+  `Nome` varchar(45) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `perfil`
+--
+
+INSERT INTO `perfil` (`IdPerfil`, `Nome`) VALUES
+(1, 'Administrador'),
+(2, 'Gerente'),
+(3, 'Vendedor'),
+(4, 'Cliente');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `pessoa`
+--
+
+CREATE TABLE `pessoa` (
+  `IdPessoa` bigint(20) NOT NULL,
+  `TipoPessoa` char(1) DEFAULT NULL,
+  `NomeRazao` varchar(45) DEFAULT NULL,
+  `ApelidoFantasia` varchar(45) DEFAULT NULL,
+  `CPFCNPJ` varchar(14) DEFAULT NULL,
+  `RGInscricao` varchar(14) DEFAULT NULL,
+  `DataNascimento` date DEFAULT NULL,
+  `Genero` char(1) DEFAULT NULL,
+  `Inativo` bit(1) DEFAULT NULL,
+  `DataInclusao` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `pessoa`
+--
+
+INSERT INTO `pessoa` (`IdPessoa`, `TipoPessoa`, `NomeRazao`, `ApelidoFantasia`, `CPFCNPJ`, `RGInscricao`, `DataNascimento`, `Genero`, `Inativo`, `DataInclusao`) VALUES
+(1, 'F', 'Administrador', 'Administrador', NULL, NULL, NULL, 'M', b'0', NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `produto`
+--
+
+CREATE TABLE `produto` (
+  `IdProduto` bigint(20) NOT NULL,
+  `NomeTecnico` varchar(45) DEFAULT NULL,
+  `NomeComercial` varchar(45) DEFAULT NULL,
+  `CodigoInterno` varchar(20) DEFAULT NULL,
+  `Descricao` varchar(45) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `statuspedido`
+--
+
+CREATE TABLE `statuspedido` (
+  `IdStatusPedido` bigint(20) NOT NULL,
+  `Nome` varchar(45) DEFAULT NULL,
+  `Descricao` varchar(45) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `statuspedido`
+--
+
+INSERT INTO `statuspedido` (`IdStatusPedido`, `Nome`, `Descricao`) VALUES
+(1, 'Aberto', 'Pedido aberto para edição.'),
+(2, 'Separação', 'Pedido fechado para edição, em processo de se'),
+(3, 'Cancelado', 'Pedido cancelado.'),
+(4, 'Entregue', 'Pedido entregue.');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `telefone`
+--
+
+CREATE TABLE `telefone` (
+  `IdTelefone` bigint(20) NOT NULL,
+  `IdPessoa` bigint(20) NOT NULL,
+  `DDI` varchar(5) DEFAULT NULL,
+  `DDD` char(2) DEFAULT NULL,
+  `Numero` char(9) DEFAULT NULL,
+  `Ramal` varchar(5) DEFAULT NULL,
+  `IdCategoriaTelefone` int(11) NOT NULL,
+  `Observacao` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `usuario`
+--
+
+CREATE TABLE `usuario` (
+  `IdUsuario` bigint(20) NOT NULL,
+  `IdPessoa` bigint(20) NOT NULL,
+  `Login` varchar(15) DEFAULT NULL,
+  `Senha` varchar(45) DEFAULT NULL,
+  `IdPerfil` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `usuario`
+--
+
+INSERT INTO `usuario` (`IdUsuario`, `IdPessoa`, `Login`, `Senha`, `IdPerfil`) VALUES
+(1, 1, 'Admin', 'Admin', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `vinculo`
+--
+
+CREATE TABLE `vinculo` (
+  `IdVinculo` int(11) NOT NULL,
+  `Nome` varchar(45) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `vinculo`
+--
+
+INSERT INTO `vinculo` (`IdVinculo`, `Nome`) VALUES
+(1, 'Funcionário'),
+(2, 'Cliente'),
+(3, 'Fornecedor'),
+(4, 'Transportador');
+
+-- --------------------------------------------------------
+
+--
+-- Estrutura da tabela `vinculopessoa`
+--
+
+CREATE TABLE `vinculopessoa` (
+  `IdVinculoPessoa` int(11) NOT NULL,
+  `IdVinculo` int(11) NOT NULL,
+  `IdPessoa` bigint(20) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Índices para tabelas despejadas
+--
+
+--
+-- Índices para tabela `categoriaemail`
+--
+ALTER TABLE `categoriaemail`
+  ADD PRIMARY KEY (`IdCategoriaEmail`);
+
+--
+-- Índices para tabela `categoriaendereco`
+--
+ALTER TABLE `categoriaendereco`
+  ADD PRIMARY KEY (`IdCategoriaEndereco`);
+
+--
+-- Índices para tabela `categoriatelefone`
+--
+ALTER TABLE `categoriatelefone`
+  ADD PRIMARY KEY (`IdCategoriaTelefone`);
+
+--
+-- Índices para tabela `cidade`
+--
+ALTER TABLE `cidade`
+  ADD PRIMARY KEY (`IdCidade`),
+  ADD KEY `fk_Cidade_Estado1` (`IdEstado`);
+
+--
+-- Índices para tabela `email`
+--
+ALTER TABLE `email`
+  ADD PRIMARY KEY (`IdEmail`),
+  ADD KEY `fk_Email_Pessoa1` (`IdPessoa`),
+  ADD KEY `fk_Email_Categoria_Email1` (`IdCategoriaEmail`);
+
+--
+-- Índices para tabela `endereco`
+--
+ALTER TABLE `endereco`
+  ADD PRIMARY KEY (`IdEndereco`),
+  ADD KEY `fk_Endereco_Pessoa` (`IdPessoa`),
+  ADD KEY `fk_Endereco_Categoria_Endereco1` (`IdCategoriaEndereco`),
+  ADD KEY `fk_Endereco_Cidade1` (`IdCidade`);
+
+--
+-- Índices para tabela `estado`
+--
+ALTER TABLE `estado`
+  ADD PRIMARY KEY (`IdEstado`);
+
+--
+-- Índices para tabela `formapagamento`
+--
+ALTER TABLE `formapagamento`
+  ADD PRIMARY KEY (`IdFormaPagamento`);
+
+--
+-- Índices para tabela `historicopedido`
+--
+ALTER TABLE `historicopedido`
+  ADD PRIMARY KEY (`IdHistoricoPedido`),
+  ADD KEY `fk_Historico_Pedido_Status_Pedido1` (`IdStatusPedido`),
+  ADD KEY `fk_Historico_Pedido_Usuario1` (`IdUsuarioMovimentadoPor`),
+  ADD KEY `fk_Historico_Pedido_Pedido1` (`IdPedido`);
+
+--
+-- Índices para tabela `listapreco`
+--
+ALTER TABLE `listapreco`
+  ADD PRIMARY KEY (`IdListaPreco`);
+
+--
+-- Índices para tabela `listaprecoproduto`
+--
+ALTER TABLE `listaprecoproduto`
+  ADD PRIMARY KEY (`IdListaPrecoProduto`),
+  ADD KEY `fk_Lista_Preco_has_Produto_Lista_Preco1` (`IdListaPreco`),
+  ADD KEY `fk_Lista_Preco_has_Produto_Produto1` (`IdProduto`);
+
+--
+-- Índices para tabela `parcela`
+--
+ALTER TABLE `parcela`
+  ADD PRIMARY KEY (`IdParcela`),
+  ADD KEY `fk_Parcela_Forma_Pagamento1` (`IdFormaPagamento`);
+
+--
+-- Índices para tabela `pedido`
+--
+ALTER TABLE `pedido`
+  ADD PRIMARY KEY (`IdPedido`),
+  ADD KEY `fk_Pedido_Pessoa1` (`IdPessoa`),
+  ADD KEY `fk_Pedido_Forma_Pagamento1` (`IdFormaPagamento`),
+  ADD KEY `fk_Pedido_Usuario1` (`IdUsuarioCriadoPor`);
+
+--
+-- Índices para tabela `pedidoproduto`
+--
+ALTER TABLE `pedidoproduto`
+  ADD PRIMARY KEY (`IdPedidoProduto`),
+  ADD KEY `fk_Pedido_has_Produto_Produto1` (`IdProduto`),
+  ADD KEY `fk_PedidoProduto_Pedido1` (`IdPedido`);
+
+--
+-- Índices para tabela `perfil`
+--
+ALTER TABLE `perfil`
+  ADD PRIMARY KEY (`IdPerfil`);
+
+--
+-- Índices para tabela `pessoa`
+--
+ALTER TABLE `pessoa`
+  ADD PRIMARY KEY (`IdPessoa`);
+
+--
+-- Índices para tabela `produto`
+--
+ALTER TABLE `produto`
+  ADD PRIMARY KEY (`IdProduto`);
+
+--
+-- Índices para tabela `statuspedido`
+--
+ALTER TABLE `statuspedido`
+  ADD PRIMARY KEY (`IdStatusPedido`);
+
+--
+-- Índices para tabela `telefone`
+--
+ALTER TABLE `telefone`
+  ADD PRIMARY KEY (`IdTelefone`),
+  ADD KEY `fk_Telefone_Pessoa1` (`IdPessoa`),
+  ADD KEY `fk_Telefone_Categoria_Telefone1` (`IdCategoriaTelefone`);
+
+--
+-- Índices para tabela `usuario`
+--
+ALTER TABLE `usuario`
+  ADD PRIMARY KEY (`IdUsuario`),
+  ADD KEY `fk_Usuario_Pessoa1` (`IdPessoa`),
+  ADD KEY `fk_Usuario_Perfil1` (`IdPerfil`);
+
+--
+-- Índices para tabela `vinculo`
+--
+ALTER TABLE `vinculo`
+  ADD PRIMARY KEY (`IdVinculo`);
+
+--
+-- Índices para tabela `vinculopessoa`
+--
+ALTER TABLE `vinculopessoa`
+  ADD PRIMARY KEY (`IdVinculoPessoa`),
+  ADD KEY `fk_Vinculo_has_Pessoa_Vinculo1` (`IdVinculo`),
+  ADD KEY `fk_Vinculo_has_Pessoa_Pessoa1` (`IdPessoa`);
+
+--
+-- AUTO_INCREMENT de tabelas despejadas
+--
+
+--
+-- AUTO_INCREMENT de tabela `categoriaemail`
+--
+ALTER TABLE `categoriaemail`
+  MODIFY `IdCategoriaEmail` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT de tabela `categoriaendereco`
+--
+ALTER TABLE `categoriaendereco`
+  MODIFY `IdCategoriaEndereco` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de tabela `categoriatelefone`
+--
+ALTER TABLE `categoriatelefone`
+  MODIFY `IdCategoriaTelefone` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT de tabela `cidade`
+--
+ALTER TABLE `cidade`
+  MODIFY `IdCidade` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5573;
+
+--
+-- AUTO_INCREMENT de tabela `email`
+--
+ALTER TABLE `email`
+  MODIFY `IdEmail` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `endereco`
+--
+ALTER TABLE `endereco`
+  MODIFY `IdEndereco` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `formapagamento`
+--
+ALTER TABLE `formapagamento`
+  MODIFY `IdFormaPagamento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de tabela `historicopedido`
+--
+ALTER TABLE `historicopedido`
+  MODIFY `IdHistoricoPedido` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `listapreco`
+--
+ALTER TABLE `listapreco`
+  MODIFY `IdListaPreco` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de tabela `listaprecoproduto`
+--
+ALTER TABLE `listaprecoproduto`
+  MODIFY `IdListaPrecoProduto` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `parcela`
+--
+ALTER TABLE `parcela`
+  MODIFY `IdParcela` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de tabela `pedido`
+--
+ALTER TABLE `pedido`
+  MODIFY `IdPedido` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `pedidoproduto`
+--
+ALTER TABLE `pedidoproduto`
+  MODIFY `IdPedidoProduto` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `perfil`
+--
+ALTER TABLE `perfil`
+  MODIFY `IdPerfil` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT de tabela `pessoa`
+--
+ALTER TABLE `pessoa`
+  MODIFY `IdPessoa` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de tabela `produto`
+--
+ALTER TABLE `produto`
+  MODIFY `IdProduto` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `statuspedido`
+--
+ALTER TABLE `statuspedido`
+  MODIFY `IdStatusPedido` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT de tabela `telefone`
+--
+ALTER TABLE `telefone`
+  MODIFY `IdTelefone` bigint(20) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de tabela `usuario`
+--
+ALTER TABLE `usuario`
+  MODIFY `IdUsuario` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT de tabela `vinculo`
+--
+ALTER TABLE `vinculo`
+  MODIFY `IdVinculo` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT de tabela `vinculopessoa`
+--
+ALTER TABLE `vinculopessoa`
+  MODIFY `IdVinculoPessoa` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- Restrições para despejos de tabelas
+--
+
+--
+-- Limitadores para a tabela `cidade`
+--
+ALTER TABLE `cidade`
+  ADD CONSTRAINT `fk_Cidade_Estado1` FOREIGN KEY (`IdEstado`) REFERENCES `estado` (`IdEstado`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Limitadores para a tabela `email`
+--
+ALTER TABLE `email`
+  ADD CONSTRAINT `fk_Email_Categoria_Email1` FOREIGN KEY (`IdCategoriaEmail`) REFERENCES `categoriaemail` (`IdCategoriaEmail`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Email_Pessoa1` FOREIGN KEY (`IdPessoa`) REFERENCES `pessoa` (`IdPessoa`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Limitadores para a tabela `endereco`
+--
+ALTER TABLE `endereco`
+  ADD CONSTRAINT `fk_Endereco_Categoria_Endereco1` FOREIGN KEY (`IdCategoriaEndereco`) REFERENCES `categoriaendereco` (`IdCategoriaEndereco`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Endereco_Cidade1` FOREIGN KEY (`IdCidade`) REFERENCES `cidade` (`IdCidade`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Endereco_Pessoa` FOREIGN KEY (`IdPessoa`) REFERENCES `pessoa` (`IdPessoa`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Limitadores para a tabela `historicopedido`
+--
+ALTER TABLE `historicopedido`
+  ADD CONSTRAINT `fk_Historico_Pedido_Pedido1` FOREIGN KEY (`IdPedido`) REFERENCES `pedido` (`IdPedido`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Historico_Pedido_Status_Pedido1` FOREIGN KEY (`IdStatusPedido`) REFERENCES `statuspedido` (`IdStatusPedido`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Historico_Pedido_Usuario1` FOREIGN KEY (`IdUsuarioMovimentadoPor`) REFERENCES `usuario` (`IdUsuario`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Limitadores para a tabela `listaprecoproduto`
+--
+ALTER TABLE `listaprecoproduto`
+  ADD CONSTRAINT `fk_Lista_Preco_has_Produto_Lista_Preco1` FOREIGN KEY (`IdListaPreco`) REFERENCES `listapreco` (`IdListaPreco`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Lista_Preco_has_Produto_Produto1` FOREIGN KEY (`IdProduto`) REFERENCES `produto` (`IdProduto`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Limitadores para a tabela `parcela`
+--
+ALTER TABLE `parcela`
+  ADD CONSTRAINT `fk_Parcela_Forma_Pagamento1` FOREIGN KEY (`IdFormaPagamento`) REFERENCES `formapagamento` (`IdFormaPagamento`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Limitadores para a tabela `pedido`
+--
+ALTER TABLE `pedido`
+  ADD CONSTRAINT `fk_Pedido_Forma_Pagamento1` FOREIGN KEY (`IdFormaPagamento`) REFERENCES `formapagamento` (`IdFormaPagamento`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Pedido_Pessoa1` FOREIGN KEY (`IdPessoa`) REFERENCES `pessoa` (`IdPessoa`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Pedido_Usuario1` FOREIGN KEY (`IdUsuarioCriadoPor`) REFERENCES `usuario` (`IdUsuario`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Limitadores para a tabela `pedidoproduto`
+--
+ALTER TABLE `pedidoproduto`
+  ADD CONSTRAINT `fk_PedidoProduto_Pedido1` FOREIGN KEY (`IdPedido`) REFERENCES `pedido` (`IdPedido`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Pedido_has_Produto_Produto1` FOREIGN KEY (`IdProduto`) REFERENCES `produto` (`IdProduto`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Limitadores para a tabela `telefone`
+--
+ALTER TABLE `telefone`
+  ADD CONSTRAINT `fk_Telefone_Categoria_Telefone1` FOREIGN KEY (`IdCategoriaTelefone`) REFERENCES `categoriatelefone` (`IdCategoriaTelefone`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Telefone_Pessoa1` FOREIGN KEY (`IdPessoa`) REFERENCES `pessoa` (`IdPessoa`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Limitadores para a tabela `usuario`
+--
+ALTER TABLE `usuario`
+  ADD CONSTRAINT `fk_Usuario_Perfil1` FOREIGN KEY (`IdPerfil`) REFERENCES `perfil` (`IdPerfil`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Usuario_Pessoa1` FOREIGN KEY (`IdPessoa`) REFERENCES `pessoa` (`IdPessoa`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Limitadores para a tabela `vinculopessoa`
+--
+ALTER TABLE `vinculopessoa`
+  ADD CONSTRAINT `fk_Vinculo_has_Pessoa_Pessoa1` FOREIGN KEY (`IdPessoa`) REFERENCES `pessoa` (`IdPessoa`) ON DELETE NO ACTION ON UPDATE NO ACTION,
+  ADD CONSTRAINT `fk_Vinculo_has_Pessoa_Vinculo1` FOREIGN KEY (`IdVinculo`) REFERENCES `vinculo` (`IdVinculo`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 COMMIT;
 
-
--- -----------------------------------------------------
--- Data for table `master-pedidos`.`CategoriaEndereco`
--- -----------------------------------------------------
-START TRANSACTION;
-USE `master-pedidos`;
-INSERT INTO `master-pedidos`.`CategoriaEndereco` (`IdCategoriaEndereco`, `Nome`, `Descricao`) VALUES (1, 'Padrão', NULL);
-INSERT INTO `master-pedidos`.`CategoriaEndereco` (`IdCategoriaEndereco`, `Nome`, `Descricao`) VALUES (2, 'Entrega', NULL);
-INSERT INTO `master-pedidos`.`CategoriaEndereco` (`IdCategoriaEndereco`, `Nome`, `Descricao`) VALUES (3, 'Cobrança', NULL);
-
-COMMIT;
-
-
--- -----------------------------------------------------
--- Data for table `master-pedidos`.`Estado`
--- -----------------------------------------------------
-START TRANSACTION;
-USE `master-pedidos`;
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (1, 'RONDÔNIA', 'RO', 'NORTE', '11');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (2, 'ACRE', 'AC', 'NORTE', '12');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (3, 'AMAZONAS', 'AM', 'NORTE', '13');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (4, 'RORAIMA', 'RR', 'NORTE', '14');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (5, 'PARÁ', 'PA', 'NORTE', '15');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (6, 'AMAPÁ', 'AM', 'NORTE', '16');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (7, 'TOCANTINS', 'TO', 'NORTE', '17');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (8, 'MARANHÃO', 'MA', 'NORDESTE', '21');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (9, 'PIAUÍ', 'PI', 'NORDESTE', '22');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (10, 'CEARÁ', 'CE', 'NORDESTE', '23');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (11, 'RIO GRANDE DO NORTE', 'RN', 'NORDESTE', '24');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (12, 'PARAÍBA', 'PB', 'NORDESTE', '25');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (13, 'PERNAMBUCO', 'PE', 'NORDESTE', '26');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (14, 'ALAGOAS', 'AL', 'NORDESTE', '27');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (15, 'SERGIPE', 'SE', 'NORDESTE', '28');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (16, 'BAHIA', 'BA', 'NORDESTE', '29');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (17, 'MINAS GERAIS', 'MG', 'SUDESTE', '31');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (18, 'ESPÍRITO SANTO', 'ES', 'SUDESTE', '32');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (19, 'RIO DE JANEIRO', 'RJ', 'SUDESTE', '33');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (20, 'SÃO PAULO', 'SP', 'SUDESTE', '35');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (21, 'PARANÁ', 'PR', 'SUL', '41');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (22, 'SANTA CATARINA', 'SC', 'SUL', '42');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (23, 'RIO GRANDE DO SUL', 'RS', 'SUL', '43');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (24, 'MATO GROSSO DO SUL', 'MS', 'CENTRO-OESTE', '50');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (25, 'MATO GROSSO', 'MT', 'CENTRO-OESTE', '51');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (26, 'GOIÁS', 'GO', 'CENTRO-OESTE', '52');
-INSERT INTO `master-pedidos`.`Estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES (27, 'DISTRITO FEDERAL', 'DF', 'CENTRO-OESTE', '53');
-
-COMMIT;
-
-
--- -----------------------------------------------------
--- Data for table `master-pedidos`.`Cidade`
--- -----------------------------------------------------
-START TRANSACTION;
-USE `master-pedidos`;
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1, 'ALTA FLORESTA D\'OESTE', 1100015, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2, 'ARIQUEMES', 1100023, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3, 'CABIXI', 1100031, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4, 'CACOAL', 1100049, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5, 'CEREJEIRAS', 1100056, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (6, 'COLORADO DO OESTE', 1100064, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (7, 'CORUMBIARA', 1100072, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (8, 'COSTA MARQUES', 1100080, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (9, 'ESPIGÃO D\'OESTE', 1100098, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (10, 'GUAJARÁ-MIRIM', 1100106, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (11, 'JARU', 1100114, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (12, 'JI-PARANÁ', 1100122, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (13, 'MACHADINHO D\'OESTE', 1100130, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (14, 'NOVA BRASILÂNDIA D\'OESTE', 1100148, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (15, 'OURO PRETO DO OESTE', 1100155, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (16, 'PIMENTA BUENO', 1100189, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (17, 'PORTO VELHO', 1100205, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (18, 'PRESIDENTE MÉDICI', 1100254, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (19, 'RIO CRESPO', 1100262, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (20, 'ROLIM DE MOURA', 1100288, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (21, 'SANTA LUZIA D\'OESTE', 1100296, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (22, 'VILHENA', 1100304, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (23, 'SÃO MIGUEL DO GUAPORÉ', 1100320, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (24, 'NOVA MAMORÉ', 1100338, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (25, 'ALVORADA D\'OESTE', 1100346, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (26, 'ALTO ALEGRE DOS PARECIS', 1100379, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (27, 'ALTO PARAÍSO', 1100403, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (28, 'BURITIS', 1100452, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (29, 'NOVO HORIZONTE DO OESTE', 1100502, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (30, 'CACAULÂNDIA', 1100601, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (31, 'CAMPO NOVO DE RONDÔNIA', 1100700, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (32, 'CANDEIAS DO JAMARI', 1100809, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (33, 'CASTANHEIRAS', 1100908, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (34, 'CHUPINGUAIA', 1100924, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (35, 'CUJUBIM', 1100940, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (36, 'GOVERNADOR JORGE TEIXEIRA', 1101005, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (37, 'ITAPUÃ DO OESTE', 1101104, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (38, 'MINISTRO ANDREAZZA', 1101203, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (39, 'MIRANTE DA SERRA', 1101302, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (40, 'MONTE NEGRO', 1101401, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (41, 'NOVA UNIÃO', 1101435, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (42, 'PARECIS', 1101450, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (43, 'PIMENTEIRAS DO OESTE', 1101468, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (44, 'PRIMAVERA DE RONDÔNIA', 1101476, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (45, 'SÃO FELIPE D\'OESTE', 1101484, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (46, 'SÃO FRANCISCO DO GUAPORÉ', 1101492, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (47, 'SERINGUEIRAS', 1101500, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (48, 'TEIXEIRÓPOLIS', 1101559, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (49, 'THEOBROMA', 1101609, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (50, 'URUPÁ', 1101708, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (51, 'VALE DO ANARI', 1101757, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (52, 'VALE DO PARAÍSO', 1101807, 1);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (53, 'ACRELÂNDIA', 1200013, 2);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (54, 'ASSIS BRASIL', 1200054, 2);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (55, 'BRASILÉIA', 1200104, 2);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (56, 'BUJARI', 1200138, 2);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (57, 'CAPIXABA', 1200179, 2);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (58, 'CRUZEIRO DO SUL', 1200203, 2);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (59, 'EPITACIOLÂNDIA', 1200252, 2);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (60, 'FEIJÓ', 1200302, 2);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (61, 'JORDÃO', 1200328, 2);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (62, 'MÂNCIO LIMA', 1200336, 2);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (63, 'MANOEL URBANO', 1200344, 2);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (64, 'MARECHAL THAUMATURGO', 1200351, 2);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (65, 'PLÁCIDO DE CASTRO', 1200385, 2);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (66, 'PORTO WALTER', 1200393, 2);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (67, 'RIO BRANCO', 1200401, 2);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (68, 'RODRIGUES ALVES', 1200427, 2);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (69, 'SANTA ROSA DO PURUS', 1200435, 2);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (70, 'SENADOR GUIOMARD', 1200450, 2);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (71, 'SENA MADUREIRA', 1200500, 2);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (72, 'TARAUACÁ', 1200609, 2);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (73, 'XAPURI', 1200708, 2);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (74, 'PORTO ACRE', 1200807, 2);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (75, 'ALVARÃES', 1300029, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (76, 'AMATURÁ', 1300060, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (77, 'ANAMÃ', 1300086, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (78, 'ANORI', 1300102, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (79, 'APUÍ', 1300144, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (80, 'ATALAIA DO NORTE', 1300201, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (81, 'AUTAZES', 1300300, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (82, 'BARCELOS', 1300409, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (83, 'BARREIRINHA', 1300508, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (84, 'BENJAMIN CONSTANT', 1300607, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (85, 'BERURI', 1300631, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (86, 'BOA VISTA DO RAMOS', 1300680, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (87, 'BOCA DO ACRE', 1300706, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (88, 'BORBA', 1300805, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (89, 'CAAPIRANGA', 1300839, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (90, 'CANUTAMA', 1300904, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (91, 'CARAUARI', 1301001, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (92, 'CAREIRO', 1301100, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (93, 'CAREIRO DA VÁRZEA', 1301159, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (94, 'COARI', 1301209, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (95, 'CODAJÁS', 1301308, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (96, 'EIRUNEPÉ', 1301407, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (97, 'ENVIRA', 1301506, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (98, 'FONTE BOA', 1301605, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (99, 'GUAJARÁ', 1301654, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (100, 'HUMAITÁ', 1301704, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (101, 'IPIXUNA', 1301803, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (102, 'IRANDUBA', 1301852, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (103, 'ITACOATIARA', 1301902, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (104, 'ITAMARATI', 1301951, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (105, 'ITAPIRANGA', 1302009, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (106, 'JAPURÁ', 1302108, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (107, 'JURUÁ', 1302207, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (108, 'JUTAÍ', 1302306, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (109, 'LÁBREA', 1302405, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (110, 'MANACAPURU', 1302504, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (111, 'MANAQUIRI', 1302553, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (112, 'MANAUS', 1302603, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (113, 'MANICORÉ', 1302702, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (114, 'MARAÃ', 1302801, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (115, 'MAUÉS', 1302900, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (116, 'NHAMUNDÁ', 1303007, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (117, 'NOVA OLINDA DO NORTE', 1303106, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (118, 'NOVO AIRÃO', 1303205, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (119, 'NOVO ARIPUANÃ', 1303304, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (120, 'PARINTINS', 1303403, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (121, 'PAUINI', 1303502, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (122, 'PRESIDENTE FIGUEIREDO', 1303536, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (123, 'RIO PRETO DA EVA', 1303569, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (124, 'SANTA ISABEL DO RIO NEGRO', 1303601, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (125, 'SANTO ANTÔNIO DO IÇÁ', 1303700, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (126, 'SÃO GABRIEL DA CACHOEIRA', 1303809, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (127, 'SÃO PAULO DE OLIVENÇA', 1303908, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (128, 'SÃO SEBASTIÃO DO UATUMÃ', 1303957, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (129, 'SILVES', 1304005, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (130, 'TABATINGA', 1304062, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (131, 'TAPAUÁ', 1304104, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (132, 'TEFÉ', 1304203, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (133, 'TONANTINS', 1304237, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (134, 'UARINI', 1304260, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (135, 'URUCARÁ', 1304302, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (136, 'URUCURITUBA', 1304401, 3);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (137, 'AMAJARI', 1400027, 4);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (138, 'ALTO ALEGRE', 1400050, 4);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (139, 'BOA VISTA', 1400100, 4);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (140, 'BONFIM', 1400159, 4);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (141, 'CANTÁ', 1400175, 4);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (142, 'CARACARAÍ', 1400209, 4);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (143, 'CAROEBE', 1400233, 4);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (144, 'IRACEMA', 1400282, 4);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (145, 'MUCAJAÍ', 1400308, 4);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (146, 'NORMANDIA', 1400407, 4);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (147, 'PACARAIMA', 1400456, 4);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (148, 'RORAINÓPOLIS', 1400472, 4);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (149, 'SÃO JOÃO DA BALIZA', 1400506, 4);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (150, 'SÃO LUIZ', 1400605, 4);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (151, 'UIRAMUTÃ', 1400704, 4);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (152, 'ABAETETUBA', 1500107, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (153, 'ABEL FIGUEIREDO', 1500131, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (154, 'ACARÁ', 1500206, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (155, 'AFUÁ', 1500305, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (156, 'ÁGUA AZUL DO NORTE', 1500347, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (157, 'ALENQUER', 1500404, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (158, 'ALMEIRIM', 1500503, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (159, 'ALTAMIRA', 1500602, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (160, 'ANAJÁS', 1500701, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (161, 'ANANINDEUA', 1500800, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (162, 'ANAPU', 1500859, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (163, 'AUGUSTO CORRÊA', 1500909, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (164, 'AURORA DO PARÁ', 1500958, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (165, 'AVEIRO', 1501006, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (166, 'BAGRE', 1501105, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (167, 'BAIÃO', 1501204, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (168, 'BANNACH', 1501253, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (169, 'BARCARENA', 1501303, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (170, 'BELÉM', 1501402, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (171, 'BELTERRA', 1501451, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (172, 'BENEVIDES', 1501501, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (173, 'BOM JESUS DO TOCANTINS', 1501576, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (174, 'BONITO', 1501600, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (175, 'BRAGANÇA', 1501709, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (176, 'BRASIL NOVO', 1501725, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (177, 'BREJO GRANDE DO ARAGUAIA', 1501758, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (178, 'BREU BRANCO', 1501782, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (179, 'BREVES', 1501808, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (180, 'BUJARU', 1501907, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (181, 'CACHOEIRA DO PIRIÁ', 1501956, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (182, 'CACHOEIRA DO ARARI', 1502004, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (183, 'CAMETÁ', 1502103, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (184, 'CANAÃ DOS CARAJÁS', 1502152, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (185, 'CAPANEMA', 1502202, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (186, 'CAPITÃO POÇO', 1502301, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (187, 'CASTANHAL', 1502400, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (188, 'CHAVES', 1502509, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (189, 'COLARES', 1502608, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (190, 'CONCEIÇÃO DO ARAGUAIA', 1502707, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (191, 'CONCÓRDIA DO PARÁ', 1502756, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (192, 'CUMARU DO NORTE', 1502764, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (193, 'CURIONÓPOLIS', 1502772, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (194, 'CURRALINHO', 1502806, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (195, 'CURUÁ', 1502855, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (196, 'CURUÇÁ', 1502905, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (197, 'DOM ELISEU', 1502939, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (198, 'ELDORADO DO CARAJÁS', 1502954, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (199, 'FARO', 1503002, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (200, 'FLORESTA DO ARAGUAIA', 1503044, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (201, 'GARRAFÃO DO NORTE', 1503077, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (202, 'GOIANÉSIA DO PARÁ', 1503093, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (203, 'GURUPÁ', 1503101, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (204, 'IGARAPÉ-AÇU', 1503200, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (205, 'IGARAPÉ-MIRI', 1503309, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (206, 'INHANGAPI', 1503408, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (207, 'IPIXUNA DO PARÁ', 1503457, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (208, 'IRITUIA', 1503507, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (209, 'ITAITUBA', 1503606, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (210, 'ITUPIRANGA', 1503705, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (211, 'JACAREACANGA', 1503754, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (212, 'JACUNDÁ', 1503804, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (213, 'JURUTI', 1503903, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (214, 'LIMOEIRO DO AJURU', 1504000, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (215, 'MÃE DO RIO', 1504059, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (216, 'MAGALHÃES BARATA', 1504109, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (217, 'MARABÁ', 1504208, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (218, 'MARACANÃ', 1504307, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (219, 'MARAPANIM', 1504406, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (220, 'MARITUBA', 1504422, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (221, 'MEDICILÂNDIA', 1504455, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (222, 'MELGAÇO', 1504505, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (223, 'MOCAJUBA', 1504604, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (224, 'MOJU', 1504703, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (225, 'MOJUÍ DOS CAMPOS', 1504752, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (226, 'MONTE ALEGRE', 1504802, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (227, 'MUANÁ', 1504901, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (228, 'NOVA ESPERANÇA DO PIRIÁ', 1504950, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (229, 'NOVA IPIXUNA', 1504976, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (230, 'NOVA TIMBOTEUA', 1505007, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (231, 'NOVO PROGRESSO', 1505031, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (232, 'NOVO REPARTIMENTO', 1505064, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (233, 'ÓBIDOS', 1505106, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (234, 'OEIRAS DO PARÁ', 1505205, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (235, 'ORIXIMINÁ', 1505304, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (236, 'OURÉM', 1505403, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (237, 'OURILÂNDIA DO NORTE', 1505437, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (238, 'PACAJÁ', 1505486, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (239, 'PALESTINA DO PARÁ', 1505494, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (240, 'PARAGOMINAS', 1505502, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (241, 'PARAUAPEBAS', 1505536, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (242, 'PAU D\'ARCO', 1505551, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (243, 'PEIXE-BOI', 1505601, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (244, 'PIÇARRA', 1505635, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (245, 'PLACAS', 1505650, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (246, 'PONTA DE PEDRAS', 1505700, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (247, 'PORTEL', 1505809, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (248, 'PORTO DE MOZ', 1505908, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (249, 'PRAINHA', 1506005, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (250, 'PRIMAVERA', 1506104, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (251, 'QUATIPURU', 1506112, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (252, 'REDENÇÃO', 1506138, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (253, 'RIO MARIA', 1506161, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (254, 'RONDON DO PARÁ', 1506187, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (255, 'RURÓPOLIS', 1506195, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (256, 'SALINÓPOLIS', 1506203, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (257, 'SALVATERRA', 1506302, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (258, 'SANTA BÁRBARA DO PARÁ', 1506351, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (259, 'SANTA CRUZ DO ARARI', 1506401, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (260, 'SANTA IZABEL DO PARÁ', 1506500, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (261, 'SANTA LUZIA DO PARÁ', 1506559, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (262, 'SANTA MARIA DAS BARREIRAS', 1506583, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (263, 'SANTA MARIA DO PARÁ', 1506609, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (264, 'SANTANA DO ARAGUAIA', 1506708, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (265, 'SANTARÉM', 1506807, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (266, 'SANTARÉM NOVO', 1506906, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (267, 'SANTO ANTÔNIO DO TAUÁ', 1507003, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (268, 'SÃO CAETANO DE ODIVELAS', 1507102, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (269, 'SÃO DOMINGOS DO ARAGUAIA', 1507151, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (270, 'SÃO DOMINGOS DO CAPIM', 1507201, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (271, 'SÃO FÉLIX DO XINGU', 1507300, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (272, 'SÃO FRANCISCO DO PARÁ', 1507409, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (273, 'SÃO GERALDO DO ARAGUAIA', 1507458, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (274, 'SÃO JOÃO DA PONTA', 1507466, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (275, 'SÃO JOÃO DE PIRABAS', 1507474, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (276, 'SÃO JOÃO DO ARAGUAIA', 1507508, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (277, 'SÃO MIGUEL DO GUAMÁ', 1507607, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (278, 'SÃO SEBASTIÃO DA BOA VISTA', 1507706, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (279, 'SAPUCAIA', 1507755, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (280, 'SENADOR JOSÉ PORFÍRIO', 1507805, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (281, 'SOURE', 1507904, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (282, 'TAILÂNDIA', 1507953, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (283, 'TERRA ALTA', 1507961, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (284, 'TERRA SANTA', 1507979, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (285, 'TOMÉ-AÇU', 1508001, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (286, 'TRACUATEUA', 1508035, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (287, 'TRAIRÃO', 1508050, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (288, 'TUCUMÃ', 1508084, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (289, 'TUCURUÍ', 1508100, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (290, 'ULIANÓPOLIS', 1508126, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (291, 'URUARÁ', 1508159, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (292, 'VIGIA', 1508209, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (293, 'VISEU', 1508308, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (294, 'VITÓRIA DO XINGU', 1508357, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (295, 'XINGUARA', 1508407, 5);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (296, 'SERRA DO NAVIO', 1600055, 6);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (297, 'AMAPÁ', 1600105, 6);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (298, 'PEDRA BRANCA DO AMAPARI', 1600154, 6);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (299, 'CALÇOENE', 1600204, 6);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (300, 'CUTIAS', 1600212, 6);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (301, 'FERREIRA GOMES', 1600238, 6);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (302, 'ITAUBAL', 1600253, 6);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (303, 'LARANJAL DO JARI', 1600279, 6);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (304, 'MACAPÁ', 1600303, 6);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (305, 'MAZAGÃO', 1600402, 6);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (306, 'OIAPOQUE', 1600501, 6);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (307, 'PORTO GRANDE', 1600535, 6);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (308, 'PRACUÚBA', 1600550, 6);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (309, 'SANTANA', 1600600, 6);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (310, 'TARTARUGALZINHO', 1600709, 6);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (311, 'VITÓRIA DO JARI', 1600808, 6);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (312, 'ABREULÂNDIA', 1700251, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (313, 'AGUIARNÓPOLIS', 1700301, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (314, 'ALIANÇA DO TOCANTINS', 1700350, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (315, 'ALMAS', 1700400, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (316, 'ALVORADA', 1700707, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (317, 'ANANÁS', 1701002, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (318, 'ANGICO', 1701051, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (319, 'APARECIDA DO RIO NEGRO', 1701101, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (320, 'ARAGOMINAS', 1701309, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (321, 'ARAGUACEMA', 1701903, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (322, 'ARAGUAÇU', 1702000, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (323, 'ARAGUAÍNA', 1702109, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (324, 'ARAGUANÃ', 1702158, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (325, 'ARAGUATINS', 1702208, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (326, 'ARAPOEMA', 1702307, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (327, 'ARRAIAS', 1702406, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (328, 'AUGUSTINÓPOLIS', 1702554, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (329, 'AURORA DO TOCANTINS', 1702703, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (330, 'AXIXÁ DO TOCANTINS', 1702901, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (331, 'BABAÇULÂNDIA', 1703008, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (332, 'BANDEIRANTES DO TOCANTINS', 1703057, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (333, 'BARRA DO OURO', 1703073, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (334, 'BARROLÂNDIA', 1703107, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (335, 'BERNARDO SAYÃO', 1703206, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (336, 'BOM JESUS DO TOCANTINS', 1703305, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (337, 'BRASILÂNDIA DO TOCANTINS', 1703602, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (338, 'BREJINHO DE NAZARÉ', 1703701, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (339, 'BURITI DO TOCANTINS', 1703800, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (340, 'CACHOEIRINHA', 1703826, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (341, 'CAMPOS LINDOS', 1703842, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (342, 'CARIRI DO TOCANTINS', 1703867, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (343, 'CARMOLÂNDIA', 1703883, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (344, 'CARRASCO BONITO', 1703891, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (345, 'CASEARA', 1703909, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (346, 'CENTENÁRIO', 1704105, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (347, 'CHAPADA DE AREIA', 1704600, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (348, 'CHAPADA DA NATIVIDADE', 1705102, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (349, 'COLINAS DO TOCANTINS', 1705508, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (350, 'COMBINADO', 1705557, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (351, 'CONCEIÇÃO DO TOCANTINS', 1705607, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (352, 'COUTO MAGALHÃES', 1706001, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (353, 'CRISTALÂNDIA', 1706100, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (354, 'CRIXÁS DO TOCANTINS', 1706258, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (355, 'DARCINÓPOLIS', 1706506, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (356, 'DIANÓPOLIS', 1707009, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (357, 'DIVINÓPOLIS DO TOCANTINS', 1707108, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (358, 'DOIS IRMÃOS DO TOCANTINS', 1707207, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (359, 'DUERÉ', 1707306, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (360, 'ESPERANTINA', 1707405, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (361, 'FÁTIMA', 1707553, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (362, 'FIGUEIRÓPOLIS', 1707652, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (363, 'FILADÉLFIA', 1707702, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (364, 'FORMOSO DO ARAGUAIA', 1708205, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (365, 'FORTALEZA DO TABOCÃO', 1708254, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (366, 'GOIANORTE', 1708304, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (367, 'GOIATINS', 1709005, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (368, 'GUARAÍ', 1709302, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (369, 'GURUPI', 1709500, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (370, 'IPUEIRAS', 1709807, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (371, 'ITACAJÁ', 1710508, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (372, 'ITAGUATINS', 1710706, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (373, 'ITAPIRATINS', 1710904, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (374, 'ITAPORÃ DO TOCANTINS', 1711100, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (375, 'JAÚ DO TOCANTINS', 1711506, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (376, 'JUARINA', 1711803, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (377, 'LAGOA DA CONFUSÃO', 1711902, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (378, 'LAGOA DO TOCANTINS', 1711951, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (379, 'LAJEADO', 1712009, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (380, 'LAVANDEIRA', 1712157, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (381, 'LIZARDA', 1712405, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (382, 'LUZINÓPOLIS', 1712454, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (383, 'MARIANÓPOLIS DO TOCANTINS', 1712504, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (384, 'MATEIROS', 1712702, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (385, 'MAURILÂNDIA DO TOCANTINS', 1712801, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (386, 'MIRACEMA DO TOCANTINS', 1713205, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (387, 'MIRANORTE', 1713304, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (388, 'MONTE DO CARMO', 1713601, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (389, 'MONTE SANTO DO TOCANTINS', 1713700, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (390, 'PALMEIRAS DO TOCANTINS', 1713809, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (391, 'MURICILÂNDIA', 1713957, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (392, 'NATIVIDADE', 1714203, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (393, 'NAZARÉ', 1714302, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (394, 'NOVA OLINDA', 1714880, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (395, 'NOVA ROSALÂNDIA', 1715002, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (396, 'NOVO ACORDO', 1715101, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (397, 'NOVO ALEGRE', 1715150, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (398, 'NOVO JARDIM', 1715259, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (399, 'OLIVEIRA DE FÁTIMA', 1715507, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (400, 'PALMEIRANTE', 1715705, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (401, 'PALMEIRÓPOLIS', 1715754, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (402, 'PARAÍSO DO TOCANTINS', 1716109, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (403, 'PARANÃ', 1716208, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (404, 'PAU D\'ARCO', 1716307, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (405, 'PEDRO AFONSO', 1716505, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (406, 'PEIXE', 1716604, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (407, 'PEQUIZEIRO', 1716653, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (408, 'COLMÉIA', 1716703, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (409, 'PINDORAMA DO TOCANTINS', 1717008, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (410, 'PIRAQUÊ', 1717206, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (411, 'PIUM', 1717503, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (412, 'PONTE ALTA DO BOM JESUS', 1717800, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (413, 'PONTE ALTA DO TOCANTINS', 1717909, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (414, 'PORTO ALEGRE DO TOCANTINS', 1718006, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (415, 'PORTO NACIONAL', 1718204, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (416, 'PRAIA NORTE', 1718303, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (417, 'PRESIDENTE KENNEDY', 1718402, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (418, 'PUGMIL', 1718451, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (419, 'RECURSOLÂNDIA', 1718501, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (420, 'RIACHINHO', 1718550, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (421, 'RIO DA CONCEIÇÃO', 1718659, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (422, 'RIO DOS BOIS', 1718709, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (423, 'RIO SONO', 1718758, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (424, 'SAMPAIO', 1718808, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (425, 'SANDOLÂNDIA', 1718840, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (426, 'SANTA FÉ DO ARAGUAIA', 1718865, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (427, 'SANTA MARIA DO TOCANTINS', 1718881, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (428, 'SANTA RITA DO TOCANTINS', 1718899, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (429, 'SANTA ROSA DO TOCANTINS', 1718907, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (430, 'SANTA TEREZA DO TOCANTINS', 1719004, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (431, 'SANTA TEREZINHA DO TOCANTINS', 1720002, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (432, 'SÃO BENTO DO TOCANTINS', 1720101, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (433, 'SÃO FÉLIX DO TOCANTINS', 1720150, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (434, 'SÃO MIGUEL DO TOCANTINS', 1720200, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (435, 'SÃO SALVADOR DO TOCANTINS', 1720259, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (436, 'SÃO SEBASTIÃO DO TOCANTINS', 1720309, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (437, 'SÃO VALÉRIO', 1720499, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (438, 'SILVANÓPOLIS', 1720655, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (439, 'SÍTIO NOVO DO TOCANTINS', 1720804, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (440, 'SUCUPIRA', 1720853, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (441, 'TAGUATINGA', 1720903, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (442, 'TAIPAS DO TOCANTINS', 1720937, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (443, 'TALISMÃ', 1720978, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (444, 'PALMAS', 1721000, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (445, 'TOCANTÍNIA', 1721109, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (446, 'TOCANTINÓPOLIS', 1721208, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (447, 'TUPIRAMA', 1721257, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (448, 'TUPIRATINS', 1721307, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (449, 'WANDERLÂNDIA', 1722081, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (450, 'XAMBIOÁ', 1722107, 7);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (451, 'AÇAILÂNDIA', 2100055, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (452, 'AFONSO CUNHA', 2100105, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (453, 'ÁGUA DOCE DO MARANHÃO', 2100154, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (454, 'ALCÂNTARA', 2100204, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (455, 'ALDEIAS ALTAS', 2100303, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (456, 'ALTAMIRA DO MARANHÃO', 2100402, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (457, 'ALTO ALEGRE DO MARANHÃO', 2100436, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (458, 'ALTO ALEGRE DO PINDARÉ', 2100477, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (459, 'ALTO PARNAÍBA', 2100501, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (460, 'AMAPÁ DO MARANHÃO', 2100550, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (461, 'AMARANTE DO MARANHÃO', 2100600, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (462, 'ANAJATUBA', 2100709, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (463, 'ANAPURUS', 2100808, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (464, 'APICUM-AÇU', 2100832, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (465, 'ARAGUANÃ', 2100873, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (466, 'ARAIOSES', 2100907, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (467, 'ARAME', 2100956, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (468, 'ARARI', 2101004, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (469, 'AXIXÁ', 2101103, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (470, 'BACABAL', 2101202, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (471, 'BACABEIRA', 2101251, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (472, 'BACURI', 2101301, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (473, 'BACURITUBA', 2101350, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (474, 'BALSAS', 2101400, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (475, 'BARÃO DE GRAJAÚ', 2101509, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (476, 'BARRA DO CORDA', 2101608, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (477, 'BARREIRINHAS', 2101707, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (478, 'BELÁGUA', 2101731, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (479, 'BELA VISTA DO MARANHÃO', 2101772, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (480, 'BENEDITO LEITE', 2101806, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (481, 'BEQUIMÃO', 2101905, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (482, 'BERNARDO DO MEARIM', 2101939, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (483, 'BOA VISTA DO GURUPI', 2101970, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (484, 'BOM JARDIM', 2102002, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (485, 'BOM JESUS DAS SELVAS', 2102036, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (486, 'BOM LUGAR', 2102077, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (487, 'BREJO', 2102101, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (488, 'BREJO DE AREIA', 2102150, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (489, 'BURITI', 2102200, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (490, 'BURITI BRAVO', 2102309, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (491, 'BURITICUPU', 2102325, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (492, 'BURITIRANA', 2102358, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (493, 'CACHOEIRA GRANDE', 2102374, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (494, 'CAJAPIÓ', 2102408, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (495, 'CAJARI', 2102507, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (496, 'CAMPESTRE DO MARANHÃO', 2102556, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (497, 'CÂNDIDO MENDES', 2102606, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (498, 'CANTANHEDE', 2102705, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (499, 'CAPINZAL DO NORTE', 2102754, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (500, 'CAROLINA', 2102804, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (501, 'CARUTAPERA', 2102903, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (502, 'CAXIAS', 2103000, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (503, 'CEDRAL', 2103109, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (504, 'CENTRAL DO MARANHÃO', 2103125, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (505, 'CENTRO DO GUILHERME', 2103158, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (506, 'CENTRO NOVO DO MARANHÃO', 2103174, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (507, 'CHAPADINHA', 2103208, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (508, 'CIDELÂNDIA', 2103257, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (509, 'CODÓ', 2103307, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (510, 'COELHO NETO', 2103406, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (511, 'COLINAS', 2103505, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (512, 'CONCEIÇÃO DO LAGO-AÇU', 2103554, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (513, 'COROATÁ', 2103604, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (514, 'CURURUPU', 2103703, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (515, 'DAVINÓPOLIS', 2103752, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (516, 'DOM PEDRO', 2103802, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (517, 'DUQUE BACELAR', 2103901, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (518, 'ESPERANTINÓPOLIS', 2104008, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (519, 'ESTREITO', 2104057, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (520, 'FEIRA NOVA DO MARANHÃO', 2104073, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (521, 'FERNANDO FALCÃO', 2104081, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (522, 'FORMOSA DA SERRA NEGRA', 2104099, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (523, 'FORTALEZA DOS NOGUEIRAS', 2104107, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (524, 'FORTUNA', 2104206, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (525, 'GODOFREDO VIANA', 2104305, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (526, 'GONÇALVES DIAS', 2104404, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (527, 'GOVERNADOR ARCHER', 2104503, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (528, 'GOVERNADOR EDISON LOBÃO', 2104552, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (529, 'GOVERNADOR EUGÊNIO BARROS', 2104602, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (530, 'GOVERNADOR LUIZ ROCHA', 2104628, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (531, 'GOVERNADOR NEWTON BELLO', 2104651, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (532, 'GOVERNADOR NUNES FREIRE', 2104677, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (533, 'GRAÇA ARANHA', 2104701, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (534, 'GRAJAÚ', 2104800, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (535, 'GUIMARÃES', 2104909, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (536, 'HUMBERTO DE CAMPOS', 2105005, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (537, 'ICATU', 2105104, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (538, 'IGARAPÉ DO MEIO', 2105153, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (539, 'IGARAPÉ GRANDE', 2105203, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (540, 'IMPERATRIZ', 2105302, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (541, 'ITAIPAVA DO GRAJAÚ', 2105351, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (542, 'ITAPECURU MIRIM', 2105401, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (543, 'ITINGA DO MARANHÃO', 2105427, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (544, 'JATOBÁ', 2105450, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (545, 'JENIPAPO DOS VIEIRAS', 2105476, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (546, 'JOÃO LISBOA', 2105500, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (547, 'JOSELÂNDIA', 2105609, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (548, 'JUNCO DO MARANHÃO', 2105658, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (549, 'LAGO DA PEDRA', 2105708, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (550, 'LAGO DO JUNCO', 2105807, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (551, 'LAGO VERDE', 2105906, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (552, 'LAGOA DO MATO', 2105922, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (553, 'LAGO DOS RODRIGUES', 2105948, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (554, 'LAGOA GRANDE DO MARANHÃO', 2105963, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (555, 'LAJEADO NOVO', 2105989, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (556, 'LIMA CAMPOS', 2106003, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (557, 'LORETO', 2106102, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (558, 'LUÍS DOMINGUES', 2106201, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (559, 'MAGALHÃES DE ALMEIDA', 2106300, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (560, 'MARACAÇUMÉ', 2106326, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (561, 'MARAJÁ DO SENA', 2106359, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (562, 'MARANHÃOZINHO', 2106375, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (563, 'MATA ROMA', 2106409, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (564, 'MATINHA', 2106508, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (565, 'MATÕES', 2106607, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (566, 'MATÕES DO NORTE', 2106631, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (567, 'MILAGRES DO MARANHÃO', 2106672, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (568, 'MIRADOR', 2106706, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (569, 'MIRANDA DO NORTE', 2106755, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (570, 'MIRINZAL', 2106805, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (571, 'MONÇÃO', 2106904, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (572, 'MONTES ALTOS', 2107001, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (573, 'MORROS', 2107100, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (574, 'NINA RODRIGUES', 2107209, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (575, 'NOVA COLINAS', 2107258, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (576, 'NOVA IORQUE', 2107308, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (577, 'NOVA OLINDA DO MARANHÃO', 2107357, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (578, 'OLHO D\'ÁGUA DAS CUNHÃS', 2107407, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (579, 'OLINDA NOVA DO MARANHÃO', 2107456, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (580, 'PAÇO DO LUMIAR', 2107506, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (581, 'PALMEIRÂNDIA', 2107605, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (582, 'PARAIBANO', 2107704, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (583, 'PARNARAMA', 2107803, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (584, 'PASSAGEM FRANCA', 2107902, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (585, 'PASTOS BONS', 2108009, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (586, 'PAULINO NEVES', 2108058, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (587, 'PAULO RAMOS', 2108108, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (588, 'PEDREIRAS', 2108207, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (589, 'PEDRO DO ROSÁRIO', 2108256, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (590, 'PENALVA', 2108306, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (591, 'PERI MIRIM', 2108405, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (592, 'PERITORÓ', 2108454, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (593, 'PINDARÉ-MIRIM', 2108504, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (594, 'PINHEIRO', 2108603, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (595, 'PIO XII', 2108702, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (596, 'PIRAPEMAS', 2108801, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (597, 'POÇÃO DE PEDRAS', 2108900, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (598, 'PORTO FRANCO', 2109007, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (599, 'PORTO RICO DO MARANHÃO', 2109056, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (600, 'PRESIDENTE DUTRA', 2109106, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (601, 'PRESIDENTE JUSCELINO', 2109205, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (602, 'PRESIDENTE MÉDICI', 2109239, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (603, 'PRESIDENTE SARNEY', 2109270, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (604, 'PRESIDENTE VARGAS', 2109304, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (605, 'PRIMEIRA CRUZ', 2109403, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (606, 'RAPOSA', 2109452, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (607, 'RIACHÃO', 2109502, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (608, 'RIBAMAR FIQUENE', 2109551, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (609, 'ROSÁRIO', 2109601, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (610, 'SAMBAÍBA', 2109700, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (611, 'SANTA FILOMENA DO MARANHÃO', 2109759, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (612, 'SANTA HELENA', 2109809, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (613, 'SANTA INÊS', 2109908, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (614, 'SANTA LUZIA', 2110005, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (615, 'SANTA LUZIA DO PARUÁ', 2110039, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (616, 'SANTA QUITÉRIA DO MARANHÃO', 2110104, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (617, 'SANTA RITA', 2110203, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (618, 'SANTANA DO MARANHÃO', 2110237, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (619, 'SANTO AMARO DO MARANHÃO', 2110278, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (620, 'SANTO ANTÔNIO DOS LOPES', 2110302, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (621, 'SÃO BENEDITO DO RIO PRETO', 2110401, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (622, 'SÃO BENTO', 2110500, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (623, 'SÃO BERNARDO', 2110609, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (624, 'SÃO DOMINGOS DO AZEITÃO', 2110658, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (625, 'SÃO DOMINGOS DO MARANHÃO', 2110708, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (626, 'SÃO FÉLIX DE BALSAS', 2110807, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (627, 'SÃO FRANCISCO DO BREJÃO', 2110856, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (628, 'SÃO FRANCISCO DO MARANHÃO', 2110906, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (629, 'SÃO JOÃO BATISTA', 2111003, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (630, 'SÃO JOÃO DO CARÚ', 2111029, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (631, 'SÃO JOÃO DO PARAÍSO', 2111052, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (632, 'SÃO JOÃO DO SOTER', 2111078, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (633, 'SÃO JOÃO DOS PATOS', 2111102, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (634, 'SÃO JOSÉ DE RIBAMAR', 2111201, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (635, 'SÃO JOSÉ DOS BASÍLIOS', 2111250, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (636, 'SÃO LUÍS', 2111300, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (637, 'SÃO LUÍS GONZAGA DO MARANHÃO', 2111409, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (638, 'SÃO MATEUS DO MARANHÃO', 2111508, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (639, 'SÃO PEDRO DA ÁGUA BRANCA', 2111532, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (640, 'SÃO PEDRO DOS CRENTES', 2111573, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (641, 'SÃO RAIMUNDO DAS MANGABEIRAS', 2111607, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (642, 'SÃO RAIMUNDO DO DOCA BEZERRA', 2111631, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (643, 'SÃO ROBERTO', 2111672, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (644, 'SÃO VICENTE FERRER', 2111706, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (645, 'SATUBINHA', 2111722, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (646, 'SENADOR ALEXANDRE COSTA', 2111748, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (647, 'SENADOR LA ROCQUE', 2111763, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (648, 'SERRANO DO MARANHÃO', 2111789, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (649, 'SÍTIO NOVO', 2111805, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (650, 'SUCUPIRA DO NORTE', 2111904, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (651, 'SUCUPIRA DO RIACHÃO', 2111953, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (652, 'TASSO FRAGOSO', 2112001, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (653, 'TIMBIRAS', 2112100, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (654, 'TIMON', 2112209, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (655, 'TRIZIDELA DO VALE', 2112233, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (656, 'TUFILÂNDIA', 2112274, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (657, 'TUNTUM', 2112308, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (658, 'TURIAÇU', 2112407, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (659, 'TURILÂNDIA', 2112456, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (660, 'TUTÓIA', 2112506, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (661, 'URBANO SANTOS', 2112605, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (662, 'VARGEM GRANDE', 2112704, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (663, 'VIANA', 2112803, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (664, 'VILA NOVA DOS MARTÍRIOS', 2112852, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (665, 'VITÓRIA DO MEARIM', 2112902, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (666, 'VITORINO FREIRE', 2113009, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (667, 'ZÉ DOCA', 2114007, 8);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (668, 'ACAUÃ', 2200053, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (669, 'AGRICOLÂNDIA', 2200103, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (670, 'ÁGUA BRANCA', 2200202, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (671, 'ALAGOINHA DO PIAUÍ', 2200251, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (672, 'ALEGRETE DO PIAUÍ', 2200277, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (673, 'ALTO LONGÁ', 2200301, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (674, 'ALTOS', 2200400, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (675, 'ALVORADA DO GURGUÉIA', 2200459, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (676, 'AMARANTE', 2200509, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (677, 'ANGICAL DO PIAUÍ', 2200608, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (678, 'ANÍSIO DE ABREU', 2200707, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (679, 'ANTÔNIO ALMEIDA', 2200806, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (680, 'AROAZES', 2200905, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (681, 'AROEIRAS DO ITAIM', 2200954, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (682, 'ARRAIAL', 2201002, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (683, 'ASSUNÇÃO DO PIAUÍ', 2201051, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (684, 'AVELINO LOPES', 2201101, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (685, 'BAIXA GRANDE DO RIBEIRO', 2201150, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (686, 'BARRA D\'ALCÂNTARA', 2201176, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (687, 'BARRAS', 2201200, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (688, 'BARREIRAS DO PIAUÍ', 2201309, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (689, 'BARRO DURO', 2201408, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (690, 'BATALHA', 2201507, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (691, 'BELA VISTA DO PIAUÍ', 2201556, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (692, 'BELÉM DO PIAUÍ', 2201572, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (693, 'BENEDITINOS', 2201606, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (694, 'BERTOLÍNIA', 2201705, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (695, 'BETÂNIA DO PIAUÍ', 2201739, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (696, 'BOA HORA', 2201770, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (697, 'BOCAINA', 2201804, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (698, 'BOM JESUS', 2201903, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (699, 'BOM PRINCÍPIO DO PIAUÍ', 2201919, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (700, 'BONFIM DO PIAUÍ', 2201929, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (701, 'BOQUEIRÃO DO PIAUÍ', 2201945, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (702, 'BRASILEIRA', 2201960, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (703, 'BREJO DO PIAUÍ', 2201988, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (704, 'BURITI DOS LOPES', 2202000, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (705, 'BURITI DOS MONTES', 2202026, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (706, 'CABECEIRAS DO PIAUÍ', 2202059, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (707, 'CAJAZEIRAS DO PIAUÍ', 2202075, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (708, 'CAJUEIRO DA PRAIA', 2202083, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (709, 'CALDEIRÃO GRANDE DO PIAUÍ', 2202091, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (710, 'CAMPINAS DO PIAUÍ', 2202109, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (711, 'CAMPO ALEGRE DO FIDALGO', 2202117, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (712, 'CAMPO GRANDE DO PIAUÍ', 2202133, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (713, 'CAMPO LARGO DO PIAUÍ', 2202174, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (714, 'CAMPO MAIOR', 2202208, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (715, 'CANAVIEIRA', 2202251, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (716, 'CANTO DO BURITI', 2202307, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (717, 'CAPITÃO DE CAMPOS', 2202406, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (718, 'CAPITÃO GERVÁSIO OLIVEIRA', 2202455, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (719, 'CARACOL', 2202505, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (720, 'CARAÚBAS DO PIAUÍ', 2202539, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (721, 'CARIDADE DO PIAUÍ', 2202554, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (722, 'CASTELO DO PIAUÍ', 2202604, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (723, 'CAXINGÓ', 2202653, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (724, 'COCAL', 2202703, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (725, 'COCAL DE TELHA', 2202711, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (726, 'COCAL DOS ALVES', 2202729, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (727, 'COIVARAS', 2202737, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (728, 'COLÔNIA DO GURGUÉIA', 2202752, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (729, 'COLÔNIA DO PIAUÍ', 2202778, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (730, 'CONCEIÇÃO DO CANINDÉ', 2202802, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (731, 'CORONEL JOSÉ DIAS', 2202851, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (732, 'CORRENTE', 2202901, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (733, 'CRISTALÂNDIA DO PIAUÍ', 2203008, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (734, 'CRISTINO CASTRO', 2203107, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (735, 'CURIMATÁ', 2203206, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (736, 'CURRAIS', 2203230, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (737, 'CURRALINHOS', 2203255, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (738, 'CURRAL NOVO DO PIAUÍ', 2203271, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (739, 'DEMERVAL LOBÃO', 2203305, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (740, 'DIRCEU ARCOVERDE', 2203354, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (741, 'DOM EXPEDITO LOPES', 2203404, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (742, 'DOMINGOS MOURÃO', 2203420, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (743, 'DOM INOCÊNCIO', 2203453, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (744, 'ELESBÃO VELOSO', 2203503, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (745, 'ELISEU MARTINS', 2203602, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (746, 'ESPERANTINA', 2203701, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (747, 'FARTURA DO PIAUÍ', 2203750, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (748, 'FLORES DO PIAUÍ', 2203800, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (749, 'FLORESTA DO PIAUÍ', 2203859, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (750, 'FLORIANO', 2203909, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (751, 'FRANCINÓPOLIS', 2204006, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (752, 'FRANCISCO AYRES', 2204105, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (753, 'FRANCISCO MACEDO', 2204154, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (754, 'FRANCISCO SANTOS', 2204204, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (755, 'FRONTEIRAS', 2204303, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (756, 'GEMINIANO', 2204352, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (757, 'GILBUÉS', 2204402, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (758, 'GUADALUPE', 2204501, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (759, 'GUARIBAS', 2204550, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (760, 'HUGO NAPOLEÃO', 2204600, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (761, 'ILHA GRANDE', 2204659, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (762, 'INHUMA', 2204709, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (763, 'IPIRANGA DO PIAUÍ', 2204808, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (764, 'ISAÍAS COELHO', 2204907, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (765, 'ITAINÓPOLIS', 2205003, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (766, 'ITAUEIRA', 2205102, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (767, 'JACOBINA DO PIAUÍ', 2205151, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (768, 'JAICÓS', 2205201, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (769, 'JARDIM DO MULATO', 2205250, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (770, 'JATOBÁ DO PIAUÍ', 2205276, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (771, 'JERUMENHA', 2205300, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (772, 'JOÃO COSTA', 2205359, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (773, 'JOAQUIM PIRES', 2205409, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (774, 'JOCA MARQUES', 2205458, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (775, 'JOSÉ DE FREITAS', 2205508, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (776, 'JUAZEIRO DO PIAUÍ', 2205516, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (777, 'JÚLIO BORGES', 2205524, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (778, 'JUREMA', 2205532, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (779, 'LAGOINHA DO PIAUÍ', 2205540, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (780, 'LAGOA ALEGRE', 2205557, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (781, 'LAGOA DO BARRO DO PIAUÍ', 2205565, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (782, 'LAGOA DE SÃO FRANCISCO', 2205573, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (783, 'LAGOA DO PIAUÍ', 2205581, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (784, 'LAGOA DO SÍTIO', 2205599, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (785, 'LANDRI SALES', 2205607, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (786, 'LUÍS CORREIA', 2205706, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (787, 'LUZILÂNDIA', 2205805, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (788, 'MADEIRO', 2205854, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (789, 'MANOEL EMÍDIO', 2205904, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (790, 'MARCOLÂNDIA', 2205953, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (791, 'MARCOS PARENTE', 2206001, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (792, 'MASSAPÊ DO PIAUÍ', 2206050, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (793, 'MATIAS OLÍMPIO', 2206100, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (794, 'MIGUEL ALVES', 2206209, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (795, 'MIGUEL LEÃO', 2206308, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (796, 'MILTON BRANDÃO', 2206357, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (797, 'MONSENHOR GIL', 2206407, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (798, 'MONSENHOR HIPÓLITO', 2206506, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (799, 'MONTE ALEGRE DO PIAUÍ', 2206605, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (800, 'MORRO CABEÇA NO TEMPO', 2206654, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (801, 'MORRO DO CHAPÉU DO PIAUÍ', 2206670, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (802, 'MURICI DOS PORTELAS', 2206696, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (803, 'NAZARÉ DO PIAUÍ', 2206704, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (804, 'NAZÁRIA', 2206720, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (805, 'NOSSA SENHORA DE NAZARÉ', 2206753, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (806, 'NOSSA SENHORA DOS REMÉDIOS', 2206803, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (807, 'NOVO ORIENTE DO PIAUÍ', 2206902, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (808, 'NOVO SANTO ANTÔNIO', 2206951, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (809, 'OEIRAS', 2207009, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (810, 'OLHO D\'ÁGUA DO PIAUÍ', 2207108, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (811, 'PADRE MARCOS', 2207207, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (812, 'PAES LANDIM', 2207306, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (813, 'PAJEÚ DO PIAUÍ', 2207355, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (814, 'PALMEIRA DO PIAUÍ', 2207405, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (815, 'PALMEIRAIS', 2207504, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (816, 'PAQUETÁ', 2207553, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (817, 'PARNAGUÁ', 2207603, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (818, 'PARNAÍBA', 2207702, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (819, 'PASSAGEM FRANCA DO PIAUÍ', 2207751, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (820, 'PATOS DO PIAUÍ', 2207777, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (821, 'PAU D\'ARCO DO PIAUÍ', 2207793, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (822, 'PAULISTANA', 2207801, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (823, 'PAVUSSU', 2207850, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (824, 'PEDRO II', 2207900, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (825, 'PEDRO LAURENTINO', 2207934, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (826, 'NOVA SANTA RITA', 2207959, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (827, 'PICOS', 2208007, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (828, 'PIMENTEIRAS', 2208106, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (829, 'PIO IX', 2208205, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (830, 'PIRACURUCA', 2208304, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (831, 'PIRIPIRI', 2208403, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (832, 'PORTO', 2208502, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (833, 'PORTO ALEGRE DO PIAUÍ', 2208551, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (834, 'PRATA DO PIAUÍ', 2208601, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (835, 'QUEIMADA NOVA', 2208650, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (836, 'REDENÇÃO DO GURGUÉIA', 2208700, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (837, 'REGENERAÇÃO', 2208809, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (838, 'RIACHO FRIO', 2208858, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (839, 'RIBEIRA DO PIAUÍ', 2208874, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (840, 'RIBEIRO GONÇALVES', 2208908, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (841, 'RIO GRANDE DO PIAUÍ', 2209005, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (842, 'SANTA CRUZ DO PIAUÍ', 2209104, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (843, 'SANTA CRUZ DOS MILAGRES', 2209153, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (844, 'SANTA FILOMENA', 2209203, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (845, 'SANTA LUZ', 2209302, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (846, 'SANTANA DO PIAUÍ', 2209351, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (847, 'SANTA ROSA DO PIAUÍ', 2209377, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (848, 'SANTO ANTÔNIO DE LISBOA', 2209401, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (849, 'SANTO ANTÔNIO DOS MILAGRES', 2209450, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (850, 'SANTO INÁCIO DO PIAUÍ', 2209500, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (851, 'SÃO BRAZ DO PIAUÍ', 2209559, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (852, 'SÃO FÉLIX DO PIAUÍ', 2209609, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (853, 'SÃO FRANCISCO DE ASSIS DO PIAUÍ', 2209658, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (854, 'SÃO FRANCISCO DO PIAUÍ', 2209708, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (855, 'SÃO GONÇALO DO GURGUÉIA', 2209757, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (856, 'SÃO GONÇALO DO PIAUÍ', 2209807, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (857, 'SÃO JOÃO DA CANABRAVA', 2209856, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (858, 'SÃO JOÃO DA FRONTEIRA', 2209872, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (859, 'SÃO JOÃO DA SERRA', 2209906, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (860, 'SÃO JOÃO DA VARJOTA', 2209955, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (861, 'SÃO JOÃO DO ARRAIAL', 2209971, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (862, 'SÃO JOÃO DO PIAUÍ', 2210003, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (863, 'SÃO JOSÉ DO DIVINO', 2210052, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (864, 'SÃO JOSÉ DO PEIXE', 2210102, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (865, 'SÃO JOSÉ DO PIAUÍ', 2210201, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (866, 'SÃO JULIÃO', 2210300, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (867, 'SÃO LOURENÇO DO PIAUÍ', 2210359, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (868, 'SÃO LUIS DO PIAUÍ', 2210375, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (869, 'SÃO MIGUEL DA BAIXA GRANDE', 2210383, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (870, 'SÃO MIGUEL DO FIDALGO', 2210391, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (871, 'SÃO MIGUEL DO TAPUIO', 2210409, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (872, 'SÃO PEDRO DO PIAUÍ', 2210508, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (873, 'SÃO RAIMUNDO NONATO', 2210607, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (874, 'SEBASTIÃO BARROS', 2210623, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (875, 'SEBASTIÃO LEAL', 2210631, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (876, 'SIGEFREDO PACHECO', 2210656, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (877, 'SIMÕES', 2210706, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (878, 'SIMPLÍCIO MENDES', 2210805, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (879, 'SOCORRO DO PIAUÍ', 2210904, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (880, 'SUSSUAPARA', 2210938, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (881, 'TAMBORIL DO PIAUÍ', 2210953, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (882, 'TANQUE DO PIAUÍ', 2210979, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (883, 'TERESINA', 2211001, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (884, 'UNIÃO', 2211100, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (885, 'URUÇUÍ', 2211209, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (886, 'VALENÇA DO PIAUÍ', 2211308, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (887, 'VÁRZEA BRANCA', 2211357, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (888, 'VÁRZEA GRANDE', 2211407, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (889, 'VERA MENDES', 2211506, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (890, 'VILA NOVA DO PIAUÍ', 2211605, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (891, 'WALL FERRAZ', 2211704, 9);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (892, 'ABAIARA', 2300101, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (893, 'ACARAPE', 2300150, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (894, 'ACARAÚ', 2300200, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (895, 'ACOPIARA', 2300309, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (896, 'AIUABA', 2300408, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (897, 'ALCÂNTARAS', 2300507, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (898, 'ALTANEIRA', 2300606, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (899, 'ALTO SANTO', 2300705, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (900, 'AMONTADA', 2300754, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (901, 'ANTONINA DO NORTE', 2300804, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (902, 'APUIARÉS', 2300903, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (903, 'AQUIRAZ', 2301000, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (904, 'ARACATI', 2301109, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (905, 'ARACOIABA', 2301208, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (906, 'ARARENDÁ', 2301257, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (907, 'ARARIPE', 2301307, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (908, 'ARATUBA', 2301406, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (909, 'ARNEIROZ', 2301505, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (910, 'ASSARÉ', 2301604, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (911, 'AURORA', 2301703, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (912, 'BAIXIO', 2301802, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (913, 'BANABUIÚ', 2301851, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (914, 'BARBALHA', 2301901, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (915, 'BARREIRA', 2301950, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (916, 'BARRO', 2302008, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (917, 'BARROQUINHA', 2302057, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (918, 'BATURITÉ', 2302107, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (919, 'BEBERIBE', 2302206, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (920, 'BELA CRUZ', 2302305, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (921, 'BOA VIAGEM', 2302404, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (922, 'BREJO SANTO', 2302503, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (923, 'CAMOCIM', 2302602, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (924, 'CAMPOS SALES', 2302701, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (925, 'CANINDÉ', 2302800, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (926, 'CAPISTRANO', 2302909, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (927, 'CARIDADE', 2303006, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (928, 'CARIRÉ', 2303105, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (929, 'CARIRIAÇU', 2303204, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (930, 'CARIÚS', 2303303, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (931, 'CARNAUBAL', 2303402, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (932, 'CASCAVEL', 2303501, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (933, 'CATARINA', 2303600, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (934, 'CATUNDA', 2303659, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (935, 'CAUCAIA', 2303709, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (936, 'CEDRO', 2303808, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (937, 'CHAVAL', 2303907, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (938, 'CHORÓ', 2303931, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (939, 'CHOROZINHO', 2303956, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (940, 'COREAÚ', 2304004, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (941, 'CRATEÚS', 2304103, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (942, 'CRATO', 2304202, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (943, 'CROATÁ', 2304236, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (944, 'CRUZ', 2304251, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (945, 'DEPUTADO IRAPUAN PINHEIRO', 2304269, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (946, 'ERERÊ', 2304277, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (947, 'EUSÉBIO', 2304285, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (948, 'FARIAS BRITO', 2304301, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (949, 'FORQUILHA', 2304350, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (950, 'FORTALEZA', 2304400, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (951, 'FORTIM', 2304459, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (952, 'FRECHEIRINHA', 2304509, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (953, 'GENERAL SAMPAIO', 2304608, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (954, 'GRAÇA', 2304657, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (955, 'GRANJA', 2304707, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (956, 'GRANJEIRO', 2304806, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (957, 'GROAÍRAS', 2304905, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (958, 'GUAIÚBA', 2304954, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (959, 'GUARACIABA DO NORTE', 2305001, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (960, 'GUARAMIRANGA', 2305100, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (961, 'HIDROLÂNDIA', 2305209, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (962, 'HORIZONTE', 2305233, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (963, 'IBARETAMA', 2305266, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (964, 'IBIAPINA', 2305308, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (965, 'IBICUITINGA', 2305332, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (966, 'ICAPUÍ', 2305357, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (967, 'ICÓ', 2305407, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (968, 'IGUATU', 2305506, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (969, 'INDEPENDÊNCIA', 2305605, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (970, 'IPAPORANGA', 2305654, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (971, 'IPAUMIRIM', 2305704, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (972, 'IPU', 2305803, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (973, 'IPUEIRAS', 2305902, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (974, 'IRACEMA', 2306009, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (975, 'IRAUÇUBA', 2306108, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (976, 'ITAIÇABA', 2306207, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (977, 'ITAITINGA', 2306256, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (978, 'ITAPAJÉ', 2306306, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (979, 'ITAPIPOCA', 2306405, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (980, 'ITAPIÚNA', 2306504, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (981, 'ITAREMA', 2306553, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (982, 'ITATIRA', 2306603, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (983, 'JAGUARETAMA', 2306702, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (984, 'JAGUARIBARA', 2306801, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (985, 'JAGUARIBE', 2306900, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (986, 'JAGUARUANA', 2307007, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (987, 'JARDIM', 2307106, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (988, 'JATI', 2307205, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (989, 'JIJOCA DE JERICOACOARA', 2307254, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (990, 'JUAZEIRO DO NORTE', 2307304, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (991, 'JUCÁS', 2307403, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (992, 'LAVRAS DA MANGABEIRA', 2307502, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (993, 'LIMOEIRO DO NORTE', 2307601, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (994, 'MADALENA', 2307635, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (995, 'MARACANAÚ', 2307650, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (996, 'MARANGUAPE', 2307700, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (997, 'MARCO', 2307809, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (998, 'MARTINÓPOLE', 2307908, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (999, 'MASSAPÊ', 2308005, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1000, 'MAURITI', 2308104, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1001, 'MERUOCA', 2308203, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1002, 'MILAGRES', 2308302, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1003, 'MILHÃ', 2308351, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1004, 'MIRAÍMA', 2308377, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1005, 'MISSÃO VELHA', 2308401, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1006, 'MOMBAÇA', 2308500, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1007, 'MONSENHOR TABOSA', 2308609, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1008, 'MORADA NOVA', 2308708, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1009, 'MORAÚJO', 2308807, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1010, 'MORRINHOS', 2308906, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1011, 'MUCAMBO', 2309003, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1012, 'MULUNGU', 2309102, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1013, 'NOVA OLINDA', 2309201, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1014, 'NOVA RUSSAS', 2309300, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1015, 'NOVO ORIENTE', 2309409, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1016, 'OCARA', 2309458, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1017, 'ORÓS', 2309508, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1018, 'PACAJUS', 2309607, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1019, 'PACATUBA', 2309706, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1020, 'PACOTI', 2309805, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1021, 'PACUJÁ', 2309904, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1022, 'PALHANO', 2310001, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1023, 'PALMÁCIA', 2310100, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1024, 'PARACURU', 2310209, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1025, 'PARAIPABA', 2310258, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1026, 'PARAMBU', 2310308, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1027, 'PARAMOTI', 2310407, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1028, 'PEDRA BRANCA', 2310506, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1029, 'PENAFORTE', 2310605, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1030, 'PENTECOSTE', 2310704, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1031, 'PEREIRO', 2310803, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1032, 'PINDORETAMA', 2310852, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1033, 'PIQUET CARNEIRO', 2310902, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1034, 'PIRES FERREIRA', 2310951, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1035, 'PORANGA', 2311009, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1036, 'PORTEIRAS', 2311108, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1037, 'POTENGI', 2311207, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1038, 'POTIRETAMA', 2311231, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1039, 'QUITERIANÓPOLIS', 2311264, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1040, 'QUIXADÁ', 2311306, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1041, 'QUIXELÔ', 2311355, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1042, 'QUIXERAMOBIM', 2311405, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1043, 'QUIXERÉ', 2311504, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1044, 'REDENÇÃO', 2311603, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1045, 'RERIUTABA', 2311702, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1046, 'RUSSAS', 2311801, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1047, 'SABOEIRO', 2311900, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1048, 'SALITRE', 2311959, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1049, 'SANTANA DO ACARAÚ', 2312007, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1050, 'SANTANA DO CARIRI', 2312106, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1051, 'SANTA QUITÉRIA', 2312205, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1052, 'SÃO BENEDITO', 2312304, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1053, 'SÃO GONÇALO DO AMARANTE', 2312403, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1054, 'SÃO JOÃO DO JAGUARIBE', 2312502, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1055, 'SÃO LUÍS DO CURU', 2312601, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1056, 'SENADOR POMPEU', 2312700, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1057, 'SENADOR SÁ', 2312809, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1058, 'SOBRAL', 2312908, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1059, 'SOLONÓPOLE', 2313005, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1060, 'TABULEIRO DO NORTE', 2313104, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1061, 'TAMBORIL', 2313203, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1062, 'TARRAFAS', 2313252, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1063, 'TAUÁ', 2313302, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1064, 'TEJUÇUOCA', 2313351, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1065, 'TIANGUÁ', 2313401, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1066, 'TRAIRI', 2313500, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1067, 'TURURU', 2313559, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1068, 'UBAJARA', 2313609, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1069, 'UMARI', 2313708, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1070, 'UMIRIM', 2313757, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1071, 'URUBURETAMA', 2313807, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1072, 'URUOCA', 2313906, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1073, 'VARJOTA', 2313955, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1074, 'VÁRZEA ALEGRE', 2314003, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1075, 'VIÇOSA DO CEARÁ', 2314102, 10);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1076, 'ACARI', 2400109, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1077, 'AÇU', 2400208, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1078, 'AFONSO BEZERRA', 2400307, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1079, 'ÁGUA NOVA', 2400406, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1080, 'ALEXANDRIA', 2400505, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1081, 'ALMINO AFONSO', 2400604, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1082, 'ALTO DO RODRIGUES', 2400703, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1083, 'ANGICOS', 2400802, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1084, 'ANTÔNIO MARTINS', 2400901, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1085, 'APODI', 2401008, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1086, 'AREIA BRANCA', 2401107, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1087, 'ARÊS', 2401206, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1088, 'AUGUSTO SEVERO', 2401305, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1089, 'BAÍA FORMOSA', 2401404, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1090, 'BARAÚNA', 2401453, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1091, 'BARCELONA', 2401503, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1092, 'BENTO FERNANDES', 2401602, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1093, 'BODÓ', 2401651, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1094, 'BOM JESUS', 2401701, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1095, 'BREJINHO', 2401800, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1096, 'CAIÇARA DO NORTE', 2401859, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1097, 'CAIÇARA DO RIO DO VENTO', 2401909, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1098, 'CAICÓ', 2402006, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1099, 'CAMPO REDONDO', 2402105, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1100, 'CANGUARETAMA', 2402204, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1101, 'CARAÚBAS', 2402303, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1102, 'CARNAÚBA DOS DANTAS', 2402402, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1103, 'CARNAUBAIS', 2402501, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1104, 'CEARÁ-MIRIM', 2402600, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1105, 'CERRO CORÁ', 2402709, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1106, 'CORONEL EZEQUIEL', 2402808, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1107, 'CORONEL JOÃO PESSOA', 2402907, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1108, 'CRUZETA', 2403004, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1109, 'CURRAIS NOVOS', 2403103, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1110, 'DOUTOR SEVERIANO', 2403202, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1111, 'PARNAMIRIM', 2403251, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1112, 'ENCANTO', 2403301, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1113, 'EQUADOR', 2403400, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1114, 'ESPÍRITO SANTO', 2403509, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1115, 'EXTREMOZ', 2403608, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1116, 'FELIPE GUERRA', 2403707, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1117, 'FERNANDO PEDROZA', 2403756, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1118, 'FLORÂNIA', 2403806, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1119, 'FRANCISCO DANTAS', 2403905, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1120, 'FRUTUOSO GOMES', 2404002, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1121, 'GALINHOS', 2404101, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1122, 'GOIANINHA', 2404200, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1123, 'GOVERNADOR DIX-SEPT ROSADO', 2404309, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1124, 'GROSSOS', 2404408, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1125, 'GUAMARÉ', 2404507, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1126, 'IELMO MARINHO', 2404606, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1127, 'IPANGUAÇU', 2404705, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1128, 'IPUEIRA', 2404804, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1129, 'ITAJÁ', 2404853, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1130, 'ITAÚ', 2404903, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1131, 'JAÇANÃ', 2405009, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1132, 'JANDAÍRA', 2405108, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1133, 'JANDUÍS', 2405207, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1134, 'JANUÁRIO CICCO', 2405306, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1135, 'JAPI', 2405405, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1136, 'JARDIM DE ANGICOS', 2405504, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1137, 'JARDIM DE PIRANHAS', 2405603, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1138, 'JARDIM DO SERIDÓ', 2405702, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1139, 'JOÃO CÂMARA', 2405801, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1140, 'JOÃO DIAS', 2405900, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1141, 'JOSÉ DA PENHA', 2406007, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1142, 'JUCURUTU', 2406106, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1143, 'JUNDIÁ', 2406155, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1144, 'LAGOA D\'ANTA', 2406205, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1145, 'LAGOA DE PEDRAS', 2406304, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1146, 'LAGOA DE VELHOS', 2406403, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1147, 'LAGOA NOVA', 2406502, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1148, 'LAGOA SALGADA', 2406601, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1149, 'LAJES', 2406700, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1150, 'LAJES PINTADAS', 2406809, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1151, 'LUCRÉCIA', 2406908, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1152, 'LUÍS GOMES', 2407005, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1153, 'MACAÍBA', 2407104, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1154, 'MACAU', 2407203, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1155, 'MAJOR SALES', 2407252, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1156, 'MARCELINO VIEIRA', 2407302, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1157, 'MARTINS', 2407401, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1158, 'MAXARANGUAPE', 2407500, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1159, 'MESSIAS TARGINO', 2407609, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1160, 'MONTANHAS', 2407708, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1161, 'MONTE ALEGRE', 2407807, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1162, 'MONTE DAS GAMELEIRAS', 2407906, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1163, 'MOSSORÓ', 2408003, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1164, 'NATAL', 2408102, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1165, 'NÍSIA FLORESTA', 2408201, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1166, 'NOVA CRUZ', 2408300, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1167, 'OLHO-D\'ÁGUA DO BORGES', 2408409, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1168, 'OURO BRANCO', 2408508, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1169, 'PARANÁ', 2408607, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1170, 'PARAÚ', 2408706, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1171, 'PARAZINHO', 2408805, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1172, 'PARELHAS', 2408904, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1173, 'RIO DO FOGO', 2408953, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1174, 'PASSA E FICA', 2409100, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1175, 'PASSAGEM', 2409209, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1176, 'PATU', 2409308, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1177, 'SANTA MARIA', 2409332, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1178, 'PAU DOS FERROS', 2409407, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1179, 'PEDRA GRANDE', 2409506, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1180, 'PEDRA PRETA', 2409605, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1181, 'PEDRO AVELINO', 2409704, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1182, 'PEDRO VELHO', 2409803, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1183, 'PENDÊNCIAS', 2409902, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1184, 'PILÕES', 2410009, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1185, 'POÇO BRANCO', 2410108, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1186, 'PORTALEGRE', 2410207, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1187, 'PORTO DO MANGUE', 2410256, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1188, 'SERRA CAIADA', 2410306, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1189, 'PUREZA', 2410405, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1190, 'RAFAEL FERNANDES', 2410504, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1191, 'RAFAEL GODEIRO', 2410603, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1192, 'RIACHO DA CRUZ', 2410702, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1193, 'RIACHO DE SANTANA', 2410801, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1194, 'RIACHUELO', 2410900, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1195, 'RODOLFO FERNANDES', 2411007, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1196, 'TIBAU', 2411056, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1197, 'RUY BARBOSA', 2411106, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1198, 'SANTA CRUZ', 2411205, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1199, 'SANTANA DO MATOS', 2411403, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1200, 'SANTANA DO SERIDÓ', 2411429, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1201, 'SANTO ANTÔNIO', 2411502, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1202, 'SÃO BENTO DO NORTE', 2411601, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1203, 'SÃO BENTO DO TRAIRÍ', 2411700, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1204, 'SÃO FERNANDO', 2411809, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1205, 'SÃO FRANCISCO DO OESTE', 2411908, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1206, 'SÃO GONÇALO DO AMARANTE', 2412005, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1207, 'SÃO JOÃO DO SABUGI', 2412104, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1208, 'SÃO JOSÉ DE MIPIBU', 2412203, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1209, 'SÃO JOSÉ DO CAMPESTRE', 2412302, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1210, 'SÃO JOSÉ DO SERIDÓ', 2412401, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1211, 'SÃO MIGUEL', 2412500, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1212, 'SÃO MIGUEL DO GOSTOSO', 2412559, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1213, 'SÃO PAULO DO POTENGI', 2412609, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1214, 'SÃO PEDRO', 2412708, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1215, 'SÃO RAFAEL', 2412807, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1216, 'SÃO TOMÉ', 2412906, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1217, 'SÃO VICENTE', 2413003, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1218, 'SENADOR ELÓI DE SOUZA', 2413102, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1219, 'SENADOR GEORGINO AVELINO', 2413201, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1220, 'SERRA DE SÃO BENTO', 2413300, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1221, 'SERRA DO MEL', 2413359, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1222, 'SERRA NEGRA DO NORTE', 2413409, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1223, 'SERRINHA', 2413508, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1224, 'SERRINHA DOS PINTOS', 2413557, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1225, 'SEVERIANO MELO', 2413607, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1226, 'SÍTIO NOVO', 2413706, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1227, 'TABOLEIRO GRANDE', 2413805, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1228, 'TAIPU', 2413904, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1229, 'TANGARÁ', 2414001, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1230, 'TENENTE ANANIAS', 2414100, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1231, 'TENENTE LAURENTINO CRUZ', 2414159, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1232, 'TIBAU DO SUL', 2414209, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1233, 'TIMBAÚBA DOS BATISTAS', 2414308, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1234, 'TOUROS', 2414407, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1235, 'TRIUNFO POTIGUAR', 2414456, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1236, 'UMARIZAL', 2414506, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1237, 'UPANEMA', 2414605, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1238, 'VÁRZEA', 2414704, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1239, 'VENHA-VER', 2414753, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1240, 'VERA CRUZ', 2414803, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1241, 'VIÇOSA', 2414902, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1242, 'VILA FLOR', 2415008, 11);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1243, 'ÁGUA BRANCA', 2500106, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1244, 'AGUIAR', 2500205, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1245, 'ALAGOA GRANDE', 2500304, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1246, 'ALAGOA NOVA', 2500403, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1247, 'ALAGOINHA', 2500502, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1248, 'ALCANTIL', 2500536, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1249, 'ALGODÃO DE JANDAÍRA', 2500577, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1250, 'ALHANDRA', 2500601, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1251, 'SÃO JOÃO DO RIO DO PEIXE', 2500700, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1252, 'AMPARO', 2500734, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1253, 'APARECIDA', 2500775, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1254, 'ARAÇAGI', 2500809, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1255, 'ARARA', 2500908, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1256, 'ARARUNA', 2501005, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1257, 'AREIA', 2501104, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1258, 'AREIA DE BARAÚNAS', 2501153, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1259, 'AREIAL', 2501203, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1260, 'AROEIRAS', 2501302, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1261, 'ASSUNÇÃO', 2501351, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1262, 'BAÍA DA TRAIÇÃO', 2501401, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1263, 'BANANEIRAS', 2501500, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1264, 'BARAÚNA', 2501534, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1265, 'BARRA DE SANTANA', 2501575, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1266, 'BARRA DE SANTA ROSA', 2501609, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1267, 'BARRA DE SÃO MIGUEL', 2501708, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1268, 'BAYEUX', 2501807, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1269, 'BELÉM', 2501906, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1270, 'BELÉM DO BREJO DO CRUZ', 2502003, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1271, 'BERNARDINO BATISTA', 2502052, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1272, 'BOA VENTURA', 2502102, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1273, 'BOA VISTA', 2502151, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1274, 'BOM JESUS', 2502201, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1275, 'BOM SUCESSO', 2502300, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1276, 'BONITO DE SANTA FÉ', 2502409, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1277, 'BOQUEIRÃO', 2502508, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1278, 'IGARACY', 2502607, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1279, 'BORBOREMA', 2502706, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1280, 'BREJO DO CRUZ', 2502805, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1281, 'BREJO DOS SANTOS', 2502904, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1282, 'CAAPORÃ', 2503001, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1283, 'CABACEIRAS', 2503100, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1284, 'CABEDELO', 2503209, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1285, 'CACHOEIRA DOS ÍNDIOS', 2503308, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1286, 'CACIMBA DE AREIA', 2503407, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1287, 'CACIMBA DE DENTRO', 2503506, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1288, 'CACIMBAS', 2503555, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1289, 'CAIÇARA', 2503605, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1290, 'CAJAZEIRAS', 2503704, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1291, 'CAJAZEIRINHAS', 2503753, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1292, 'CALDAS BRANDÃO', 2503803, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1293, 'CAMALAÚ', 2503902, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1294, 'CAMPINA GRANDE', 2504009, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1295, 'CAPIM', 2504033, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1296, 'CARAÚBAS', 2504074, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1297, 'CARRAPATEIRA', 2504108, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1298, 'CASSERENGUE', 2504157, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1299, 'CATINGUEIRA', 2504207, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1300, 'CATOLÉ DO ROCHA', 2504306, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1301, 'CATURITÉ', 2504355, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1302, 'CONCEIÇÃO', 2504405, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1303, 'CONDADO', 2504504, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1304, 'CONDE', 2504603, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1305, 'CONGO', 2504702, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1306, 'COREMAS', 2504801, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1307, 'COXIXOLA', 2504850, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1308, 'CRUZ DO ESPÍRITO SANTO', 2504900, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1309, 'CUBATI', 2505006, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1310, 'CUITÉ', 2505105, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1311, 'CUITEGI', 2505204, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1312, 'CUITÉ DE MAMANGUAPE', 2505238, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1313, 'CURRAL DE CIMA', 2505279, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1314, 'CURRAL VELHO', 2505303, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1315, 'DAMIÃO', 2505352, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1316, 'DESTERRO', 2505402, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1317, 'VISTA SERRANA', 2505501, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1318, 'DIAMANTE', 2505600, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1319, 'DONA INÊS', 2505709, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1320, 'DUAS ESTRADAS', 2505808, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1321, 'EMAS', 2505907, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1322, 'ESPERANÇA', 2506004, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1323, 'FAGUNDES', 2506103, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1324, 'FREI MARTINHO', 2506202, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1325, 'GADO BRAVO', 2506251, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1326, 'GUARABIRA', 2506301, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1327, 'GURINHÉM', 2506400, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1328, 'GURJÃO', 2506509, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1329, 'IBIARA', 2506608, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1330, 'IMACULADA', 2506707, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1331, 'INGÁ', 2506806, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1332, 'ITABAIANA', 2506905, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1333, 'ITAPORANGA', 2507002, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1334, 'ITAPOROROCA', 2507101, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1335, 'ITATUBA', 2507200, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1336, 'JACARAÚ', 2507309, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1337, 'JERICÓ', 2507408, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1338, 'JOÃO PESSOA', 2507507, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1339, 'JUAREZ TÁVORA', 2507606, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1340, 'JUAZEIRINHO', 2507705, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1341, 'JUNCO DO SERIDÓ', 2507804, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1342, 'JURIPIRANGA', 2507903, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1343, 'JURU', 2508000, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1344, 'LAGOA', 2508109, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1345, 'LAGOA DE DENTRO', 2508208, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1346, 'LAGOA SECA', 2508307, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1347, 'LASTRO', 2508406, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1348, 'LIVRAMENTO', 2508505, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1349, 'LOGRADOURO', 2508554, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1350, 'LUCENA', 2508604, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1351, 'MÃE D\'ÁGUA', 2508703, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1352, 'MALTA', 2508802, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1353, 'MAMANGUAPE', 2508901, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1354, 'MANAÍRA', 2509008, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1355, 'MARCAÇÃO', 2509057, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1356, 'MARI', 2509107, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1357, 'MARIZÓPOLIS', 2509156, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1358, 'MASSARANDUBA', 2509206, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1359, 'MATARACA', 2509305, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1360, 'MATINHAS', 2509339, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1361, 'MATO GROSSO', 2509370, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1362, 'MATURÉIA', 2509396, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1363, 'MOGEIRO', 2509404, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1364, 'MONTADAS', 2509503, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1365, 'MONTE HOREBE', 2509602, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1366, 'MONTEIRO', 2509701, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1367, 'MULUNGU', 2509800, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1368, 'NATUBA', 2509909, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1369, 'NAZAREZINHO', 2510006, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1370, 'NOVA FLORESTA', 2510105, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1371, 'NOVA OLINDA', 2510204, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1372, 'NOVA PALMEIRA', 2510303, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1373, 'OLHO D\'ÁGUA', 2510402, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1374, 'OLIVEDOS', 2510501, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1375, 'OURO VELHO', 2510600, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1376, 'PARARI', 2510659, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1377, 'PASSAGEM', 2510709, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1378, 'PATOS', 2510808, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1379, 'PAULISTA', 2510907, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1380, 'PEDRA BRANCA', 2511004, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1381, 'PEDRA LAVRADA', 2511103, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1382, 'PEDRAS DE FOGO', 2511202, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1383, 'PIANCÓ', 2511301, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1384, 'PICUÍ', 2511400, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1385, 'PILAR', 2511509, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1386, 'PILÕES', 2511608, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1387, 'PILÕEZINHOS', 2511707, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1388, 'PIRPIRITUBA', 2511806, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1389, 'PITIMBU', 2511905, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1390, 'POCINHOS', 2512002, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1391, 'POÇO DANTAS', 2512036, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1392, 'POÇO DE JOSÉ DE MOURA', 2512077, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1393, 'POMBAL', 2512101, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1394, 'PRATA', 2512200, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1395, 'PRINCESA ISABEL', 2512309, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1396, 'PUXINANÃ', 2512408, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1397, 'QUEIMADAS', 2512507, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1398, 'QUIXABA', 2512606, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1399, 'REMÍGIO', 2512705, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1400, 'PEDRO RÉGIS', 2512721, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1401, 'RIACHÃO', 2512747, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1402, 'RIACHÃO DO BACAMARTE', 2512754, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1403, 'RIACHÃO DO POÇO', 2512762, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1404, 'RIACHO DE SANTO ANTÔNIO', 2512788, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1405, 'RIACHO DOS CAVALOS', 2512804, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1406, 'RIO TINTO', 2512903, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1407, 'SALGADINHO', 2513000, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1408, 'SALGADO DE SÃO FÉLIX', 2513109, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1409, 'SANTA CECÍLIA', 2513158, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1410, 'SANTA CRUZ', 2513208, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1411, 'SANTA HELENA', 2513307, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1412, 'SANTA INÊS', 2513356, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1413, 'SANTA LUZIA', 2513406, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1414, 'SANTANA DE MANGUEIRA', 2513505, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1415, 'SANTANA DOS GARROTES', 2513604, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1416, 'JOCA CLAUDINO', 2513653, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1417, 'SANTA RITA', 2513703, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1418, 'SANTA TERESINHA', 2513802, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1419, 'SANTO ANDRÉ', 2513851, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1420, 'SÃO BENTO', 2513901, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1421, 'SÃO BENTINHO', 2513927, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1422, 'SÃO DOMINGOS DO CARIRI', 2513943, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1423, 'SÃO DOMINGOS', 2513968, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1424, 'SÃO FRANCISCO', 2513984, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1425, 'SÃO JOÃO DO CARIRI', 2514008, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1426, 'SÃO JOÃO DO TIGRE', 2514107, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1427, 'SÃO JOSÉ DA LAGOA TAPADA', 2514206, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1428, 'SÃO JOSÉ DE CAIANA', 2514305, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1429, 'SÃO JOSÉ DE ESPINHARAS', 2514404, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1430, 'SÃO JOSÉ DOS RAMOS', 2514453, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1431, 'SÃO JOSÉ DE PIRANHAS', 2514503, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1432, 'SÃO JOSÉ DE PRINCESA', 2514552, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1433, 'SÃO JOSÉ DO BONFIM', 2514602, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1434, 'SÃO JOSÉ DO BREJO DO CRUZ', 2514651, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1435, 'SÃO JOSÉ DO SABUGI', 2514701, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1436, 'SÃO JOSÉ DOS CORDEIROS', 2514800, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1437, 'SÃO MAMEDE', 2514909, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1438, 'SÃO MIGUEL DE TAIPU', 2515005, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1439, 'SÃO SEBASTIÃO DE LAGOA DE ROÇA', 2515104, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1440, 'SÃO SEBASTIÃO DO UMBUZEIRO', 2515203, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1441, 'SAPÉ', 2515302, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1442, 'SÃO VICENTE DO SERIDÓ', 2515401, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1443, 'SERRA BRANCA', 2515500, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1444, 'SERRA DA RAIZ', 2515609, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1445, 'SERRA GRANDE', 2515708, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1446, 'SERRA REDONDA', 2515807, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1447, 'SERRARIA', 2515906, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1448, 'SERTÃOZINHO', 2515930, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1449, 'SOBRADO', 2515971, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1450, 'SOLÂNEA', 2516003, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1451, 'SOLEDADE', 2516102, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1452, 'SOSSÊGO', 2516151, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1453, 'SOUSA', 2516201, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1454, 'SUMÉ', 2516300, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1455, 'TACIMA', 2516409, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1456, 'TAPEROÁ', 2516508, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1457, 'TAVARES', 2516607, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1458, 'TEIXEIRA', 2516706, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1459, 'TENÓRIO', 2516755, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1460, 'TRIUNFO', 2516805, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1461, 'UIRAÚNA', 2516904, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1462, 'UMBUZEIRO', 2517001, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1463, 'VÁRZEA', 2517100, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1464, 'VIEIRÓPOLIS', 2517209, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1465, 'ZABELÊ', 2517407, 12);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1466, 'ABREU E LIMA', 2600054, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1467, 'AFOGADOS DA INGAZEIRA', 2600104, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1468, 'AFRÂNIO', 2600203, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1469, 'AGRESTINA', 2600302, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1470, 'ÁGUA PRETA', 2600401, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1471, 'ÁGUAS BELAS', 2600500, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1472, 'ALAGOINHA', 2600609, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1473, 'ALIANÇA', 2600708, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1474, 'ALTINHO', 2600807, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1475, 'AMARAJI', 2600906, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1476, 'ANGELIM', 2601003, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1477, 'ARAÇOIABA', 2601052, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1478, 'ARARIPINA', 2601102, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1479, 'ARCOVERDE', 2601201, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1480, 'BARRA DE GUABIRABA', 2601300, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1481, 'BARREIROS', 2601409, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1482, 'BELÉM DE MARIA', 2601508, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1483, 'BELÉM DO SÃO FRANCISCO', 2601607, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1484, 'BELO JARDIM', 2601706, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1485, 'BETÂNIA', 2601805, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1486, 'BEZERROS', 2601904, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1487, 'BODOCÓ', 2602001, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1488, 'BOM CONSELHO', 2602100, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1489, 'BOM JARDIM', 2602209, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1490, 'BONITO', 2602308, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1491, 'BREJÃO', 2602407, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1492, 'BREJINHO', 2602506, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1493, 'BREJO DA MADRE DE DEUS', 2602605, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1494, 'BUENOS AIRES', 2602704, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1495, 'BUÍQUE', 2602803, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1496, 'CABO DE SANTO AGOSTINHO', 2602902, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1497, 'CABROBÓ', 2603009, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1498, 'CACHOEIRINHA', 2603108, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1499, 'CAETÉS', 2603207, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1500, 'CALÇADO', 2603306, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1501, 'CALUMBI', 2603405, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1502, 'CAMARAGIBE', 2603454, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1503, 'CAMOCIM DE SÃO FÉLIX', 2603504, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1504, 'CAMUTANGA', 2603603, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1505, 'CANHOTINHO', 2603702, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1506, 'CAPOEIRAS', 2603801, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1507, 'CARNAÍBA', 2603900, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1508, 'CARNAUBEIRA DA PENHA', 2603926, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1509, 'CARPINA', 2604007, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1510, 'CARUARU', 2604106, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1511, 'CASINHAS', 2604155, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1512, 'CATENDE', 2604205, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1513, 'CEDRO', 2604304, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1514, 'CHÃ DE ALEGRIA', 2604403, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1515, 'CHÃ GRANDE', 2604502, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1516, 'CONDADO', 2604601, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1517, 'CORRENTES', 2604700, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1518, 'CORTÊS', 2604809, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1519, 'CUMARU', 2604908, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1520, 'CUPIRA', 2605004, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1521, 'CUSTÓDIA', 2605103, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1522, 'DORMENTES', 2605152, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1523, 'ESCADA', 2605202, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1524, 'EXU', 2605301, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1525, 'FEIRA NOVA', 2605400, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1526, 'FERNANDO DE NORONHA', 2605459, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1527, 'FERREIROS', 2605509, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1528, 'FLORES', 2605608, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1529, 'FLORESTA', 2605707, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1530, 'FREI MIGUELINHO', 2605806, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1531, 'GAMELEIRA', 2605905, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1532, 'GARANHUNS', 2606002, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1533, 'GLÓRIA DO GOITÁ', 2606101, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1534, 'GOIANA', 2606200, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1535, 'GRANITO', 2606309, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1536, 'GRAVATÁ', 2606408, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1537, 'IATI', 2606507, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1538, 'IBIMIRIM', 2606606, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1539, 'IBIRAJUBA', 2606705, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1540, 'IGARASSU', 2606804, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1541, 'IGUARACY', 2606903, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1542, 'INAJÁ', 2607000, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1543, 'INGAZEIRA', 2607109, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1544, 'IPOJUCA', 2607208, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1545, 'IPUBI', 2607307, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1546, 'ITACURUBA', 2607406, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1547, 'ITAÍBA', 2607505, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1548, 'ILHA DE ITAMARACÁ', 2607604, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1549, 'ITAMBÉ', 2607653, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1550, 'ITAPETIM', 2607703, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1551, 'ITAPISSUMA', 2607752, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1552, 'ITAQUITINGA', 2607802, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1553, 'JABOATÃO DOS GUARARAPES', 2607901, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1554, 'JAQUEIRA', 2607950, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1555, 'JATAÚBA', 2608008, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1556, 'JATOBÁ', 2608057, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1557, 'JOÃO ALFREDO', 2608107, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1558, 'JOAQUIM NABUCO', 2608206, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1559, 'JUCATI', 2608255, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1560, 'JUPI', 2608305, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1561, 'JUREMA', 2608404, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1562, 'LAGOA DO CARRO', 2608453, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1563, 'LAGOA DE ITAENGA', 2608503, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1564, 'LAGOA DO OURO', 2608602, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1565, 'LAGOA DOS GATOS', 2608701, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1566, 'LAGOA GRANDE', 2608750, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1567, 'LAJEDO', 2608800, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1568, 'LIMOEIRO', 2608909, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1569, 'MACAPARANA', 2609006, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1570, 'MACHADOS', 2609105, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1571, 'MANARI', 2609154, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1572, 'MARAIAL', 2609204, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1573, 'MIRANDIBA', 2609303, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1574, 'MORENO', 2609402, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1575, 'NAZARÉ DA MATA', 2609501, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1576, 'OLINDA', 2609600, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1577, 'OROBÓ', 2609709, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1578, 'OROCÓ', 2609808, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1579, 'OURICURI', 2609907, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1580, 'PALMARES', 2610004, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1581, 'PALMEIRINA', 2610103, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1582, 'PANELAS', 2610202, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1583, 'PARANATAMA', 2610301, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1584, 'PARNAMIRIM', 2610400, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1585, 'PASSIRA', 2610509, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1586, 'PAUDALHO', 2610608, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1587, 'PAULISTA', 2610707, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1588, 'PEDRA', 2610806, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1589, 'PESQUEIRA', 2610905, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1590, 'PETROLÂNDIA', 2611002, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1591, 'PETROLINA', 2611101, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1592, 'POÇÃO', 2611200, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1593, 'POMBOS', 2611309, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1594, 'PRIMAVERA', 2611408, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1595, 'QUIPAPÁ', 2611507, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1596, 'QUIXABA', 2611533, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1597, 'RECIFE', 2611606, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1598, 'RIACHO DAS ALMAS', 2611705, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1599, 'RIBEIRÃO', 2611804, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1600, 'RIO FORMOSO', 2611903, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1601, 'SAIRÉ', 2612000, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1602, 'SALGADINHO', 2612109, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1603, 'SALGUEIRO', 2612208, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1604, 'SALOÁ', 2612307, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1605, 'SANHARÓ', 2612406, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1606, 'SANTA CRUZ', 2612455, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1607, 'SANTA CRUZ DA BAIXA VERDE', 2612471, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1608, 'SANTA CRUZ DO CAPIBARIBE', 2612505, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1609, 'SANTA FILOMENA', 2612554, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1610, 'SANTA MARIA DA BOA VISTA', 2612604, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1611, 'SANTA MARIA DO CAMBUCÁ', 2612703, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1612, 'SANTA TEREZINHA', 2612802, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1613, 'SÃO BENEDITO DO SUL', 2612901, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1614, 'SÃO BENTO DO UNA', 2613008, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1615, 'SÃO CAITANO', 2613107, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1616, 'SÃO JOÃO', 2613206, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1617, 'SÃO JOAQUIM DO MONTE', 2613305, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1618, 'SÃO JOSÉ DA COROA GRANDE', 2613404, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1619, 'SÃO JOSÉ DO BELMONTE', 2613503, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1620, 'SÃO JOSÉ DO EGITO', 2613602, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1621, 'SÃO LOURENÇO DA MATA', 2613701, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1622, 'SÃO VICENTE FERRER', 2613800, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1623, 'SERRA TALHADA', 2613909, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1624, 'SERRITA', 2614006, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1625, 'SERTÂNIA', 2614105, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1626, 'SIRINHAÉM', 2614204, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1627, 'MOREILÂNDIA', 2614303, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1628, 'SOLIDÃO', 2614402, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1629, 'SURUBIM', 2614501, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1630, 'TABIRA', 2614600, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1631, 'TACAIMBÓ', 2614709, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1632, 'TACARATU', 2614808, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1633, 'TAMANDARÉ', 2614857, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1634, 'TAQUARITINGA DO NORTE', 2615003, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1635, 'TEREZINHA', 2615102, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1636, 'TERRA NOVA', 2615201, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1637, 'TIMBAÚBA', 2615300, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1638, 'TORITAMA', 2615409, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1639, 'TRACUNHAÉM', 2615508, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1640, 'TRINDADE', 2615607, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1641, 'TRIUNFO', 2615706, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1642, 'TUPANATINGA', 2615805, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1643, 'TUPARETAMA', 2615904, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1644, 'VENTUROSA', 2616001, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1645, 'VERDEJANTE', 2616100, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1646, 'VERTENTE DO LÉRIO', 2616183, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1647, 'VERTENTES', 2616209, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1648, 'VICÊNCIA', 2616308, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1649, 'VITÓRIA DE SANTO ANTÃO', 2616407, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1650, 'XEXÉU', 2616506, 13);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1651, 'ÁGUA BRANCA', 2700102, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1652, 'ANADIA', 2700201, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1653, 'ARAPIRACA', 2700300, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1654, 'ATALAIA', 2700409, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1655, 'BARRA DE SANTO ANTÔNIO', 2700508, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1656, 'BARRA DE SÃO MIGUEL', 2700607, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1657, 'BATALHA', 2700706, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1658, 'BELÉM', 2700805, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1659, 'BELO MONTE', 2700904, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1660, 'BOCA DA MATA', 2701001, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1661, 'BRANQUINHA', 2701100, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1662, 'CACIMBINHAS', 2701209, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1663, 'CAJUEIRO', 2701308, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1664, 'CAMPESTRE', 2701357, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1665, 'CAMPO ALEGRE', 2701407, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1666, 'CAMPO GRANDE', 2701506, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1667, 'CANAPI', 2701605, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1668, 'CAPELA', 2701704, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1669, 'CARNEIROS', 2701803, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1670, 'CHÃ PRETA', 2701902, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1671, 'COITÉ DO NÓIA', 2702009, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1672, 'COLÔNIA LEOPOLDINA', 2702108, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1673, 'COQUEIRO SECO', 2702207, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1674, 'CORURIPE', 2702306, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1675, 'CRAÍBAS', 2702355, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1676, 'DELMIRO GOUVEIA', 2702405, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1677, 'DOIS RIACHOS', 2702504, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1678, 'ESTRELA DE ALAGOAS', 2702553, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1679, 'FEIRA GRANDE', 2702603, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1680, 'FELIZ DESERTO', 2702702, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1681, 'FLEXEIRAS', 2702801, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1682, 'GIRAU DO PONCIANO', 2702900, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1683, 'IBATEGUARA', 2703007, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1684, 'IGACI', 2703106, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1685, 'IGREJA NOVA', 2703205, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1686, 'INHAPI', 2703304, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1687, 'JACARÉ DOS HOMENS', 2703403, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1688, 'JACUÍPE', 2703502, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1689, 'JAPARATINGA', 2703601, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1690, 'JARAMATAIA', 2703700, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1691, 'JEQUIÁ DA PRAIA', 2703759, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1692, 'JOAQUIM GOMES', 2703809, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1693, 'JUNDIÁ', 2703908, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1694, 'JUNQUEIRO', 2704005, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1695, 'LAGOA DA CANOA', 2704104, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1696, 'LIMOEIRO DE ANADIA', 2704203, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1697, 'MACEIÓ', 2704302, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1698, 'MAJOR ISIDORO', 2704401, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1699, 'MARAGOGI', 2704500, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1700, 'MARAVILHA', 2704609, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1701, 'MARECHAL DEODORO', 2704708, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1702, 'MARIBONDO', 2704807, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1703, 'MAR VERMELHO', 2704906, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1704, 'MATA GRANDE', 2705002, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1705, 'MATRIZ DE CAMARAGIBE', 2705101, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1706, 'MESSIAS', 2705200, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1707, 'MINADOR DO NEGRÃO', 2705309, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1708, 'MONTEIRÓPOLIS', 2705408, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1709, 'MURICI', 2705507, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1710, 'NOVO LINO', 2705606, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1711, 'OLHO D\'ÁGUA DAS FLORES', 2705705, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1712, 'OLHO D\'ÁGUA DO CASADO', 2705804, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1713, 'OLHO D\'ÁGUA GRANDE', 2705903, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1714, 'OLIVENÇA', 2706000, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1715, 'OURO BRANCO', 2706109, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1716, 'PALESTINA', 2706208, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1717, 'PALMEIRA DOS ÍNDIOS', 2706307, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1718, 'PÃO DE AÇÚCAR', 2706406, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1719, 'PARICONHA', 2706422, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1720, 'PARIPUEIRA', 2706448, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1721, 'PASSO DE CAMARAGIBE', 2706505, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1722, 'PAULO JACINTO', 2706604, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1723, 'PENEDO', 2706703, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1724, 'PIAÇABUÇU', 2706802, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1725, 'PILAR', 2706901, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1726, 'PINDOBA', 2707008, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1727, 'PIRANHAS', 2707107, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1728, 'POÇO DAS TRINCHEIRAS', 2707206, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1729, 'PORTO CALVO', 2707305, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1730, 'PORTO DE PEDRAS', 2707404, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1731, 'PORTO REAL DO COLÉGIO', 2707503, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1732, 'QUEBRANGULO', 2707602, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1733, 'RIO LARGO', 2707701, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1734, 'ROTEIRO', 2707800, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1735, 'SANTA LUZIA DO NORTE', 2707909, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1736, 'SANTANA DO IPANEMA', 2708006, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1737, 'SANTANA DO MUNDAÚ', 2708105, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1738, 'SÃO BRÁS', 2708204, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1739, 'SÃO JOSÉ DA LAJE', 2708303, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1740, 'SÃO JOSÉ DA TAPERA', 2708402, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1741, 'SÃO LUÍS DO QUITUNDE', 2708501, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1742, 'SÃO MIGUEL DOS CAMPOS', 2708600, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1743, 'SÃO MIGUEL DOS MILAGRES', 2708709, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1744, 'SÃO SEBASTIÃO', 2708808, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1745, 'SATUBA', 2708907, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1746, 'SENADOR RUI PALMEIRA', 2708956, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1747, 'TANQUE D\'ARCA', 2709004, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1748, 'TAQUARANA', 2709103, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1749, 'TEOTÔNIO VILELA', 2709152, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1750, 'TRAIPU', 2709202, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1751, 'UNIÃO DOS PALMARES', 2709301, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1752, 'VIÇOSA', 2709400, 14);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1753, 'AMPARO DE SÃO FRANCISCO', 2800100, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1754, 'AQUIDABÃ', 2800209, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1755, 'ARACAJU', 2800308, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1756, 'ARAUÁ', 2800407, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1757, 'AREIA BRANCA', 2800506, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1758, 'BARRA DOS COQUEIROS', 2800605, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1759, 'BOQUIM', 2800670, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1760, 'BREJO GRANDE', 2800704, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1761, 'CAMPO DO BRITO', 2801009, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1762, 'CANHOBA', 2801108, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1763, 'CANINDÉ DE SÃO FRANCISCO', 2801207, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1764, 'CAPELA', 2801306, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1765, 'CARIRA', 2801405, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1766, 'CARMÓPOLIS', 2801504, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1767, 'CEDRO DE SÃO JOÃO', 2801603, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1768, 'CRISTINÁPOLIS', 2801702, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1769, 'CUMBE', 2801900, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1770, 'DIVINA PASTORA', 2802007, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1771, 'ESTÂNCIA', 2802106, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1772, 'FEIRA NOVA', 2802205, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1773, 'FREI PAULO', 2802304, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1774, 'GARARU', 2802403, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1775, 'GENERAL MAYNARD', 2802502, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1776, 'GRACHO CARDOSO', 2802601, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1777, 'ILHA DAS FLORES', 2802700, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1778, 'INDIAROBA', 2802809, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1779, 'ITABAIANA', 2802908, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1780, 'ITABAIANINHA', 2803005, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1781, 'ITABI', 2803104, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1782, 'ITAPORANGA D\'AJUDA', 2803203, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1783, 'JAPARATUBA', 2803302, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1784, 'JAPOATÃ', 2803401, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1785, 'LAGARTO', 2803500, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1786, 'LARANJEIRAS', 2803609, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1787, 'MACAMBIRA', 2803708, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1788, 'MALHADA DOS BOIS', 2803807, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1789, 'MALHADOR', 2803906, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1790, 'MARUIM', 2804003, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1791, 'MOITA BONITA', 2804102, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1792, 'MONTE ALEGRE DE SERGIPE', 2804201, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1793, 'MURIBECA', 2804300, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1794, 'NEÓPOLIS', 2804409, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1795, 'NOSSA SENHORA APARECIDA', 2804458, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1796, 'NOSSA SENHORA DA GLÓRIA', 2804508, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1797, 'NOSSA SENHORA DAS DORES', 2804607, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1798, 'NOSSA SENHORA DE LOURDES', 2804706, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1799, 'NOSSA SENHORA DO SOCORRO', 2804805, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1800, 'PACATUBA', 2804904, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1801, 'PEDRA MOLE', 2805000, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1802, 'PEDRINHAS', 2805109, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1803, 'PINHÃO', 2805208, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1804, 'PIRAMBU', 2805307, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1805, 'POÇO REDONDO', 2805406, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1806, 'POÇO VERDE', 2805505, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1807, 'PORTO DA FOLHA', 2805604, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1808, 'PROPRIÁ', 2805703, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1809, 'RIACHÃO DO DANTAS', 2805802, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1810, 'RIACHUELO', 2805901, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1811, 'RIBEIRÓPOLIS', 2806008, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1812, 'ROSÁRIO DO CATETE', 2806107, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1813, 'SALGADO', 2806206, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1814, 'SANTA LUZIA DO ITANHY', 2806305, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1815, 'SANTANA DO SÃO FRANCISCO', 2806404, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1816, 'SANTA ROSA DE LIMA', 2806503, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1817, 'SANTO AMARO DAS BROTAS', 2806602, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1818, 'SÃO CRISTÓVÃO', 2806701, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1819, 'SÃO DOMINGOS', 2806800, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1820, 'SÃO FRANCISCO', 2806909, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1821, 'SÃO MIGUEL DO ALEIXO', 2807006, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1822, 'SIMÃO DIAS', 2807105, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1823, 'SIRIRI', 2807204, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1824, 'TELHA', 2807303, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1825, 'TOBIAS BARRETO', 2807402, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1826, 'TOMAR DO GERU', 2807501, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1827, 'UMBAÚBA', 2807600, 15);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1828, 'ABAÍRA', 2900108, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1829, 'ABARÉ', 2900207, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1830, 'ACAJUTIBA', 2900306, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1831, 'ADUSTINA', 2900355, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1832, 'ÁGUA FRIA', 2900405, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1833, 'ÉRICO CARDOSO', 2900504, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1834, 'AIQUARA', 2900603, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1835, 'ALAGOINHAS', 2900702, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1836, 'ALCOBAÇA', 2900801, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1837, 'ALMADINA', 2900900, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1838, 'AMARGOSA', 2901007, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1839, 'AMÉLIA RODRIGUES', 2901106, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1840, 'AMÉRICA DOURADA', 2901155, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1841, 'ANAGÉ', 2901205, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1842, 'ANDARAÍ', 2901304, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1843, 'ANDORINHA', 2901353, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1844, 'ANGICAL', 2901403, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1845, 'ANGUERA', 2901502, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1846, 'ANTAS', 2901601, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1847, 'ANTÔNIO CARDOSO', 2901700, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1848, 'ANTÔNIO GONÇALVES', 2901809, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1849, 'APORÁ', 2901908, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1850, 'APUAREMA', 2901957, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1851, 'ARACATU', 2902005, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1852, 'ARAÇAS', 2902054, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1853, 'ARACI', 2902104, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1854, 'ARAMARI', 2902203, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1855, 'ARATACA', 2902252, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1856, 'ARATUÍPE', 2902302, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1857, 'AURELINO LEAL', 2902401, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1858, 'BAIANÓPOLIS', 2902500, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1859, 'BAIXA GRANDE', 2902609, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1860, 'BANZAÊ', 2902658, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1861, 'BARRA', 2902708, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1862, 'BARRA DA ESTIVA', 2902807, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1863, 'BARRA DO CHOÇA', 2902906, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1864, 'BARRA DO MENDES', 2903003, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1865, 'BARRA DO ROCHA', 2903102, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1866, 'BARREIRAS', 2903201, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1867, 'BARRO ALTO', 2903235, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1868, 'BARROCAS', 2903276, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1869, 'BARRO PRETO', 2903300, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1870, 'BELMONTE', 2903409, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1871, 'BELO CAMPO', 2903508, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1872, 'BIRITINGA', 2903607, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1873, 'BOA NOVA', 2903706, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1874, 'BOA VISTA DO TUPIM', 2903805, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1875, 'BOM JESUS DA LAPA', 2903904, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1876, 'BOM JESUS DA SERRA', 2903953, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1877, 'BONINAL', 2904001, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1878, 'BONITO', 2904050, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1879, 'BOQUIRA', 2904100, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1880, 'BOTUPORÃ', 2904209, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1881, 'BREJÕES', 2904308, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1882, 'BREJOLÂNDIA', 2904407, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1883, 'BROTAS DE MACAÚBAS', 2904506, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1884, 'BRUMADO', 2904605, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1885, 'BUERAREMA', 2904704, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1886, 'BURITIRAMA', 2904753, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1887, 'CAATIBA', 2904803, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1888, 'CABACEIRAS DO PARAGUAÇU', 2904852, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1889, 'CACHOEIRA', 2904902, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1890, 'CACULÉ', 2905008, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1891, 'CAÉM', 2905107, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1892, 'CAETANOS', 2905156, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1893, 'CAETITÉ', 2905206, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1894, 'CAFARNAUM', 2905305, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1895, 'CAIRU', 2905404, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1896, 'CALDEIRÃO GRANDE', 2905503, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1897, 'CAMACAN', 2905602, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1898, 'CAMAÇARI', 2905701, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1899, 'CAMAMU', 2905800, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1900, 'CAMPO ALEGRE DE LOURDES', 2905909, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1901, 'CAMPO FORMOSO', 2906006, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1902, 'CANÁPOLIS', 2906105, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1903, 'CANARANA', 2906204, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1904, 'CANAVIEIRAS', 2906303, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1905, 'CANDEAL', 2906402, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1906, 'CANDEIAS', 2906501, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1907, 'CANDIBA', 2906600, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1908, 'CÂNDIDO SALES', 2906709, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1909, 'CANSANÇÃO', 2906808, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1910, 'CANUDOS', 2906824, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1911, 'CAPELA DO ALTO ALEGRE', 2906857, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1912, 'CAPIM GROSSO', 2906873, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1913, 'CARAÍBAS', 2906899, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1914, 'CARAVELAS', 2906907, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1915, 'CARDEAL DA SILVA', 2907004, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1916, 'CARINHANHA', 2907103, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1917, 'CASA NOVA', 2907202, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1918, 'CASTRO ALVES', 2907301, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1919, 'CATOLÂNDIA', 2907400, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1920, 'CATU', 2907509, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1921, 'CATURAMA', 2907558, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1922, 'CENTRAL', 2907608, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1923, 'CHORROCHÓ', 2907707, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1924, 'CÍCERO DANTAS', 2907806, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1925, 'CIPÓ', 2907905, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1926, 'COARACI', 2908002, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1927, 'COCOS', 2908101, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1928, 'CONCEIÇÃO DA FEIRA', 2908200, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1929, 'CONCEIÇÃO DO ALMEIDA', 2908309, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1930, 'CONCEIÇÃO DO COITÉ', 2908408, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1931, 'CONCEIÇÃO DO JACUÍPE', 2908507, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1932, 'CONDE', 2908606, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1933, 'CONDEÚBA', 2908705, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1934, 'CONTENDAS DO SINCORÁ', 2908804, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1935, 'CORAÇÃO DE MARIA', 2908903, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1936, 'CORDEIROS', 2909000, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1937, 'CORIBE', 2909109, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1938, 'CORONEL JOÃO SÁ', 2909208, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1939, 'CORRENTINA', 2909307, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1940, 'COTEGIPE', 2909406, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1941, 'CRAVOLÂNDIA', 2909505, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1942, 'CRISÓPOLIS', 2909604, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1943, 'CRISTÓPOLIS', 2909703, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1944, 'CRUZ DAS ALMAS', 2909802, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1945, 'CURAÇÁ', 2909901, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1946, 'DÁRIO MEIRA', 2910008, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1947, 'DIAS D\'ÁVILA', 2910057, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1948, 'DOM BASÍLIO', 2910107, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1949, 'DOM MACEDO COSTA', 2910206, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1950, 'ELÍSIO MEDRADO', 2910305, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1951, 'ENCRUZILHADA', 2910404, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1952, 'ENTRE RIOS', 2910503, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1953, 'ESPLANADA', 2910602, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1954, 'EUCLIDES DA CUNHA', 2910701, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1955, 'EUNÁPOLIS', 2910727, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1956, 'FÁTIMA', 2910750, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1957, 'FEIRA DA MATA', 2910776, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1958, 'FEIRA DE SANTANA', 2910800, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1959, 'FILADÉLFIA', 2910859, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1960, 'FIRMINO ALVES', 2910909, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1961, 'FLORESTA AZUL', 2911006, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1962, 'FORMOSA DO RIO PRETO', 2911105, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1963, 'GANDU', 2911204, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1964, 'GAVIÃO', 2911253, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1965, 'GENTIO DO OURO', 2911303, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1966, 'GLÓRIA', 2911402, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1967, 'GONGOGI', 2911501, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1968, 'GOVERNADOR MANGABEIRA', 2911600, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1969, 'GUAJERU', 2911659, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1970, 'GUANAMBI', 2911709, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1971, 'GUARATINGA', 2911808, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1972, 'HELIÓPOLIS', 2911857, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1973, 'IAÇU', 2911907, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1974, 'IBIASSUCÊ', 2912004, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1975, 'IBICARAÍ', 2912103, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1976, 'IBICOARA', 2912202, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1977, 'IBICUÍ', 2912301, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1978, 'IBIPEBA', 2912400, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1979, 'IBIPITANGA', 2912509, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1980, 'IBIQUERA', 2912608, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1981, 'IBIRAPITANGA', 2912707, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1982, 'IBIRAPUÃ', 2912806, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1983, 'IBIRATAIA', 2912905, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1984, 'IBITIARA', 2913002, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1985, 'IBITITÁ', 2913101, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1986, 'IBOTIRAMA', 2913200, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1987, 'ICHU', 2913309, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1988, 'IGAPORÃ', 2913408, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1989, 'IGRAPIÚNA', 2913457, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1990, 'IGUAÍ', 2913507, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1991, 'ILHÉUS', 2913606, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1992, 'INHAMBUPE', 2913705, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1993, 'IPECAETÁ', 2913804, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1994, 'IPIAÚ', 2913903, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1995, 'IPIRÁ', 2914000, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1996, 'IPUPIARA', 2914109, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1997, 'IRAJUBA', 2914208, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1998, 'IRAMAIA', 2914307, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (1999, 'IRAQUARA', 2914406, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2000, 'IRARÁ', 2914505, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2001, 'IRECÊ', 2914604, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2002, 'ITABELA', 2914653, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2003, 'ITABERABA', 2914703, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2004, 'ITABUNA', 2914802, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2005, 'ITACARÉ', 2914901, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2006, 'ITAETÉ', 2915007, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2007, 'ITAGI', 2915106, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2008, 'ITAGIBÁ', 2915205, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2009, 'ITAGIMIRIM', 2915304, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2010, 'ITAGUAÇU DA BAHIA', 2915353, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2011, 'ITAJU DO COLÔNIA', 2915403, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2012, 'ITAJUÍPE', 2915502, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2013, 'ITAMARAJU', 2915601, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2014, 'ITAMARI', 2915700, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2015, 'ITAMBÉ', 2915809, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2016, 'ITANAGRA', 2915908, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2017, 'ITANHÉM', 2916005, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2018, 'ITAPARICA', 2916104, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2019, 'ITAPÉ', 2916203, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2020, 'ITAPEBI', 2916302, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2021, 'ITAPETINGA', 2916401, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2022, 'ITAPICURU', 2916500, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2023, 'ITAPITANGA', 2916609, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2024, 'ITAQUARA', 2916708, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2025, 'ITARANTIM', 2916807, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2026, 'ITATIM', 2916856, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2027, 'ITIRUÇU', 2916906, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2028, 'ITIÚBA', 2917003, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2029, 'ITORORÓ', 2917102, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2030, 'ITUAÇU', 2917201, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2031, 'ITUBERÁ', 2917300, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2032, 'IUIÚ', 2917334, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2033, 'JABORANDI', 2917359, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2034, 'JACARACI', 2917409, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2035, 'JACOBINA', 2917508, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2036, 'JAGUAQUARA', 2917607, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2037, 'JAGUARARI', 2917706, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2038, 'JAGUARIPE', 2917805, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2039, 'JANDAÍRA', 2917904, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2040, 'JEQUIÉ', 2918001, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2041, 'JEREMOABO', 2918100, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2042, 'JIQUIRIÇÁ', 2918209, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2043, 'JITAÚNA', 2918308, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2044, 'JOÃO DOURADO', 2918357, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2045, 'JUAZEIRO', 2918407, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2046, 'JUCURUÇU', 2918456, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2047, 'JUSSARA', 2918506, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2048, 'JUSSARI', 2918555, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2049, 'JUSSIAPE', 2918605, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2050, 'LAFAIETE COUTINHO', 2918704, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2051, 'LAGOA REAL', 2918753, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2052, 'LAJE', 2918803, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2053, 'LAJEDÃO', 2918902, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2054, 'LAJEDINHO', 2919009, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2055, 'LAJEDO DO TABOCAL', 2919058, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2056, 'LAMARÃO', 2919108, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2057, 'LAPÃO', 2919157, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2058, 'LAURO DE FREITAS', 2919207, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2059, 'LENÇÓIS', 2919306, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2060, 'LICÍNIO DE ALMEIDA', 2919405, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2061, 'LIVRAMENTO DE NOSSA SENHORA', 2919504, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2062, 'LUÍS EDUARDO MAGALHÃES', 2919553, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2063, 'MACAJUBA', 2919603, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2064, 'MACARANI', 2919702, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2065, 'MACAÚBAS', 2919801, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2066, 'MACURURÉ', 2919900, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2067, 'MADRE DE DEUS', 2919926, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2068, 'MAETINGA', 2919959, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2069, 'MAIQUINIQUE', 2920007, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2070, 'MAIRI', 2920106, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2071, 'MALHADA', 2920205, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2072, 'MALHADA DE PEDRAS', 2920304, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2073, 'MANOEL VITORINO', 2920403, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2074, 'MANSIDÃO', 2920452, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2075, 'MARACÁS', 2920502, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2076, 'MARAGOGIPE', 2920601, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2077, 'MARAÚ', 2920700, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2078, 'MARCIONÍLIO SOUZA', 2920809, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2079, 'MASCOTE', 2920908, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2080, 'MATA DE SÃO JOÃO', 2921005, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2081, 'MATINA', 2921054, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2082, 'MEDEIROS NETO', 2921104, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2083, 'MIGUEL CALMON', 2921203, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2084, 'MILAGRES', 2921302, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2085, 'MIRANGABA', 2921401, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2086, 'MIRANTE', 2921450, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2087, 'MONTE SANTO', 2921500, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2088, 'MORPARÁ', 2921609, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2089, 'MORRO DO CHAPÉU', 2921708, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2090, 'MORTUGABA', 2921807, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2091, 'MUCUGÊ', 2921906, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2092, 'MUCURI', 2922003, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2093, 'MULUNGU DO MORRO', 2922052, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2094, 'MUNDO NOVO', 2922102, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2095, 'MUNIZ FERREIRA', 2922201, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2096, 'MUQUÉM DE SÃO FRANCISCO', 2922250, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2097, 'MURITIBA', 2922300, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2098, 'MUTUÍPE', 2922409, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2099, 'NAZARÉ', 2922508, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2100, 'NILO PEÇANHA', 2922607, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2101, 'NORDESTINA', 2922656, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2102, 'NOVA CANAÃ', 2922706, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2103, 'NOVA FÁTIMA', 2922730, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2104, 'NOVA IBIÁ', 2922755, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2105, 'NOVA ITARANA', 2922805, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2106, 'NOVA REDENÇÃO', 2922854, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2107, 'NOVA SOURE', 2922904, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2108, 'NOVA VIÇOSA', 2923001, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2109, 'NOVO HORIZONTE', 2923035, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2110, 'NOVO TRIUNFO', 2923050, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2111, 'OLINDINA', 2923100, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2112, 'OLIVEIRA DOS BREJINHOS', 2923209, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2113, 'OURIÇANGAS', 2923308, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2114, 'OUROLÂNDIA', 2923357, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2115, 'PALMAS DE MONTE ALTO', 2923407, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2116, 'PALMEIRAS', 2923506, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2117, 'PARAMIRIM', 2923605, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2118, 'PARATINGA', 2923704, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2119, 'PARIPIRANGA', 2923803, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2120, 'PAU BRASIL', 2923902, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2121, 'PAULO AFONSO', 2924009, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2122, 'PÉ DE SERRA', 2924058, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2123, 'PEDRÃO', 2924108, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2124, 'PEDRO ALEXANDRE', 2924207, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2125, 'PIATÃ', 2924306, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2126, 'PILÃO ARCADO', 2924405, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2127, 'PINDAÍ', 2924504, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2128, 'PINDOBAÇU', 2924603, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2129, 'PINTADAS', 2924652, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2130, 'PIRAÍ DO NORTE', 2924678, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2131, 'PIRIPÁ', 2924702, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2132, 'PIRITIBA', 2924801, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2133, 'PLANALTINO', 2924900, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2134, 'PLANALTO', 2925006, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2135, 'POÇÕES', 2925105, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2136, 'POJUCA', 2925204, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2137, 'PONTO NOVO', 2925253, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2138, 'PORTO SEGURO', 2925303, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2139, 'POTIRAGUÁ', 2925402, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2140, 'PRADO', 2925501, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2141, 'PRESIDENTE DUTRA', 2925600, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2142, 'PRESIDENTE JÂNIO QUADROS', 2925709, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2143, 'PRESIDENTE TANCREDO NEVES', 2925758, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2144, 'QUEIMADAS', 2925808, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2145, 'QUIJINGUE', 2925907, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2146, 'QUIXABEIRA', 2925931, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2147, 'RAFAEL JAMBEIRO', 2925956, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2148, 'REMANSO', 2926004, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2149, 'RETIROLÂNDIA', 2926103, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2150, 'RIACHÃO DAS NEVES', 2926202, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2151, 'RIACHÃO DO JACUÍPE', 2926301, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2152, 'RIACHO DE SANTANA', 2926400, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2153, 'RIBEIRA DO AMPARO', 2926509, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2154, 'RIBEIRA DO POMBAL', 2926608, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2155, 'RIBEIRÃO DO LARGO', 2926657, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2156, 'RIO DE CONTAS', 2926707, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2157, 'RIO DO ANTÔNIO', 2926806, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2158, 'RIO DO PIRES', 2926905, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2159, 'RIO REAL', 2927002, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2160, 'RODELAS', 2927101, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2161, 'RUY BARBOSA', 2927200, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2162, 'SALINAS DA MARGARIDA', 2927309, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2163, 'SALVADOR', 2927408, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2164, 'SANTA BÁRBARA', 2927507, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2165, 'SANTA BRÍGIDA', 2927606, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2166, 'SANTA CRUZ CABRÁLIA', 2927705, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2167, 'SANTA CRUZ DA VITÓRIA', 2927804, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2168, 'SANTA INÊS', 2927903, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2169, 'SANTALUZ', 2928000, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2170, 'SANTA LUZIA', 2928059, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2171, 'SANTA MARIA DA VITÓRIA', 2928109, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2172, 'SANTANA', 2928208, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2173, 'SANTANÓPOLIS', 2928307, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2174, 'SANTA RITA DE CÁSSIA', 2928406, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2175, 'SANTA TERESINHA', 2928505, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2176, 'SANTO AMARO', 2928604, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2177, 'SANTO ANTÔNIO DE JESUS', 2928703, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2178, 'SANTO ESTÊVÃO', 2928802, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2179, 'SÃO DESIDÉRIO', 2928901, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2180, 'SÃO DOMINGOS', 2928950, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2181, 'SÃO FÉLIX', 2929008, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2182, 'SÃO FÉLIX DO CORIBE', 2929057, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2183, 'SÃO FELIPE', 2929107, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2184, 'SÃO FRANCISCO DO CONDE', 2929206, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2185, 'SÃO GABRIEL', 2929255, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2186, 'SÃO GONÇALO DOS CAMPOS', 2929305, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2187, 'SÃO JOSÉ DA VITÓRIA', 2929354, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2188, 'SÃO JOSÉ DO JACUÍPE', 2929370, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2189, 'SÃO MIGUEL DAS MATAS', 2929404, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2190, 'SÃO SEBASTIÃO DO PASSÉ', 2929503, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2191, 'SAPEAÇU', 2929602, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2192, 'SÁTIRO DIAS', 2929701, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2193, 'SAUBARA', 2929750, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2194, 'SAÚDE', 2929800, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2195, 'SEABRA', 2929909, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2196, 'SEBASTIÃO LARANJEIRAS', 2930006, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2197, 'SENHOR DO BONFIM', 2930105, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2198, 'SERRA DO RAMALHO', 2930154, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2199, 'SENTO SÉ', 2930204, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2200, 'SERRA DOURADA', 2930303, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2201, 'SERRA PRETA', 2930402, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2202, 'SERRINHA', 2930501, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2203, 'SERROLÂNDIA', 2930600, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2204, 'SIMÕES FILHO', 2930709, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2205, 'SÍTIO DO MATO', 2930758, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2206, 'SÍTIO DO QUINTO', 2930766, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2207, 'SOBRADINHO', 2930774, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2208, 'SOUTO SOARES', 2930808, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2209, 'TABOCAS DO BREJO VELHO', 2930907, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2210, 'TANHAÇU', 2931004, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2211, 'TANQUE NOVO', 2931053, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2212, 'TANQUINHO', 2931103, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2213, 'TAPEROÁ', 2931202, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2214, 'TAPIRAMUTÁ', 2931301, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2215, 'TEIXEIRA DE FREITAS', 2931350, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2216, 'TEODORO SAMPAIO', 2931400, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2217, 'TEOFILÂNDIA', 2931509, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2218, 'TEOLÂNDIA', 2931608, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2219, 'TERRA NOVA', 2931707, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2220, 'TREMEDAL', 2931806, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2221, 'TUCANO', 2931905, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2222, 'UAUÁ', 2932002, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2223, 'UBAÍRA', 2932101, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2224, 'UBAITABA', 2932200, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2225, 'UBATÃ', 2932309, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2226, 'UIBAÍ', 2932408, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2227, 'UMBURANAS', 2932457, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2228, 'UNA', 2932507, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2229, 'URANDI', 2932606, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2230, 'URUÇUCA', 2932705, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2231, 'UTINGA', 2932804, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2232, 'VALENÇA', 2932903, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2233, 'VALENTE', 2933000, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2234, 'VÁRZEA DA ROÇA', 2933059, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2235, 'VÁRZEA DO POÇO', 2933109, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2236, 'VÁRZEA NOVA', 2933158, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2237, 'VARZEDO', 2933174, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2238, 'VERA CRUZ', 2933208, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2239, 'VEREDA', 2933257, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2240, 'VITÓRIA DA CONQUISTA', 2933307, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2241, 'WAGNER', 2933406, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2242, 'WANDERLEY', 2933455, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2243, 'WENCESLAU GUIMARÃES', 2933505, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2244, 'XIQUE-XIQUE', 2933604, 16);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2245, 'ABADIA DOS DOURADOS', 3100104, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2246, 'ABAETÉ', 3100203, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2247, 'ABRE CAMPO', 3100302, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2248, 'ACAIACA', 3100401, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2249, 'AÇUCENA', 3100500, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2250, 'ÁGUA BOA', 3100609, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2251, 'ÁGUA COMPRIDA', 3100708, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2252, 'AGUANIL', 3100807, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2253, 'ÁGUAS FORMOSAS', 3100906, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2254, 'ÁGUAS VERMELHAS', 3101003, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2255, 'AIMORÉS', 3101102, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2256, 'AIURUOCA', 3101201, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2257, 'ALAGOA', 3101300, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2258, 'ALBERTINA', 3101409, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2259, 'ALÉM PARAÍBA', 3101508, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2260, 'ALFENAS', 3101607, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2261, 'ALFREDO VASCONCELOS', 3101631, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2262, 'ALMENARA', 3101706, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2263, 'ALPERCATA', 3101805, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2264, 'ALPINÓPOLIS', 3101904, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2265, 'ALTEROSA', 3102001, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2266, 'ALTO CAPARAÓ', 3102050, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2267, 'ALTO RIO DOCE', 3102100, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2268, 'ALVARENGA', 3102209, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2269, 'ALVINÓPOLIS', 3102308, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2270, 'ALVORADA DE MINAS', 3102407, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2271, 'AMPARO DO SERRA', 3102506, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2272, 'ANDRADAS', 3102605, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2273, 'CACHOEIRA DE PAJEÚ', 3102704, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2274, 'ANDRELÂNDIA', 3102803, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2275, 'ANGELÂNDIA', 3102852, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2276, 'ANTÔNIO CARLOS', 3102902, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2277, 'ANTÔNIO DIAS', 3103009, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2278, 'ANTÔNIO PRADO DE MINAS', 3103108, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2279, 'ARAÇAÍ', 3103207, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2280, 'ARACITABA', 3103306, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2281, 'ARAÇUAÍ', 3103405, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2282, 'ARAGUARI', 3103504, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2283, 'ARANTINA', 3103603, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2284, 'ARAPONGA', 3103702, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2285, 'ARAPORÃ', 3103751, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2286, 'ARAPUÁ', 3103801, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2287, 'ARAÚJOS', 3103900, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2288, 'ARAXÁ', 3104007, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2289, 'ARCEBURGO', 3104106, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2290, 'ARCOS', 3104205, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2291, 'AREADO', 3104304, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2292, 'ARGIRITA', 3104403, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2293, 'ARICANDUVA', 3104452, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2294, 'ARINOS', 3104502, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2295, 'ASTOLFO DUTRA', 3104601, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2296, 'ATALÉIA', 3104700, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2297, 'AUGUSTO DE LIMA', 3104809, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2298, 'BAEPENDI', 3104908, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2299, 'BALDIM', 3105004, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2300, 'BAMBUÍ', 3105103, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2301, 'BANDEIRA', 3105202, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2302, 'BANDEIRA DO SUL', 3105301, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2303, 'BARÃO DE COCAIS', 3105400, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2304, 'BARÃO DE MONTE ALTO', 3105509, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2305, 'BARBACENA', 3105608, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2306, 'BARRA LONGA', 3105707, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2307, 'BARROSO', 3105905, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2308, 'BELA VISTA DE MINAS', 3106002, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2309, 'BELMIRO BRAGA', 3106101, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2310, 'BELO HORIZONTE', 3106200, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2311, 'BELO ORIENTE', 3106309, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2312, 'BELO VALE', 3106408, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2313, 'BERILO', 3106507, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2314, 'BERTÓPOLIS', 3106606, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2315, 'BERIZAL', 3106655, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2316, 'BETIM', 3106705, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2317, 'BIAS FORTES', 3106804, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2318, 'BICAS', 3106903, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2319, 'BIQUINHAS', 3107000, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2320, 'BOA ESPERANÇA', 3107109, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2321, 'BOCAINA DE MINAS', 3107208, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2322, 'BOCAIÚVA', 3107307, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2323, 'BOM DESPACHO', 3107406, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2324, 'BOM JARDIM DE MINAS', 3107505, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2325, 'BOM JESUS DA PENHA', 3107604, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2326, 'BOM JESUS DO AMPARO', 3107703, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2327, 'BOM JESUS DO GALHO', 3107802, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2328, 'BOM REPOUSO', 3107901, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2329, 'BOM SUCESSO', 3108008, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2330, 'BONFIM', 3108107, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2331, 'BONFINÓPOLIS DE MINAS', 3108206, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2332, 'BONITO DE MINAS', 3108255, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2333, 'BORDA DA MATA', 3108305, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2334, 'BOTELHOS', 3108404, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2335, 'BOTUMIRIM', 3108503, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2336, 'BRASILÂNDIA DE MINAS', 3108552, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2337, 'BRASÍLIA DE MINAS', 3108602, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2338, 'BRÁS PIRES', 3108701, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2339, 'BRAÚNAS', 3108800, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2340, 'BRAZÓPOLIS', 3108909, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2341, 'BRUMADINHO', 3109006, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2342, 'BUENO BRANDÃO', 3109105, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2343, 'BUENÓPOLIS', 3109204, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2344, 'BUGRE', 3109253, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2345, 'BURITIS', 3109303, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2346, 'BURITIZEIRO', 3109402, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2347, 'CABECEIRA GRANDE', 3109451, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2348, 'CABO VERDE', 3109501, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2349, 'CACHOEIRA DA PRATA', 3109600, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2350, 'CACHOEIRA DE MINAS', 3109709, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2351, 'CACHOEIRA DOURADA', 3109808, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2352, 'CAETANÓPOLIS', 3109907, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2353, 'CAETÉ', 3110004, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2354, 'CAIANA', 3110103, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2355, 'CAJURI', 3110202, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2356, 'CALDAS', 3110301, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2357, 'CAMACHO', 3110400, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2358, 'CAMANDUCAIA', 3110509, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2359, 'CAMBUÍ', 3110608, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2360, 'CAMBUQUIRA', 3110707, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2361, 'CAMPANÁRIO', 3110806, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2362, 'CAMPANHA', 3110905, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2363, 'CAMPESTRE', 3111002, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2364, 'CAMPINA VERDE', 3111101, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2365, 'CAMPO AZUL', 3111150, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2366, 'CAMPO BELO', 3111200, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2367, 'CAMPO DO MEIO', 3111309, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2368, 'CAMPO FLORIDO', 3111408, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2369, 'CAMPOS ALTOS', 3111507, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2370, 'CAMPOS GERAIS', 3111606, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2371, 'CANAÃ', 3111705, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2372, 'CANÁPOLIS', 3111804, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2373, 'CANA VERDE', 3111903, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2374, 'CANDEIAS', 3112000, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2375, 'CANTAGALO', 3112059, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2376, 'CAPARAÓ', 3112109, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2377, 'CAPELA NOVA', 3112208, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2378, 'CAPELINHA', 3112307, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2379, 'CAPETINGA', 3112406, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2380, 'CAPIM BRANCO', 3112505, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2381, 'CAPINÓPOLIS', 3112604, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2382, 'CAPITÃO ANDRADE', 3112653, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2383, 'CAPITÃO ENÉAS', 3112703, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2384, 'CAPITÓLIO', 3112802, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2385, 'CAPUTIRA', 3112901, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2386, 'CARAÍ', 3113008, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2387, 'CARANAÍBA', 3113107, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2388, 'CARANDAÍ', 3113206, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2389, 'CARANGOLA', 3113305, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2390, 'CARATINGA', 3113404, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2391, 'CARBONITA', 3113503, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2392, 'CAREAÇU', 3113602, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2393, 'CARLOS CHAGAS', 3113701, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2394, 'CARMÉSIA', 3113800, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2395, 'CARMO DA CACHOEIRA', 3113909, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2396, 'CARMO DA MATA', 3114006, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2397, 'CARMO DE MINAS', 3114105, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2398, 'CARMO DO CAJURU', 3114204, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2399, 'CARMO DO PARANAÍBA', 3114303, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2400, 'CARMO DO RIO CLARO', 3114402, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2401, 'CARMÓPOLIS DE MINAS', 3114501, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2402, 'CARNEIRINHO', 3114550, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2403, 'CARRANCAS', 3114600, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2404, 'CARVALHÓPOLIS', 3114709, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2405, 'CARVALHOS', 3114808, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2406, 'CASA GRANDE', 3114907, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2407, 'CASCALHO RICO', 3115003, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2408, 'CÁSSIA', 3115102, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2409, 'CONCEIÇÃO DA BARRA DE MINAS', 3115201, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2410, 'CATAGUASES', 3115300, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2411, 'CATAS ALTAS', 3115359, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2412, 'CATAS ALTAS DA NORUEGA', 3115409, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2413, 'CATUJI', 3115458, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2414, 'CATUTI', 3115474, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2415, 'CAXAMBU', 3115508, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2416, 'CEDRO DO ABAETÉ', 3115607, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2417, 'CENTRAL DE MINAS', 3115706, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2418, 'CENTRALINA', 3115805, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2419, 'CHÁCARA', 3115904, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2420, 'CHALÉ', 3116001, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2421, 'CHAPADA DO NORTE', 3116100, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2422, 'CHAPADA GAÚCHA', 3116159, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2423, 'CHIADOR', 3116209, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2424, 'CIPOTÂNEA', 3116308, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2425, 'CLARAVAL', 3116407, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2426, 'CLARO DOS POÇÕES', 3116506, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2427, 'CLÁUDIO', 3116605, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2428, 'COIMBRA', 3116704, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2429, 'COLUNA', 3116803, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2430, 'COMENDADOR GOMES', 3116902, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2431, 'COMERCINHO', 3117009, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2432, 'CONCEIÇÃO DA APARECIDA', 3117108, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2433, 'CONCEIÇÃO DAS PEDRAS', 3117207, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2434, 'CONCEIÇÃO DAS ALAGOAS', 3117306, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2435, 'CONCEIÇÃO DE IPANEMA', 3117405, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2436, 'CONCEIÇÃO DO MATO DENTRO', 3117504, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2437, 'CONCEIÇÃO DO PARÁ', 3117603, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2438, 'CONCEIÇÃO DO RIO VERDE', 3117702, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2439, 'CONCEIÇÃO DOS OUROS', 3117801, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2440, 'CÔNEGO MARINHO', 3117836, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2441, 'CONFINS', 3117876, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2442, 'CONGONHAL', 3117900, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2443, 'CONGONHAS', 3118007, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2444, 'CONGONHAS DO NORTE', 3118106, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2445, 'CONQUISTA', 3118205, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2446, 'CONSELHEIRO LAFAIETE', 3118304, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2447, 'CONSELHEIRO PENA', 3118403, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2448, 'CONSOLAÇÃO', 3118502, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2449, 'CONTAGEM', 3118601, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2450, 'COQUEIRAL', 3118700, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2451, 'CORAÇÃO DE JESUS', 3118809, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2452, 'CORDISBURGO', 3118908, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2453, 'CORDISLÂNDIA', 3119005, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2454, 'CORINTO', 3119104, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2455, 'COROACI', 3119203, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2456, 'COROMANDEL', 3119302, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2457, 'CORONEL FABRICIANO', 3119401, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2458, 'CORONEL MURTA', 3119500, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2459, 'CORONEL PACHECO', 3119609, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2460, 'CORONEL XAVIER CHAVES', 3119708, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2461, 'CÓRREGO DANTA', 3119807, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2462, 'CÓRREGO DO BOM JESUS', 3119906, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2463, 'CÓRREGO FUNDO', 3119955, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2464, 'CÓRREGO NOVO', 3120003, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2465, 'COUTO DE MAGALHÃES DE MINAS', 3120102, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2466, 'CRISÓLITA', 3120151, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2467, 'CRISTAIS', 3120201, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2468, 'CRISTÁLIA', 3120300, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2469, 'CRISTIANO OTONI', 3120409, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2470, 'CRISTINA', 3120508, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2471, 'CRUCILÂNDIA', 3120607, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2472, 'CRUZEIRO DA FORTALEZA', 3120706, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2473, 'CRUZÍLIA', 3120805, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2474, 'CUPARAQUE', 3120839, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2475, 'CURRAL DE DENTRO', 3120870, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2476, 'CURVELO', 3120904, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2477, 'DATAS', 3121001, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2478, 'DELFIM MOREIRA', 3121100, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2479, 'DELFINÓPOLIS', 3121209, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2480, 'DELTA', 3121258, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2481, 'DESCOBERTO', 3121308, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2482, 'DESTERRO DE ENTRE RIOS', 3121407, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2483, 'DESTERRO DO MELO', 3121506, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2484, 'DIAMANTINA', 3121605, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2485, 'DIOGO DE VASCONCELOS', 3121704, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2486, 'DIONÍSIO', 3121803, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2487, 'DIVINÉSIA', 3121902, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2488, 'DIVINO', 3122009, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2489, 'DIVINO DAS LARANJEIRAS', 3122108, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2490, 'DIVINOLÂNDIA DE MINAS', 3122207, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2491, 'DIVINÓPOLIS', 3122306, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2492, 'DIVISA ALEGRE', 3122355, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2493, 'DIVISA NOVA', 3122405, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2494, 'DIVISÓPOLIS', 3122454, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2495, 'DOM BOSCO', 3122470, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2496, 'DOM CAVATI', 3122504, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2497, 'DOM JOAQUIM', 3122603, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2498, 'DOM SILVÉRIO', 3122702, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2499, 'DOM VIÇOSO', 3122801, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2500, 'DONA EUSÉBIA', 3122900, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2501, 'DORES DE CAMPOS', 3123007, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2502, 'DORES DE GUANHÃES', 3123106, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2503, 'DORES DO INDAIÁ', 3123205, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2504, 'DORES DO TURVO', 3123304, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2505, 'DORESÓPOLIS', 3123403, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2506, 'DOURADOQUARA', 3123502, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2507, 'DURANDÉ', 3123528, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2508, 'ELÓI MENDES', 3123601, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2509, 'ENGENHEIRO CALDAS', 3123700, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2510, 'ENGENHEIRO NAVARRO', 3123809, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2511, 'ENTRE FOLHAS', 3123858, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2512, 'ENTRE RIOS DE MINAS', 3123908, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2513, 'ERVÁLIA', 3124005, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2514, 'ESMERALDAS', 3124104, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2515, 'ESPERA FELIZ', 3124203, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2516, 'ESPINOSA', 3124302, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2517, 'ESPÍRITO SANTO DO DOURADO', 3124401, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2518, 'ESTIVA', 3124500, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2519, 'ESTRELA DALVA', 3124609, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2520, 'ESTRELA DO INDAIÁ', 3124708, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2521, 'ESTRELA DO SUL', 3124807, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2522, 'EUGENÓPOLIS', 3124906, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2523, 'EWBANK DA CÂMARA', 3125002, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2524, 'EXTREMA', 3125101, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2525, 'FAMA', 3125200, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2526, 'FARIA LEMOS', 3125309, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2527, 'FELÍCIO DOS SANTOS', 3125408, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2528, 'SÃO GONÇALO DO RIO PRETO', 3125507, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2529, 'FELISBURGO', 3125606, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2530, 'FELIXLÂNDIA', 3125705, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2531, 'FERNANDES TOURINHO', 3125804, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2532, 'FERROS', 3125903, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2533, 'FERVEDOURO', 3125952, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2534, 'FLORESTAL', 3126000, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2535, 'FORMIGA', 3126109, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2536, 'FORMOSO', 3126208, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2537, 'FORTALEZA DE MINAS', 3126307, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2538, 'FORTUNA DE MINAS', 3126406, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2539, 'FRANCISCO BADARÓ', 3126505, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2540, 'FRANCISCO DUMONT', 3126604, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2541, 'FRANCISCO SÁ', 3126703, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2542, 'FRANCISCÓPOLIS', 3126752, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2543, 'FREI GASPAR', 3126802, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2544, 'FREI INOCÊNCIO', 3126901, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2545, 'FREI LAGONEGRO', 3126950, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2546, 'FRONTEIRA', 3127008, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2547, 'FRONTEIRA DOS VALES', 3127057, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2548, 'FRUTA DE LEITE', 3127073, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2549, 'FRUTAL', 3127107, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2550, 'FUNILÂNDIA', 3127206, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2551, 'GALILÉIA', 3127305, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2552, 'GAMELEIRAS', 3127339, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2553, 'GLAUCILÂNDIA', 3127354, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2554, 'GOIABEIRA', 3127370, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2555, 'GOIANÁ', 3127388, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2556, 'GONÇALVES', 3127404, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2557, 'GONZAGA', 3127503, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2558, 'GOUVEIA', 3127602, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2559, 'GOVERNADOR VALADARES', 3127701, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2560, 'GRÃO MOGOL', 3127800, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2561, 'GRUPIARA', 3127909, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2562, 'GUANHÃES', 3128006, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2563, 'GUAPÉ', 3128105, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2564, 'GUARACIABA', 3128204, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2565, 'GUARACIAMA', 3128253, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2566, 'GUARANÉSIA', 3128303, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2567, 'GUARANI', 3128402, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2568, 'GUARARÁ', 3128501, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2569, 'GUARDA-MOR', 3128600, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2570, 'GUAXUPÉ', 3128709, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2571, 'GUIDOVAL', 3128808, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2572, 'GUIMARÂNIA', 3128907, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2573, 'GUIRICEMA', 3129004, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2574, 'GURINHATÃ', 3129103, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2575, 'HELIODORA', 3129202, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2576, 'IAPU', 3129301, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2577, 'IBERTIOGA', 3129400, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2578, 'IBIÁ', 3129509, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2579, 'IBIAÍ', 3129608, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2580, 'IBIRACATU', 3129657, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2581, 'IBIRACI', 3129707, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2582, 'IBIRITÉ', 3129806, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2583, 'IBITIÚRA DE MINAS', 3129905, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2584, 'IBITURUNA', 3130002, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2585, 'ICARAÍ DE MINAS', 3130051, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2586, 'IGARAPÉ', 3130101, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2587, 'IGARATINGA', 3130200, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2588, 'IGUATAMA', 3130309, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2589, 'IJACI', 3130408, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2590, 'ILICÍNEA', 3130507, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2591, 'IMBÉ DE MINAS', 3130556, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2592, 'INCONFIDENTES', 3130606, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2593, 'INDAIABIRA', 3130655, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2594, 'INDIANÓPOLIS', 3130705, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2595, 'INGAÍ', 3130804, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2596, 'INHAPIM', 3130903, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2597, 'INHAÚMA', 3131000, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2598, 'INIMUTABA', 3131109, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2599, 'IPABA', 3131158, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2600, 'IPANEMA', 3131208, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2601, 'IPATINGA', 3131307, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2602, 'IPIAÇU', 3131406, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2603, 'IPUIÚNA', 3131505, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2604, 'IRAÍ DE MINAS', 3131604, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2605, 'ITABIRA', 3131703, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2606, 'ITABIRINHA', 3131802, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2607, 'ITABIRITO', 3131901, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2608, 'ITACAMBIRA', 3132008, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2609, 'ITACARAMBI', 3132107, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2610, 'ITAGUARA', 3132206, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2611, 'ITAIPÉ', 3132305, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2612, 'ITAJUBÁ', 3132404, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2613, 'ITAMARANDIBA', 3132503, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2614, 'ITAMARATI DE MINAS', 3132602, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2615, 'ITAMBACURI', 3132701, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2616, 'ITAMBÉ DO MATO DENTRO', 3132800, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2617, 'ITAMOGI', 3132909, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2618, 'ITAMONTE', 3133006, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2619, 'ITANHANDU', 3133105, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2620, 'ITANHOMI', 3133204, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2621, 'ITAOBIM', 3133303, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2622, 'ITAPAGIPE', 3133402, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2623, 'ITAPECERICA', 3133501, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2624, 'ITAPEVA', 3133600, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2625, 'ITATIAIUÇU', 3133709, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2626, 'ITAÚ DE MINAS', 3133758, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2627, 'ITAÚNA', 3133808, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2628, 'ITAVERAVA', 3133907, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2629, 'ITINGA', 3134004, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2630, 'ITUETA', 3134103, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2631, 'ITUIUTABA', 3134202, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2632, 'ITUMIRIM', 3134301, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2633, 'ITURAMA', 3134400, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2634, 'ITUTINGA', 3134509, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2635, 'JABOTICATUBAS', 3134608, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2636, 'JACINTO', 3134707, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2637, 'JACUÍ', 3134806, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2638, 'JACUTINGA', 3134905, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2639, 'JAGUARAÇU', 3135001, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2640, 'JAÍBA', 3135050, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2641, 'JAMPRUCA', 3135076, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2642, 'JANAÚBA', 3135100, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2643, 'JANUÁRIA', 3135209, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2644, 'JAPARAÍBA', 3135308, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2645, 'JAPONVAR', 3135357, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2646, 'JECEABA', 3135407, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2647, 'JENIPAPO DE MINAS', 3135456, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2648, 'JEQUERI', 3135506, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2649, 'JEQUITAÍ', 3135605, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2650, 'JEQUITIBÁ', 3135704, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2651, 'JEQUITINHONHA', 3135803, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2652, 'JESUÂNIA', 3135902, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2653, 'JOAÍMA', 3136009, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2654, 'JOANÉSIA', 3136108, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2655, 'JOÃO MONLEVADE', 3136207, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2656, 'JOÃO PINHEIRO', 3136306, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2657, 'JOAQUIM FELÍCIO', 3136405, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2658, 'JORDÂNIA', 3136504, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2659, 'JOSÉ GONÇALVES DE MINAS', 3136520, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2660, 'JOSÉ RAYDAN', 3136553, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2661, 'JOSENÓPOLIS', 3136579, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2662, 'NOVA UNIÃO', 3136603, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2663, 'JUATUBA', 3136652, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2664, 'JUIZ DE FORA', 3136702, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2665, 'JURAMENTO', 3136801, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2666, 'JURUAIA', 3136900, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2667, 'JUVENÍLIA', 3136959, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2668, 'LADAINHA', 3137007, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2669, 'LAGAMAR', 3137106, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2670, 'LAGOA DA PRATA', 3137205, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2671, 'LAGOA DOS PATOS', 3137304, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2672, 'LAGOA DOURADA', 3137403, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2673, 'LAGOA FORMOSA', 3137502, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2674, 'LAGOA GRANDE', 3137536, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2675, 'LAGOA SANTA', 3137601, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2676, 'LAJINHA', 3137700, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2677, 'LAMBARI', 3137809, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2678, 'LAMIM', 3137908, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2679, 'LARANJAL', 3138005, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2680, 'LASSANCE', 3138104, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2681, 'LAVRAS', 3138203, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2682, 'LEANDRO FERREIRA', 3138302, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2683, 'LEME DO PRADO', 3138351, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2684, 'LEOPOLDINA', 3138401, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2685, 'LIBERDADE', 3138500, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2686, 'LIMA DUARTE', 3138609, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2687, 'LIMEIRA DO OESTE', 3138625, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2688, 'LONTRA', 3138658, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2689, 'LUISBURGO', 3138674, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2690, 'LUISLÂNDIA', 3138682, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2691, 'LUMINÁRIAS', 3138708, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2692, 'LUZ', 3138807, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2693, 'MACHACALIS', 3138906, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2694, 'MACHADO', 3139003, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2695, 'MADRE DE DEUS DE MINAS', 3139102, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2696, 'MALACACHETA', 3139201, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2697, 'MAMONAS', 3139250, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2698, 'MANGA', 3139300, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2699, 'MANHUAÇU', 3139409, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2700, 'MANHUMIRIM', 3139508, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2701, 'MANTENA', 3139607, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2702, 'MARAVILHAS', 3139706, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2703, 'MAR DE ESPANHA', 3139805, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2704, 'MARIA DA FÉ', 3139904, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2705, 'MARIANA', 3140001, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2706, 'MARILAC', 3140100, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2707, 'MÁRIO CAMPOS', 3140159, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2708, 'MARIPÁ DE MINAS', 3140209, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2709, 'MARLIÉRIA', 3140308, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2710, 'MARMELÓPOLIS', 3140407, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2711, 'MARTINHO CAMPOS', 3140506, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2712, 'MARTINS SOARES', 3140530, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2713, 'MATA VERDE', 3140555, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2714, 'MATERLÂNDIA', 3140605, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2715, 'MATEUS LEME', 3140704, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2716, 'MATIAS BARBOSA', 3140803, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2717, 'MATIAS CARDOSO', 3140852, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2718, 'MATIPÓ', 3140902, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2719, 'MATO VERDE', 3141009, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2720, 'MATOZINHOS', 3141108, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2721, 'MATUTINA', 3141207, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2722, 'MEDEIROS', 3141306, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2723, 'MEDINA', 3141405, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2724, 'MENDES PIMENTEL', 3141504, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2725, 'MERCÊS', 3141603, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2726, 'MESQUITA', 3141702, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2727, 'MINAS NOVAS', 3141801, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2728, 'MINDURI', 3141900, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2729, 'MIRABELA', 3142007, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2730, 'MIRADOURO', 3142106, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2731, 'MIRAÍ', 3142205, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2732, 'MIRAVÂNIA', 3142254, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2733, 'MOEDA', 3142304, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2734, 'MOEMA', 3142403, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2735, 'MONJOLOS', 3142502, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2736, 'MONSENHOR PAULO', 3142601, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2737, 'MONTALVÂNIA', 3142700, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2738, 'MONTE ALEGRE DE MINAS', 3142809, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2739, 'MONTE AZUL', 3142908, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2740, 'MONTE BELO', 3143005, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2741, 'MONTE CARMELO', 3143104, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2742, 'MONTE FORMOSO', 3143153, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2743, 'MONTE SANTO DE MINAS', 3143203, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2744, 'MONTES CLAROS', 3143302, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2745, 'MONTE SIÃO', 3143401, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2746, 'MONTEZUMA', 3143450, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2747, 'MORADA NOVA DE MINAS', 3143500, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2748, 'MORRO DA GARÇA', 3143609, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2749, 'MORRO DO PILAR', 3143708, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2750, 'MUNHOZ', 3143807, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2751, 'MURIAÉ', 3143906, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2752, 'MUTUM', 3144003, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2753, 'MUZAMBINHO', 3144102, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2754, 'NACIP RAYDAN', 3144201, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2755, 'NANUQUE', 3144300, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2756, 'NAQUE', 3144359, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2757, 'NATALÂNDIA', 3144375, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2758, 'NATÉRCIA', 3144409, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2759, 'NAZARENO', 3144508, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2760, 'NEPOMUCENO', 3144607, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2761, 'NINHEIRA', 3144656, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2762, 'NOVA BELÉM', 3144672, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2763, 'NOVA ERA', 3144706, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2764, 'NOVA LIMA', 3144805, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2765, 'NOVA MÓDICA', 3144904, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2766, 'NOVA PONTE', 3145000, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2767, 'NOVA PORTEIRINHA', 3145059, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2768, 'NOVA RESENDE', 3145109, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2769, 'NOVA SERRANA', 3145208, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2770, 'NOVO CRUZEIRO', 3145307, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2771, 'NOVO ORIENTE DE MINAS', 3145356, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2772, 'NOVORIZONTE', 3145372, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2773, 'OLARIA', 3145406, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2774, 'OLHOS-D\'ÁGUA', 3145455, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2775, 'OLÍMPIO NORONHA', 3145505, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2776, 'OLIVEIRA', 3145604, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2777, 'OLIVEIRA FORTES', 3145703, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2778, 'ONÇA DE PITANGUI', 3145802, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2779, 'ORATÓRIOS', 3145851, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2780, 'ORIZÂNIA', 3145877, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2781, 'OURO BRANCO', 3145901, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2782, 'OURO FINO', 3146008, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2783, 'OURO PRETO', 3146107, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2784, 'OURO VERDE DE MINAS', 3146206, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2785, 'PADRE CARVALHO', 3146255, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2786, 'PADRE PARAÍSO', 3146305, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2787, 'PAINEIRAS', 3146404, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2788, 'PAINS', 3146503, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2789, 'PAI PEDRO', 3146552, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2790, 'PAIVA', 3146602, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2791, 'PALMA', 3146701, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2792, 'PALMÓPOLIS', 3146750, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2793, 'PAPAGAIOS', 3146909, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2794, 'PARACATU', 3147006, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2795, 'PARÁ DE MINAS', 3147105, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2796, 'PARAGUAÇU', 3147204, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2797, 'PARAISÓPOLIS', 3147303, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2798, 'PARAOPEBA', 3147402, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2799, 'PASSABÉM', 3147501, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2800, 'PASSA QUATRO', 3147600, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2801, 'PASSA TEMPO', 3147709, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2802, 'PASSA-VINTE', 3147808, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2803, 'PASSOS', 3147907, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2804, 'PATIS', 3147956, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2805, 'PATOS DE MINAS', 3148004, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2806, 'PATROCÍNIO', 3148103, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2807, 'PATROCÍNIO DO MURIAÉ', 3148202, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2808, 'PAULA CÂNDIDO', 3148301, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2809, 'PAULISTAS', 3148400, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2810, 'PAVÃO', 3148509, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2811, 'PEÇANHA', 3148608, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2812, 'PEDRA AZUL', 3148707, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2813, 'PEDRA BONITA', 3148756, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2814, 'PEDRA DO ANTA', 3148806, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2815, 'PEDRA DO INDAIÁ', 3148905, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2816, 'PEDRA DOURADA', 3149002, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2817, 'PEDRALVA', 3149101, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2818, 'PEDRAS DE MARIA DA CRUZ', 3149150, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2819, 'PEDRINÓPOLIS', 3149200, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2820, 'PEDRO LEOPOLDO', 3149309, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2821, 'PEDRO TEIXEIRA', 3149408, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2822, 'PEQUERI', 3149507, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2823, 'PEQUI', 3149606, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2824, 'PERDIGÃO', 3149705, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2825, 'PERDIZES', 3149804, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2826, 'PERDÕES', 3149903, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2827, 'PERIQUITO', 3149952, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2828, 'PESCADOR', 3150000, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2829, 'PIAU', 3150109, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2830, 'PIEDADE DE CARATINGA', 3150158, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2831, 'PIEDADE DE PONTE NOVA', 3150208, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2832, 'PIEDADE DO RIO GRANDE', 3150307, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2833, 'PIEDADE DOS GERAIS', 3150406, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2834, 'PIMENTA', 3150505, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2835, 'PINGO-D\'ÁGUA', 3150539, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2836, 'PINTÓPOLIS', 3150570, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2837, 'PIRACEMA', 3150604, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2838, 'PIRAJUBA', 3150703, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2839, 'PIRANGA', 3150802, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2840, 'PIRANGUÇU', 3150901, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2841, 'PIRANGUINHO', 3151008, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2842, 'PIRAPETINGA', 3151107, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2843, 'PIRAPORA', 3151206, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2844, 'PIRAÚBA', 3151305, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2845, 'PITANGUI', 3151404, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2846, 'PIUMHI', 3151503, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2847, 'PLANURA', 3151602, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2848, 'POÇO FUNDO', 3151701, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2849, 'POÇOS DE CALDAS', 3151800, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2850, 'POCRANE', 3151909, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2851, 'POMPÉU', 3152006, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2852, 'PONTE NOVA', 3152105, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2853, 'PONTO CHIQUE', 3152131, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2854, 'PONTO DOS VOLANTES', 3152170, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2855, 'PORTEIRINHA', 3152204, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2856, 'PORTO FIRME', 3152303, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2857, 'POTÉ', 3152402, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2858, 'POUSO ALEGRE', 3152501, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2859, 'POUSO ALTO', 3152600, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2860, 'PRADOS', 3152709, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2861, 'PRATA', 3152808, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2862, 'PRATÁPOLIS', 3152907, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2863, 'PRATINHA', 3153004, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2864, 'PRESIDENTE BERNARDES', 3153103, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2865, 'PRESIDENTE JUSCELINO', 3153202, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2866, 'PRESIDENTE KUBITSCHEK', 3153301, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2867, 'PRESIDENTE OLEGÁRIO', 3153400, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2868, 'ALTO JEQUITIBÁ', 3153509, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2869, 'PRUDENTE DE MORAIS', 3153608, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2870, 'QUARTEL GERAL', 3153707, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2871, 'QUELUZITO', 3153806, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2872, 'RAPOSOS', 3153905, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2873, 'RAUL SOARES', 3154002, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2874, 'RECREIO', 3154101, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2875, 'REDUTO', 3154150, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2876, 'RESENDE COSTA', 3154200, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2877, 'RESPLENDOR', 3154309, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2878, 'RESSAQUINHA', 3154408, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2879, 'RIACHINHO', 3154457, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2880, 'RIACHO DOS MACHADOS', 3154507, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2881, 'RIBEIRÃO DAS NEVES', 3154606, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2882, 'RIBEIRÃO VERMELHO', 3154705, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2883, 'RIO ACIMA', 3154804, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2884, 'RIO CASCA', 3154903, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2885, 'RIO DOCE', 3155009, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2886, 'RIO DO PRADO', 3155108, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2887, 'RIO ESPERA', 3155207, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2888, 'RIO MANSO', 3155306, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2889, 'RIO NOVO', 3155405, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2890, 'RIO PARANAÍBA', 3155504, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2891, 'RIO PARDO DE MINAS', 3155603, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2892, 'RIO PIRACICABA', 3155702, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2893, 'RIO POMBA', 3155801, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2894, 'RIO PRETO', 3155900, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2895, 'RIO VERMELHO', 3156007, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2896, 'RITÁPOLIS', 3156106, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2897, 'ROCHEDO DE MINAS', 3156205, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2898, 'RODEIRO', 3156304, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2899, 'ROMARIA', 3156403, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2900, 'ROSÁRIO DA LIMEIRA', 3156452, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2901, 'RUBELITA', 3156502, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2902, 'RUBIM', 3156601, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2903, 'SABARÁ', 3156700, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2904, 'SABINÓPOLIS', 3156809, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2905, 'SACRAMENTO', 3156908, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2906, 'SALINAS', 3157005, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2907, 'SALTO DA DIVISA', 3157104, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2908, 'SANTA BÁRBARA', 3157203, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2909, 'SANTA BÁRBARA DO LESTE', 3157252, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2910, 'SANTA BÁRBARA DO MONTE VERDE', 3157278, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2911, 'SANTA BÁRBARA DO TUGÚRIO', 3157302, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2912, 'SANTA CRUZ DE MINAS', 3157336, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2913, 'SANTA CRUZ DE SALINAS', 3157377, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2914, 'SANTA CRUZ DO ESCALVADO', 3157401, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2915, 'SANTA EFIGÊNIA DE MINAS', 3157500, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2916, 'SANTA FÉ DE MINAS', 3157609, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2917, 'SANTA HELENA DE MINAS', 3157658, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2918, 'SANTA JULIANA', 3157708, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2919, 'SANTA LUZIA', 3157807, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2920, 'SANTA MARGARIDA', 3157906, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2921, 'SANTA MARIA DE ITABIRA', 3158003, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2922, 'SANTA MARIA DO SALTO', 3158102, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2923, 'SANTA MARIA DO SUAÇUÍ', 3158201, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2924, 'SANTANA DA VARGEM', 3158300, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2925, 'SANTANA DE CATAGUASES', 3158409, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2926, 'SANTANA DE PIRAPAMA', 3158508, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2927, 'SANTANA DO DESERTO', 3158607, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2928, 'SANTANA DO GARAMBÉU', 3158706, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2929, 'SANTANA DO JACARÉ', 3158805, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2930, 'SANTANA DO MANHUAÇU', 3158904, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2931, 'SANTANA DO PARAÍSO', 3158953, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2932, 'SANTANA DO RIACHO', 3159001, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2933, 'SANTANA DOS MONTES', 3159100, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2934, 'SANTA RITA DE CALDAS', 3159209, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2935, 'SANTA RITA DE JACUTINGA', 3159308, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2936, 'SANTA RITA DE MINAS', 3159357, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2937, 'SANTA RITA DE IBITIPOCA', 3159407, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2938, 'SANTA RITA DO ITUETO', 3159506, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2939, 'SANTA RITA DO SAPUCAÍ', 3159605, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2940, 'SANTA ROSA DA SERRA', 3159704, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2941, 'SANTA VITÓRIA', 3159803, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2942, 'SANTO ANTÔNIO DO AMPARO', 3159902, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2943, 'SANTO ANTÔNIO DO AVENTUREIRO', 3160009, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2944, 'SANTO ANTÔNIO DO GRAMA', 3160108, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2945, 'SANTO ANTÔNIO DO ITAMBÉ', 3160207, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2946, 'SANTO ANTÔNIO DO JACINTO', 3160306, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2947, 'SANTO ANTÔNIO DO MONTE', 3160405, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2948, 'SANTO ANTÔNIO DO RETIRO', 3160454, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2949, 'SANTO ANTÔNIO DO RIO ABAIXO', 3160504, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2950, 'SANTO HIPÓLITO', 3160603, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2951, 'SANTOS DUMONT', 3160702, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2952, 'SÃO BENTO ABADE', 3160801, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2953, 'SÃO BRÁS DO SUAÇUÍ', 3160900, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2954, 'SÃO DOMINGOS DAS DORES', 3160959, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2955, 'SÃO DOMINGOS DO PRATA', 3161007, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2956, 'SÃO FÉLIX DE MINAS', 3161056, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2957, 'SÃO FRANCISCO', 3161106, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2958, 'SÃO FRANCISCO DE PAULA', 3161205, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2959, 'SÃO FRANCISCO DE SALES', 3161304, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2960, 'SÃO FRANCISCO DO GLÓRIA', 3161403, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2961, 'SÃO GERALDO', 3161502, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2962, 'SÃO GERALDO DA PIEDADE', 3161601, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2963, 'SÃO GERALDO DO BAIXIO', 3161650, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2964, 'SÃO GONÇALO DO ABAETÉ', 3161700, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2965, 'SÃO GONÇALO DO PARÁ', 3161809, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2966, 'SÃO GONÇALO DO RIO ABAIXO', 3161908, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2967, 'SÃO GONÇALO DO SAPUCAÍ', 3162005, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2968, 'SÃO GOTARDO', 3162104, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2969, 'SÃO JOÃO BATISTA DO GLÓRIA', 3162203, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2970, 'SÃO JOÃO DA LAGOA', 3162252, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2971, 'SÃO JOÃO DA MATA', 3162302, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2972, 'SÃO JOÃO DA PONTE', 3162401, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2973, 'SÃO JOÃO DAS MISSÕES', 3162450, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2974, 'SÃO JOÃO DEL REI', 3162500, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2975, 'SÃO JOÃO DO MANHUAÇU', 3162559, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2976, 'SÃO JOÃO DO MANTENINHA', 3162575, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2977, 'SÃO JOÃO DO ORIENTE', 3162609, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2978, 'SÃO JOÃO DO PACUÍ', 3162658, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2979, 'SÃO JOÃO DO PARAÍSO', 3162708, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2980, 'SÃO JOÃO EVANGELISTA', 3162807, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2981, 'SÃO JOÃO NEPOMUCENO', 3162906, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2982, 'SÃO JOAQUIM DE BICAS', 3162922, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2983, 'SÃO JOSÉ DA BARRA', 3162948, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2984, 'SÃO JOSÉ DA LAPA', 3162955, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2985, 'SÃO JOSÉ DA SAFIRA', 3163003, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2986, 'SÃO JOSÉ DA VARGINHA', 3163102, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2987, 'SÃO JOSÉ DO ALEGRE', 3163201, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2988, 'SÃO JOSÉ DO DIVINO', 3163300, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2989, 'SÃO JOSÉ DO GOIABAL', 3163409, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2990, 'SÃO JOSÉ DO JACURI', 3163508, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2991, 'SÃO JOSÉ DO MANTIMENTO', 3163607, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2992, 'SÃO LOURENÇO', 3163706, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2993, 'SÃO MIGUEL DO ANTA', 3163805, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2994, 'SÃO PEDRO DA UNIÃO', 3163904, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2995, 'SÃO PEDRO DOS FERROS', 3164001, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2996, 'SÃO PEDRO DO SUAÇUÍ', 3164100, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2997, 'SÃO ROMÃO', 3164209, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2998, 'SÃO ROQUE DE MINAS', 3164308, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (2999, 'SÃO SEBASTIÃO DA BELA VISTA', 3164407, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3000, 'SÃO SEBASTIÃO DA VARGEM ALEGRE', 3164431, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3001, 'SÃO SEBASTIÃO DO ANTA', 3164472, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3002, 'SÃO SEBASTIÃO DO MARANHÃO', 3164506, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3003, 'SÃO SEBASTIÃO DO OESTE', 3164605, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3004, 'SÃO SEBASTIÃO DO PARAÍSO', 3164704, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3005, 'SÃO SEBASTIÃO DO RIO PRETO', 3164803, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3006, 'SÃO SEBASTIÃO DO RIO VERDE', 3164902, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3007, 'SÃO TIAGO', 3165008, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3008, 'SÃO TOMÁS DE AQUINO', 3165107, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3009, 'SÃO THOMÉ DAS LETRAS', 3165206, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3010, 'SÃO VICENTE DE MINAS', 3165305, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3011, 'SAPUCAÍ-MIRIM', 3165404, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3012, 'SARDOÁ', 3165503, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3013, 'SARZEDO', 3165537, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3014, 'SETUBINHA', 3165552, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3015, 'SEM-PEIXE', 3165560, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3016, 'SENADOR AMARAL', 3165578, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3017, 'SENADOR CORTES', 3165602, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3018, 'SENADOR FIRMINO', 3165701, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3019, 'SENADOR JOSÉ BENTO', 3165800, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3020, 'SENADOR MODESTINO GONÇALVES', 3165909, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3021, 'SENHORA DE OLIVEIRA', 3166006, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3022, 'SENHORA DO PORTO', 3166105, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3023, 'SENHORA DOS REMÉDIOS', 3166204, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3024, 'SERICITA', 3166303, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3025, 'SERITINGA', 3166402, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3026, 'SERRA AZUL DE MINAS', 3166501, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3027, 'SERRA DA SAUDADE', 3166600, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3028, 'SERRA DOS AIMORÉS', 3166709, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3029, 'SERRA DO SALITRE', 3166808, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3030, 'SERRANIA', 3166907, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3031, 'SERRANÓPOLIS DE MINAS', 3166956, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3032, 'SERRANOS', 3167004, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3033, 'SERRO', 3167103, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3034, 'SETE LAGOAS', 3167202, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3035, 'SILVEIRÂNIA', 3167301, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3036, 'SILVIANÓPOLIS', 3167400, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3037, 'SIMÃO PEREIRA', 3167509, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3038, 'SIMONÉSIA', 3167608, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3039, 'SOBRÁLIA', 3167707, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3040, 'SOLEDADE DE MINAS', 3167806, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3041, 'TABULEIRO', 3167905, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3042, 'TAIOBEIRAS', 3168002, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3043, 'TAPARUBA', 3168051, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3044, 'TAPIRA', 3168101, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3045, 'TAPIRAÍ', 3168200, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3046, 'TAQUARAÇU DE MINAS', 3168309, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3047, 'TARUMIRIM', 3168408, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3048, 'TEIXEIRAS', 3168507, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3049, 'TEÓFILO OTONI', 3168606, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3050, 'TIMÓTEO', 3168705, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3051, 'TIRADENTES', 3168804, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3052, 'TIROS', 3168903, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3053, 'TOCANTINS', 3169000, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3054, 'TOCOS DO MOJI', 3169059, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3055, 'TOLEDO', 3169109, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3056, 'TOMBOS', 3169208, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3057, 'TRÊS CORAÇÕES', 3169307, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3058, 'TRÊS MARIAS', 3169356, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3059, 'TRÊS PONTAS', 3169406, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3060, 'TUMIRITINGA', 3169505, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3061, 'TUPACIGUARA', 3169604, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3062, 'TURMALINA', 3169703, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3063, 'TURVOLÂNDIA', 3169802, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3064, 'UBÁ', 3169901, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3065, 'UBAÍ', 3170008, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3066, 'UBAPORANGA', 3170057, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3067, 'UBERABA', 3170107, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3068, 'UBERLÂNDIA', 3170206, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3069, 'UMBURATIBA', 3170305, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3070, 'UNAÍ', 3170404, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3071, 'UNIÃO DE MINAS', 3170438, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3072, 'URUANA DE MINAS', 3170479, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3073, 'URUCÂNIA', 3170503, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3074, 'URUCUIA', 3170529, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3075, 'VARGEM ALEGRE', 3170578, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3076, 'VARGEM BONITA', 3170602, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3077, 'VARGEM GRANDE DO RIO PARDO', 3170651, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3078, 'VARGINHA', 3170701, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3079, 'VARJÃO DE MINAS', 3170750, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3080, 'VÁRZEA DA PALMA', 3170800, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3081, 'VARZELÂNDIA', 3170909, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3082, 'VAZANTE', 3171006, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3083, 'VERDELÂNDIA', 3171030, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3084, 'VEREDINHA', 3171071, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3085, 'VERÍSSIMO', 3171105, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3086, 'VERMELHO NOVO', 3171154, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3087, 'VESPASIANO', 3171204, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3088, 'VIÇOSA', 3171303, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3089, 'VIEIRAS', 3171402, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3090, 'MATHIAS LOBATO', 3171501, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3091, 'VIRGEM DA LAPA', 3171600, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3092, 'VIRGÍNIA', 3171709, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3093, 'VIRGINÓPOLIS', 3171808, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3094, 'VIRGOLÂNDIA', 3171907, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3095, 'VISCONDE DO RIO BRANCO', 3172004, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3096, 'VOLTA GRANDE', 3172103, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3097, 'WENCESLAU BRAZ', 3172202, 17);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3098, 'AFONSO CLÁUDIO', 3200102, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3099, 'ÁGUIA BRANCA', 3200136, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3100, 'ÁGUA DOCE DO NORTE', 3200169, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3101, 'ALEGRE', 3200201, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3102, 'ALFREDO CHAVES', 3200300, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3103, 'ALTO RIO NOVO', 3200359, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3104, 'ANCHIETA', 3200409, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3105, 'APIACÁ', 3200508, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3106, 'ARACRUZ', 3200607, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3107, 'ATILIO VIVACQUA', 3200706, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3108, 'BAIXO GUANDU', 3200805, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3109, 'BARRA DE SÃO FRANCISCO', 3200904, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3110, 'BOA ESPERANÇA', 3201001, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3111, 'BOM JESUS DO NORTE', 3201100, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3112, 'BREJETUBA', 3201159, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3113, 'CACHOEIRO DE ITAPEMIRIM', 3201209, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3114, 'CARIACICA', 3201308, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3115, 'CASTELO', 3201407, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3116, 'COLATINA', 3201506, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3117, 'CONCEIÇÃO DA BARRA', 3201605, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3118, 'CONCEIÇÃO DO CASTELO', 3201704, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3119, 'DIVINO DE SÃO LOURENÇO', 3201803, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3120, 'DOMINGOS MARTINS', 3201902, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3121, 'DORES DO RIO PRETO', 3202009, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3122, 'ECOPORANGA', 3202108, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3123, 'FUNDÃO', 3202207, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3124, 'GOVERNADOR LINDENBERG', 3202256, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3125, 'GUAÇUÍ', 3202306, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3126, 'GUARAPARI', 3202405, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3127, 'IBATIBA', 3202454, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3128, 'IBIRAÇU', 3202504, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3129, 'IBITIRAMA', 3202553, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3130, 'ICONHA', 3202603, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3131, 'IRUPI', 3202652, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3132, 'ITAGUAÇU', 3202702, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3133, 'ITAPEMIRIM', 3202801, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3134, 'ITARANA', 3202900, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3135, 'IÚNA', 3203007, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3136, 'JAGUARÉ', 3203056, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3137, 'JERÔNIMO MONTEIRO', 3203106, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3138, 'JOÃO NEIVA', 3203130, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3139, 'LARANJA DA TERRA', 3203163, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3140, 'LINHARES', 3203205, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3141, 'MANTENÓPOLIS', 3203304, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3142, 'MARATAÍZES', 3203320, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3143, 'MARECHAL FLORIANO', 3203346, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3144, 'MARILÂNDIA', 3203353, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3145, 'MIMOSO DO SUL', 3203403, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3146, 'MONTANHA', 3203502, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3147, 'MUCURICI', 3203601, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3148, 'MUNIZ FREIRE', 3203700, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3149, 'MUQUI', 3203809, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3150, 'NOVA VENÉCIA', 3203908, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3151, 'PANCAS', 3204005, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3152, 'PEDRO CANÁRIO', 3204054, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3153, 'PINHEIROS', 3204104, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3154, 'PIÚMA', 3204203, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3155, 'PONTO BELO', 3204252, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3156, 'PRESIDENTE KENNEDY', 3204302, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3157, 'RIO BANANAL', 3204351, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3158, 'RIO NOVO DO SUL', 3204401, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3159, 'SANTA LEOPOLDINA', 3204500, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3160, 'SANTA MARIA DE JETIBÁ', 3204559, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3161, 'SANTA TERESA', 3204609, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3162, 'SÃO DOMINGOS DO NORTE', 3204658, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3163, 'SÃO GABRIEL DA PALHA', 3204708, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3164, 'SÃO JOSÉ DO CALÇADO', 3204807, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3165, 'SÃO MATEUS', 3204906, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3166, 'SÃO ROQUE DO CANAÃ', 3204955, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3167, 'SERRA', 3205002, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3168, 'SOORETAMA', 3205010, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3169, 'VARGEM ALTA', 3205036, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3170, 'VENDA NOVA DO IMIGRANTE', 3205069, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3171, 'VIANA', 3205101, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3172, 'VILA PAVÃO', 3205150, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3173, 'VILA VALÉRIO', 3205176, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3174, 'VILA VELHA', 3205200, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3175, 'VITÓRIA', 3205309, 18);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3176, 'ANGRA DOS REIS', 3300100, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3177, 'APERIBÉ', 3300159, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3178, 'ARARUAMA', 3300209, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3179, 'AREAL', 3300225, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3180, 'ARMAÇÃO DOS BÚZIOS', 3300233, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3181, 'ARRAIAL DO CABO', 3300258, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3182, 'BARRA DO PIRAÍ', 3300308, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3183, 'BARRA MANSA', 3300407, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3184, 'BELFORD ROXO', 3300456, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3185, 'BOM JARDIM', 3300506, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3186, 'BOM JESUS DO ITABAPOANA', 3300605, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3187, 'CABO FRIO', 3300704, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3188, 'CACHOEIRAS DE MACACU', 3300803, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3189, 'CAMBUCI', 3300902, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3190, 'CARAPEBUS', 3300936, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3191, 'COMENDADOR LEVY GASPARIAN', 3300951, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3192, 'CAMPOS DOS GOYTACAZES', 3301009, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3193, 'CANTAGALO', 3301108, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3194, 'CARDOSO MOREIRA', 3301157, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3195, 'CARMO', 3301207, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3196, 'CASIMIRO DE ABREU', 3301306, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3197, 'CONCEIÇÃO DE MACABU', 3301405, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3198, 'CORDEIRO', 3301504, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3199, 'DUAS BARRAS', 3301603, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3200, 'DUQUE DE CAXIAS', 3301702, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3201, 'ENGENHEIRO PAULO DE FRONTIN', 3301801, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3202, 'GUAPIMIRIM', 3301850, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3203, 'IGUABA GRANDE', 3301876, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3204, 'ITABORAÍ', 3301900, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3205, 'ITAGUAÍ', 3302007, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3206, 'ITALVA', 3302056, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3207, 'ITAOCARA', 3302106, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3208, 'ITAPERUNA', 3302205, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3209, 'ITATIAIA', 3302254, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3210, 'JAPERI', 3302270, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3211, 'LAJE DO MURIAÉ', 3302304, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3212, 'MACAÉ', 3302403, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3213, 'MACUCO', 3302452, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3214, 'MAGÉ', 3302502, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3215, 'MANGARATIBA', 3302601, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3216, 'MARICÁ', 3302700, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3217, 'MENDES', 3302809, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3218, 'MESQUITA', 3302858, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3219, 'MIGUEL PEREIRA', 3302908, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3220, 'MIRACEMA', 3303005, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3221, 'NATIVIDADE', 3303104, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3222, 'NILÓPOLIS', 3303203, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3223, 'NITERÓI', 3303302, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3224, 'NOVA FRIBURGO', 3303401, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3225, 'NOVA IGUAÇU', 3303500, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3226, 'PARACAMBI', 3303609, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3227, 'PARAÍBA DO SUL', 3303708, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3228, 'PARATY', 3303807, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3229, 'PATY DO ALFERES', 3303856, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3230, 'PETRÓPOLIS', 3303906, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3231, 'PINHEIRAL', 3303955, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3232, 'PIRAÍ', 3304003, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3233, 'PORCIÚNCULA', 3304102, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3234, 'PORTO REAL', 3304110, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3235, 'QUATIS', 3304128, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3236, 'QUEIMADOS', 3304144, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3237, 'QUISSAMÃ', 3304151, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3238, 'RESENDE', 3304201, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3239, 'RIO BONITO', 3304300, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3240, 'RIO CLARO', 3304409, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3241, 'RIO DAS FLORES', 3304508, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3242, 'RIO DAS OSTRAS', 3304524, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3243, 'RIO DE JANEIRO', 3304557, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3244, 'SANTA MARIA MADALENA', 3304607, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3245, 'SANTO ANTÔNIO DE PÁDUA', 3304706, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3246, 'SÃO FRANCISCO DE ITABAPOANA', 3304755, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3247, 'SÃO FIDÉLIS', 3304805, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3248, 'SÃO GONÇALO', 3304904, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3249, 'SÃO JOÃO DA BARRA', 3305000, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3250, 'SÃO JOÃO DE MERITI', 3305109, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3251, 'SÃO JOSÉ DE UBÁ', 3305133, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3252, 'SÃO JOSÉ DO VALE DO RIO PRETO', 3305158, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3253, 'SÃO PEDRO DA ALDEIA', 3305208, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3254, 'SÃO SEBASTIÃO DO ALTO', 3305307, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3255, 'SAPUCAIA', 3305406, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3256, 'SAQUAREMA', 3305505, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3257, 'SEROPÉDICA', 3305554, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3258, 'SILVA JARDIM', 3305604, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3259, 'SUMIDOURO', 3305703, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3260, 'TANGUÁ', 3305752, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3261, 'TERESÓPOLIS', 3305802, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3262, 'TRAJANO DE MORAES', 3305901, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3263, 'TRÊS RIOS', 3306008, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3264, 'VALENÇA', 3306107, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3265, 'VARRE-SAI', 3306156, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3266, 'VASSOURAS', 3306206, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3267, 'VOLTA REDONDA', 3306305, 19);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3268, 'ADAMANTINA', 3500105, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3269, 'ADOLFO', 3500204, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3270, 'AGUAÍ', 3500303, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3271, 'ÁGUAS DA PRATA', 3500402, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3272, 'ÁGUAS DE LINDÓIA', 3500501, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3273, 'ÁGUAS DE SANTA BÁRBARA', 3500550, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3274, 'ÁGUAS DE SÃO PEDRO', 3500600, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3275, 'AGUDOS', 3500709, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3276, 'ALAMBARI', 3500758, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3277, 'ALFREDO MARCONDES', 3500808, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3278, 'ALTAIR', 3500907, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3279, 'ALTINÓPOLIS', 3501004, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3280, 'ALTO ALEGRE', 3501103, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3281, 'ALUMÍNIO', 3501152, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3282, 'ÁLVARES FLORENCE', 3501202, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3283, 'ÁLVARES MACHADO', 3501301, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3284, 'ÁLVARO DE CARVALHO', 3501400, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3285, 'ALVINLÂNDIA', 3501509, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3286, 'AMERICANA', 3501608, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3287, 'AMÉRICO BRASILIENSE', 3501707, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3288, 'AMÉRICO DE CAMPOS', 3501806, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3289, 'AMPARO', 3501905, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3290, 'ANALÂNDIA', 3502002, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3291, 'ANDRADINA', 3502101, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3292, 'ANGATUBA', 3502200, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3293, 'ANHEMBI', 3502309, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3294, 'ANHUMAS', 3502408, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3295, 'APARECIDA', 3502507, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3296, 'APARECIDA D\'OESTE', 3502606, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3297, 'APIAÍ', 3502705, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3298, 'ARAÇARIGUAMA', 3502754, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3299, 'ARAÇATUBA', 3502804, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3300, 'ARAÇOIABA DA SERRA', 3502903, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3301, 'ARAMINA', 3503000, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3302, 'ARANDU', 3503109, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3303, 'ARAPEÍ', 3503158, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3304, 'ARARAQUARA', 3503208, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3305, 'ARARAS', 3503307, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3306, 'ARCO-ÍRIS', 3503356, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3307, 'AREALVA', 3503406, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3308, 'AREIAS', 3503505, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3309, 'AREIÓPOLIS', 3503604, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3310, 'ARIRANHA', 3503703, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3311, 'ARTUR NOGUEIRA', 3503802, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3312, 'ARUJÁ', 3503901, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3313, 'ASPÁSIA', 3503950, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3314, 'ASSIS', 3504008, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3315, 'ATIBAIA', 3504107, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3316, 'AURIFLAMA', 3504206, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3317, 'AVAÍ', 3504305, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3318, 'AVANHANDAVA', 3504404, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3319, 'AVARÉ', 3504503, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3320, 'BADY BASSITT', 3504602, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3321, 'BALBINOS', 3504701, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3322, 'BÁLSAMO', 3504800, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3323, 'BANANAL', 3504909, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3324, 'BARÃO DE ANTONINA', 3505005, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3325, 'BARBOSA', 3505104, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3326, 'BARIRI', 3505203, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3327, 'BARRA BONITA', 3505302, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3328, 'BARRA DO CHAPÉU', 3505351, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3329, 'BARRA DO TURVO', 3505401, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3330, 'BARRETOS', 3505500, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3331, 'BARRINHA', 3505609, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3332, 'BARUERI', 3505708, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3333, 'BASTOS', 3505807, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3334, 'BATATAIS', 3505906, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3335, 'BAURU', 3506003, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3336, 'BEBEDOURO', 3506102, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3337, 'BENTO DE ABREU', 3506201, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3338, 'BERNARDINO DE CAMPOS', 3506300, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3339, 'BERTIOGA', 3506359, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3340, 'BILAC', 3506409, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3341, 'BIRIGUI', 3506508, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3342, 'BIRITIBA-MIRIM', 3506607, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3343, 'BOA ESPERANÇA DO SUL', 3506706, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3344, 'BOCAINA', 3506805, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3345, 'BOFETE', 3506904, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3346, 'BOITUVA', 3507001, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3347, 'BOM JESUS DOS PERDÕES', 3507100, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3348, 'BOM SUCESSO DE ITARARÉ', 3507159, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3349, 'BORÁ', 3507209, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3350, 'BORACÉIA', 3507308, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3351, 'BORBOREMA', 3507407, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3352, 'BOREBI', 3507456, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3353, 'BOTUCATU', 3507506, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3354, 'BRAGANÇA PAULISTA', 3507605, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3355, 'BRAÚNA', 3507704, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3356, 'BREJO ALEGRE', 3507753, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3357, 'BRODOWSKI', 3507803, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3358, 'BROTAS', 3507902, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3359, 'BURI', 3508009, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3360, 'BURITAMA', 3508108, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3361, 'BURITIZAL', 3508207, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3362, 'CABRÁLIA PAULISTA', 3508306, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3363, 'CABREÚVA', 3508405, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3364, 'CAÇAPAVA', 3508504, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3365, 'CACHOEIRA PAULISTA', 3508603, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3366, 'CACONDE', 3508702, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3367, 'CAFELÂNDIA', 3508801, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3368, 'CAIABU', 3508900, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3369, 'CAIEIRAS', 3509007, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3370, 'CAIUÁ', 3509106, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3371, 'CAJAMAR', 3509205, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3372, 'CAJATI', 3509254, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3373, 'CAJOBI', 3509304, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3374, 'CAJURU', 3509403, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3375, 'CAMPINA DO MONTE ALEGRE', 3509452, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3376, 'CAMPINAS', 3509502, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3377, 'CAMPO LIMPO PAULISTA', 3509601, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3378, 'CAMPOS DO JORDÃO', 3509700, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3379, 'CAMPOS NOVOS PAULISTA', 3509809, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3380, 'CANANÉIA', 3509908, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3381, 'CANAS', 3509957, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3382, 'CÂNDIDO MOTA', 3510005, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3383, 'CÂNDIDO RODRIGUES', 3510104, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3384, 'CANITAR', 3510153, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3385, 'CAPÃO BONITO', 3510203, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3386, 'CAPELA DO ALTO', 3510302, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3387, 'CAPIVARI', 3510401, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3388, 'CARAGUATATUBA', 3510500, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3389, 'CARAPICUÍBA', 3510609, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3390, 'CARDOSO', 3510708, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3391, 'CASA BRANCA', 3510807, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3392, 'CÁSSIA DOS COQUEIROS', 3510906, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3393, 'CASTILHO', 3511003, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3394, 'CATANDUVA', 3511102, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3395, 'CATIGUÁ', 3511201, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3396, 'CEDRAL', 3511300, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3397, 'CERQUEIRA CÉSAR', 3511409, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3398, 'CERQUILHO', 3511508, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3399, 'CESÁRIO LANGE', 3511607, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3400, 'CHARQUEADA', 3511706, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3401, 'CLEMENTINA', 3511904, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3402, 'COLINA', 3512001, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3403, 'COLÔMBIA', 3512100, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3404, 'CONCHAL', 3512209, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3405, 'CONCHAS', 3512308, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3406, 'CORDEIRÓPOLIS', 3512407, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3407, 'COROADOS', 3512506, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3408, 'CORONEL MACEDO', 3512605, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3409, 'CORUMBATAÍ', 3512704, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3410, 'COSMÓPOLIS', 3512803, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3411, 'COSMORAMA', 3512902, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3412, 'COTIA', 3513009, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3413, 'CRAVINHOS', 3513108, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3414, 'CRISTAIS PAULISTA', 3513207, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3415, 'CRUZÁLIA', 3513306, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3416, 'CRUZEIRO', 3513405, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3417, 'CUBATÃO', 3513504, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3418, 'CUNHA', 3513603, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3419, 'DESCALVADO', 3513702, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3420, 'DIADEMA', 3513801, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3421, 'DIRCE REIS', 3513850, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3422, 'DIVINOLÂNDIA', 3513900, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3423, 'DOBRADA', 3514007, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3424, 'DOIS CÓRREGOS', 3514106, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3425, 'DOLCINÓPOLIS', 3514205, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3426, 'DOURADO', 3514304, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3427, 'DRACENA', 3514403, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3428, 'DUARTINA', 3514502, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3429, 'DUMONT', 3514601, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3430, 'ECHAPORÃ', 3514700, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3431, 'ELDORADO', 3514809, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3432, 'ELIAS FAUSTO', 3514908, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3433, 'ELISIÁRIO', 3514924, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3434, 'EMBAÚBA', 3514957, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3435, 'EMBU DAS ARTES', 3515004, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3436, 'EMBU-GUAÇU', 3515103, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3437, 'EMILIANÓPOLIS', 3515129, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3438, 'ENGENHEIRO COELHO', 3515152, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3439, 'ESPÍRITO SANTO DO PINHAL', 3515186, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3440, 'ESPÍRITO SANTO DO TURVO', 3515194, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3441, 'ESTRELA D\'OESTE', 3515202, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3442, 'ESTRELA DO NORTE', 3515301, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3443, 'EUCLIDES DA CUNHA PAULISTA', 3515350, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3444, 'FARTURA', 3515400, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3445, 'FERNANDÓPOLIS', 3515509, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3446, 'FERNANDO PRESTES', 3515608, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3447, 'FERNÃO', 3515657, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3448, 'FERRAZ DE VASCONCELOS', 3515707, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3449, 'FLORA RICA', 3515806, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3450, 'FLOREAL', 3515905, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3451, 'FLÓRIDA PAULISTA', 3516002, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3452, 'FLORÍNIA', 3516101, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3453, 'FRANCA', 3516200, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3454, 'FRANCISCO MORATO', 3516309, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3455, 'FRANCO DA ROCHA', 3516408, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3456, 'GABRIEL MONTEIRO', 3516507, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3457, 'GÁLIA', 3516606, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3458, 'GARÇA', 3516705, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3459, 'GASTÃO VIDIGAL', 3516804, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3460, 'GAVIÃO PEIXOTO', 3516853, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3461, 'GENERAL SALGADO', 3516903, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3462, 'GETULINA', 3517000, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3463, 'GLICÉRIO', 3517109, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3464, 'GUAIÇARA', 3517208, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3465, 'GUAIMBÊ', 3517307, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3466, 'GUAÍRA', 3517406, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3467, 'GUAPIAÇU', 3517505, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3468, 'GUAPIARA', 3517604, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3469, 'GUARÁ', 3517703, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3470, 'GUARAÇAÍ', 3517802, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3471, 'GUARACI', 3517901, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3472, 'GUARANI D\'OESTE', 3518008, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3473, 'GUARANTÃ', 3518107, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3474, 'GUARARAPES', 3518206, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3475, 'GUARAREMA', 3518305, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3476, 'GUARATINGUETÁ', 3518404, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3477, 'GUAREÍ', 3518503, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3478, 'GUARIBA', 3518602, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3479, 'GUARUJÁ', 3518701, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3480, 'GUARULHOS', 3518800, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3481, 'GUATAPARÁ', 3518859, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3482, 'GUZOLÂNDIA', 3518909, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3483, 'HERCULÂNDIA', 3519006, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3484, 'HOLAMBRA', 3519055, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3485, 'HORTOLÂNDIA', 3519071, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3486, 'IACANGA', 3519105, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3487, 'IACRI', 3519204, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3488, 'IARAS', 3519253, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3489, 'IBATÉ', 3519303, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3490, 'IBIRÁ', 3519402, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3491, 'IBIRAREMA', 3519501, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3492, 'IBITINGA', 3519600, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3493, 'IBIÚNA', 3519709, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3494, 'ICÉM', 3519808, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3495, 'IEPÊ', 3519907, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3496, 'IGARAÇU DO TIETÊ', 3520004, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3497, 'IGARAPAVA', 3520103, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3498, 'IGARATÁ', 3520202, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3499, 'IGUAPE', 3520301, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3500, 'ILHABELA', 3520400, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3501, 'ILHA COMPRIDA', 3520426, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3502, 'ILHA SOLTEIRA', 3520442, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3503, 'INDAIATUBA', 3520509, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3504, 'INDIANA', 3520608, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3505, 'INDIAPORÃ', 3520707, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3506, 'INÚBIA PAULISTA', 3520806, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3507, 'IPAUSSU', 3520905, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3508, 'IPERÓ', 3521002, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3509, 'IPEÚNA', 3521101, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3510, 'IPIGUÁ', 3521150, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3511, 'IPORANGA', 3521200, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3512, 'IPUÃ', 3521309, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3513, 'IRACEMÁPOLIS', 3521408, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3514, 'IRAPUÃ', 3521507, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3515, 'IRAPURU', 3521606, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3516, 'ITABERÁ', 3521705, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3517, 'ITAÍ', 3521804, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3518, 'ITAJOBI', 3521903, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3519, 'ITAJU', 3522000, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3520, 'ITANHAÉM', 3522109, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3521, 'ITAÓCA', 3522158, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3522, 'ITAPECERICA DA SERRA', 3522208, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3523, 'ITAPETININGA', 3522307, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3524, 'ITAPEVA', 3522406, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3525, 'ITAPEVI', 3522505, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3526, 'ITAPIRA', 3522604, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3527, 'ITAPIRAPUÃ PAULISTA', 3522653, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3528, 'ITÁPOLIS', 3522703, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3529, 'ITAPORANGA', 3522802, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3530, 'ITAPUÍ', 3522901, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3531, 'ITAPURA', 3523008, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3532, 'ITAQUAQUECETUBA', 3523107, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3533, 'ITARARÉ', 3523206, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3534, 'ITARIRI', 3523305, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3535, 'ITATIBA', 3523404, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3536, 'ITATINGA', 3523503, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3537, 'ITIRAPINA', 3523602, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3538, 'ITIRAPUÃ', 3523701, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3539, 'ITOBI', 3523800, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3540, 'ITU', 3523909, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3541, 'ITUPEVA', 3524006, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3542, 'ITUVERAVA', 3524105, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3543, 'JABORANDI', 3524204, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3544, 'JABOTICABAL', 3524303, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3545, 'JACAREÍ', 3524402, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3546, 'JACI', 3524501, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3547, 'JACUPIRANGA', 3524600, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3548, 'JAGUARIÚNA', 3524709, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3549, 'JALES', 3524808, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3550, 'JAMBEIRO', 3524907, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3551, 'JANDIRA', 3525003, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3552, 'JARDINÓPOLIS', 3525102, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3553, 'JARINU', 3525201, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3554, 'JAÚ', 3525300, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3555, 'JERIQUARA', 3525409, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3556, 'JOANÓPOLIS', 3525508, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3557, 'JOÃO RAMALHO', 3525607, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3558, 'JOSÉ BONIFÁCIO', 3525706, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3559, 'JÚLIO MESQUITA', 3525805, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3560, 'JUMIRIM', 3525854, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3561, 'JUNDIAÍ', 3525904, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3562, 'JUNQUEIRÓPOLIS', 3526001, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3563, 'JUQUIÁ', 3526100, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3564, 'JUQUITIBA', 3526209, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3565, 'LAGOINHA', 3526308, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3566, 'LARANJAL PAULISTA', 3526407, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3567, 'LAVÍNIA', 3526506, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3568, 'LAVRINHAS', 3526605, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3569, 'LEME', 3526704, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3570, 'LENÇÓIS PAULISTA', 3526803, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3571, 'LIMEIRA', 3526902, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3572, 'LINDÓIA', 3527009, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3573, 'LINS', 3527108, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3574, 'LORENA', 3527207, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3575, 'LOURDES', 3527256, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3576, 'LOUVEIRA', 3527306, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3577, 'LUCÉLIA', 3527405, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3578, 'LUCIANÓPOLIS', 3527504, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3579, 'LUÍS ANTÔNIO', 3527603, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3580, 'LUIZIÂNIA', 3527702, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3581, 'LUPÉRCIO', 3527801, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3582, 'LUTÉCIA', 3527900, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3583, 'MACATUBA', 3528007, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3584, 'MACAUBAL', 3528106, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3585, 'MACEDÔNIA', 3528205, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3586, 'MAGDA', 3528304, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3587, 'MAIRINQUE', 3528403, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3588, 'MAIRIPORÃ', 3528502, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3589, 'MANDURI', 3528601, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3590, 'MARABÁ PAULISTA', 3528700, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3591, 'MARACAÍ', 3528809, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3592, 'MARAPOAMA', 3528858, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3593, 'MARIÁPOLIS', 3528908, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3594, 'MARÍLIA', 3529005, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3595, 'MARINÓPOLIS', 3529104, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3596, 'MARTINÓPOLIS', 3529203, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3597, 'MATÃO', 3529302, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3598, 'MAUÁ', 3529401, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3599, 'MENDONÇA', 3529500, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3600, 'MERIDIANO', 3529609, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3601, 'MESÓPOLIS', 3529658, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3602, 'MIGUELÓPOLIS', 3529708, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3603, 'MINEIROS DO TIETÊ', 3529807, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3604, 'MIRACATU', 3529906, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3605, 'MIRA ESTRELA', 3530003, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3606, 'MIRANDÓPOLIS', 3530102, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3607, 'MIRANTE DO PARANAPANEMA', 3530201, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3608, 'MIRASSOL', 3530300, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3609, 'MIRASSOLÂNDIA', 3530409, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3610, 'MOCOCA', 3530508, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3611, 'MOGI DAS CRUZES', 3530607, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3612, 'MOGI GUAÇU', 3530706, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3613, 'MOGI MIRIM', 3530805, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3614, 'MOMBUCA', 3530904, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3615, 'MONÇÕES', 3531001, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3616, 'MONGAGUÁ', 3531100, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3617, 'MONTE ALEGRE DO SUL', 3531209, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3618, 'MONTE ALTO', 3531308, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3619, 'MONTE APRAZÍVEL', 3531407, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3620, 'MONTE AZUL PAULISTA', 3531506, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3621, 'MONTE CASTELO', 3531605, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3622, 'MONTEIRO LOBATO', 3531704, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3623, 'MONTE MOR', 3531803, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3624, 'MORRO AGUDO', 3531902, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3625, 'MORUNGABA', 3532009, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3626, 'MOTUCA', 3532058, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3627, 'MURUTINGA DO SUL', 3532108, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3628, 'NANTES', 3532157, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3629, 'NARANDIBA', 3532207, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3630, 'NATIVIDADE DA SERRA', 3532306, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3631, 'NAZARÉ PAULISTA', 3532405, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3632, 'NEVES PAULISTA', 3532504, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3633, 'NHANDEARA', 3532603, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3634, 'NIPOÃ', 3532702, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3635, 'NOVA ALIANÇA', 3532801, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3636, 'NOVA CAMPINA', 3532827, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3637, 'NOVA CANAÃ PAULISTA', 3532843, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3638, 'NOVA CASTILHO', 3532868, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3639, 'NOVA EUROPA', 3532900, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3640, 'NOVA GRANADA', 3533007, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3641, 'NOVA GUATAPORANGA', 3533106, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3642, 'NOVA INDEPENDÊNCIA', 3533205, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3643, 'NOVAIS', 3533254, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3644, 'NOVA LUZITÂNIA', 3533304, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3645, 'NOVA ODESSA', 3533403, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3646, 'NOVO HORIZONTE', 3533502, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3647, 'NUPORANGA', 3533601, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3648, 'OCAUÇU', 3533700, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3649, 'ÓLEO', 3533809, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3650, 'OLÍMPIA', 3533908, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3651, 'ONDA VERDE', 3534005, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3652, 'ORIENTE', 3534104, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3653, 'ORINDIÚVA', 3534203, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3654, 'ORLÂNDIA', 3534302, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3655, 'OSASCO', 3534401, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3656, 'OSCAR BRESSANE', 3534500, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3657, 'OSVALDO CRUZ', 3534609, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3658, 'OURINHOS', 3534708, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3659, 'OUROESTE', 3534757, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3660, 'OURO VERDE', 3534807, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3661, 'PACAEMBU', 3534906, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3662, 'PALESTINA', 3535002, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3663, 'PALMARES PAULISTA', 3535101, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3664, 'PALMEIRA D\'OESTE', 3535200, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3665, 'PALMITAL', 3535309, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3666, 'PANORAMA', 3535408, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3667, 'PARAGUAÇU PAULISTA', 3535507, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3668, 'PARAIBUNA', 3535606, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3669, 'PARAÍSO', 3535705, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3670, 'PARANAPANEMA', 3535804, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3671, 'PARANAPUÃ', 3535903, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3672, 'PARAPUÃ', 3536000, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3673, 'PARDINHO', 3536109, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3674, 'PARIQUERA-AÇU', 3536208, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3675, 'PARISI', 3536257, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3676, 'PATROCÍNIO PAULISTA', 3536307, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3677, 'PAULICÉIA', 3536406, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3678, 'PAULÍNIA', 3536505, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3679, 'PAULISTÂNIA', 3536570, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3680, 'PAULO DE FARIA', 3536604, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3681, 'PEDERNEIRAS', 3536703, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3682, 'PEDRA BELA', 3536802, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3683, 'PEDRANÓPOLIS', 3536901, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3684, 'PEDREGULHO', 3537008, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3685, 'PEDREIRA', 3537107, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3686, 'PEDRINHAS PAULISTA', 3537156, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3687, 'PEDRO DE TOLEDO', 3537206, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3688, 'PENÁPOLIS', 3537305, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3689, 'PEREIRA BARRETO', 3537404, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3690, 'PEREIRAS', 3537503, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3691, 'PERUÍBE', 3537602, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3692, 'PIACATU', 3537701, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3693, 'PIEDADE', 3537800, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3694, 'PILAR DO SUL', 3537909, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3695, 'PINDAMONHANGABA', 3538006, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3696, 'PINDORAMA', 3538105, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3697, 'PINHALZINHO', 3538204, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3698, 'PIQUEROBI', 3538303, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3699, 'PIQUETE', 3538501, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3700, 'PIRACAIA', 3538600, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3701, 'PIRACICABA', 3538709, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3702, 'PIRAJU', 3538808, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3703, 'PIRAJUÍ', 3538907, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3704, 'PIRANGI', 3539004, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3705, 'PIRAPORA DO BOM JESUS', 3539103, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3706, 'PIRAPOZINHO', 3539202, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3707, 'PIRASSUNUNGA', 3539301, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3708, 'PIRATININGA', 3539400, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3709, 'PITANGUEIRAS', 3539509, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3710, 'PLANALTO', 3539608, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3711, 'PLATINA', 3539707, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3712, 'POÁ', 3539806, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3713, 'POLONI', 3539905, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3714, 'POMPÉIA', 3540002, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3715, 'PONGAÍ', 3540101, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3716, 'PONTAL', 3540200, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3717, 'PONTALINDA', 3540259, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3718, 'PONTES GESTAL', 3540309, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3719, 'POPULINA', 3540408, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3720, 'PORANGABA', 3540507, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3721, 'PORTO FELIZ', 3540606, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3722, 'PORTO FERREIRA', 3540705, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3723, 'POTIM', 3540754, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3724, 'POTIRENDABA', 3540804, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3725, 'PRACINHA', 3540853, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3726, 'PRADÓPOLIS', 3540903, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3727, 'PRAIA GRANDE', 3541000, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3728, 'PRATÂNIA', 3541059, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3729, 'PRESIDENTE ALVES', 3541109, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3730, 'PRESIDENTE BERNARDES', 3541208, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3731, 'PRESIDENTE EPITÁCIO', 3541307, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3732, 'PRESIDENTE PRUDENTE', 3541406, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3733, 'PRESIDENTE VENCESLAU', 3541505, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3734, 'PROMISSÃO', 3541604, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3735, 'QUADRA', 3541653, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3736, 'QUATÁ', 3541703, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3737, 'QUEIROZ', 3541802, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3738, 'QUELUZ', 3541901, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3739, 'QUINTANA', 3542008, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3740, 'RAFARD', 3542107, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3741, 'RANCHARIA', 3542206, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3742, 'REDENÇÃO DA SERRA', 3542305, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3743, 'REGENTE FEIJÓ', 3542404, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3744, 'REGINÓPOLIS', 3542503, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3745, 'REGISTRO', 3542602, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3746, 'RESTINGA', 3542701, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3747, 'RIBEIRA', 3542800, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3748, 'RIBEIRÃO BONITO', 3542909, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3749, 'RIBEIRÃO BRANCO', 3543006, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3750, 'RIBEIRÃO CORRENTE', 3543105, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3751, 'RIBEIRÃO DO SUL', 3543204, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3752, 'RIBEIRÃO DOS ÍNDIOS', 3543238, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3753, 'RIBEIRÃO GRANDE', 3543253, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3754, 'RIBEIRÃO PIRES', 3543303, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3755, 'RIBEIRÃO PRETO', 3543402, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3756, 'RIVERSUL', 3543501, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3757, 'RIFAINA', 3543600, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3758, 'RINCÃO', 3543709, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3759, 'RINÓPOLIS', 3543808, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3760, 'RIO CLARO', 3543907, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3761, 'RIO DAS PEDRAS', 3544004, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3762, 'RIO GRANDE DA SERRA', 3544103, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3763, 'RIOLÂNDIA', 3544202, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3764, 'ROSANA', 3544251, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3765, 'ROSEIRA', 3544301, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3766, 'RUBIÁCEA', 3544400, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3767, 'RUBINÉIA', 3544509, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3768, 'SABINO', 3544608, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3769, 'SAGRES', 3544707, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3770, 'SALES', 3544806, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3771, 'SALES OLIVEIRA', 3544905, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3772, 'SALESÓPOLIS', 3545001, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3773, 'SALMOURÃO', 3545100, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3774, 'SALTINHO', 3545159, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3775, 'SALTO', 3545209, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3776, 'SALTO DE PIRAPORA', 3545308, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3777, 'SALTO GRANDE', 3545407, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3778, 'SANDOVALINA', 3545506, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3779, 'SANTA ADÉLIA', 3545605, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3780, 'SANTA ALBERTINA', 3545704, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3781, 'SANTA BÁRBARA D\'OESTE', 3545803, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3782, 'SANTA BRANCA', 3546009, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3783, 'SANTA CLARA D\'OESTE', 3546108, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3784, 'SANTA CRUZ DA CONCEIÇÃO', 3546207, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3785, 'SANTA CRUZ DA ESPERANÇA', 3546256, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3786, 'SANTA CRUZ DAS PALMEIRAS', 3546306, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3787, 'SANTA CRUZ DO RIO PARDO', 3546405, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3788, 'SANTA ERNESTINA', 3546504, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3789, 'SANTA FÉ DO SUL', 3546603, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3790, 'SANTA GERTRUDES', 3546702, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3791, 'SANTA ISABEL', 3546801, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3792, 'SANTA LÚCIA', 3546900, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3793, 'SANTA MARIA DA SERRA', 3547007, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3794, 'SANTA MERCEDES', 3547106, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3795, 'SANTANA DA PONTE PENSA', 3547205, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3796, 'SANTANA DE PARNAÍBA', 3547304, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3797, 'SANTA RITA D\'OESTE', 3547403, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3798, 'SANTA RITA DO PASSA QUATRO', 3547502, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3799, 'SANTA ROSA DE VITERBO', 3547601, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3800, 'SANTA SALETE', 3547650, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3801, 'SANTO ANASTÁCIO', 3547700, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3802, 'SANTO ANDRÉ', 3547809, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3803, 'SANTO ANTÔNIO DA ALEGRIA', 3547908, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3804, 'SANTO ANTÔNIO DE POSSE', 3548005, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3805, 'SANTO ANTÔNIO DO ARACANGUÁ', 3548054, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3806, 'SANTO ANTÔNIO DO JARDIM', 3548104, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3807, 'SANTO ANTÔNIO DO PINHAL', 3548203, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3808, 'SANTO EXPEDITO', 3548302, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3809, 'SANTÓPOLIS DO AGUAPEÍ', 3548401, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3810, 'SANTOS', 3548500, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3811, 'SÃO BENTO DO SAPUCAÍ', 3548609, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3812, 'SÃO BERNARDO DO CAMPO', 3548708, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3813, 'SÃO CAETANO DO SUL', 3548807, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3814, 'SÃO CARLOS', 3548906, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3815, 'SÃO FRANCISCO', 3549003, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3816, 'SÃO JOÃO DA BOA VISTA', 3549102, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3817, 'SÃO JOÃO DAS DUAS PONTES', 3549201, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3818, 'SÃO JOÃO DE IRACEMA', 3549250, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3819, 'SÃO JOÃO DO PAU D\'ALHO', 3549300, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3820, 'SÃO JOAQUIM DA BARRA', 3549409, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3821, 'SÃO JOSÉ DA BELA VISTA', 3549508, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3822, 'SÃO JOSÉ DO BARREIRO', 3549607, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3823, 'SÃO JOSÉ DO RIO PARDO', 3549706, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3824, 'SÃO JOSÉ DO RIO PRETO', 3549805, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3825, 'SÃO JOSÉ DOS CAMPOS', 3549904, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3826, 'SÃO LOURENÇO DA SERRA', 3549953, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3827, 'SÃO LUÍS DO PARAITINGA', 3550001, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3828, 'SÃO MANUEL', 3550100, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3829, 'SÃO MIGUEL ARCANJO', 3550209, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3830, 'SÃO PAULO', 3550308, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3831, 'SÃO PEDRO', 3550407, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3832, 'SÃO PEDRO DO TURVO', 3550506, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3833, 'SÃO ROQUE', 3550605, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3834, 'SÃO SEBASTIÃO', 3550704, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3835, 'SÃO SEBASTIÃO DA GRAMA', 3550803, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3836, 'SÃO SIMÃO', 3550902, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3837, 'SÃO VICENTE', 3551009, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3838, 'SARAPUÍ', 3551108, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3839, 'SARUTAIÁ', 3551207, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3840, 'SEBASTIANÓPOLIS DO SUL', 3551306, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3841, 'SERRA AZUL', 3551405, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3842, 'SERRANA', 3551504, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3843, 'SERRA NEGRA', 3551603, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3844, 'SERTÃOZINHO', 3551702, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3845, 'SETE BARRAS', 3551801, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3846, 'SEVERÍNIA', 3551900, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3847, 'SILVEIRAS', 3552007, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3848, 'SOCORRO', 3552106, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3849, 'SOROCABA', 3552205, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3850, 'SUD MENNUCCI', 3552304, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3851, 'SUMARÉ', 3552403, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3852, 'SUZANO', 3552502, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3853, 'SUZANÁPOLIS', 3552551, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3854, 'TABAPUÃ', 3552601, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3855, 'TABATINGA', 3552700, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3856, 'TABOÃO DA SERRA', 3552809, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3857, 'TACIBA', 3552908, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3858, 'TAGUAÍ', 3553005, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3859, 'TAIAÇU', 3553104, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3860, 'TAIÚVA', 3553203, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3861, 'TAMBAÚ', 3553302, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3862, 'TANABI', 3553401, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3863, 'TAPIRAÍ', 3553500, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3864, 'TAPIRATIBA', 3553609, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3865, 'TAQUARAL', 3553658, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3866, 'TAQUARITINGA', 3553708, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3867, 'TAQUARITUBA', 3553807, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3868, 'TAQUARIVAÍ', 3553856, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3869, 'TARABAI', 3553906, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3870, 'TARUMÃ', 3553955, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3871, 'TATUÍ', 3554003, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3872, 'TAUBATÉ', 3554102, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3873, 'TEJUPÁ', 3554201, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3874, 'TEODORO SAMPAIO', 3554300, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3875, 'TERRA ROXA', 3554409, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3876, 'TIETÊ', 3554508, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3877, 'TIMBURI', 3554607, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3878, 'TORRE DE PEDRA', 3554656, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3879, 'TORRINHA', 3554706, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3880, 'TRABIJU', 3554755, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3881, 'TREMEMBÉ', 3554805, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3882, 'TRÊS FRONTEIRAS', 3554904, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3883, 'TUIUTI', 3554953, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3884, 'TUPÃ', 3555000, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3885, 'TUPI PAULISTA', 3555109, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3886, 'TURIÚBA', 3555208, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3887, 'TURMALINA', 3555307, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3888, 'UBARANA', 3555356, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3889, 'UBATUBA', 3555406, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3890, 'UBIRAJARA', 3555505, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3891, 'UCHOA', 3555604, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3892, 'UNIÃO PAULISTA', 3555703, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3893, 'URÂNIA', 3555802, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3894, 'URU', 3555901, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3895, 'URUPÊS', 3556008, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3896, 'VALENTIM GENTIL', 3556107, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3897, 'VALINHOS', 3556206, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3898, 'VALPARAÍSO', 3556305, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3899, 'VARGEM', 3556354, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3900, 'VARGEM GRANDE DO SUL', 3556404, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3901, 'VARGEM GRANDE PAULISTA', 3556453, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3902, 'VÁRZEA PAULISTA', 3556503, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3903, 'VERA CRUZ', 3556602, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3904, 'VINHEDO', 3556701, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3905, 'VIRADOURO', 3556800, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3906, 'VISTA ALEGRE DO ALTO', 3556909, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3907, 'VITÓRIA BRASIL', 3556958, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3908, 'VOTORANTIM', 3557006, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3909, 'VOTUPORANGA', 3557105, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3910, 'ZACARIAS', 3557154, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3911, 'CHAVANTES', 3557204, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3912, 'ESTIVA GERBI', 3557303, 20);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3913, 'ABATIÁ', 4100103, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3914, 'ADRIANÓPOLIS', 4100202, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3915, 'AGUDOS DO SUL', 4100301, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3916, 'ALMIRANTE TAMANDARÉ', 4100400, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3917, 'ALTAMIRA DO PARANÁ', 4100459, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3918, 'ALTÔNIA', 4100509, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3919, 'ALTO PARANÁ', 4100608, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3920, 'ALTO PIQUIRI', 4100707, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3921, 'ALVORADA DO SUL', 4100806, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3922, 'AMAPORÃ', 4100905, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3923, 'AMPÉRE', 4101002, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3924, 'ANAHY', 4101051, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3925, 'ANDIRÁ', 4101101, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3926, 'ÂNGULO', 4101150, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3927, 'ANTONINA', 4101200, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3928, 'ANTÔNIO OLINTO', 4101309, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3929, 'APUCARANA', 4101408, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3930, 'ARAPONGAS', 4101507, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3931, 'ARAPOTI', 4101606, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3932, 'ARAPUÃ', 4101655, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3933, 'ARARUNA', 4101705, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3934, 'ARAUCÁRIA', 4101804, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3935, 'ARIRANHA DO IVAÍ', 4101853, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3936, 'ASSAÍ', 4101903, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3937, 'ASSIS CHATEAUBRIAND', 4102000, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3938, 'ASTORGA', 4102109, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3939, 'ATALAIA', 4102208, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3940, 'BALSA NOVA', 4102307, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3941, 'BANDEIRANTES', 4102406, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3942, 'BARBOSA FERRAZ', 4102505, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3943, 'BARRACÃO', 4102604, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3944, 'BARRA DO JACARÉ', 4102703, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3945, 'BELA VISTA DA CAROBA', 4102752, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3946, 'BELA VISTA DO PARAÍSO', 4102802, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3947, 'BITURUNA', 4102901, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3948, 'BOA ESPERANÇA', 4103008, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3949, 'BOA ESPERANÇA DO IGUAÇU', 4103024, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3950, 'BOA VENTURA DE SÃO ROQUE', 4103040, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3951, 'BOA VISTA DA APARECIDA', 4103057, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3952, 'BOCAIÚVA DO SUL', 4103107, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3953, 'BOM JESUS DO SUL', 4103156, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3954, 'BOM SUCESSO', 4103206, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3955, 'BOM SUCESSO DO SUL', 4103222, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3956, 'BORRAZÓPOLIS', 4103305, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3957, 'BRAGANEY', 4103354, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3958, 'BRASILÂNDIA DO SUL', 4103370, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3959, 'CAFEARA', 4103404, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3960, 'CAFELÂNDIA', 4103453, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3961, 'CAFEZAL DO SUL', 4103479, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3962, 'CALIFÓRNIA', 4103503, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3963, 'CAMBARÁ', 4103602, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3964, 'CAMBÉ', 4103701, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3965, 'CAMBIRA', 4103800, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3966, 'CAMPINA DA LAGOA', 4103909, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3967, 'CAMPINA DO SIMÃO', 4103958, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3968, 'CAMPINA GRANDE DO SUL', 4104006, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3969, 'CAMPO BONITO', 4104055, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3970, 'CAMPO DO TENENTE', 4104105, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3971, 'CAMPO LARGO', 4104204, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3972, 'CAMPO MAGRO', 4104253, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3973, 'CAMPO MOURÃO', 4104303, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3974, 'CÂNDIDO DE ABREU', 4104402, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3975, 'CANDÓI', 4104428, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3976, 'CANTAGALO', 4104451, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3977, 'CAPANEMA', 4104501, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3978, 'CAPITÃO LEÔNIDAS MARQUES', 4104600, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3979, 'CARAMBEÍ', 4104659, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3980, 'CARLÓPOLIS', 4104709, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3981, 'CASCAVEL', 4104808, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3982, 'CASTRO', 4104907, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3983, 'CATANDUVAS', 4105003, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3984, 'CENTENÁRIO DO SUL', 4105102, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3985, 'CERRO AZUL', 4105201, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3986, 'CÉU AZUL', 4105300, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3987, 'CHOPINZINHO', 4105409, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3988, 'CIANORTE', 4105508, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3989, 'CIDADE GAÚCHA', 4105607, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3990, 'CLEVELÂNDIA', 4105706, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3991, 'COLOMBO', 4105805, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3992, 'COLORADO', 4105904, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3993, 'CONGONHINHAS', 4106001, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3994, 'CONSELHEIRO MAIRINCK', 4106100, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3995, 'CONTENDA', 4106209, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3996, 'CORBÉLIA', 4106308, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3997, 'CORNÉLIO PROCÓPIO', 4106407, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3998, 'CORONEL DOMINGOS SOARES', 4106456, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (3999, 'CORONEL VIVIDA', 4106506, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4000, 'CORUMBATAÍ DO SUL', 4106555, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4001, 'CRUZEIRO DO IGUAÇU', 4106571, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4002, 'CRUZEIRO DO OESTE', 4106605, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4003, 'CRUZEIRO DO SUL', 4106704, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4004, 'CRUZ MACHADO', 4106803, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4005, 'CRUZMALTINA', 4106852, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4006, 'CURITIBA', 4106902, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4007, 'CURIÚVA', 4107009, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4008, 'DIAMANTE DO NORTE', 4107108, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4009, 'DIAMANTE DO SUL', 4107124, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4010, 'DIAMANTE D\'OESTE', 4107157, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4011, 'DOIS VIZINHOS', 4107207, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4012, 'DOURADINA', 4107256, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4013, 'DOUTOR CAMARGO', 4107306, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4014, 'ENÉAS MARQUES', 4107405, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4015, 'ENGENHEIRO BELTRÃO', 4107504, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4016, 'ESPERANÇA NOVA', 4107520, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4017, 'ENTRE RIOS DO OESTE', 4107538, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4018, 'ESPIGÃO ALTO DO IGUAÇU', 4107546, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4019, 'FAROL', 4107553, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4020, 'FAXINAL', 4107603, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4021, 'FAZENDA RIO GRANDE', 4107652, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4022, 'FÊNIX', 4107702, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4023, 'FERNANDES PINHEIRO', 4107736, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4024, 'FIGUEIRA', 4107751, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4025, 'FLORAÍ', 4107801, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4026, 'FLOR DA SERRA DO SUL', 4107850, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4027, 'FLORESTA', 4107900, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4028, 'FLORESTÓPOLIS', 4108007, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4029, 'FLÓRIDA', 4108106, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4030, 'FORMOSA DO OESTE', 4108205, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4031, 'FOZ DO IGUAÇU', 4108304, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4032, 'FRANCISCO ALVES', 4108320, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4033, 'FRANCISCO BELTRÃO', 4108403, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4034, 'FOZ DO JORDÃO', 4108452, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4035, 'GENERAL CARNEIRO', 4108502, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4036, 'GODOY MOREIRA', 4108551, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4037, 'GOIOERÊ', 4108601, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4038, 'GOIOXIM', 4108650, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4039, 'GRANDES RIOS', 4108700, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4040, 'GUAÍRA', 4108809, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4041, 'GUAIRAÇÁ', 4108908, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4042, 'GUAMIRANGA', 4108957, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4043, 'GUAPIRAMA', 4109005, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4044, 'GUAPOREMA', 4109104, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4045, 'GUARACI', 4109203, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4046, 'GUARANIAÇU', 4109302, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4047, 'GUARAPUAVA', 4109401, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4048, 'GUARAQUEÇABA', 4109500, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4049, 'GUARATUBA', 4109609, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4050, 'HONÓRIO SERPA', 4109658, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4051, 'IBAITI', 4109708, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4052, 'IBEMA', 4109757, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4053, 'IBIPORÃ', 4109807, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4054, 'ICARAÍMA', 4109906, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4055, 'IGUARAÇU', 4110003, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4056, 'IGUATU', 4110052, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4057, 'IMBAÚ', 4110078, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4058, 'IMBITUVA', 4110102, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4059, 'INÁCIO MARTINS', 4110201, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4060, 'INAJÁ', 4110300, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4061, 'INDIANÓPOLIS', 4110409, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4062, 'IPIRANGA', 4110508, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4063, 'IPORÃ', 4110607, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4064, 'IRACEMA DO OESTE', 4110656, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4065, 'IRATI', 4110706, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4066, 'IRETAMA', 4110805, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4067, 'ITAGUAJÉ', 4110904, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4068, 'ITAIPULÂNDIA', 4110953, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4069, 'ITAMBARACÁ', 4111001, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4070, 'ITAMBÉ', 4111100, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4071, 'ITAPEJARA D\'OESTE', 4111209, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4072, 'ITAPERUÇU', 4111258, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4073, 'ITAÚNA DO SUL', 4111308, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4074, 'IVAÍ', 4111407, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4075, 'IVAIPORÃ', 4111506, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4076, 'IVATÉ', 4111555, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4077, 'IVATUBA', 4111605, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4078, 'JABOTI', 4111704, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4079, 'JACAREZINHO', 4111803, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4080, 'JAGUAPITÃ', 4111902, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4081, 'JAGUARIAÍVA', 4112009, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4082, 'JANDAIA DO SUL', 4112108, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4083, 'JANIÓPOLIS', 4112207, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4084, 'JAPIRA', 4112306, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4085, 'JAPURÁ', 4112405, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4086, 'JARDIM ALEGRE', 4112504, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4087, 'JARDIM OLINDA', 4112603, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4088, 'JATAIZINHO', 4112702, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4089, 'JESUÍTAS', 4112751, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4090, 'JOAQUIM TÁVORA', 4112801, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4091, 'JUNDIAÍ DO SUL', 4112900, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4092, 'JURANDA', 4112959, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4093, 'JUSSARA', 4113007, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4094, 'KALORÉ', 4113106, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4095, 'LAPA', 4113205, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4096, 'LARANJAL', 4113254, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4097, 'LARANJEIRAS DO SUL', 4113304, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4098, 'LEÓPOLIS', 4113403, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4099, 'LIDIANÓPOLIS', 4113429, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4100, 'LINDOESTE', 4113452, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4101, 'LOANDA', 4113502, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4102, 'LOBATO', 4113601, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4103, 'LONDRINA', 4113700, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4104, 'LUIZIANA', 4113734, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4105, 'LUNARDELLI', 4113759, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4106, 'LUPIONÓPOLIS', 4113809, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4107, 'MALLET', 4113908, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4108, 'MAMBORÊ', 4114005, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4109, 'MANDAGUAÇU', 4114104, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4110, 'MANDAGUARI', 4114203, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4111, 'MANDIRITUBA', 4114302, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4112, 'MANFRINÓPOLIS', 4114351, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4113, 'MANGUEIRINHA', 4114401, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4114, 'MANOEL RIBAS', 4114500, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4115, 'MARECHAL CÂNDIDO RONDON', 4114609, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4116, 'MARIA HELENA', 4114708, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4117, 'MARIALVA', 4114807, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4118, 'MARILÂNDIA DO SUL', 4114906, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4119, 'MARILENA', 4115002, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4120, 'MARILUZ', 4115101, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4121, 'MARINGÁ', 4115200, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4122, 'MARIÓPOLIS', 4115309, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4123, 'MARIPÁ', 4115358, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4124, 'MARMELEIRO', 4115408, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4125, 'MARQUINHO', 4115457, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4126, 'MARUMBI', 4115507, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4127, 'MATELÂNDIA', 4115606, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4128, 'MATINHOS', 4115705, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4129, 'MATO RICO', 4115739, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4130, 'MAUÁ DA SERRA', 4115754, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4131, 'MEDIANEIRA', 4115804, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4132, 'MERCEDES', 4115853, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4133, 'MIRADOR', 4115903, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4134, 'MIRASELVA', 4116000, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4135, 'MISSAL', 4116059, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4136, 'MOREIRA SALES', 4116109, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4137, 'MORRETES', 4116208, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4138, 'MUNHOZ DE MELO', 4116307, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4139, 'NOSSA SENHORA DAS GRAÇAS', 4116406, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4140, 'NOVA ALIANÇA DO IVAÍ', 4116505, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4141, 'NOVA AMÉRICA DA COLINA', 4116604, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4142, 'NOVA AURORA', 4116703, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4143, 'NOVA CANTU', 4116802, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4144, 'NOVA ESPERANÇA', 4116901, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4145, 'NOVA ESPERANÇA DO SUDOESTE', 4116950, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4146, 'NOVA FÁTIMA', 4117008, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4147, 'NOVA LARANJEIRAS', 4117057, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4148, 'NOVA LONDRINA', 4117107, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4149, 'NOVA OLÍMPIA', 4117206, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4150, 'NOVA SANTA BÁRBARA', 4117214, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4151, 'NOVA SANTA ROSA', 4117222, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4152, 'NOVA PRATA DO IGUAÇU', 4117255, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4153, 'NOVA TEBAS', 4117271, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4154, 'NOVO ITACOLOMI', 4117297, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4155, 'ORTIGUEIRA', 4117305, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4156, 'OURIZONA', 4117404, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4157, 'OURO VERDE DO OESTE', 4117453, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4158, 'PAIÇANDU', 4117503, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4159, 'PALMAS', 4117602, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4160, 'PALMEIRA', 4117701, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4161, 'PALMITAL', 4117800, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4162, 'PALOTINA', 4117909, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4163, 'PARAÍSO DO NORTE', 4118006, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4164, 'PARANACITY', 4118105, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4165, 'PARANAGUÁ', 4118204, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4166, 'PARANAPOEMA', 4118303, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4167, 'PARANAVAÍ', 4118402, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4168, 'PATO BRAGADO', 4118451, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4169, 'PATO BRANCO', 4118501, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4170, 'PAULA FREITAS', 4118600, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4171, 'PAULO FRONTIN', 4118709, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4172, 'PEABIRU', 4118808, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4173, 'PEROBAL', 4118857, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4174, 'PÉROLA', 4118907, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4175, 'PÉROLA D\'OESTE', 4119004, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4176, 'PIÊN', 4119103, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4177, 'PINHAIS', 4119152, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4178, 'PINHALÃO', 4119202, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4179, 'PINHAL DE SÃO BENTO', 4119251, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4180, 'PINHÃO', 4119301, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4181, 'PIRAÍ DO SUL', 4119400, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4182, 'PIRAQUARA', 4119509, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4183, 'PITANGA', 4119608, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4184, 'PITANGUEIRAS', 4119657, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4185, 'PLANALTINA DO PARANÁ', 4119707, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4186, 'PLANALTO', 4119806, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4187, 'PONTA GROSSA', 4119905, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4188, 'PONTAL DO PARANÁ', 4119954, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4189, 'PORECATU', 4120002, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4190, 'PORTO AMAZONAS', 4120101, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4191, 'PORTO BARREIRO', 4120150, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4192, 'PORTO RICO', 4120200, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4193, 'PORTO VITÓRIA', 4120309, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4194, 'PRADO FERREIRA', 4120333, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4195, 'PRANCHITA', 4120358, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4196, 'PRESIDENTE CASTELO BRANCO', 4120408, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4197, 'PRIMEIRO DE MAIO', 4120507, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4198, 'PRUDENTÓPOLIS', 4120606, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4199, 'QUARTO CENTENÁRIO', 4120655, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4200, 'QUATIGUÁ', 4120705, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4201, 'QUATRO BARRAS', 4120804, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4202, 'QUATRO PONTES', 4120853, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4203, 'QUEDAS DO IGUAÇU', 4120903, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4204, 'QUERÊNCIA DO NORTE', 4121000, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4205, 'QUINTA DO SOL', 4121109, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4206, 'QUITANDINHA', 4121208, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4207, 'RAMILÂNDIA', 4121257, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4208, 'RANCHO ALEGRE', 4121307, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4209, 'RANCHO ALEGRE D\'OESTE', 4121356, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4210, 'REALEZA', 4121406, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4211, 'REBOUÇAS', 4121505, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4212, 'RENASCENÇA', 4121604, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4213, 'RESERVA', 4121703, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4214, 'RESERVA DO IGUAÇU', 4121752, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4215, 'RIBEIRÃO CLARO', 4121802, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4216, 'RIBEIRÃO DO PINHAL', 4121901, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4217, 'RIO AZUL', 4122008, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4218, 'RIO BOM', 4122107, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4219, 'RIO BONITO DO IGUAÇU', 4122156, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4220, 'RIO BRANCO DO IVAÍ', 4122172, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4221, 'RIO BRANCO DO SUL', 4122206, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4222, 'RIO NEGRO', 4122305, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4223, 'ROLÂNDIA', 4122404, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4224, 'RONCADOR', 4122503, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4225, 'RONDON', 4122602, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4226, 'ROSÁRIO DO IVAÍ', 4122651, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4227, 'SABÁUDIA', 4122701, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4228, 'SALGADO FILHO', 4122800, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4229, 'SALTO DO ITARARÉ', 4122909, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4230, 'SALTO DO LONTRA', 4123006, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4231, 'SANTA AMÉLIA', 4123105, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4232, 'SANTA CECÍLIA DO PAVÃO', 4123204, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4233, 'SANTA CRUZ DE MONTE CASTELO', 4123303, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4234, 'SANTA FÉ', 4123402, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4235, 'SANTA HELENA', 4123501, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4236, 'SANTA INÊS', 4123600, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4237, 'SANTA ISABEL DO IVAÍ', 4123709, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4238, 'SANTA IZABEL DO OESTE', 4123808, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4239, 'SANTA LÚCIA', 4123824, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4240, 'SANTA MARIA DO OESTE', 4123857, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4241, 'SANTA MARIANA', 4123907, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4242, 'SANTA MÔNICA', 4123956, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4243, 'SANTANA DO ITARARÉ', 4124004, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4244, 'SANTA TEREZA DO OESTE', 4124020, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4245, 'SANTA TEREZINHA DE ITAIPU', 4124053, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4246, 'SANTO ANTÔNIO DA PLATINA', 4124103, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4247, 'SANTO ANTÔNIO DO CAIUÁ', 4124202, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4248, 'SANTO ANTÔNIO DO PARAÍSO', 4124301, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4249, 'SANTO ANTÔNIO DO SUDOESTE', 4124400, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4250, 'SANTO INÁCIO', 4124509, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4251, 'SÃO CARLOS DO IVAÍ', 4124608, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4252, 'SÃO JERÔNIMO DA SERRA', 4124707, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4253, 'SÃO JOÃO', 4124806, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4254, 'SÃO JOÃO DO CAIUÁ', 4124905, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4255, 'SÃO JOÃO DO IVAÍ', 4125001, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4256, 'SÃO JOÃO DO TRIUNFO', 4125100, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4257, 'SÃO JORGE D\'OESTE', 4125209, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4258, 'SÃO JORGE DO IVAÍ', 4125308, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4259, 'SÃO JORGE DO PATROCÍNIO', 4125357, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4260, 'SÃO JOSÉ DA BOA VISTA', 4125407, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4261, 'SÃO JOSÉ DAS PALMEIRAS', 4125456, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4262, 'SÃO JOSÉ DOS PINHAIS', 4125506, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4263, 'SÃO MANOEL DO PARANÁ', 4125555, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4264, 'SÃO MATEUS DO SUL', 4125605, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4265, 'SÃO MIGUEL DO IGUAÇU', 4125704, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4266, 'SÃO PEDRO DO IGUAÇU', 4125753, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4267, 'SÃO PEDRO DO IVAÍ', 4125803, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4268, 'SÃO PEDRO DO PARANÁ', 4125902, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4269, 'SÃO SEBASTIÃO DA AMOREIRA', 4126009, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4270, 'SÃO TOMÉ', 4126108, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4271, 'SAPOPEMA', 4126207, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4272, 'SARANDI', 4126256, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4273, 'SAUDADE DO IGUAÇU', 4126272, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4274, 'SENGÉS', 4126306, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4275, 'SERRANÓPOLIS DO IGUAÇU', 4126355, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4276, 'SERTANEJA', 4126405, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4277, 'SERTANÓPOLIS', 4126504, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4278, 'SIQUEIRA CAMPOS', 4126603, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4279, 'SULINA', 4126652, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4280, 'TAMARANA', 4126678, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4281, 'TAMBOARA', 4126702, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4282, 'TAPEJARA', 4126801, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4283, 'TAPIRA', 4126900, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4284, 'TEIXEIRA SOARES', 4127007, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4285, 'TELÊMACO BORBA', 4127106, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4286, 'TERRA BOA', 4127205, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4287, 'TERRA RICA', 4127304, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4288, 'TERRA ROXA', 4127403, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4289, 'TIBAGI', 4127502, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4290, 'TIJUCAS DO SUL', 4127601, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4291, 'TOLEDO', 4127700, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4292, 'TOMAZINA', 4127809, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4293, 'TRÊS BARRAS DO PARANÁ', 4127858, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4294, 'TUNAS DO PARANÁ', 4127882, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4295, 'TUNEIRAS DO OESTE', 4127908, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4296, 'TUPÃSSI', 4127957, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4297, 'TURVO', 4127965, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4298, 'UBIRATÃ', 4128005, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4299, 'UMUARAMA', 4128104, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4300, 'UNIÃO DA VITÓRIA', 4128203, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4301, 'UNIFLOR', 4128302, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4302, 'URAÍ', 4128401, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4303, 'WENCESLAU BRAZ', 4128500, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4304, 'VENTANIA', 4128534, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4305, 'VERA CRUZ DO OESTE', 4128559, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4306, 'VERÊ', 4128609, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4307, 'ALTO PARAÍSO', 4128625, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4308, 'DOUTOR ULYSSES', 4128633, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4309, 'VIRMOND', 4128658, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4310, 'VITORINO', 4128708, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4311, 'XAMBRÊ', 4128807, 21);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4312, 'ABDON BATISTA', 4200051, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4313, 'ABELARDO LUZ', 4200101, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4314, 'AGROLÂNDIA', 4200200, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4315, 'AGRONÔMICA', 4200309, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4316, 'ÁGUA DOCE', 4200408, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4317, 'ÁGUAS DE CHAPECÓ', 4200507, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4318, 'ÁGUAS FRIAS', 4200556, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4319, 'ÁGUAS MORNAS', 4200606, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4320, 'ALFREDO WAGNER', 4200705, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4321, 'ALTO BELA VISTA', 4200754, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4322, 'ANCHIETA', 4200804, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4323, 'ANGELINA', 4200903, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4324, 'ANITA GARIBALDI', 4201000, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4325, 'ANITÁPOLIS', 4201109, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4326, 'ANTÔNIO CARLOS', 4201208, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4327, 'APIÚNA', 4201257, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4328, 'ARABUTÃ', 4201273, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4329, 'ARAQUARI', 4201307, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4330, 'ARARANGUÁ', 4201406, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4331, 'ARMAZÉM', 4201505, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4332, 'ARROIO TRINTA', 4201604, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4333, 'ARVOREDO', 4201653, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4334, 'ASCURRA', 4201703, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4335, 'ATALANTA', 4201802, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4336, 'AURORA', 4201901, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4337, 'BALNEÁRIO ARROIO DO SILVA', 4201950, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4338, 'BALNEÁRIO CAMBORIÚ', 4202008, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4339, 'BALNEÁRIO BARRA DO SUL', 4202057, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4340, 'BALNEÁRIO GAIVOTA', 4202073, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4341, 'BANDEIRANTE', 4202081, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4342, 'BARRA BONITA', 4202099, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4343, 'BARRA VELHA', 4202107, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4344, 'BELA VISTA DO TOLDO', 4202131, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4345, 'BELMONTE', 4202156, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4346, 'BENEDITO NOVO', 4202206, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4347, 'BIGUAÇU', 4202305, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4348, 'BLUMENAU', 4202404, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4349, 'BOCAINA DO SUL', 4202438, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4350, 'BOMBINHAS', 4202453, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4351, 'BOM JARDIM DA SERRA', 4202503, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4352, 'BOM JESUS', 4202537, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4353, 'BOM JESUS DO OESTE', 4202578, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4354, 'BOM RETIRO', 4202602, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4355, 'BOTUVERÁ', 4202701, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4356, 'BRAÇO DO NORTE', 4202800, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4357, 'BRAÇO DO TROMBUDO', 4202859, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4358, 'BRUNÓPOLIS', 4202875, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4359, 'BRUSQUE', 4202909, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4360, 'CAÇADOR', 4203006, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4361, 'CAIBI', 4203105, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4362, 'CALMON', 4203154, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4363, 'CAMBORIÚ', 4203204, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4364, 'CAPÃO ALTO', 4203253, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4365, 'CAMPO ALEGRE', 4203303, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4366, 'CAMPO BELO DO SUL', 4203402, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4367, 'CAMPO ERÊ', 4203501, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4368, 'CAMPOS NOVOS', 4203600, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4369, 'CANELINHA', 4203709, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4370, 'CANOINHAS', 4203808, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4371, 'CAPINZAL', 4203907, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4372, 'CAPIVARI DE BAIXO', 4203956, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4373, 'CATANDUVAS', 4204004, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4374, 'CAXAMBU DO SUL', 4204103, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4375, 'CELSO RAMOS', 4204152, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4376, 'CERRO NEGRO', 4204178, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4377, 'CHAPADÃO DO LAGEADO', 4204194, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4378, 'CHAPECÓ', 4204202, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4379, 'COCAL DO SUL', 4204251, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4380, 'CONCÓRDIA', 4204301, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4381, 'CORDILHEIRA ALTA', 4204350, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4382, 'CORONEL FREITAS', 4204400, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4383, 'CORONEL MARTINS', 4204459, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4384, 'CORUPÁ', 4204509, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4385, 'CORREIA PINTO', 4204558, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4386, 'CRICIÚMA', 4204608, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4387, 'CUNHA PORÃ', 4204707, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4388, 'CUNHATAÍ', 4204756, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4389, 'CURITIBANOS', 4204806, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4390, 'DESCANSO', 4204905, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4391, 'DIONÍSIO CERQUEIRA', 4205001, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4392, 'DONA EMMA', 4205100, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4393, 'DOUTOR PEDRINHO', 4205159, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4394, 'ENTRE RIOS', 4205175, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4395, 'ERMO', 4205191, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4396, 'ERVAL VELHO', 4205209, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4397, 'FAXINAL DOS GUEDES', 4205308, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4398, 'FLOR DO SERTÃO', 4205357, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4399, 'FLORIANÓPOLIS', 4205407, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4400, 'FORMOSA DO SUL', 4205431, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4401, 'FORQUILHINHA', 4205456, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4402, 'FRAIBURGO', 4205506, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4403, 'FREI ROGÉRIO', 4205555, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4404, 'GALVÃO', 4205605, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4405, 'GAROPABA', 4205704, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4406, 'GARUVA', 4205803, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4407, 'GASPAR', 4205902, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4408, 'GOVERNADOR CELSO RAMOS', 4206009, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4409, 'GRÃO PARÁ', 4206108, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4410, 'GRAVATAL', 4206207, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4411, 'GUABIRUBA', 4206306, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4412, 'GUARACIABA', 4206405, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4413, 'GUARAMIRIM', 4206504, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4414, 'GUARUJÁ DO SUL', 4206603, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4415, 'GUATAMBÚ', 4206652, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4416, 'HERVAL D\'OESTE', 4206702, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4417, 'IBIAM', 4206751, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4418, 'IBICARÉ', 4206801, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4419, 'IBIRAMA', 4206900, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4420, 'IÇARA', 4207007, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4421, 'ILHOTA', 4207106, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4422, 'IMARUÍ', 4207205, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4423, 'IMBITUBA', 4207304, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4424, 'IMBUIA', 4207403, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4425, 'INDAIAL', 4207502, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4426, 'IOMERÊ', 4207577, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4427, 'IPIRA', 4207601, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4428, 'IPORÃ DO OESTE', 4207650, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4429, 'IPUAÇU', 4207684, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4430, 'IPUMIRIM', 4207700, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4431, 'IRACEMINHA', 4207759, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4432, 'IRANI', 4207809, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4433, 'IRATI', 4207858, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4434, 'IRINEÓPOLIS', 4207908, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4435, 'ITÁ', 4208005, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4436, 'ITAIÓPOLIS', 4208104, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4437, 'ITAJAÍ', 4208203, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4438, 'ITAPEMA', 4208302, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4439, 'ITAPIRANGA', 4208401, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4440, 'ITAPOÁ', 4208450, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4441, 'ITUPORANGA', 4208500, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4442, 'JABORÁ', 4208609, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4443, 'JACINTO MACHADO', 4208708, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4444, 'JAGUARUNA', 4208807, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4445, 'JARAGUÁ DO SUL', 4208906, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4446, 'JARDINÓPOLIS', 4208955, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4447, 'JOAÇABA', 4209003, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4448, 'JOINVILLE', 4209102, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4449, 'JOSÉ BOITEUX', 4209151, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4450, 'JUPIÁ', 4209177, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4451, 'LACERDÓPOLIS', 4209201, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4452, 'LAGES', 4209300, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4453, 'LAGUNA', 4209409, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4454, 'LAJEADO GRANDE', 4209458, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4455, 'LAURENTINO', 4209508, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4456, 'LAURO MULLER', 4209607, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4457, 'LEBON RÉGIS', 4209706, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4458, 'LEOBERTO LEAL', 4209805, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4459, 'LINDÓIA DO SUL', 4209854, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4460, 'LONTRAS', 4209904, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4461, 'LUIZ ALVES', 4210001, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4462, 'LUZERNA', 4210035, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4463, 'MACIEIRA', 4210050, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4464, 'MAFRA', 4210100, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4465, 'MAJOR GERCINO', 4210209, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4466, 'MAJOR VIEIRA', 4210308, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4467, 'MARACAJÁ', 4210407, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4468, 'MARAVILHA', 4210506, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4469, 'MAREMA', 4210555, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4470, 'MASSARANDUBA', 4210605, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4471, 'MATOS COSTA', 4210704, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4472, 'MELEIRO', 4210803, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4473, 'MIRIM DOCE', 4210852, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4474, 'MODELO', 4210902, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4475, 'MONDAÍ', 4211009, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4476, 'MONTE CARLO', 4211058, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4477, 'MONTE CASTELO', 4211108, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4478, 'MORRO DA FUMAÇA', 4211207, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4479, 'MORRO GRANDE', 4211256, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4480, 'NAVEGANTES', 4211306, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4481, 'NOVA ERECHIM', 4211405, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4482, 'NOVA ITABERABA', 4211454, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4483, 'NOVA TRENTO', 4211504, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4484, 'NOVA VENEZA', 4211603, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4485, 'NOVO HORIZONTE', 4211652, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4486, 'ORLEANS', 4211702, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4487, 'OTACÍLIO COSTA', 4211751, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4488, 'OURO', 4211801, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4489, 'OURO VERDE', 4211850, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4490, 'PAIAL', 4211876, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4491, 'PAINEL', 4211892, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4492, 'PALHOÇA', 4211900, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4493, 'PALMA SOLA', 4212007, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4494, 'PALMEIRA', 4212056, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4495, 'PALMITOS', 4212106, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4496, 'PAPANDUVA', 4212205, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4497, 'PARAÍSO', 4212239, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4498, 'PASSO DE TORRES', 4212254, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4499, 'PASSOS MAIA', 4212270, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4500, 'PAULO LOPES', 4212304, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4501, 'PEDRAS GRANDES', 4212403, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4502, 'PENHA', 4212502, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4503, 'PERITIBA', 4212601, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4504, 'PESCARIA BRAVA', 4212650, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4505, 'PETROLÂNDIA', 4212700, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4506, 'BALNEÁRIO PIÇARRAS', 4212809, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4507, 'PINHALZINHO', 4212908, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4508, 'PINHEIRO PRETO', 4213005, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4509, 'PIRATUBA', 4213104, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4510, 'PLANALTO ALEGRE', 4213153, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4511, 'POMERODE', 4213203, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4512, 'PONTE ALTA', 4213302, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4513, 'PONTE ALTA DO NORTE', 4213351, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4514, 'PONTE SERRADA', 4213401, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4515, 'PORTO BELO', 4213500, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4516, 'PORTO UNIÃO', 4213609, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4517, 'POUSO REDONDO', 4213708, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4518, 'PRAIA GRANDE', 4213807, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4519, 'PRESIDENTE CASTELLO BRANCO', 4213906, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4520, 'PRESIDENTE GETÚLIO', 4214003, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4521, 'PRESIDENTE NEREU', 4214102, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4522, 'PRINCESA', 4214151, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4523, 'QUILOMBO', 4214201, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4524, 'RANCHO QUEIMADO', 4214300, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4525, 'RIO DAS ANTAS', 4214409, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4526, 'RIO DO CAMPO', 4214508, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4527, 'RIO DO OESTE', 4214607, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4528, 'RIO DOS CEDROS', 4214706, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4529, 'RIO DO SUL', 4214805, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4530, 'RIO FORTUNA', 4214904, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4531, 'RIO NEGRINHO', 4215000, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4532, 'RIO RUFINO', 4215059, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4533, 'RIQUEZA', 4215075, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4534, 'RODEIO', 4215109, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4535, 'ROMELÂNDIA', 4215208, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4536, 'SALETE', 4215307, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4537, 'SALTINHO', 4215356, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4538, 'SALTO VELOSO', 4215406, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4539, 'SANGÃO', 4215455, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4540, 'SANTA CECÍLIA', 4215505, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4541, 'SANTA HELENA', 4215554, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4542, 'SANTA ROSA DE LIMA', 4215604, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4543, 'SANTA ROSA DO SUL', 4215653, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4544, 'SANTA TEREZINHA', 4215679, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4545, 'SANTA TEREZINHA DO PROGRESSO', 4215687, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4546, 'SANTIAGO DO SUL', 4215695, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4547, 'SANTO AMARO DA IMPERATRIZ', 4215703, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4548, 'SÃO BERNARDINO', 4215752, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4549, 'SÃO BENTO DO SUL', 4215802, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4550, 'SÃO BONIFÁCIO', 4215901, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4551, 'SÃO CARLOS', 4216008, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4552, 'SÃO CRISTOVÃO DO SUL', 4216057, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4553, 'SÃO DOMINGOS', 4216107, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4554, 'SÃO FRANCISCO DO SUL', 4216206, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4555, 'SÃO JOÃO DO OESTE', 4216255, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4556, 'SÃO JOÃO BATISTA', 4216305, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4557, 'SÃO JOÃO DO ITAPERIÚ', 4216354, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4558, 'SÃO JOÃO DO SUL', 4216404, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4559, 'SÃO JOAQUIM', 4216503, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4560, 'SÃO JOSÉ', 4216602, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4561, 'SÃO JOSÉ DO CEDRO', 4216701, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4562, 'SÃO JOSÉ DO CERRITO', 4216800, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4563, 'SÃO LOURENÇO DO OESTE', 4216909, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4564, 'SÃO LUDGERO', 4217006, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4565, 'SÃO MARTINHO', 4217105, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4566, 'SÃO MIGUEL DA BOA VISTA', 4217154, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4567, 'SÃO MIGUEL DO OESTE', 4217204, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4568, 'SÃO PEDRO DE ALCÂNTARA', 4217253, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4569, 'SAUDADES', 4217303, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4570, 'SCHROEDER', 4217402, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4571, 'SEARA', 4217501, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4572, 'SERRA ALTA', 4217550, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4573, 'SIDERÓPOLIS', 4217600, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4574, 'SOMBRIO', 4217709, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4575, 'SUL BRASIL', 4217758, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4576, 'TAIÓ', 4217808, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4577, 'TANGARÁ', 4217907, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4578, 'TIGRINHOS', 4217956, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4579, 'TIJUCAS', 4218004, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4580, 'TIMBÉ DO SUL', 4218103, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4581, 'TIMBÓ', 4218202, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4582, 'TIMBÓ GRANDE', 4218251, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4583, 'TRÊS BARRAS', 4218301, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4584, 'TREVISO', 4218350, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4585, 'TREZE DE MAIO', 4218400, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4586, 'TREZE TÍLIAS', 4218509, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4587, 'TROMBUDO CENTRAL', 4218608, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4588, 'TUBARÃO', 4218707, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4589, 'TUNÁPOLIS', 4218756, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4590, 'TURVO', 4218806, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4591, 'UNIÃO DO OESTE', 4218855, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4592, 'URUBICI', 4218905, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4593, 'URUPEMA', 4218954, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4594, 'URUSSANGA', 4219002, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4595, 'VARGEÃO', 4219101, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4596, 'VARGEM', 4219150, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4597, 'VARGEM BONITA', 4219176, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4598, 'VIDAL RAMOS', 4219200, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4599, 'VIDEIRA', 4219309, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4600, 'VITOR MEIRELES', 4219358, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4601, 'WITMARSUM', 4219408, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4602, 'XANXERÊ', 4219507, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4603, 'XAVANTINA', 4219606, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4604, 'XAXIM', 4219705, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4605, 'ZORTÉA', 4219853, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4606, 'BALNEÁRIO RINCÃO', 4220000, 22);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4607, 'LAGOA MIRIM', 4300001, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4608, 'LAGOA DOS PATOS', 4300002, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4609, 'ACEGUÁ', 4300034, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4610, 'ÁGUA SANTA', 4300059, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4611, 'AGUDO', 4300109, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4612, 'AJURICABA', 4300208, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4613, 'ALECRIM', 4300307, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4614, 'ALEGRETE', 4300406, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4615, 'ALEGRIA', 4300455, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4616, 'ALMIRANTE TAMANDARÉ DO SUL', 4300471, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4617, 'ALPESTRE', 4300505, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4618, 'ALTO ALEGRE', 4300554, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4619, 'ALTO FELIZ', 4300570, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4620, 'ALVORADA', 4300604, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4621, 'AMARAL FERRADOR', 4300638, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4622, 'AMETISTA DO SUL', 4300646, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4623, 'ANDRÉ DA ROCHA', 4300661, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4624, 'ANTA GORDA', 4300703, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4625, 'ANTÔNIO PRADO', 4300802, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4626, 'ARAMBARÉ', 4300851, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4627, 'ARARICÁ', 4300877, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4628, 'ARATIBA', 4300901, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4629, 'ARROIO DO MEIO', 4301008, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4630, 'ARROIO DO SAL', 4301057, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4631, 'ARROIO DO PADRE', 4301073, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4632, 'ARROIO DOS RATOS', 4301107, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4633, 'ARROIO DO TIGRE', 4301206, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4634, 'ARROIO GRANDE', 4301305, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4635, 'ARVOREZINHA', 4301404, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4636, 'AUGUSTO PESTANA', 4301503, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4637, 'ÁUREA', 4301552, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4638, 'BAGÉ', 4301602, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4639, 'BALNEÁRIO PINHAL', 4301636, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4640, 'BARÃO', 4301651, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4641, 'BARÃO DE COTEGIPE', 4301701, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4642, 'BARÃO DO TRIUNFO', 4301750, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4643, 'BARRACÃO', 4301800, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4644, 'BARRA DO GUARITA', 4301859, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4645, 'BARRA DO QUARAÍ', 4301875, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4646, 'BARRA DO RIBEIRO', 4301909, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4647, 'BARRA DO RIO AZUL', 4301925, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4648, 'BARRA FUNDA', 4301958, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4649, 'BARROS CASSAL', 4302006, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4650, 'BENJAMIN CONSTANT DO SUL', 4302055, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4651, 'BENTO GONÇALVES', 4302105, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4652, 'BOA VISTA DAS MISSÕES', 4302154, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4653, 'BOA VISTA DO BURICÁ', 4302204, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4654, 'BOA VISTA DO CADEADO', 4302220, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4655, 'BOA VISTA DO INCRA', 4302238, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4656, 'BOA VISTA DO SUL', 4302253, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4657, 'BOM JESUS', 4302303, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4658, 'BOM PRINCÍPIO', 4302352, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4659, 'BOM PROGRESSO', 4302378, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4660, 'BOM RETIRO DO SUL', 4302402, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4661, 'BOQUEIRÃO DO LEÃO', 4302451, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4662, 'BOSSOROCA', 4302501, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4663, 'BOZANO', 4302584, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4664, 'BRAGA', 4302600, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4665, 'BROCHIER', 4302659, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4666, 'BUTIÁ', 4302709, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4667, 'CAÇAPAVA DO SUL', 4302808, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4668, 'CACEQUI', 4302907, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4669, 'CACHOEIRA DO SUL', 4303004, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4670, 'CACHOEIRINHA', 4303103, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4671, 'CACIQUE DOBLE', 4303202, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4672, 'CAIBATÉ', 4303301, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4673, 'CAIÇARA', 4303400, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4674, 'CAMAQUÃ', 4303509, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4675, 'CAMARGO', 4303558, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4676, 'CAMBARÁ DO SUL', 4303608, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4677, 'CAMPESTRE DA SERRA', 4303673, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4678, 'CAMPINA DAS MISSÕES', 4303707, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4679, 'CAMPINAS DO SUL', 4303806, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4680, 'CAMPO BOM', 4303905, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4681, 'CAMPO NOVO', 4304002, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4682, 'CAMPOS BORGES', 4304101, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4683, 'CANDELÁRIA', 4304200, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4684, 'CÂNDIDO GODÓI', 4304309, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4685, 'CANDIOTA', 4304358, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4686, 'CANELA', 4304408, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4687, 'CANGUÇU', 4304507, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4688, 'CANOAS', 4304606, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4689, 'CANUDOS DO VALE', 4304614, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4690, 'CAPÃO BONITO DO SUL', 4304622, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4691, 'CAPÃO DA CANOA', 4304630, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4692, 'CAPÃO DO CIPÓ', 4304655, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4693, 'CAPÃO DO LEÃO', 4304663, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4694, 'CAPIVARI DO SUL', 4304671, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4695, 'CAPELA DE SANTANA', 4304689, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4696, 'CAPITÃO', 4304697, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4697, 'CARAZINHO', 4304705, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4698, 'CARAÁ', 4304713, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4699, 'CARLOS BARBOSA', 4304804, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4700, 'CARLOS GOMES', 4304853, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4701, 'CASCA', 4304903, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4702, 'CASEIROS', 4304952, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4703, 'CATUÍPE', 4305009, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4704, 'CAXIAS DO SUL', 4305108, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4705, 'CENTENÁRIO', 4305116, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4706, 'CERRITO', 4305124, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4707, 'CERRO BRANCO', 4305132, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4708, 'CERRO GRANDE', 4305157, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4709, 'CERRO GRANDE DO SUL', 4305173, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4710, 'CERRO LARGO', 4305207, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4711, 'CHAPADA', 4305306, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4712, 'CHARQUEADAS', 4305355, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4713, 'CHARRUA', 4305371, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4714, 'CHIAPETTA', 4305405, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4715, 'CHUÍ', 4305439, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4716, 'CHUVISCA', 4305447, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4717, 'CIDREIRA', 4305454, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4718, 'CIRÍACO', 4305504, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4719, 'COLINAS', 4305587, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4720, 'COLORADO', 4305603, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4721, 'CONDOR', 4305702, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4722, 'CONSTANTINA', 4305801, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4723, 'COQUEIRO BAIXO', 4305835, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4724, 'COQUEIROS DO SUL', 4305850, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4725, 'CORONEL BARROS', 4305871, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4726, 'CORONEL BICACO', 4305900, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4727, 'CORONEL PILAR', 4305934, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4728, 'COTIPORÃ', 4305959, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4729, 'COXILHA', 4305975, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4730, 'CRISSIUMAL', 4306007, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4731, 'CRISTAL', 4306056, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4732, 'CRISTAL DO SUL', 4306072, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4733, 'CRUZ ALTA', 4306106, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4734, 'CRUZALTENSE', 4306130, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4735, 'CRUZEIRO DO SUL', 4306205, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4736, 'DAVID CANABARRO', 4306304, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4737, 'DERRUBADAS', 4306320, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4738, 'DEZESSEIS DE NOVEMBRO', 4306353, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4739, 'DILERMANDO DE AGUIAR', 4306379, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4740, 'DOIS IRMÃOS', 4306403, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4741, 'DOIS IRMÃOS DAS MISSÕES', 4306429, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4742, 'DOIS LAJEADOS', 4306452, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4743, 'DOM FELICIANO', 4306502, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4744, 'DOM PEDRO DE ALCÂNTARA', 4306551, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4745, 'DOM PEDRITO', 4306601, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4746, 'DONA FRANCISCA', 4306700, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4747, 'DOUTOR MAURÍCIO CARDOSO', 4306734, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4748, 'DOUTOR RICARDO', 4306759, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4749, 'ELDORADO DO SUL', 4306767, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4750, 'ENCANTADO', 4306809, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4751, 'ENCRUZILHADA DO SUL', 4306908, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4752, 'ENGENHO VELHO', 4306924, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4753, 'ENTRE-IJUÍS', 4306932, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4754, 'ENTRE RIOS DO SUL', 4306957, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4755, 'EREBANGO', 4306973, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4756, 'ERECHIM', 4307005, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4757, 'ERNESTINA', 4307054, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4758, 'HERVAL', 4307104, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4759, 'ERVAL GRANDE', 4307203, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4760, 'ERVAL SECO', 4307302, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4761, 'ESMERALDA', 4307401, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4762, 'ESPERANÇA DO SUL', 4307450, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4763, 'ESPUMOSO', 4307500, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4764, 'ESTAÇÃO', 4307559, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4765, 'ESTÂNCIA VELHA', 4307609, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4766, 'ESTEIO', 4307708, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4767, 'ESTRELA', 4307807, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4768, 'ESTRELA VELHA', 4307815, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4769, 'EUGÊNIO DE CASTRO', 4307831, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4770, 'FAGUNDES VARELA', 4307864, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4771, 'FARROUPILHA', 4307906, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4772, 'FAXINAL DO SOTURNO', 4308003, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4773, 'FAXINALZINHO', 4308052, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4774, 'FAZENDA VILANOVA', 4308078, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4775, 'FELIZ', 4308102, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4776, 'FLORES DA CUNHA', 4308201, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4777, 'FLORIANO PEIXOTO', 4308250, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4778, 'FONTOURA XAVIER', 4308300, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4779, 'FORMIGUEIRO', 4308409, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4780, 'FORQUETINHA', 4308433, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4781, 'FORTALEZA DOS VALOS', 4308458, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4782, 'FREDERICO WESTPHALEN', 4308508, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4783, 'GARIBALDI', 4308607, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4784, 'GARRUCHOS', 4308656, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4785, 'GAURAMA', 4308706, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4786, 'GENERAL CÂMARA', 4308805, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4787, 'GENTIL', 4308854, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4788, 'GETÚLIO VARGAS', 4308904, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4789, 'GIRUÁ', 4309001, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4790, 'GLORINHA', 4309050, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4791, 'GRAMADO', 4309100, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4792, 'GRAMADO DOS LOUREIROS', 4309126, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4793, 'GRAMADO XAVIER', 4309159, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4794, 'GRAVATAÍ', 4309209, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4795, 'GUABIJU', 4309258, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4796, 'GUAÍBA', 4309308, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4797, 'GUAPORÉ', 4309407, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4798, 'GUARANI DAS MISSÕES', 4309506, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4799, 'HARMONIA', 4309555, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4800, 'HERVEIRAS', 4309571, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4801, 'HORIZONTINA', 4309605, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4802, 'HULHA NEGRA', 4309654, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4803, 'HUMAITÁ', 4309704, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4804, 'IBARAMA', 4309753, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4805, 'IBIAÇÁ', 4309803, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4806, 'IBIRAIARAS', 4309902, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4807, 'IBIRAPUITÃ', 4309951, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4808, 'IBIRUBÁ', 4310009, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4809, 'IGREJINHA', 4310108, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4810, 'IJUÍ', 4310207, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4811, 'ILÓPOLIS', 4310306, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4812, 'IMBÉ', 4310330, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4813, 'IMIGRANTE', 4310363, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4814, 'INDEPENDÊNCIA', 4310405, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4815, 'INHACORÁ', 4310413, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4816, 'IPÊ', 4310439, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4817, 'IPIRANGA DO SUL', 4310462, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4818, 'IRAÍ', 4310504, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4819, 'ITAARA', 4310538, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4820, 'ITACURUBI', 4310553, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4821, 'ITAPUCA', 4310579, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4822, 'ITAQUI', 4310603, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4823, 'ITATI', 4310652, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4824, 'ITATIBA DO SUL', 4310702, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4825, 'IVORÁ', 4310751, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4826, 'IVOTI', 4310801, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4827, 'JABOTICABA', 4310850, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4828, 'JACUIZINHO', 4310876, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4829, 'JACUTINGA', 4310900, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4830, 'JAGUARÃO', 4311007, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4831, 'JAGUARI', 4311106, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4832, 'JAQUIRANA', 4311122, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4833, 'JARI', 4311130, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4834, 'JÓIA', 4311155, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4835, 'JÚLIO DE CASTILHOS', 4311205, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4836, 'LAGOA BONITA DO SUL', 4311239, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4837, 'LAGOÃO', 4311254, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4838, 'LAGOA DOS TRÊS CANTOS', 4311270, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4839, 'LAGOA VERMELHA', 4311304, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4840, 'LAJEADO', 4311403, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4841, 'LAJEADO DO BUGRE', 4311429, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4842, 'LAVRAS DO SUL', 4311502, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4843, 'LIBERATO SALZANO', 4311601, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4844, 'LINDOLFO COLLOR', 4311627, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4845, 'LINHA NOVA', 4311643, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4846, 'MACHADINHO', 4311700, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4847, 'MAÇAMBARÁ', 4311718, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4848, 'MAMPITUBA', 4311734, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4849, 'MANOEL VIANA', 4311759, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4850, 'MAQUINÉ', 4311775, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4851, 'MARATÁ', 4311791, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4852, 'MARAU', 4311809, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4853, 'MARCELINO RAMOS', 4311908, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4854, 'MARIANA PIMENTEL', 4311981, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4855, 'MARIANO MORO', 4312005, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4856, 'MARQUES DE SOUZA', 4312054, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4857, 'MATA', 4312104, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4858, 'MATO CASTELHANO', 4312138, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4859, 'MATO LEITÃO', 4312153, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4860, 'MATO QUEIMADO', 4312179, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4861, 'MAXIMILIANO DE ALMEIDA', 4312203, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4862, 'MINAS DO LEÃO', 4312252, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4863, 'MIRAGUAÍ', 4312302, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4864, 'MONTAURI', 4312351, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4865, 'MONTE ALEGRE DOS CAMPOS', 4312377, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4866, 'MONTE BELO DO SUL', 4312385, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4867, 'MONTENEGRO', 4312401, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4868, 'MORMAÇO', 4312427, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4869, 'MORRINHOS DO SUL', 4312443, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4870, 'MORRO REDONDO', 4312450, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4871, 'MORRO REUTER', 4312476, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4872, 'MOSTARDAS', 4312500, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4873, 'MUÇUM', 4312609, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4874, 'MUITOS CAPÕES', 4312617, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4875, 'MULITERNO', 4312625, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4876, 'NÃO-ME-TOQUE', 4312658, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4877, 'NICOLAU VERGUEIRO', 4312674, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4878, 'NONOAI', 4312708, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4879, 'NOVA ALVORADA', 4312757, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4880, 'NOVA ARAÇÁ', 4312807, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4881, 'NOVA BASSANO', 4312906, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4882, 'NOVA BOA VISTA', 4312955, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4883, 'NOVA BRÉSCIA', 4313003, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4884, 'NOVA CANDELÁRIA', 4313011, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4885, 'NOVA ESPERANÇA DO SUL', 4313037, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4886, 'NOVA HARTZ', 4313060, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4887, 'NOVA PÁDUA', 4313086, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4888, 'NOVA PALMA', 4313102, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4889, 'NOVA PETRÓPOLIS', 4313201, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4890, 'NOVA PRATA', 4313300, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4891, 'NOVA RAMADA', 4313334, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4892, 'NOVA ROMA DO SUL', 4313359, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4893, 'NOVA SANTA RITA', 4313375, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4894, 'NOVO CABRAIS', 4313391, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4895, 'NOVO HAMBURGO', 4313409, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4896, 'NOVO MACHADO', 4313425, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4897, 'NOVO TIRADENTES', 4313441, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4898, 'NOVO XINGU', 4313466, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4899, 'NOVO BARREIRO', 4313490, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4900, 'OSÓRIO', 4313508, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4901, 'PAIM FILHO', 4313607, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4902, 'PALMARES DO SUL', 4313656, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4903, 'PALMEIRA DAS MISSÕES', 4313706, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4904, 'PALMITINHO', 4313805, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4905, 'PANAMBI', 4313904, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4906, 'PANTANO GRANDE', 4313953, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4907, 'PARAÍ', 4314001, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4908, 'PARAÍSO DO SUL', 4314027, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4909, 'PARECI NOVO', 4314035, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4910, 'PAROBÉ', 4314050, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4911, 'PASSA SETE', 4314068, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4912, 'PASSO DO SOBRADO', 4314076, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4913, 'PASSO FUNDO', 4314100, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4914, 'PAULO BENTO', 4314134, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4915, 'PAVERAMA', 4314159, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4916, 'PEDRAS ALTAS', 4314175, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4917, 'PEDRO OSÓRIO', 4314209, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4918, 'PEJUÇARA', 4314308, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4919, 'PELOTAS', 4314407, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4920, 'PICADA CAFÉ', 4314423, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4921, 'PINHAL', 4314456, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4922, 'PINHAL DA SERRA', 4314464, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4923, 'PINHAL GRANDE', 4314472, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4924, 'PINHEIRINHO DO VALE', 4314498, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4925, 'PINHEIRO MACHADO', 4314506, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4926, 'PINTO BANDEIRA', 4314548, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4927, 'PIRAPÓ', 4314555, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4928, 'PIRATINI', 4314605, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4929, 'PLANALTO', 4314704, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4930, 'POÇO DAS ANTAS', 4314753, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4931, 'PONTÃO', 4314779, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4932, 'PONTE PRETA', 4314787, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4933, 'PORTÃO', 4314803, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4934, 'PORTO ALEGRE', 4314902, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4935, 'PORTO LUCENA', 4315008, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4936, 'PORTO MAUÁ', 4315057, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4937, 'PORTO VERA CRUZ', 4315073, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4938, 'PORTO XAVIER', 4315107, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4939, 'POUSO NOVO', 4315131, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4940, 'PRESIDENTE LUCENA', 4315149, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4941, 'PROGRESSO', 4315156, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4942, 'PROTÁSIO ALVES', 4315172, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4943, 'PUTINGA', 4315206, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4944, 'QUARAÍ', 4315305, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4945, 'QUATRO IRMÃOS', 4315313, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4946, 'QUEVEDOS', 4315321, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4947, 'QUINZE DE NOVEMBRO', 4315354, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4948, 'REDENTORA', 4315404, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4949, 'RELVADO', 4315453, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4950, 'RESTINGA SECA', 4315503, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4951, 'RIO DOS ÍNDIOS', 4315552, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4952, 'RIO GRANDE', 4315602, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4953, 'RIO PARDO', 4315701, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4954, 'RIOZINHO', 4315750, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4955, 'ROCA SALES', 4315800, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4956, 'RODEIO BONITO', 4315909, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4957, 'ROLADOR', 4315958, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4958, 'ROLANTE', 4316006, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4959, 'RONDA ALTA', 4316105, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4960, 'RONDINHA', 4316204, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4961, 'ROQUE GONZALES', 4316303, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4962, 'ROSÁRIO DO SUL', 4316402, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4963, 'SAGRADA FAMÍLIA', 4316428, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4964, 'SALDANHA MARINHO', 4316436, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4965, 'SALTO DO JACUÍ', 4316451, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4966, 'SALVADOR DAS MISSÕES', 4316477, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4967, 'SALVADOR DO SUL', 4316501, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4968, 'SANANDUVA', 4316600, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4969, 'SANTA BÁRBARA DO SUL', 4316709, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4970, 'SANTA CECÍLIA DO SUL', 4316733, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4971, 'SANTA CLARA DO SUL', 4316758, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4972, 'SANTA CRUZ DO SUL', 4316808, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4973, 'SANTA MARIA', 4316907, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4974, 'SANTA MARIA DO HERVAL', 4316956, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4975, 'SANTA MARGARIDA DO SUL', 4316972, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4976, 'SANTANA DA BOA VISTA', 4317004, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4977, 'SANT\'ANA DO LIVRAMENTO', 4317103, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4978, 'SANTA ROSA', 4317202, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4979, 'SANTA TEREZA', 4317251, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4980, 'SANTA VITÓRIA DO PALMAR', 4317301, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4981, 'SANTIAGO', 4317400, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4982, 'SANTO ÂNGELO', 4317509, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4983, 'SANTO ANTÔNIO DO PALMA', 4317558, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4984, 'SANTO ANTÔNIO DA PATRULHA', 4317608, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4985, 'SANTO ANTÔNIO DAS MISSÕES', 4317707, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4986, 'SANTO ANTÔNIO DO PLANALTO', 4317756, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4987, 'SANTO AUGUSTO', 4317806, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4988, 'SANTO CRISTO', 4317905, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4989, 'SANTO EXPEDITO DO SUL', 4317954, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4990, 'SÃO BORJA', 4318002, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4991, 'SÃO DOMINGOS DO SUL', 4318051, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4992, 'SÃO FRANCISCO DE ASSIS', 4318101, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4993, 'SÃO FRANCISCO DE PAULA', 4318200, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4994, 'SÃO GABRIEL', 4318309, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4995, 'SÃO JERÔNIMO', 4318408, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4996, 'SÃO JOÃO DA URTIGA', 4318424, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4997, 'SÃO JOÃO DO POLÊSINE', 4318432, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4998, 'SÃO JORGE', 4318440, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (4999, 'SÃO JOSÉ DAS MISSÕES', 4318457, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5000, 'SÃO JOSÉ DO HERVAL', 4318465, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5001, 'SÃO JOSÉ DO HORTÊNCIO', 4318481, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5002, 'SÃO JOSÉ DO INHACORÁ', 4318499, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5003, 'SÃO JOSÉ DO NORTE', 4318507, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5004, 'SÃO JOSÉ DO OURO', 4318606, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5005, 'SÃO JOSÉ DO SUL', 4318614, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5006, 'SÃO JOSÉ DOS AUSENTES', 4318622, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5007, 'SÃO LEOPOLDO', 4318705, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5008, 'SÃO LOURENÇO DO SUL', 4318804, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5009, 'SÃO LUIZ GONZAGA', 4318903, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5010, 'SÃO MARCOS', 4319000, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5011, 'SÃO MARTINHO', 4319109, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5012, 'SÃO MARTINHO DA SERRA', 4319125, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5013, 'SÃO MIGUEL DAS MISSÕES', 4319158, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5014, 'SÃO NICOLAU', 4319208, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5015, 'SÃO PAULO DAS MISSÕES', 4319307, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5016, 'SÃO PEDRO DA SERRA', 4319356, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5017, 'SÃO PEDRO DAS MISSÕES', 4319364, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5018, 'SÃO PEDRO DO BUTIÁ', 4319372, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5019, 'SÃO PEDRO DO SUL', 4319406, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5020, 'SÃO SEBASTIÃO DO CAÍ', 4319505, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5021, 'SÃO SEPÉ', 4319604, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5022, 'SÃO VALENTIM', 4319703, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5023, 'SÃO VALENTIM DO SUL', 4319711, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5024, 'SÃO VALÉRIO DO SUL', 4319737, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5025, 'SÃO VENDELINO', 4319752, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5026, 'SÃO VICENTE DO SUL', 4319802, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5027, 'SAPIRANGA', 4319901, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5028, 'SAPUCAIA DO SUL', 4320008, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5029, 'SARANDI', 4320107, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5030, 'SEBERI', 4320206, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5031, 'SEDE NOVA', 4320230, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5032, 'SEGREDO', 4320263, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5033, 'SELBACH', 4320305, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5034, 'SENADOR SALGADO FILHO', 4320321, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5035, 'SENTINELA DO SUL', 4320354, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5036, 'SERAFINA CORRÊA', 4320404, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5037, 'SÉRIO', 4320453, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5038, 'SERTÃO', 4320503, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5039, 'SERTÃO SANTANA', 4320552, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5040, 'SETE DE SETEMBRO', 4320578, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5041, 'SEVERIANO DE ALMEIDA', 4320602, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5042, 'SILVEIRA MARTINS', 4320651, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5043, 'SINIMBU', 4320677, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5044, 'SOBRADINHO', 4320701, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5045, 'SOLEDADE', 4320800, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5046, 'TABAÍ', 4320859, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5047, 'TAPEJARA', 4320909, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5048, 'TAPERA', 4321006, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5049, 'TAPES', 4321105, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5050, 'TAQUARA', 4321204, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5051, 'TAQUARI', 4321303, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5052, 'TAQUARUÇU DO SUL', 4321329, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5053, 'TAVARES', 4321352, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5054, 'TENENTE PORTELA', 4321402, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5055, 'TERRA DE AREIA', 4321436, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5056, 'TEUTÔNIA', 4321451, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5057, 'TIO HUGO', 4321469, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5058, 'TIRADENTES DO SUL', 4321477, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5059, 'TOROPI', 4321493, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5060, 'TORRES', 4321501, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5061, 'TRAMANDAÍ', 4321600, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5062, 'TRAVESSEIRO', 4321626, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5063, 'TRÊS ARROIOS', 4321634, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5064, 'TRÊS CACHOEIRAS', 4321667, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5065, 'TRÊS COROAS', 4321709, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5066, 'TRÊS DE MAIO', 4321808, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5067, 'TRÊS FORQUILHAS', 4321832, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5068, 'TRÊS PALMEIRAS', 4321857, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5069, 'TRÊS PASSOS', 4321907, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5070, 'TRINDADE DO SUL', 4321956, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5071, 'TRIUNFO', 4322004, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5072, 'TUCUNDUVA', 4322103, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5073, 'TUNAS', 4322152, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5074, 'TUPANCI DO SUL', 4322186, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5075, 'TUPANCIRETÃ', 4322202, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5076, 'TUPANDI', 4322251, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5077, 'TUPARENDI', 4322301, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5078, 'TURUÇU', 4322327, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5079, 'UBIRETAMA', 4322343, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5080, 'UNIÃO DA SERRA', 4322350, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5081, 'UNISTALDA', 4322376, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5082, 'URUGUAIANA', 4322400, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5083, 'VACARIA', 4322509, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5084, 'VALE VERDE', 4322525, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5085, 'VALE DO SOL', 4322533, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5086, 'VALE REAL', 4322541, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5087, 'VANINI', 4322558, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5088, 'VENÂNCIO AIRES', 4322608, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5089, 'VERA CRUZ', 4322707, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5090, 'VERANÓPOLIS', 4322806, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5091, 'VESPASIANO CORREA', 4322855, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5092, 'VIADUTOS', 4322905, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5093, 'VIAMÃO', 4323002, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5094, 'VICENTE DUTRA', 4323101, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5095, 'VICTOR GRAEFF', 4323200, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5096, 'VILA FLORES', 4323309, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5097, 'VILA LÂNGARO', 4323358, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5098, 'VILA MARIA', 4323408, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5099, 'VILA NOVA DO SUL', 4323457, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5100, 'VISTA ALEGRE', 4323507, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5101, 'VISTA ALEGRE DO PRATA', 4323606, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5102, 'VISTA GAÚCHA', 4323705, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5103, 'VITÓRIA DAS MISSÕES', 4323754, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5104, 'WESTFALIA', 4323770, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5105, 'XANGRI-LÁ', 4323804, 23);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5106, 'ÁGUA CLARA', 5000203, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5107, 'ALCINÓPOLIS', 5000252, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5108, 'AMAMBAI', 5000609, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5109, 'ANASTÁCIO', 5000708, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5110, 'ANAURILÂNDIA', 5000807, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5111, 'ANGÉLICA', 5000856, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5112, 'ANTÔNIO JOÃO', 5000906, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5113, 'APARECIDA DO TABOADO', 5001003, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5114, 'AQUIDAUANA', 5001102, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5115, 'ARAL MOREIRA', 5001243, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5116, 'BANDEIRANTES', 5001508, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5117, 'BATAGUASSU', 5001904, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5118, 'BATAYPORÃ', 5002001, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5119, 'BELA VISTA', 5002100, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5120, 'BODOQUENA', 5002159, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5121, 'BONITO', 5002209, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5122, 'BRASILÂNDIA', 5002308, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5123, 'CAARAPÓ', 5002407, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5124, 'CAMAPUÃ', 5002605, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5125, 'CAMPO GRANDE', 5002704, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5126, 'CARACOL', 5002803, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5127, 'CASSILÂNDIA', 5002902, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5128, 'CHAPADÃO DO SUL', 5002951, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5129, 'CORGUINHO', 5003108, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5130, 'CORONEL SAPUCAIA', 5003157, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5131, 'CORUMBÁ', 5003207, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5132, 'COSTA RICA', 5003256, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5133, 'COXIM', 5003306, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5134, 'DEODÁPOLIS', 5003454, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5135, 'DOIS IRMÃOS DO BURITI', 5003488, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5136, 'DOURADINA', 5003504, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5137, 'DOURADOS', 5003702, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5138, 'ELDORADO', 5003751, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5139, 'FÁTIMA DO SUL', 5003801, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5140, 'FIGUEIRÃO', 5003900, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5141, 'GLÓRIA DE DOURADOS', 5004007, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5142, 'GUIA LOPES DA LAGUNA', 5004106, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5143, 'IGUATEMI', 5004304, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5144, 'INOCÊNCIA', 5004403, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5145, 'ITAPORÃ', 5004502, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5146, 'ITAQUIRAÍ', 5004601, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5147, 'IVINHEMA', 5004700, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5148, 'JAPORÃ', 5004809, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5149, 'JARAGUARI', 5004908, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5150, 'JARDIM', 5005004, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5151, 'JATEÍ', 5005103, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5152, 'JUTI', 5005152, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5153, 'LADÁRIO', 5005202, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5154, 'LAGUNA CARAPÃ', 5005251, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5155, 'MARACAJU', 5005400, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5156, 'MIRANDA', 5005608, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5157, 'MUNDO NOVO', 5005681, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5158, 'NAVIRAÍ', 5005707, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5159, 'NIOAQUE', 5005806, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5160, 'NOVA ALVORADA DO SUL', 5006002, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5161, 'NOVA ANDRADINA', 5006200, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5162, 'NOVO HORIZONTE DO SUL', 5006259, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5163, 'PARAÍSO DAS ÁGUAS', 5006275, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5164, 'PARANAÍBA', 5006309, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5165, 'PARANHOS', 5006358, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5166, 'PEDRO GOMES', 5006408, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5167, 'PONTA PORÃ', 5006606, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5168, 'PORTO MURTINHO', 5006903, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5169, 'RIBAS DO RIO PARDO', 5007109, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5170, 'RIO BRILHANTE', 5007208, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5171, 'RIO NEGRO', 5007307, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5172, 'RIO VERDE DE MATO GROSSO', 5007406, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5173, 'ROCHEDO', 5007505, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5174, 'SANTA RITA DO PARDO', 5007554, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5175, 'SÃO GABRIEL DO OESTE', 5007695, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5176, 'SETE QUEDAS', 5007703, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5177, 'SELVÍRIA', 5007802, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5178, 'SIDROLÂNDIA', 5007901, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5179, 'SONORA', 5007935, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5180, 'TACURU', 5007950, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5181, 'TAQUARUSSU', 5007976, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5182, 'TERENOS', 5008008, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5183, 'TRÊS LAGOAS', 5008305, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5184, 'VICENTINA', 5008404, 24);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5185, 'ACORIZAL', 5100102, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5186, 'ÁGUA BOA', 5100201, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5187, 'ALTA FLORESTA', 5100250, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5188, 'ALTO ARAGUAIA', 5100300, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5189, 'ALTO BOA VISTA', 5100359, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5190, 'ALTO GARÇAS', 5100409, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5191, 'ALTO PARAGUAI', 5100508, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5192, 'ALTO TAQUARI', 5100607, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5193, 'APIACÁS', 5100805, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5194, 'ARAGUAIANA', 5101001, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5195, 'ARAGUAINHA', 5101209, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5196, 'ARAPUTANGA', 5101258, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5197, 'ARENÁPOLIS', 5101308, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5198, 'ARIPUANÃ', 5101407, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5199, 'BARÃO DE MELGAÇO', 5101605, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5200, 'BARRA DO BUGRES', 5101704, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5201, 'BARRA DO GARÇAS', 5101803, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5202, 'BOM JESUS DO ARAGUAIA', 5101852, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5203, 'BRASNORTE', 5101902, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5204, 'CÁCERES', 5102504, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5205, 'CAMPINÁPOLIS', 5102603, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5206, 'CAMPO NOVO DO PARECIS', 5102637, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5207, 'CAMPO VERDE', 5102678, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5208, 'CAMPOS DE JÚLIO', 5102686, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5209, 'CANABRAVA DO NORTE', 5102694, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5210, 'CANARANA', 5102702, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5211, 'CARLINDA', 5102793, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5212, 'CASTANHEIRA', 5102850, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5213, 'CHAPADA DOS GUIMARÃES', 5103007, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5214, 'CLÁUDIA', 5103056, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5215, 'COCALINHO', 5103106, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5216, 'COLÍDER', 5103205, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5217, 'COLNIZA', 5103254, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5218, 'COMODORO', 5103304, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5219, 'CONFRESA', 5103353, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5220, 'CONQUISTA D\'OESTE', 5103361, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5221, 'COTRIGUAÇU', 5103379, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5222, 'CUIABÁ', 5103403, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5223, 'CURVELÂNDIA', 5103437, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5224, 'DENISE', 5103452, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5225, 'DIAMANTINO', 5103502, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5226, 'DOM AQUINO', 5103601, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5227, 'FELIZ NATAL', 5103700, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5228, 'FIGUEIRÓPOLIS D\'OESTE', 5103809, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5229, 'GAÚCHA DO NORTE', 5103858, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5230, 'GENERAL CARNEIRO', 5103908, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5231, 'GLÓRIA D\'OESTE', 5103957, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5232, 'GUARANTÃ DO NORTE', 5104104, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5233, 'GUIRATINGA', 5104203, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5234, 'INDIAVAÍ', 5104500, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5235, 'IPIRANGA DO NORTE', 5104526, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5236, 'ITANHANGÁ', 5104542, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5237, 'ITAÚBA', 5104559, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5238, 'ITIQUIRA', 5104609, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5239, 'JACIARA', 5104807, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5240, 'JANGADA', 5104906, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5241, 'JAURU', 5105002, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5242, 'JUARA', 5105101, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5243, 'JUÍNA', 5105150, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5244, 'JURUENA', 5105176, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5245, 'JUSCIMEIRA', 5105200, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5246, 'LAMBARI D\'OESTE', 5105234, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5247, 'LUCAS DO RIO VERDE', 5105259, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5248, 'LUCIARA', 5105309, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5249, 'VILA BELA DA SANTÍSSIMA TRINDADE', 5105507, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5250, 'MARCELÂNDIA', 5105580, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5251, 'MATUPÁ', 5105606, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5252, 'MIRASSOL D\'OESTE', 5105622, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5253, 'NOBRES', 5105903, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5254, 'NORTELÂNDIA', 5106000, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5255, 'NOSSA SENHORA DO LIVRAMENTO', 5106109, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5256, 'NOVA BANDEIRANTES', 5106158, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5257, 'NOVA NAZARÉ', 5106174, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5258, 'NOVA LACERDA', 5106182, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5259, 'NOVA SANTA HELENA', 5106190, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5260, 'NOVA BRASILÂNDIA', 5106208, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5261, 'NOVA CANAÃ DO NORTE', 5106216, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5262, 'NOVA MUTUM', 5106224, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5263, 'NOVA OLÍMPIA', 5106232, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5264, 'NOVA UBIRATÃ', 5106240, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5265, 'NOVA XAVANTINA', 5106257, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5266, 'NOVO MUNDO', 5106265, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5267, 'NOVO HORIZONTE DO NORTE', 5106273, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5268, 'NOVO SÃO JOAQUIM', 5106281, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5269, 'PARANAÍTA', 5106299, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5270, 'PARANATINGA', 5106307, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5271, 'NOVO SANTO ANTÔNIO', 5106315, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5272, 'PEDRA PRETA', 5106372, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5273, 'PEIXOTO DE AZEVEDO', 5106422, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5274, 'PLANALTO DA SERRA', 5106455, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5275, 'POCONÉ', 5106505, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5276, 'PONTAL DO ARAGUAIA', 5106653, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5277, 'PONTE BRANCA', 5106703, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5278, 'PONTES E LACERDA', 5106752, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5279, 'PORTO ALEGRE DO NORTE', 5106778, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5280, 'PORTO DOS GAÚCHOS', 5106802, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5281, 'PORTO ESPERIDIÃO', 5106828, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5282, 'PORTO ESTRELA', 5106851, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5283, 'POXORÉU', 5107008, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5284, 'PRIMAVERA DO LESTE', 5107040, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5285, 'QUERÊNCIA', 5107065, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5286, 'SÃO JOSÉ DOS QUATRO MARCOS', 5107107, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5287, 'RESERVA DO CABAÇAL', 5107156, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5288, 'RIBEIRÃO CASCALHEIRA', 5107180, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5289, 'RIBEIRÃOZINHO', 5107198, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5290, 'RIO BRANCO', 5107206, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5291, 'SANTA CARMEM', 5107248, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5292, 'SANTO AFONSO', 5107263, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5293, 'SÃO JOSÉ DO POVO', 5107297, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5294, 'SÃO JOSÉ DO RIO CLARO', 5107305, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5295, 'SÃO JOSÉ DO XINGU', 5107354, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5296, 'SÃO PEDRO DA CIPA', 5107404, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5297, 'RONDOLÂNDIA', 5107578, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5298, 'RONDONÓPOLIS', 5107602, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5299, 'ROSÁRIO OESTE', 5107701, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5300, 'SANTA CRUZ DO XINGU', 5107743, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5301, 'SALTO DO CÉU', 5107750, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5302, 'SANTA RITA DO TRIVELATO', 5107768, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5303, 'SANTA TEREZINHA', 5107776, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5304, 'SANTO ANTÔNIO DO LESTE', 5107792, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5305, 'SANTO ANTÔNIO DO LEVERGER', 5107800, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5306, 'SÃO FÉLIX DO ARAGUAIA', 5107859, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5307, 'SAPEZAL', 5107875, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5308, 'SERRA NOVA DOURADA', 5107883, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5309, 'SINOP', 5107909, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5310, 'SORRISO', 5107925, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5311, 'TABAPORÃ', 5107941, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5312, 'TANGARÁ DA SERRA', 5107958, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5313, 'TAPURAH', 5108006, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5314, 'TERRA NOVA DO NORTE', 5108055, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5315, 'TESOURO', 5108105, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5316, 'TORIXORÉU', 5108204, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5317, 'UNIÃO DO SUL', 5108303, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5318, 'VALE DE SÃO DOMINGOS', 5108352, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5319, 'VÁRZEA GRANDE', 5108402, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5320, 'VERA', 5108501, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5321, 'VILA RICA', 5108600, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5322, 'NOVA GUARITA', 5108808, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5323, 'NOVA MARILÂNDIA', 5108857, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5324, 'NOVA MARINGÁ', 5108907, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5325, 'NOVA MONTE VERDE', 5108956, 25);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5326, 'ABADIA DE GOIÁS', 5200050, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5327, 'ABADIÂNIA', 5200100, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5328, 'ACREÚNA', 5200134, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5329, 'ADELÂNDIA', 5200159, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5330, 'ÁGUA FRIA DE GOIÁS', 5200175, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5331, 'ÁGUA LIMPA', 5200209, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5332, 'ÁGUAS LINDAS DE GOIÁS', 5200258, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5333, 'ALEXÂNIA', 5200308, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5334, 'ALOÂNDIA', 5200506, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5335, 'ALTO HORIZONTE', 5200555, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5336, 'ALTO PARAÍSO DE GOIÁS', 5200605, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5337, 'ALVORADA DO NORTE', 5200803, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5338, 'AMARALINA', 5200829, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5339, 'AMERICANO DO BRASIL', 5200852, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5340, 'AMORINÓPOLIS', 5200902, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5341, 'ANÁPOLIS', 5201108, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5342, 'ANHANGUERA', 5201207, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5343, 'ANICUNS', 5201306, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5344, 'APARECIDA DE GOIÂNIA', 5201405, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5345, 'APARECIDA DO RIO DOCE', 5201454, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5346, 'APORÉ', 5201504, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5347, 'ARAÇU', 5201603, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5348, 'ARAGARÇAS', 5201702, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5349, 'ARAGOIÂNIA', 5201801, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5350, 'ARAGUAPAZ', 5202155, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5351, 'ARENÓPOLIS', 5202353, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5352, 'ARUANÃ', 5202502, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5353, 'AURILÂNDIA', 5202601, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5354, 'AVELINÓPOLIS', 5202809, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5355, 'BALIZA', 5203104, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5356, 'BARRO ALTO', 5203203, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5357, 'BELA VISTA DE GOIÁS', 5203302, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5358, 'BOM JARDIM DE GOIÁS', 5203401, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5359, 'BOM JESUS DE GOIÁS', 5203500, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5360, 'BONFINÓPOLIS', 5203559, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5361, 'BONÓPOLIS', 5203575, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5362, 'BRAZABRANTES', 5203609, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5363, 'BRITÂNIA', 5203807, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5364, 'BURITI ALEGRE', 5203906, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5365, 'BURITI DE GOIÁS', 5203939, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5366, 'BURITINÓPOLIS', 5203962, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5367, 'CABECEIRAS', 5204003, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5368, 'CACHOEIRA ALTA', 5204102, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5369, 'CACHOEIRA DE GOIÁS', 5204201, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5370, 'CACHOEIRA DOURADA', 5204250, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5371, 'CAÇU', 5204300, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5372, 'CAIAPÔNIA', 5204409, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5373, 'CALDAS NOVAS', 5204508, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5374, 'CALDAZINHA', 5204557, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5375, 'CAMPESTRE DE GOIÁS', 5204607, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5376, 'CAMPINAÇU', 5204656, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5377, 'CAMPINORTE', 5204706, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5378, 'CAMPO ALEGRE DE GOIÁS', 5204805, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5379, 'CAMPO LIMPO DE GOIÁS', 5204854, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5380, 'CAMPOS BELOS', 5204904, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5381, 'CAMPOS VERDES', 5204953, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5382, 'CARMO DO RIO VERDE', 5205000, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5383, 'CASTELÂNDIA', 5205059, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5384, 'CATALÃO', 5205109, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5385, 'CATURAÍ', 5205208, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5386, 'CAVALCANTE', 5205307, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5387, 'CERES', 5205406, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5388, 'CEZARINA', 5205455, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5389, 'CHAPADÃO DO CÉU', 5205471, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5390, 'CIDADE OCIDENTAL', 5205497, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5391, 'COCALZINHO DE GOIÁS', 5205513, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5392, 'COLINAS DO SUL', 5205521, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5393, 'CÓRREGO DO OURO', 5205703, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5394, 'CORUMBÁ DE GOIÁS', 5205802, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5395, 'CORUMBAÍBA', 5205901, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5396, 'CRISTALINA', 5206206, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5397, 'CRISTIANÓPOLIS', 5206305, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5398, 'CRIXÁS', 5206404, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5399, 'CROMÍNIA', 5206503, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5400, 'CUMARI', 5206602, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5401, 'DAMIANÓPOLIS', 5206701, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5402, 'DAMOLÂNDIA', 5206800, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5403, 'DAVINÓPOLIS', 5206909, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5404, 'DIORAMA', 5207105, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5405, 'DOVERLÂNDIA', 5207253, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5406, 'EDEALINA', 5207352, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5407, 'EDÉIA', 5207402, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5408, 'ESTRELA DO NORTE', 5207501, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5409, 'FAINA', 5207535, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5410, 'FAZENDA NOVA', 5207600, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5411, 'FIRMINÓPOLIS', 5207808, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5412, 'FLORES DE GOIÁS', 5207907, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5413, 'FORMOSA', 5208004, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5414, 'FORMOSO', 5208103, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5415, 'GAMELEIRA DE GOIÁS', 5208152, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5416, 'DIVINÓPOLIS DE GOIÁS', 5208301, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5417, 'GOIANÁPOLIS', 5208400, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5418, 'GOIANDIRA', 5208509, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5419, 'GOIANÉSIA', 5208608, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5420, 'GOIÂNIA', 5208707, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5421, 'GOIANIRA', 5208806, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5422, 'GOIÁS', 5208905, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5423, 'GOIATUBA', 5209101, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5424, 'GOUVELÂNDIA', 5209150, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5425, 'GUAPÓ', 5209200, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5426, 'GUARAÍTA', 5209291, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5427, 'GUARANI DE GOIÁS', 5209408, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5428, 'GUARINOS', 5209457, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5429, 'HEITORAÍ', 5209606, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5430, 'HIDROLÂNDIA', 5209705, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5431, 'HIDROLINA', 5209804, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5432, 'IACIARA', 5209903, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5433, 'INACIOLÂNDIA', 5209937, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5434, 'INDIARA', 5209952, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5435, 'INHUMAS', 5210000, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5436, 'IPAMERI', 5210109, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5437, 'IPIRANGA DE GOIÁS', 5210158, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5438, 'IPORÁ', 5210208, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5439, 'ISRAELÂNDIA', 5210307, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5440, 'ITABERAÍ', 5210406, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5441, 'ITAGUARI', 5210562, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5442, 'ITAGUARU', 5210604, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5443, 'ITAJÁ', 5210802, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5444, 'ITAPACI', 5210901, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5445, 'ITAPIRAPUÃ', 5211008, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5446, 'ITAPURANGA', 5211206, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5447, 'ITARUMÃ', 5211305, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5448, 'ITAUÇU', 5211404, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5449, 'ITUMBIARA', 5211503, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5450, 'IVOLÂNDIA', 5211602, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5451, 'JANDAIA', 5211701, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5452, 'JARAGUÁ', 5211800, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5453, 'JATAÍ', 5211909, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5454, 'JAUPACI', 5212006, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5455, 'JESÚPOLIS', 5212055, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5456, 'JOVIÂNIA', 5212105, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5457, 'JUSSARA', 5212204, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5458, 'LAGOA SANTA', 5212253, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5459, 'LEOPOLDO DE BULHÕES', 5212303, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5460, 'LUZIÂNIA', 5212501, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5461, 'MAIRIPOTABA', 5212600, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5462, 'MAMBAÍ', 5212709, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5463, 'MARA ROSA', 5212808, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5464, 'MARZAGÃO', 5212907, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5465, 'MATRINCHÃ', 5212956, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5466, 'MAURILÂNDIA', 5213004, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5467, 'MIMOSO DE GOIÁS', 5213053, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5468, 'MINAÇU', 5213087, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5469, 'MINEIROS', 5213103, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5470, 'MOIPORÁ', 5213400, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5471, 'MONTE ALEGRE DE GOIÁS', 5213509, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5472, 'MONTES CLAROS DE GOIÁS', 5213707, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5473, 'MONTIVIDIU', 5213756, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5474, 'MONTIVIDIU DO NORTE', 5213772, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5475, 'MORRINHOS', 5213806, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5476, 'MORRO AGUDO DE GOIÁS', 5213855, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5477, 'MOSSÂMEDES', 5213905, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5478, 'MOZARLÂNDIA', 5214002, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5479, 'MUNDO NOVO', 5214051, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5480, 'MUTUNÓPOLIS', 5214101, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5481, 'NAZÁRIO', 5214408, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5482, 'NERÓPOLIS', 5214507, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5483, 'NIQUELÂNDIA', 5214606, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5484, 'NOVA AMÉRICA', 5214705, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5485, 'NOVA AURORA', 5214804, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5486, 'NOVA CRIXÁS', 5214838, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5487, 'NOVA GLÓRIA', 5214861, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5488, 'NOVA IGUAÇU DE GOIÁS', 5214879, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5489, 'NOVA ROMA', 5214903, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5490, 'NOVA VENEZA', 5215009, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5491, 'NOVO BRASIL', 5215207, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5492, 'NOVO GAMA', 5215231, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5493, 'NOVO PLANALTO', 5215256, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5494, 'ORIZONA', 5215306, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5495, 'OURO VERDE DE GOIÁS', 5215405, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5496, 'OUVIDOR', 5215504, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5497, 'PADRE BERNARDO', 5215603, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5498, 'PALESTINA DE GOIÁS', 5215652, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5499, 'PALMEIRAS DE GOIÁS', 5215702, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5500, 'PALMELO', 5215801, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5501, 'PALMINÓPOLIS', 5215900, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5502, 'PANAMÁ', 5216007, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5503, 'PARANAIGUARA', 5216304, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5504, 'PARAÚNA', 5216403, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5505, 'PEROLÂNDIA', 5216452, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5506, 'PETROLINA DE GOIÁS', 5216809, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5507, 'PILAR DE GOIÁS', 5216908, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5508, 'PIRACANJUBA', 5217104, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5509, 'PIRANHAS', 5217203, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5510, 'PIRENÓPOLIS', 5217302, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5511, 'PIRES DO RIO', 5217401, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5512, 'PLANALTINA', 5217609, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5513, 'PONTALINA', 5217708, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5514, 'PORANGATU', 5218003, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5515, 'PORTEIRÃO', 5218052, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5516, 'PORTELÂNDIA', 5218102, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5517, 'POSSE', 5218300, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5518, 'PROFESSOR JAMIL', 5218391, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5519, 'QUIRINÓPOLIS', 5218508, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5520, 'RIALMA', 5218607, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5521, 'RIANÁPOLIS', 5218706, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5522, 'RIO QUENTE', 5218789, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5523, 'RIO VERDE', 5218805, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5524, 'RUBIATABA', 5218904, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5525, 'SANCLERLÂNDIA', 5219001, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5526, 'SANTA BÁRBARA DE GOIÁS', 5219100, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5527, 'SANTA CRUZ DE GOIÁS', 5219209, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5528, 'SANTA FÉ DE GOIÁS', 5219258, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5529, 'SANTA HELENA DE GOIÁS', 5219308, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5530, 'SANTA ISABEL', 5219357, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5531, 'SANTA RITA DO ARAGUAIA', 5219407, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5532, 'SANTA RITA DO NOVO DESTINO', 5219456, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5533, 'SANTA ROSA DE GOIÁS', 5219506, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5534, 'SANTA TEREZA DE GOIÁS', 5219605, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5535, 'SANTA TEREZINHA DE GOIÁS', 5219704, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5536, 'SANTO ANTÔNIO DA BARRA', 5219712, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5537, 'SANTO ANTÔNIO DE GOIÁS', 5219738, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5538, 'SANTO ANTÔNIO DO DESCOBERTO', 5219753, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5539, 'SÃO DOMINGOS', 5219803, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5540, 'SÃO FRANCISCO DE GOIÁS', 5219902, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5541, 'SÃO JOÃO D\'ALIANÇA', 5220009, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5542, 'SÃO JOÃO DA PARAÚNA', 5220058, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5543, 'SÃO LUÍS DE MONTES BELOS', 5220108, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5544, 'SÃO LUÍZ DO NORTE', 5220157, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5545, 'SÃO MIGUEL DO ARAGUAIA', 5220207, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5546, 'SÃO MIGUEL DO PASSA QUATRO', 5220264, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5547, 'SÃO PATRÍCIO', 5220280, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5548, 'SÃO SIMÃO', 5220405, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5549, 'SENADOR CANEDO', 5220454, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5550, 'SERRANÓPOLIS', 5220504, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5551, 'SILVÂNIA', 5220603, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5552, 'SIMOLÂNDIA', 5220686, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5553, 'SÍTIO D\'ABADIA', 5220702, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5554, 'TAQUARAL DE GOIÁS', 5221007, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5555, 'TERESINA DE GOIÁS', 5221080, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5556, 'TEREZÓPOLIS DE GOIÁS', 5221197, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5557, 'TRÊS RANCHOS', 5221304, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5558, 'TRINDADE', 5221403, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5559, 'TROMBAS', 5221452, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5560, 'TURVÂNIA', 5221502, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5561, 'TURVELÂNDIA', 5221551, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5562, 'UIRAPURU', 5221577, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5563, 'URUAÇU', 5221601, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5564, 'URUANA', 5221700, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5565, 'URUTAÍ', 5221809, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5566, 'VALPARAÍSO DE GOIÁS', 5221858, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5567, 'VARJÃO', 5221908, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5568, 'VIANÓPOLIS', 5222005, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5569, 'VICENTINÓPOLIS', 5222054, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5570, 'VILA BOA', 5222203, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5571, 'VILA PROPÍCIO', 5222302, 26);
-INSERT INTO `master-pedidos`.`Cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES (5572, 'BRASÍLIA', 5300108, 27);
-
-COMMIT;
-
-
--- -----------------------------------------------------
--- Data for table `master-pedidos`.`CategoriaTelefone`
--- -----------------------------------------------------
-START TRANSACTION;
-USE `master-pedidos`;
-INSERT INTO `master-pedidos`.`CategoriaTelefone` (`IdCategoriaTelefone`, `Nome`, `Descricao`) VALUES (1, 'Padrão', NULL);
-INSERT INTO `master-pedidos`.`CategoriaTelefone` (`IdCategoriaTelefone`, `Nome`, `Descricao`) VALUES (2, 'Comercial', NULL);
-INSERT INTO `master-pedidos`.`CategoriaTelefone` (`IdCategoriaTelefone`, `Nome`, `Descricao`) VALUES (3, 'Residencial', NULL);
-INSERT INTO `master-pedidos`.`CategoriaTelefone` (`IdCategoriaTelefone`, `Nome`, `Descricao`) VALUES (4, 'Pessoal', NULL);
-
-COMMIT;
-
-
--- -----------------------------------------------------
--- Data for table `master-pedidos`.`CategoriaEmail`
--- -----------------------------------------------------
-START TRANSACTION;
-USE `master-pedidos`;
-INSERT INTO `master-pedidos`.`CategoriaEmail` (`IdCategoriaEmail`, `Nome`, `Descricao`) VALUES (1, 'Padrão', NULL);
-INSERT INTO `master-pedidos`.`CategoriaEmail` (`IdCategoriaEmail`, `Nome`, `Descricao`) VALUES (2, 'Cobrança', NULL);
-INSERT INTO `master-pedidos`.`CategoriaEmail` (`IdCategoriaEmail`, `Nome`, `Descricao`) VALUES (3, 'Nota Fiscal', NULL);
-INSERT INTO `master-pedidos`.`CategoriaEmail` (`IdCategoriaEmail`, `Nome`, `Descricao`) VALUES (4, 'Financeiro', NULL);
-
-COMMIT;
-
-
--- -----------------------------------------------------
--- Data for table `master-pedidos`.`Perfil`
--- -----------------------------------------------------
-START TRANSACTION;
-USE `master-pedidos`;
-INSERT INTO `master-pedidos`.`Perfil` (`IdPerfil`, `Nome`) VALUES (1, 'Administrador');
-INSERT INTO `master-pedidos`.`Perfil` (`IdPerfil`, `Nome`) VALUES (2, 'Gerente');
-INSERT INTO `master-pedidos`.`Perfil` (`IdPerfil`, `Nome`) VALUES (3, 'Vendedor');
-INSERT INTO `master-pedidos`.`Perfil` (`IdPerfil`, `Nome`) VALUES (4, 'Cliente');
-
-COMMIT;
-
-
--- -----------------------------------------------------
--- Data for table `master-pedidos`.`Usuario`
--- -----------------------------------------------------
-START TRANSACTION;
-USE `master-pedidos`;
-INSERT INTO `master-pedidos`.`Usuario` (`IdUsuario`, `IdPessoa`, `Login`, `Senha`, `IdPerfil`) VALUES (1, 1, 'Admin', 'Admin', 1);
-
-COMMIT;
-
-
--- -----------------------------------------------------
--- Data for table `master-pedidos`.`FormaPagamento`
--- -----------------------------------------------------
-START TRANSACTION;
-USE `master-pedidos`;
-INSERT INTO `master-pedidos`.`FormaPagamento` (`IdFormaPagamento`, `Descritivo`) VALUES (1, 'A vista');
-
-COMMIT;
-
-
--- -----------------------------------------------------
--- Data for table `master-pedidos`.`ListaPreco`
--- -----------------------------------------------------
-START TRANSACTION;
-USE `master-pedidos`;
-INSERT INTO `master-pedidos`.`ListaPreco` (`IdListaPreco`, `Descritivo`) VALUES (1, 'Padrão');
-
-COMMIT;
-
-
--- -----------------------------------------------------
--- Data for table `master-pedidos`.`Parcela`
--- -----------------------------------------------------
-START TRANSACTION;
-USE `master-pedidos`;
-INSERT INTO `master-pedidos`.`Parcela` (`IdParcela`, `Ordem`, `Dias`, `Peso`, `IdFormaPagamento`) VALUES (1, 1, 1, 100, 1);
-
-COMMIT;
-
-
--- -----------------------------------------------------
--- Data for table `master-pedidos`.`Vinculo`
--- -----------------------------------------------------
-START TRANSACTION;
-USE `master-pedidos`;
-INSERT INTO `master-pedidos`.`Vinculo` (`IdVinculo`, `Nome`) VALUES (1, 'Funcionário');
-INSERT INTO `master-pedidos`.`Vinculo` (`IdVinculo`, `Nome`) VALUES (2, 'Cliente');
-INSERT INTO `master-pedidos`.`Vinculo` (`IdVinculo`, `Nome`) VALUES (3, 'Fornecedor');
-INSERT INTO `master-pedidos`.`Vinculo` (`IdVinculo`, `Nome`) VALUES (4, 'Transportador');
-
-COMMIT;
-
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

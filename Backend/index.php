@@ -16,7 +16,11 @@
 
             switch($_SERVER['REQUEST_METHOD']) {
                 case "GET":
-                    $parametros = $url;
+                    if (count($url) === 1) {
+                        $parametros = array_shift($url);
+                    } else {
+                        $parametros = $url;
+                    }
                     break;
                 case "POST":
                     $json = file_get_contents("php://input");

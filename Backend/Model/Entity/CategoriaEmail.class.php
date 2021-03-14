@@ -1,5 +1,5 @@
 <?php
-    class CategoriaEmail {
+    class CategoriaEmail extends BaseEntity {
         private $idCategoriaEmail;
         private $nome;
         private $descricao;
@@ -12,7 +12,7 @@
         function setNome($nome) {$this->nome = $nome;}
         function setDescricao($descricao) {$this->descricao = $descricao;}
 
-        function __construct($idCategoriaEmail="", $nome="", $descricao="") {
+        function __construct($idCategoriaEmail=null, $nome=null, $descricao=null) {
             $this->setIdCategoriaEmail($idCategoriaEmail);
             $this->setNome($nome);
             $this->setDescricao($descricao);

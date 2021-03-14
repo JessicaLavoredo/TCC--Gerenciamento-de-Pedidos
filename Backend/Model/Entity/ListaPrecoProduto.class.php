@@ -1,5 +1,5 @@
 <?php
-    class ListaPrecoProduto {
+    class ListaPrecoProduto extends BaseEntity {
         private $idListaPrecoProduto;
         private $idListaPreco;
         private $idProduto;
@@ -18,7 +18,7 @@
         function setVista($vista) {$this->vista = $vista;}
         function setPrazo($prazo) {$this->prazo = $prazo;}
 
-        function __construct($idListaPrecoProduto="", $idListaPreco="", $idProduto="", $vista="", $prazo="") {
+        function __construct($idListaPrecoProduto=null, $idListaPreco=null, $idProduto=null, $vista=null, $prazo=null) {
             $this->setIdListaPrecoProduto($idListaPrecoProduto);
             $this->setIdListaPreco($idListaPreco);
             $this->setIdProduto($idProduto);

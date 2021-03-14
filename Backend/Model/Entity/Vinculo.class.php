@@ -1,5 +1,5 @@
 <?php
-    class Vinculo {
+    class Vinculo extends BaseEntity {
         private $idVinculo;
         private $nome;
 

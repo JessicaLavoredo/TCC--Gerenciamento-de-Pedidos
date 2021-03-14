@@ -1,5 +1,5 @@
 <?php
-    class FormaPagamento {
+    class FormaPagamento extends BaseEntity {
 
         private $idFormaPagamento;
         private $descritivo;
@@ -10,7 +10,7 @@
         function setIdFormaPagamento($idFormaPagamento) {$this->idFormaPagamento = $idFormaPagamento;}
         function setDescritivo($descritivo) {$this->descritivo = $descritivo;}
 
-        function __construct($idFormaPagamento="", $descritivo="") {
+        function __construct($idFormaPagamento=null, $descritivo=null) {
             $this->setIdFormaPagamento($idFormaPagamento);
             $this->setDescritivo($descritivo);
         }            

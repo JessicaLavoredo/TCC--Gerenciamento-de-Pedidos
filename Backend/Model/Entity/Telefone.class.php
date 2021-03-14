@@ -1,5 +1,5 @@
 <?php
-    class Telefone {
+    class Telefone extends BaseEntity {
         private $idTelefone;
         private $idPessoa;
         private $dDI;
@@ -27,7 +27,7 @@
         function setIdCategoriaTelefone($idCategoriaTelefone) {$this->idCategoriaTelefone = $idCategoriaTelefone;}
         function setObservacao($observacao) {$this->observacao = $observacao;}
 
-        function __construct($idTelefone="", $idPessoa="", $dDI="", $dDD="", $numero="", $ramal="", $idCategoriaTelefone="", $observacao="") {
+        function __construct($idTelefone=null, $idPessoa=null, $dDI=null, $dDD=null, $numero=null, $ramal=null, $idCategoriaTelefone=null, $observacao=null) {
             $this->setIdTelefone($idTelefone);
             $this->setIdPessoa($idPessoa);
             $this->setDDI($dDI);

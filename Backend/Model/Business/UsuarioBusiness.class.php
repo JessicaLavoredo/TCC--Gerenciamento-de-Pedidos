@@ -11,8 +11,8 @@
         }
 
         function login($login, $senha) {
-            // $usuario = New Usuario("","",$login,$senha,"");
-            return (new UsuarioData())->login($login, $senha);
+            $usuario = New Usuario("","",$login,$senha,"");
+            return (new UsuarioData())->autenticarUsuario($usuario);
         }
     } // fim da classe
 ?>

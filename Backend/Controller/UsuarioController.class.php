@@ -6,7 +6,7 @@
 
         }
 
-        function login($body=""){
+        function login($body=null){
             $ret = (New UsuarioBusiness())->login($body["usuario"],$body["senha"]);
             return $ret;
         }

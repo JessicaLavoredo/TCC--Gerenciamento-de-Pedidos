@@ -1,72 +1,167 @@
 <?php
 
-    class BaseData extends Conexao{
+    abstract class BaseData extends Conexao{
 
         function __construct() {
             parent::__construct();
         }
 
-        function gravar($entidade) {
-            $sql = '';
-            $classe = get_class($entidade);
-            $propriedades = (New Funcoes())->getPropriedades($classe);
-            $getId = "getId".$classe;
+        private function validaEntidade($entidade) {
+            try {
+                $classe = str_ireplace('Data', '', get_class($this));
+                if (!is_object($entidade) || !gettype($entidade) == $classe) {
+                    throw new Exception("Erro: Objeto inválido");
+                }
+                return true;
+            } catch (Exception $e) {
+                return "Erro: ".$e->getMessage();
+            }
+        }
 
-            // CASO O OBJETO A SER GRAVADO TENHA UM ID O REGISTRO SERÁ ALTERADO.
-            if ($entidade->$getId()) {
+        private function inserir($entidade) {
+            try {
+                $classe = str_ireplace('Data', '', get_class($this));
+                $propriedades = Funcoes::getPropriedades($classe);
+
+                $sql = "INSERT INTO ".$classe." (".join(", ", $propriedades).")\n";
+                $sql.= "VALUES (".join(', ', array_map(function($x){return ":".$x;}, $propriedades)).")";
+
+                $stm = $this->db->prepare($sql);
+                foreach($propriedades as $prop) {
+                    $get = "get".ucfirst($prop);
+                    $stm->bindValue(":".$prop, $entidade->$get());
+                }
+                $stm->execute();
+                return "Registro gravado com sucesso!";
+            } catch (Exception $e) {
+                return "Erro: ".$e->getMessage();
+            }
+        }
+
+        private function atualizar($entidade) {
+            try{
+                $classe = get_class($entidade);
+                $propriedades = Funcoes::getPropriedades($classe);
+                $indicePropId = array_search(strtoupper('id'.$classe), array_map(function($x){return strtoupper($x);}, $propriedades));
+                $getId = "get".ucfirst($propriedades[$indicePropId]);
+                $propriedades = Funcoes::array_remove(array_map(function($x){return strtoupper($x);}, $propriedades), strtoupper('id'.$classe));
+
                 $sql = "UPDATE ".$classe."\n";
-                $sql .= "SET ";
-                foreach ($propriedades as $prop){
-                    $get = "get".$prop;
-                    $sql .= $prop." = ".(New Funcoes())->preparaDadoSql($entidade->$get()).", ";
+                $sql.= "SET ";
+                foreach($propriedades as $prop){
+                    $sql.= $prop." = :".$prop.", ";
                 }
                 $sql = substr_replace($sql,"\n",-2);
-                $sql .= "WHERE Id".$classe." = ".$entidade->$getId();
-            } else {
-                // CASO O OBJETO NÃO TENHA UM ID SERÁ INSERIDO UM NOVO REGISTRO.
-                $sql = "INSERT INTO ".$classe." (".join(", ", $propriedades).")\n";
-                $sql .= "VALUES (";
-                foreach ($propriedades as $prop){
-                    $get = "get".$prop;
-                    $sql .= (New Funcoes())->preparaDadoSql($entidade->$get()).", ";
+                $sql.= "WHERE Id".$classe." = :Id".$classe;
+                
+                $stm = $this->db->prepare($sql);
+                foreach($propriedades as $prop){
+                    $get = "get".ucfirst($prop);
+                    $stm->bindValue(":".$prop, $entidade->$get());
                 }
-                $sql = substr_replace($sql,")\n",-2);
+                $stm->bindValue(":Id".$classe, $entidade->$getId());
+                $stm->execute();
+                return "Registro gravado com sucesso!";
+            } catch(Exception $e) {
+                return "Erro: ".$e->getMessage();
+            }
+        }
+
+        function gravar($entidade) {
+            try {
+                $this->validaEntidade($entidade);
+                
+                $classe = str_ireplace('Data', '', get_class($this));
+                $getId = 'getId'.$classe;
+                $id = (int)$entidade->$getId();
+
+                if (isset($id) && $id > 0) {
+                    return $this->atualizar($entidade);
+                } else {
+                    $setId = 'setId'.$classe;
+                    $entidade->$setId(null);
+                    return $this->inserir($entidade);
+                }
+            } catch (Exception $e) {
+                return "Erro: ".$e->getMessage();
+            }
+        }
+
+        function deletar($entidade) {
+            $classe = str_ireplace('Data', '', get_class($this));
+            $getId = 'getId'.$classe;
+            $id = (int)$entidade->$getId();
+
+            try {
+                if (isset($id) && $id > 0) {
+                    $sql = 'DELETE FROM '.$classe."\n";
+                    $sql.= 'WHERE Id'.$classe.' = :Id'.$classe;
+                    $stm = $this->db->prepare($sql);
+                    $stm->bindValue(':Id'.$classe, $entidade->$getId());
+                    $stm->execute();
+                    return 'Registro excluído com sucesso.';
+                }
+            } catch (Exception $e) {
+                return 'Erro: '.$e->getMessage();
+            }
+        }
+
+        function buscarPorId(int $id){
+            $classe = str_ireplace('Data', '', get_class($this));
+            $sql = "SELECT * FROM ".$classe." WHERE Id".$classe." = ".$id;
+            $stm = $this->db->prepare($sql);
+            $stm->execute();
+            $ret = $stm->fetch();
+            return Funcoes::criarEntidade($classe, $ret);
+        }
+
+        function buscarPorFiltro($entidade){
+            $classe = str_ireplace('Data', '', get_class($entidade));
+            $propriedades = Funcoes::getPropriedades($classe);
+
+            $sql = "SELECT * FROM ".$classe."\n";
+            $sql.= "WHERE ";
+
+            foreach($propriedades as $prop) {
+                $getProp = 'get'.ucfirst($prop);
+                if($entidade->$getProp()) {
+                    $sql.= $prop." = :".$prop;
+                } else {
+                    unset($propriedades[array_search($prop, $propriedades)]);
+                }
             }
 
-            // $ret = $this->executar($sql, $classe);
-            try {
-                $stm = $this->db->prepare($sql);
-                $stm->execute();
-                $this->db = null;
-                return "Registro gravado com sucesso.";
-            } catch (Exception $e) {
-                return "Erro ao gravar no Banco.";
+            $stm = $this->db->prepare($sql);
+            foreach($propriedades as $prop){
+                $getProp = 'get'.ucfirst($prop);
+                $stm->bindValue(":".$prop, $entidade->$getProp());
             }
+            $stm->execute();
+            $ret = $stm->fetchAll();
+            return $ret;
         }
 
         function buscarTodos() {
             $classe = str_ireplace('Data', '', get_class($this));
             $sql = "SELECT * FROM ".$classe;
-            $ret = $this->executar($sql, $classe);
+            $stm = $this->db->prepare($sql);
+            $stm->execute();
+            $ret = $stm->fetchAll();
             return $ret;
         }
 
         function buscarTodosAtivos() {
             $classe = str_ireplace('Data', '', get_class($this));
-            $propriedades = array_filter(get_class_methods($classe), function($x){if (strpos($x,'set') === 0){ return true;}});
+            $propriedades = Funcoes::getPropriedades($classe);
+
             if (count(array_filter($propriedades, function($x){if (stristr($x,'Inativo') !== false){return true;}})) > 0) { 
                 $sql = "SELECT * FROM ".$classe." WHERE Inativo = 0";
-                $ret = $this->executar($sql, $classe);
+                $stm = $this->db->prepare($sql);
+                $stm->execute();
+                $ret = $stm->fetchAll();
             } else {
                 $ret = $this->buscarTodos();
             }
-            return $ret;
-        }
-
-        function buscarPorId($id){
-            $classe = str_ireplace('Data', '', get_class($this));
-            $sql = "SELECT * FROM ".$classe." WHERE Id".$classe." = ".$id;
-            $ret = $this->executar($sql, $classe);
             return $ret;
         }
 
