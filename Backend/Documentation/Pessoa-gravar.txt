@@ -1,0 +1,42 @@
+POST http://localhost/TCC-Back/Pessoa/gravar
+{
+	"idPessoa": 0, - SE ID FOR MAIOR QUE 0 ALTERA O REGISTRO SENÃO CRIA UM NOVO
+	"tipoPessoa": "F",
+	"nomeRazao": "Cliente Numero Dois",
+	"apelidoFantasia": "Cli Dois",
+	"cpfCnpj": "741825263",
+	"rgInscricao": "356269",
+	"dataNascimento": "1997-01-17T00:00:00Z",
+	"genero": "M",
+	"inativo": 0,
+	"dataInclusao": "2021-03-12T19:00:00Z",
+	"vinculos": [1],
+	"enderecos": [
+		{
+			"cep": "17207-740",
+			"logradouro": "Rua José Trofino",
+			"numero": "59",
+			"bairro": "Jardim Carolina",
+			"idCidade": 3554,
+			"idCategoriaEndereco": 1,
+			"observacao": "Nenhuma"
+		}
+	],
+	"telefones": [
+		{
+			"dDI": "55",
+			"dDD": "14",
+			"numero": "997480089",
+			"ramal": "",
+			"idCategoriaTelefone": 1,
+			"observacao": "Telefone padrão"
+		}
+	],
+	"emails": [
+		{
+			"endereco": "cliente@um.com",
+			"idCategoriaEmail": 1,
+			"observacao": "Email padrão"
+		}
+	]
+}

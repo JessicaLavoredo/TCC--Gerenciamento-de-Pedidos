@@ -1,0 +1,22 @@
+POST http://localhost/TCC-Back/Pedido/gravar
+{
+	"idPedido": 0, - SE ID FOR MAIOR QUE 0 ALTERA O REGISTRO SENÃO CRIA UM NOVO
+	"idPessoa": 2,
+	"idFormaPagamento": 1,
+	"dataPedido": "2021-03-14T13:00:00Z", - DATAHORA ATUAL
+	"idUsuarioMovimentacao": 1, - ID DO USUÁRIO QUE ESTÁ LOGADO NO SISTEMA
+	"produtos": [
+		{
+			"idProduto": 1,
+			"preco": 17.9, - PREÇO DA TABELA
+			"quantidade": 10,
+			"desconto": 0.9	- DESCONTO SOBRE O PREÇO DA TABELA EM VALORES, NÃO EM PORCENTAGEM	
+		},
+		{
+			"idProduto": 2,
+			"preco": 22.9,
+			"quantidade": 8,
+			"desconto": 2.9
+		}
+	]
+}

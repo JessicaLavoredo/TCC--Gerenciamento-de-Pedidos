@@ -1,0 +1,10 @@
+POST http://localhost/TCC-Back/Produto/gravar
+{
+	"idProduto": 0, - SE ID FOR MAIOR QUE 0 ALTERA O REGISTRO SENÃO CRIA UM NOVO
+	"nomeTecnico": "Gaiola de Arame e Pinus Nº2",
+	"nomeComercial": "GAIOLA PINUS N2",
+	"codigoInterno": "2P",
+	"descricao": "Gaiola de arco abaulado feita em pinus e arame.",
+	"vista": 19.9,
+	"prazo": 22.9  - ESSES VALORES SERÃO GRAVADOS NA LISTA DE PREÇO PADRÃO (REGISTRO 1)
+}

@@ -1,0 +1,8 @@
+POST http://localhost/TCC-Back/Usuario/gravar
+{
+	"idUsuario": 0, - SE ID FOR MAIOR QUE 0 ALTERA O REGISTRO SENÃO CRIA UM NOVO
+	"idPessoa": 2,
+	"login": "44776646803",
+	"senha": "01234567",
+	"idPerfil": 2
+}
