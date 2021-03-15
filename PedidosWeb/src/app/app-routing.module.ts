@@ -1,3 +1,5 @@
+import { CadastroVinculoEmpresaComponent } from './pages/cadastro-vinculo-empresa/cadastro-vinculo-empresa.component';
+import { CadastroPedidoComponent } from './pages/cadastro-pedido/cadastro-pedido.component';
 import { RelatorioFuncionarioComponent } from './pages/relatorio-funcionario/relatorio-funcionario.component';
 import { PageLogadaComponent } from './pages/page-logada/page-logada.component';
 import { NgModule } from '@angular/core';
@@ -39,6 +41,8 @@ const routes: Routes = [
       { path: 'RelatorioFuncionario', component: RelatorioFuncionarioComponent },
       { path: 'RelatorioCliente', component: RelatorioClienteComponent },
       { path: 'RelatorioPedidos', component: RelatorioPedidoComponent },
+      { path: 'CadastroPedido', component: CadastroPedidoComponent },
+      { path: 'VinculoEmpresa', component: CadastroVinculoEmpresaComponent },
       { path: 'HomeAdmin', component: HomeAdminComponent }
     ],
     // canActivate: [AuthGuard]

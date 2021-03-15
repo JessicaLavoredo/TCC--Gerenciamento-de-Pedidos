@@ -1,5 +1,3 @@
-import { isThisTypeNode } from 'typescript';
-
 export class Usuario {
     public idUsuario: string;
     public idPessoa: string;

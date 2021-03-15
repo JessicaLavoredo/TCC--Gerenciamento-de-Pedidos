@@ -7,15 +7,15 @@
         <div class="form-row">
             <div class="form-group col-md-2">
                 <label for="txtCodigo">Código</label>
-                <input type="text" class="form-control" id="txtCodigo">
+                <input type="text" class="form-control" name="codigo" id="txtCodigo" [(ngModel)]="categoria.IdCategoriaTelefone">
             </div>
             <div class="form-group col-md-5">
                 <label for="txtNome">Nome</label>
-                <input type="text" class="form-control" id="txtNome">
+                <input type="text" class="form-control" name="Nome" id="txtNome" [(ngModel)]="categoria.Nome">
             </div>
             <div class="form-group col-md-5">
                 <label for="txtApelido">Descrição</label>
-                <input type="text" class="form-control" id="txtApelido">
+                <input type="text" class="form-control" name="descricao" id="txtApelido" [(ngModel)]="categoria.Descricao">
             </div>
         </div> 
         <div class="form-row mt-5 mb-2">
@@ -28,21 +28,27 @@
               <th scope="col">Código</th>
               <th scope="col">Nome</th>
               <th scope="col">Descrição</th>
+              <th scope="col">Selecionar</th>
             </tr>
           </thead>          
           <tbody>             
             <tr *ngFor="let categoria of categorias| filter:filter; let i = index">
               <th scope="row">{{categoria.IdCategoriaTelefone}}</th>
               <td>{{categoria.Nome}}</td>
-              <td>{{categoria.Descricao}}</td>                 
+              <td>{{categoria.Descricao}}</td> 
+              <td><button class="btn btn-info btnselecionar btn-sm"
+                (click)="selecionarCategoria(categoria)">
+                <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">done_outline</mat-icon>
+              </button></td>                   
             </tr>                
           </tbody>
         </table>
      </div>           
  <app-footer>
     <span rodape>
-        <button type="button" class="btn btn-secondary ml-5 rounded-pill">Salvar</button>
-        <button type="button" class="btn btn-secondary ml-5 rounded-pill">Novo</button>
+      <button type="button" (click)="Gravar()" class="btn btn-secondary ml-5 rounded-pill">Salvar</button>
+      <button type="button" class="btn btn-secondary ml-5 rounded-pill">Excluir</button>
+      <button type="button" (click)="Limpar()" class="btn btn-secondary ml-5 rounded-pill">Novo</button>
     </span>
  </app-footer>
 

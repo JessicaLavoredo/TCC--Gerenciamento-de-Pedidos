@@ -1,9 +1,9 @@
 export class FormaPagamento {
-    public idFormaPagamento: string;
-    public descritivo: string;
+    public IdFormaPagamento: string;
+    public Descritivo: string;
 
     constructor(){
-        this.idFormaPagamento = '';
-        this.descritivo = '';
+        this.IdFormaPagamento = '';
+        this.Descritivo = '';
     }
 }

@@ -8,11 +8,11 @@
         <div class="form-row">
             <div class="form-group col-md-2">
                 <label for="txtCodigo">Código</label>
-                <input type="text" class="form-control" id="txtCodigo">
+                <input type="text" class="form-control" name="codigo" id="txtCodigo" [(ngModel)]="FormaPagamento.IdFormaPagamento">
             </div>
-            <div class="form-group col-md-7">
+            <div class="form-group col-md-10">
                 <label for="txtNome">Descritivo</label>
-                <input type="text" class="form-control" id="txtNome">
+                <input type="text" class="form-control" name="Descricao" id="txtNome" [(ngModel)]="FormaPagamento.Descritivo">
             </div>
            
         </div>  
@@ -21,20 +21,26 @@
             <tr>
               <th scope="col">Código</th>
               <th scope="col">Descritivo</th>
+              <th scope="col">Selecionar</th>
             </tr>
           </thead>
           <tbody>
             <tr *ngFor="let FormaPagamento of FormasPagamento">
               <th scope="row">{{FormaPagamento.IdFormaPagamento}}</th>
-              <td>{{FormaPagamento.Descritivo}}</td>             
+              <td>{{FormaPagamento.Descritivo}}</td> 
+              <td><button class="btn btn-info btnselecionar btn-sm"
+                (click)="selecionarFormaPagamento(FormaPagamento)">
+                <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">done_outline</mat-icon>
+              </button></td>               
             </tr>                
           </tbody>
         </table>
      </div>           
  <app-footer>
     <span rodape>
-        <button type="button" class="btn btn-secondary ml-5 rounded-pill">Salvar</button>
-        <button type="button" class="btn btn-secondary ml-5 rounded-pill">Novo</button>
+      <button type="button" (click)="Gravar()" class="btn btn-secondary ml-5 rounded-pill">Salvar</button>
+      <button type="button" class="btn btn-secondary ml-5 rounded-pill">Excluir</button>
+      <button type="button" (click)="Limpar()" class="btn btn-secondary ml-5 rounded-pill">Novo</button>
     </span>
  </app-footer>
 

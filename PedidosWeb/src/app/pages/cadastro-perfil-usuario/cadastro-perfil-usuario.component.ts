@@ -11,13 +11,36 @@ import { Router } from '@angular/router';
 export class CadastroPerfilUsuarioComponent implements OnInit {
 
   public PerfisUsuario: PerfilUsuario[] = [];
-
-  constructor( private ListaPrecoService: PerfilUsuarioService, private router: Router) { }
+  public perfilUsuario: PerfilUsuario = new PerfilUsuario();
+  constructor( private PerfilUsuarioService: PerfilUsuarioService, private router: Router) { }
 
   ngOnInit(): void {
-    this.ListaPrecoService.buscarTodos().subscribe( result => {
-              this.PerfisUsuario = result;
-     });
+    this.listar();
+  }
+
+  public listar(){
+    this.PerfilUsuarioService.buscarTodos().subscribe( result => {
+      this.PerfisUsuario = result;
+  });
+    }
+  public async Gravar(){
+    try{
+      await this.PerfilUsuarioService.gravar(this.perfilUsuario);
+      this.listar();
+      this.perfilUsuario = new PerfilUsuario();
+      }catch (error){
+        console.error(error);
+      }
+  }
+
+  public selecionarPerfil(perfilUsuario: PerfilUsuario) {
+    if ( perfilUsuario ) {
+      this.perfilUsuario = perfilUsuario;
+    }
+  }
+
+  public Limpar() {
+      this.perfilUsuario = new PerfilUsuario();
   }
 
 }
