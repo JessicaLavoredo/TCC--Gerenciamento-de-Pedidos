@@ -1,0 +1,3 @@
+GET http://localhost/TCC-Back/CategoriaTelefone/buscarTodos
+
+ ** SEM BODY **

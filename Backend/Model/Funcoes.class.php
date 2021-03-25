@@ -13,24 +13,61 @@
             return $propriedades;
         }
 
+        static function primeiroOuPadrao(&$array, $padrao=null){
+            return isset($array[0]) ? $array[0] : $padrao;
+        }
+
+        //ANTIGO
+        // static function criarEntidade(string $classe, $objeto) {
+        //     $retorno = New $classe();
+        //     $propriedades = self::getPropriedades($classe);
+        //     foreach($propriedades as $prop){
+        //         $set = 'set'.ucfirst($prop);
+        //         $chaves = array_keys($objeto);
+        //         $indice = array_search(strtoupper($prop), array_map(function($x){return strtoupper($x);}, $chaves));
+        //         if (gettype($indice) === "integer" && $indice >= 0) {
+        //             $retorno->$set($objeto[$chaves[$indice]]);
+        //         }
+        //     }
+        //     return $retorno;
+        // }
+    
+
+        //NOVO
         static function criarEntidade(string $classe, $objeto) {
-            $retorno = New $classe();
+            $entidade = New $classe();            
+            if ($objeto === null){
+                return $entidade;
+            }
+
             $propriedades = self::getPropriedades($classe);
+            $chaves = array_keys($objeto);
 
             foreach($propriedades as $prop){
-                $set = 'set'.ucfirst($prop);
-                $chaves = array_keys($objeto);
                 $indice = array_search(strtoupper($prop), array_map(function($x){return strtoupper($x);}, $chaves));
+                $chave = $indice !== false ? $chaves[$indice] : $indice;
+                $get = 'get'.ucfirst($prop);
+                $set = 'set'.ucfirst($prop);
 
-                if (gettype($indice) === "integer" && $indice >= 0) {
-                    $retorno->$set($objeto[$chaves[$indice]]);
+                if (gettype($entidade->$get()) === 'object') {
+                    $classeObj = get_class($entidade->$get());
+                    if ($chave) {
+                        if (isset($objeto[$chave])) {
+                            $entidade->$set(self::criarEntidade($classeObj, $objeto[$chave]));
+                        }
+                    }
                 } else {
-                    $retorno->$set(null);
+                    if ($chave){
+                        if (isset($objeto[$chave])) {
+                            $entidade->$set($objeto[$chave]);
+                        }
+                    }
                 }
             }
 
-            return $retorno;
+            return $entidade;
         }
+        
 
     }
 ?>

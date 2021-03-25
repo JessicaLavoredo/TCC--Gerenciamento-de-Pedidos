@@ -9,8 +9,8 @@
         function autenticarUsuario($usuario){
             $sql = "SELECT * \n";
             $sql.= "FROM usuario\n";
-            $sql.= "WHERE login = ?";
-            $sql.= "AND senha = ?";
+            $sql.= "WHERE login = ? ";
+            $sql.= "AND senha = ? ";
 
             try {
                 $stm = $this->db->prepare($sql);
