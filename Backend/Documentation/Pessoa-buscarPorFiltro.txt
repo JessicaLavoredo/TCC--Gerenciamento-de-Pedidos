@@ -1,0 +1,14 @@
+POST http://localhost/TCC-Back/Pessoa/buscarPorFiltro
+
+{
+        "idPessoa": ,
+        "tipoPessoa": ,
+        "nomeRazao": ,
+        "apelidoFantasia": ,
+        "cpfCnpj": ,
+        "rgInscricao": ,
+        "dataNascimento": ,
+        "genero": ,
+        "inativo": ,
+        "dataInclusao": 
+}

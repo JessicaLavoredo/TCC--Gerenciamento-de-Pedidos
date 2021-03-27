@@ -77,9 +77,9 @@
                 $sql.= "WHERE P.IdPessoa = ".$idPessoa;
                 $stm = $this->db->prepare($sql);
                 $stm->execute();
-                $linha = $stm->fetch();
-                $pessoa = Funcoes::criarEntidade("Pessoa", $linha);
-    
+                $objPessoa = $stm->fetch();
+                $pessoa = Funcoes::criarEntidade("Pessoa", $objPessoa);
+
                 $sql = "SELECT * FROM Endereco E\n";
                 $sql.= "WHERE E.IdPessoa = ".$idPessoa;
                 $stm = $this->db->prepare($sql);
@@ -93,27 +93,31 @@
                 $stm->execute();
                 $telefones = $stm->fetchAll();
                 $pessoa->setTelefones($telefones);
-    
+
                 $sql = "SELECT * FROM Email E\n";
                 $sql.= "WHERE E.IdPessoa = ".$idPessoa;
                 $stm = $this->db->prepare($sql);
                 $stm->execute();
                 $emails = $stm->fetchAll();
                 $pessoa->setEmails($emails);
-    
+                
                 $sql = "SELECT * FROM VinculoPessoa VP\n";
                 $sql.= "WHERE VP.IdPessoa = ".$idPessoa;
                 $stm = $this->db->prepare($sql);
                 $stm->execute();
                 $linhas = $stm->fetchAll();
+                $vinculos = [];
                 foreach($linhas as $linha){
-                    $vinculos[] = $linha["IdVinculo"];
+                    if ($linha){
+                        $vinculos[] = $linha["IdVinculo"];
+                    }
                 }
                 $pessoa->setVinculos($vinculos);
+             
+                return $pessoa;
             } catch (Exception $e){
                 return "Erro ".$e->getMessage();
             }
-            return $pessoa;
         }
     } // fim da classe
 ?>

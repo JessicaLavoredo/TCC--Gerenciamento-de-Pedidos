@@ -1,0 +1,3 @@
+GET http://localhost/TCC-Back/Vinculo/buscarTodos
+
+ ** SEM BODY **

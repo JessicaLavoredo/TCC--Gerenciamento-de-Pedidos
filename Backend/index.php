@@ -28,7 +28,6 @@
                     $parametros = $obj;
                     break;
                 default: 
-                    ;
                     break;
             } 
 
