@@ -12,35 +12,36 @@ export class CadastroCatEnderecoComponent implements OnInit {
 
   public categorias: CategoriaEndereco[] = [];
   public categoria: CategoriaEndereco = new CategoriaEndereco();
-  constructor( private CategoriaEnderecoService: CategoriaEnderecoService, private router: Router) { }
+  constructor(private CategoriaEnderecoService: CategoriaEnderecoService, private router: Router) { }
 
   ngOnInit(): void {
     this.listar();
   }
 
-  public listar(){
-    this.CategoriaEnderecoService.buscarTodos().subscribe( result => {
+  public listar() {
+    this.CategoriaEnderecoService.buscarTodos().subscribe(result => {
       this.categorias = result;
-  });
-    }
-  public async Gravar(){
-    try{
+    });
+  }
+  public async Gravar() {
+    try {
       await this.CategoriaEnderecoService.gravar(this.categoria);
       this.listar();
       this.categoria = new CategoriaEndereco();
-      }catch (error){
-        console.error(error);
-      }
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   public selecionarCategoria(categoria: CategoriaEndereco) {
-    if ( categoria ) {
+    if (categoria) {
       this.categoria = categoria;
     }
   }
 
+
   public Limpar() {
-      this.categoria = new CategoriaEndereco();
+    this.categoria = new CategoriaEndereco();
   }
 
 }

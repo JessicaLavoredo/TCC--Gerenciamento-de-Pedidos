@@ -1,6 +1,6 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
-import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { AppComponent } from './app.component';
 import { MenuComponent } from './Componentes/menu/menu.component';
 import { FooterComponent } from './Componentes/footer/footer.component';
@@ -33,8 +33,14 @@ import { RecuperarSenhaComponent } from './pages/recuperar-senha/recuperar-senha
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
+import { MatSelectModule } from '@angular/material/select';
+import { MatDialogModule } from '@angular/material/dialog'
 import { Ng2SmartTableModule } from 'ng2-smart-table';
 import { Ng2SearchPipeModule } from 'ng2-search-filter';
+import { AlertComponent } from './componentes/alert/alert.component';
+import { ModalModule } from 'ngx-bootstrap/modal';
+import { NgxPaginationModule } from 'ngx-pagination';
+import { MatExpansionModule, MatAccordion } from '@angular/material/expansion';
 
 @NgModule({
   declarations: [
@@ -62,6 +68,7 @@ import { Ng2SearchPipeModule } from 'ng2-search-filter';
     CadastroPedidoComponent,
     CadastroVinculoEmpresaComponent,
     RecuperarSenhaComponent,
+    AlertComponent,
   ],
   imports: [
     BrowserModule,
@@ -74,8 +81,14 @@ import { Ng2SearchPipeModule } from 'ng2-search-filter';
     MatIconModule,
     MatCheckboxModule,
     MatRadioModule,
+    MatExpansionModule,
     Ng2SmartTableModule,
-    Ng2SearchPipeModule
+    Ng2SearchPipeModule,
+    ModalModule,
+    MatSelectModule,
+    NgxPaginationModule,
+    MatDialogModule,
+
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -10,10 +10,10 @@ import { Component, OnInit, NgModule } from '@angular/core';
 })
 export class LoginComponent implements OnInit {
 
-public usuario: Usuario = new Usuario();
+  public usuario: Usuario = new Usuario();
 
 
-  constructor( private accountService: AccountService, private router: Router) { }
+  constructor(private accountService: AccountService, private router: Router) { }
 
 
   ngOnInit(): void {
@@ -27,13 +27,13 @@ public usuario: Usuario = new Usuario();
   //     });
   //   }
 
-  async onSubmit(){
-    try{
-       await  this.accountService.login(this.usuario);
-       alert('logou');
-       this.router.navigate(['']);
-      }catch (error){
-        console.error(error);
-      }
+  async onSubmit() {
+    try {
+      await this.accountService.login(this.usuario);
+      alert('logou');
+      this.router.navigate(['']);
+    } catch (error) {
+      console.error(error);
+    }
   }
 }

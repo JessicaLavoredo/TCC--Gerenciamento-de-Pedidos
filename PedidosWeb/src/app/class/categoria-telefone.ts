@@ -3,7 +3,7 @@ export class CategoriaTelefone {
     public Nome: string;
     public Descricao: string;
 
-    constructor(){
+    constructor() {
         this.IdCategoriaTelefone = '';
         this.Nome = '';
         this.Descricao = '';

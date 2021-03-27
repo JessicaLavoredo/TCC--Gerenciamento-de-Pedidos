@@ -4,14 +4,13 @@ export class Usuario {
     public login: string;
     public senha: string;
     public idPerfil: string;
-    public usuario: string;
 
-    constructor(){
+    constructor() {
         this.idPerfil = '';
         this.idPessoa = '';
         this.idUsuario = '';
         this.login = '';
         this.senha = '';
-        this.usuario = '';
     }
+
 }

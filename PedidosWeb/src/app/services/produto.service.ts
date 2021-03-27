@@ -10,18 +10,15 @@ import Api from './Api';
 export class ProdutoService {
   constructor(private http: HttpClient) { }
 
-  public buscarTodos(){
+  public buscarTodos() {
     return this.http.get<Produto[]>(environment.api + 'Produto/buscartodos');
   }
 
-  async gravar(Produto: Produto){
+  async gravar(Produto: Produto) {
     const json = JSON.stringify(Produto);
-    const result: any =  await Api.post('Produto/gravar', json);
-    if (result.length > 0){
-        console.log(result);
-        return true;
-      }else{
-      return false;
-      }
+    const result: any = await Api.post('Produto/gravar', json);
+    if (result) {
+      return result;
     }
+  }
 }

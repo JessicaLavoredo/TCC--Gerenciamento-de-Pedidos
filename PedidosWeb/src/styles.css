@@ -1,3 +1,4 @@
+
 .corpo{
     padding-bottom: 6%;
     padding-top: 2%;
@@ -21,9 +22,6 @@ label{
 .tab-pane{
     padding-top:2em;
 }
-.checkboxInativo{
-    margin-top: 1.9em;
-}
 
 .tabelas{
     background-color: #0083A5;
@@ -35,5 +33,26 @@ label{
   margin:auto;
 }
 
-html, body { height: 100%; }
+mat-form-field {
+    width: 100%;
+    margin-top: -5px;
+  }
+  mat-label{
+      padding-top: 10;
+  }
+  .mat-form-field:not(.mat-form-field-has-label) .mat-form-field-infix {
+    border-top-width: 0;
+  }
+
+  .modal-dialog {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-94%, -70%) !important;
+  }
+  .Teste{
+      height: 370px;
+  }
+
+html, body,modal-body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

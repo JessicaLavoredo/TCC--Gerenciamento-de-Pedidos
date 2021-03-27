@@ -4,12 +4,16 @@ export class Produto {
     public nomeComercial: string;
     public codigoInterno: string;
     public descricao: string;
+    public vista: string;
+    public prazo: string;
 
-    constructor(){
+    constructor() {
         this.idProduto = '';
         this.nomeTecnico = '';
         this.nomeComercial = '';
         this.codigoInterno = '';
         this.descricao = '';
+        this.vista = '';
+        this.prazo = '';
     }
 }

@@ -1,252 +1,343 @@
- <app-menu></app-menu>
- <div class="TituloPagina">
-   <span>Cadastro de Funcionário</span>
- </div>
+<app-menu></app-menu>
+<div class="TituloPagina">
+  <span>Cadastro de Pessoa</span>
+</div>
 
-<form >
-    <div class="container corpo">
-        <div class="form-row">
-            <div class="form-group col-md-2">
-                <label for="txtCodigo">Código</label>
-                <input type="text" class="form-control" id="txtCodigo">
-            </div>
-            <div class="form-group col-md-5">
-                <label for="txtNome">Nome</label>
-                <input type="text" class="form-control" id="txtNome">
-            </div>
-            <div class="form-group col-md-5">
-                <label for="txtApelido">Apelido</label>
-                <input type="text" class="form-control" id="txtApelido">
-            </div>
-        </div>
-        <div class="form-row">
-            <div class="form-group col-md-4">
-                <label for="txtCpf">CPF</label>
-                <input type="text" class="form-control" id="txtCpf" mask="000.000.000-00">
-            </div>
-            <div class="form-group col-md-4">
-                <label for="txtRg">RG</label>
-                <input type="text" class="form-control" id="txtRg" mask="00.000.000-0">
-            </div>
-            
-            <div class="form-group col-md-4">
-                <label for="txtDataNasc">Data de Nascimento</label>
-                <input type="text" class="form-control" id="txtDataNasc" mask="00/00/0000">
-            </div>
-        </div>
+<form>
+
+  <div class="container corpo">
     <div class="form-row">
-        <div class="form-group col-md-4">
-            <div>
-                <label>Genero</label>
-            </div>            
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="optmasculino" value="option1">
-                <label class="form-check-label label-radio" for="optmasculino">Masculino</label>
-            </div>
-            <div class="form-check form-check-inline">
-                <input class="form-check-input" type="radio" name="inlineRadioOptions" id="inlineRadio2" value="option2">
-                <label class="form-check-label label-radio" for="inlineRadio2">Feminino</label>
-            </div>
-        </div>
-       
-       
-          <div class="form-group col-md-4">
-            <label for="inputState">Cargo</label>
-            <select id="inputState" class="form-control">
-              <option selected></option>
-              <option></option>
-            </select>
+      <div class="form-group col-md-2">
+        <label for="txtCodigo">Código</label>
+        <input type="text" class="form-control" id="txtCodigo" name="Codigo" [(ngModel)]="Pessoa.idPessoa">
+      </div>
+      <div class="form-group col-md-5">
+        <label for="txtNome">{{labelNome}}</label>
+        <input type="text" class="form-control" id="txtNome" name="Nome" [(ngModel)]="Pessoa.nomeRazao">
+      </div>
+      <div class="form-group col-md-5">
+        <label for="txtApelido">{{labelFantasia}}</label>
+        <input type="text" class="form-control" id="txtApelido" name="Apelido" [(ngModel)]="Pessoa.apelidoFantasia">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-4">
+        <section>
+          <div>
+            <label class="tipo">Tipo:</label>
           </div>
-          <div class="form-group col-md-4">
-            <div class="form-check ">
-              <input class="form-check-input checkboxInativo" type="checkbox" id="gridCheck">
-              <label class="form-check-label checkboxlabelInativo" for="gridCheck">
-                inativo
-              </label>
-            </div>
+          <mat-radio-group [(ngModel)]="Pessoa.tipoPessoa" color="primary" name="tipo" (ngModelChange)="alterartipo()">
+            <mat-radio-button class="tipo" value="F">Fisico</mat-radio-button>
+            <mat-radio-button class="tipo ml-3" value="J">Jurídico</mat-radio-button>
+          </mat-radio-group>
+        </section>
+      </div>
+      <div class="form-group col-md-4">
+        <label for="txtCpf">{{labelCPFCNPJ}}</label>
+        <input type="text" class="form-control" id="txtCpf" [mask]="cpfMask" name="Cpf" [(ngModel)]="Pessoa.cpfCnpj">
+      </div>
+      <div class="form-group col-md-4">
+        <label for="txtRg">{{labelRGIE}}</label>
+        <input type="text" class="form-control" id="txtRg" [mask]="rgMask" name="Rg" [(ngModel)]="Pessoa.rgInscricao">
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-4" *ngIf="!isJuridico">
+        <section>
+          <div>
+            <label class="tipo">Genero:</label>
           </div>
-    </div> 
+          <mat-radio-group [(ngModel)]="Pessoa.genero" color="primary" name="genero">
+            <mat-radio-button class="genero" value="M">Masculino</mat-radio-button>
+            <mat-radio-button class="genero ml-3" value="F">Feminino</mat-radio-button>
+          </mat-radio-group>
+        </section>
+      </div>
+
+      <div class="form-group col-md-4" *ngIf="!isJuridico">
+        <label for="txtDataNasc">Data de Nascimento</label>
+        <input type="text" class="form-control" id="txtDataNasc" mask="00/00/0000" name="dataNascimento"
+          [(ngModel)]="Pessoa.dataNascimento">
+      </div>
+      <div class="form-group col-md-4">
+        <label>Cargo</label>
+        <mat-form-field appearance="outline">
+          <mat-select multiple [(ngModel)]="Pessoa.vinculos" placeholder="Selecione um cargo" name="vinculos">
+            <mat-option *ngFor="let vinculo of Vinculos" [value]="vinculo.IdVinculo">
+              {{vinculo.Nome}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-4 checkboxInativo">
+        <mat-checkbox color="primary" [(ngModel)]="Pessoa.inativo" name="inativo"> inativo </mat-checkbox>
+      </div>
+    </div>
     <ul class="nav nav-tabs" id="myTab" role="tablist">
-        <li class="nav-item" role="presentation">
-          <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">Endereço</a>
-        </li>
-        <li class="nav-item" role="presentation">
-          <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">Email</a>
-        </li>
-        <li class="nav-item" role="presentation">
-          <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact" aria-selected="false">Telefone</a>
-        </li>
-      </ul>
-      <div class="tab-content" id="myTabContent">
-       
-        <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+      <li class="nav-item" role="presentation">
+        <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+          aria-selected="true">Endereço</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile"
+          aria-selected="false">Email</a>
+      </li>
+      <li class="nav-item" role="presentation">
+        <a class="nav-link" id="contact-tab" data-toggle="tab" href="#contact" role="tab" aria-controls="contact"
+          aria-selected="false">Telefone</a>
+      </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+      <!-- Endereços -->
+      <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
         <div class="form-row">
-          <div class="form-group col-md-2">
-            <label for="txtCodigo">Código</label>
-            <input type="text" class="form-control" id="txtCodigo">
-          </div>
           <div class="form-group col-md-10">
-            <label for="txtCodigo">Logradouro</label>
-            <input type="text" class="form-control" id="txtCodigo">
+            <label for="txtLogradouro">Logradouro</label>
+            <input type="text" class="form-control" id="txtLogradouro" [(ngModel)]="Endereco.logradouro"
+              name="logradouro">
+          </div>
+          <div class="form-group col-md-2">
+            <label for="txtNumero">Numero</label>
+            <input type="text" class="form-control" id="txtCtxtNumeroodigo" [(ngModel)]="Endereco.numero" name="numero">
           </div>
         </div>
         <div class="form-row">
           <div class="form-group col-md-6">
-            <label for="txtCodigo">Bairro</label>
-            <input type="text" class="form-control" id="txtCodigo">
+            <label for="txtBairro">Bairro</label>
+            <input type="text" class="form-control" id="Bairro" [(ngModel)]="Endereco.bairro" name="bairro">
           </div>
           <div class="form-group col-md-2">
-            <label for="txtCodigo">CEP</label>
-            <input type="text" class="form-control" id="txtCodigo" mask="00000-000">
+            <label for="txtCep">CEP</label>
+            <input type="text" class="form-control" id="txtCep" mask="00000-000" [(ngModel)]="Endereco.cep" name="cep"
+              (ngModelChange)="buscarPorCep()">
           </div>
-          <div class="form-group col-md-1">
-            <label for="txtCodigo">Cidade</label>
-            <input type="text" class="form-control" id="txtCodigo" name="cidade" [(ngModel)]="cidade.Nome">
+          <div class="form-group col-md-3">
+            <label for="txtCidade">Cidade</label>
+            <input type="text" class="form-control" id="txtCidade" name="cidade" [(ngModel)]="Endereco.nomeCidade"
+              name="idCidade">
           </div>
-          <div class="form-group mt-4 col-md-0.5">
-            <button class="btn btn-info btnsearch btn-sm"
-                (click)="PesquisarCidade()" data-toggle="modal" data-target="#ModalCidade">
-                <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+          <div class="form-group">
+            <input type="hidden" class="form-control" id="txtcatEnd" name="CatEnd" [(ngModel)]="Endereco.idCidade">
+          </div>
+          <div class="form-group mt-4 col-md-1">
+            <button class="btn btn-info btnsearch btn-sm" (click)="PesquisarCidade()" data-toggle="modal"
+              data-target="#ModalCidade">
+              <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
             </button>
           </div>
-          <div class="form-group mt-4 col-md-1.5">
-            <label for="txtCodigo">{{labelCidade}}</label>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="inputState">Categoria</label>
+            <select id="inputState" class="form-control" [(ngModel)]="Endereco.idCategoriaEndereco"
+              (ngModelChange)="SelecionarCategoriaEndereco()" name=" idCategoriaEndereco">
+              <option [value]=categoria.IdCategoriaEndereco *ngFor="let categoria of categoriasEndereco">
+                {{categoria.Nome}}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <input type="hidden" class="form-control" id="txtcatEnd" name="CatEnd"
+              [(ngModel)]="Endereco.descricaoCategoriaEndereco">
+          </div>
+          <div class="form-group col-md-8">
+            <label for="txtObservacao">Observação</label>
+            <input type="text" class="form-control" id="txtObservacao" [(ngModel)]="Endereco.observacao"
+              name="observacao">
           </div>
         </div>
-          <div class="form-row">
-            <div class="form-group col-md-4">
-              <label for="inputState">Categoria</label>
-              <select id="inputState" class="form-control" >
-                <option value={{categoria.IdEndereco}} *ngFor="let categoria of categoriasEndereco">{{categoria.Nome}}</option>
-              </select>
-            </div>
-            <div class="form-group col-md-8">
-              <label for="txtCodigo">Observação</label>
-              <input type="text" class="form-control" id="txtCodigo">
-            </div>
-            </div>
-            <div>
-              <button type="button" class="btn btn-secondary mb-3 mt-3 rounded-pill">Adicionar</button>
-            </div>
-            <table class="table">
-              <thead class="tabelas">
-                <tr>
-                  <th scope="col">Código</th>
-                  <th scope="col">Logradouro</th>
-                  <th scope="col">Bairro</th>
-                  <th scope="col">CEP</th>
-                  <th scope="col">Cidade</th>
-                  <th scope="col">Categoria</th>
-                  <th scope="col">Observação</th>
-                </tr>
-              </thead>
-              <tbody>
-               
-              </tbody>
-            </table>
-            
+        <div>
+          <button type="button" class="btn btn-secondary mb-3 mt-3 rounded-pill"
+            (click)="AdicionarEndereco()">Adicionar</button>
+          <button type="button" class="btn btn-secondary ml-5 pl-4 pr-4 rounded-pill"
+            (click)="limparEndereco()">Novo</button>
         </div>
-        <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
-          <div class="form-row">
-            <div class="form-group col-md-2">
-              <label for="txtCodigo">Código</label>
-              <input type="text" class="form-control" id="txtCodigo">
-            </div>
-            <div class="form-group col-md-10">
-              <label for="txtCodigo">Endereço</label>
-              <input type="text" class="form-control" id="txtCodigo">
-            </div>
-          </div>
-          <div class="form-row">
-              <div class="form-group col-md-4">
-                <label for="inputState">Categoria</label>
-                <select id="inputState" class="form-control" >
-                  <option value={{categoria.IdEmail}} *ngFor="let categoria of categoriasEmail">{{categoria.Nome}}</option>
-                </select>
-              </div>
-              <div class="form-group col-md-8">
-                <label for="txtCodigo">Observação</label>
-                <input type="text" class="form-control" id="txtCodigo">
-              </div>
-              </div>
-              <div>
-                <button type="button" class="btn btn-secondary mb-3 mt-3 rounded-pill">Adicionar</button>
-              </div>
-              <table class="table">
-                <thead class="tabelas">
-                  <tr>
-                    <th scope="col">Código</th>
-                    <th scope="col">Endereço</th>
-                    <th scope="col">Categoria</th>
-                    <th scope="col">Observação</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  
-                </tbody>
-              </table>
-        </div>
-        <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
-          <div class="form-row">
-            <div class="form-group col-md-2">
-              <label for="txtCodigo">Código</label>
-              <input type="text" class="form-control" id="txtCodigo">
-            </div>
-            <div class="form-group col-md-2">
-              <label for="txtCodigo">DDD</label>
-              <input type="text" class="form-control" id="txtCodigo" mask="(00)">
-            </div>
-            <div class="form-group col-md-4">
-              <label for="txtCodigo">Numero</label>
-              <input type="text" class="form-control" id="txtCodigo" mask="00000-0000">
-            </div>
-            <div class="form-group col-md-4">
-              <label for="txtCodigo">Ramal</label>
-              <input type="text" class="form-control" id="txtCodigo">
-            </div>
-          </div>
-          <div class="form-row">
-              <div class="form-group col-md-4">
-                <label for="inputState">Categoria</label>
-                <select id="inputState" class="form-control" >
-                  <option value={{categoria.IdTelefone}} *ngFor="let categoria of categoriasTelefone">{{categoria.Nome}}</option>
-                </select>
-              </div>
-              <div class="form-group col-md-8">
-                <label for="txtCodigo">Observação</label>
-                <input type="text" class="form-control" id="txtCodigo">
-              </div>
-              </div>
-              <div>
-                <button type="button" class="btn btn-secondary mb-3 mt-3 rounded-pill">Adicionar</button>
-              </div>
-              <table class="table">
-                <thead class="tabelas">
-                  <tr>
-                    <th scope="col">Código</th>
-                    <th scope="col">DDD</th>
-                    <th scope="col">Numero</th>
-                    <th scope="col">Ramal</th>
-                    <th scope="col">Categoria</th>
-                    <th scope="col">Observação</th>
-                  </tr>
-                </thead>
-                <tbody>
-                 
-                </tbody>
-              </table>
-        </div>
-      </div>    
+        <table class="table">
+          <thead class="tabelas">
+            <tr>
+              <th scope="col">Logradouro</th>
+              <th scope="col">Numero</th>
+              <th scope="col">Bairro</th>
+              <th scope="col">CEP</th>
+              <th scope="col">Cidade</th>
+              <th scope="col">Categoria</th>
+              <th scope="col">Observação</th>
+              <th scope="col"></th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let endereco of enderecos">
+              <td>{{endereco.logradouro}}</td>
+              <td>{{endereco.numero}}</td>
+              <td>{{endereco.bairro}}</td>
+              <td>{{endereco.cep}}</td>
+              <td>{{endereco.nomeCidade}}</td>
+              <td>{{endereco.descricaoCategoriaEndereco}}</td>
+              <td>{{endereco.observacao}}</td>
+              <td><button class="btn btn-info btnselecionar btn-sm" (click)="selecionarEndereco(endereco)">
+                  <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">done_outline</mat-icon>
+                </button></td>
+              <td><button class="btn btn-info btnselecionar btn-sm" (click)="excluirEndereco(endereco)">
+                  <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">clear</mat-icon>
+                </button></td>
+            </tr>
+          </tbody>
+        </table>
 
-</div>
+      </div>
 
-    
- <app-footer>
+      <!-- Emails -->
+      <div class="tab-pane fade" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+        <div class="form-row">
+          <div class="form-group col-md-12">
+            <label for="txtEnderecoEmail">Endereço</label>
+            <input type="text" class="form-control" id="txtEnderecoEmail" [(ngModel)]="email.endereco" name="endereco">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-4">
+            <label for="CboCategoriaemail">Categoria</label>
+            <select id="CboCategoriaemail" class="form-control" [(ngModel)]="email.idCategoriaEmail"
+              (ngModelChange)="SelecionarCategoriaEmail()" name="idCategoriaEmail">
+              <option [value]=categoriaEmail.IdCategoriaEmail *ngFor="let categoriaEmail of categoriasEmail">
+                {{categoriaEmail.Nome}}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <input type="hidden" class="form-control" id="txtcatEma" name="CatEma"
+              [(ngModel)]="email.descricaoCategoriaEmail">
+          </div>
+          <div class="form-group col-md-8">
+            <label for="txtObservacaoEmail">Observação</label>
+            <input type="text" class="form-control" id="txtObservacaoEmail" [(ngModel)]="email.observacao"
+              name="observacaoEmail">
+          </div>
+        </div>
+        <div>
+          <button type="button" class="btn btn-secondary mb-3 mt-3 rounded-pill"
+            (click)="AdicionarEmail()">Adicionar</button>
+          <button type="button" class="btn btn-secondary ml-5 pl-4 pr-4 rounded-pill"
+            (click)="limparEmail()">Novo</button>
+        </div>
+        <table class="table table-responsive-md">
+          <thead class="tabelas ">
+            <tr>
+              <th scope="col">Endereço</th>
+              <th scope="col"> Categoria</th>
+              <th scope="col">Observação</th>
+              <th scope="col"></th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let email of emails">
+              <td>{{email.endereco}}</td>
+              <td>{{email.descricaoCategoriaEmail}}</td>
+              <td>{{email.observacao}}</td>
+              <td><button class="btn btn-info btnselecionar btn-sm" (click)="selecionarEmail(email)">
+                  <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">done_outline</mat-icon>
+                </button></td>
+              <td><button class="btn btn-info btnselecionar btn-sm" (click)="excluirEmail(email)">
+                  <mat-icon [inline]="true" aria-hidden="false" aria-label="clear">clear</mat-icon>
+                </button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!-- Telefones -->
+      <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">
+        <div class="form-row">
+          <div class="form-group col-md-2">
+            <label for="txtDdi">DDI</label>
+            <input type="text" class="form-control" id="txtDdi" mask="00" [(ngModel)]="telefone.dDI" name="ddi">
+          </div>
+          <div class="form-group col-md-2">
+            <label for="txtDdd">DDD</label>
+            <input type="text" class="form-control" id="txtDdd" mask="(00)" [(ngModel)]="telefone.dDD" name="ddd">
+          </div>
+          <div class="form-group col-md-6">
+            <label for="txtNumeroTel">Numero</label>
+            <input type="text" class="form-control" id="txtNumeroTel" mask="00000-0000" [(ngModel)]="telefone.numero"
+              name="NumeroTel">
+          </div>
+          <div class="form-group col-md-2">
+            <label for="txtRamal">Ramal</label>
+            <input type="text" class="form-control" id="txtRamal" [(ngModel)]="telefone.ramal" name="Ramal">
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group col-md-3">
+            <label for="CboCategoriaTelefone">Categoria</label>
+            <select id="CboCategoriaTelefone" class="form-control" [(ngModel)]="telefone.idCategoriaTelefone"
+              (ngModelChange)="SelecionarCategoriaTelefone()" name="idCategoriaEmail">
+              <option [value]=categoriaTelefone.IdCategoriaTelefone
+                *ngFor="let categoriaTelefone of categoriasTelefone">
+                {{categoriaTelefone.Nome}}
+              </option>
+            </select>
+          </div>
+          <div class="form-group">
+            <input type="hidden" class="form-control" id="txtcatEma" name="CatEma"
+              [(ngModel)]="email.descricaoCategoriaEmail">
+          </div>
+          <div class="form-group col-md-9">
+            <label for="txtObservacaoTelefone">Observação</label>
+            <input type="text" class="form-control" id="txtObservacaoTelefone" [(ngModel)]="telefone.observacao"
+              name="observacaoTelefone">
+          </div>
+        </div>
+        <div>
+          <button type="button" class="btn btn-secondary mb-3 mt-3 rounded-pill"
+            (click)="AdicionarTelefone()">Adicionar</button>
+          <button type="button" class="btn btn-secondary ml-5 pl-4 pr-4 rounded-pill"
+            (click)="limparTelefone()">Novo</button>
+        </div>
+        <table class="table">
+          <thead class="tabelas">
+            <tr>
+              <th scope="col">DDI</th>
+              <th scope="col">DDD</th>
+              <th scope="col">Numero</th>
+              <th scope="col">Ramal</th>
+              <th scope="col">Categoria</th>
+              <th scope="col">Observação</th>
+              <th scope="col"></th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let telefone of telefones">
+              <td>{{telefone.dDI}}</td>
+              <td>{{telefone.dDD}}</td>
+              <td>{{telefone.numero}}</td>
+              <td>{{telefone.ramal}}</td>
+              <td>{{telefone.decricaoCategoriaTelefone}}</td>
+              <td>{{telefone.observacao}}</td>
+              <td><button class="btn btn-info btnselecionar btn-sm" (click)="selecionarTelefone(telefone)">
+                  <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">done_outline</mat-icon>
+                </button></td>
+              <td><button class="btn btn-info btnselecionar btn-sm" (click)="excluirTelefone(telefone)">
+                  <mat-icon [inline]="true" aria-hidden="false" aria-label="clear">clear</mat-icon>
+                </button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+
+
+  <app-footer>
     <span rodape>
-        <button type="submit" class="btn btn-secondary ml-5 rounded-pill">Salvar</button>
-        <button type="button" class="btn btn-secondary ml-5 rounded-pill">Novo</button>
+      <button type="submit" class="btn btn-secondary ml-5 rounded-pill" (click)="Gravar()">Salvar</button>
+      <button type="button" class="btn btn-secondary ml-5 rounded-pill">Novo</button>
     </span>
- </app-footer>
+  </app-footer>
 
 </form>
 
@@ -263,31 +354,41 @@
       <div class="modal-body">
         <div class="form-row mb-2">
           <label for="txtCodigo" class="col-md-1">Pesquisa</label>
-          <input class="form-control col-md-11" type="text" name="search" [(ngModel)]="filter"> 
+          <input class="form-control col-md-11" type="text" name="search" [(ngModel)]="filter">
         </div>
-        <table class="table">
-          <thead class="tabelas">
-            <tr>
-              <th scope="col">Código</th>
-              <th scope="col">Nome</th>
-              <th scope="col">Estado</th>
-              <th scope="col">Selecionar</th>
-            </tr>
-          </thead>          
-          <tbody>             
-            <tr *ngFor="let cidade of Cidades| filter:filter; let i = index">
-              <th scope="row">{{cidade.IdCidade}}</th>
-              <td>{{cidade.Nome}}</td>
-              <td>{{cidade.IdEstado}}</td> 
-              <td><button class="btn btn-info btnselecionar btn-sm" data-dismiss="modal" aria-label="Close"
-                (click)="selecionarCidade(cidade)">
-                <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">done_outline</mat-icon>
-              </button></td>                   
-            </tr>                
-          </tbody>
-        </table>
+        <div class="Teste">
+          <table class="table table-striped">
+            <thead class="tabelas">
+              <tr>
+                <th scope="col">Código</th>
+                <th scope="col">Nome</th>
+                <th scope="col">Estado</th>
+                <th scope="col">Selecionar</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let cidade of Cidades| filter:filter| paginate: { itemsPerPage: 5, currentPage: paginaAtual }; let i = index ">
+                <th scope="row">{{cidade.IdCidade}}</th>
+                <td>{{cidade.Nome}}</td>
+                <td>{{cidade.IdEstado}}</td>
+                <td><button class="btn btn-info btnselecionar btn-sm" data-dismiss="modal" aria-label="Close"
+                    (click)="selecionarCidade(cidade)">
+                    <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">done_outline</mat-icon>
+                  </button></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="float-right">
+          <pagination-controls previousLabel="Anterior" nextLabel="Proxima" responsive="true" autoHide="true"
+            (pageChange)="handlePageChange($event)"></pagination-controls>
+        </div>
+
       </div>
-    
+
     </div>
   </div>
+
+
 </div>

@@ -10,18 +10,13 @@ import Api from './Api';
 export class UsuarioService {
   constructor(private http: HttpClient) { }
 
-  public buscarTodos(){
+  public buscarTodos() {
     return this.http.get<Usuario[]>(environment.api + 'Usuario/buscartodos');
   }
 
-  async gravar(Usuario: Usuario){
+  async gravar(Usuario: Usuario) {
     const json = JSON.stringify(Usuario);
-    const result: any =  await Api.post('Usuario/gravar', json);
-    if (result.length > 0){
-        console.log(result);
-        return true;
-      }else{
-      return false;
-      }
-    }
+    const result: any = await Api.post('Usuario/gravar', json);
+    return result;
+  }
 }

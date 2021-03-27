@@ -1,1 +1,126 @@
-<app-menu></app-menu>
+<app-page-logada>
+    <div Logadas>
+
+        <app-menu></app-menu>
+        <div class="TituloPagina">
+            <span>Cadastro de Pedido</span>
+        </div>
+
+        <form>
+            <div class="container corpo">
+                <div class="form-row">
+                    <div class="form-group col-md-2">
+                        <label for="txtCodigo">Código</label>
+                        <input type="text" class="form-control" id="txtCodigo" name="Codigo"
+                            [(ngModel)]="Pedido.idPedido">
+                    </div>
+                </div>
+                <mat-accordion>
+                    <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                Cliente: {{Cliente.nomeRazao}}
+                            </mat-panel-title>
+                            <mat-panel-description>
+
+                            </mat-panel-description>
+                        </mat-expansion-panel-header>
+                        <div class="form-group col-md-2">
+                            <label for="txtCodigoPedido">Codigo</label>
+                            <input type="text" class="form-control" id="txtCodigoPedido" name="Nome"
+                                [(ngModel)]="Pedido.idPessoa">
+                        </div>
+                    </mat-expansion-panel>
+                </mat-accordion>
+
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="txtFormaPagamento">Forma de Pagamento</label>
+                        <select id="txtFormaPagamento" class="form-control" [(ngModel)]="Pedido.idFormaPagamento"
+                            name=" idFormaPagamento">
+                            <option [value]=FormaPagamento.IdFormaPagamento
+                                *ngFor="let FormaPagamento of FormasPagamento">
+                                {{FormaPagamento.Descritivo}}
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group col-md-10">
+                        <label for="txtProduto">Produto</label>
+                        <input type="text" class="form-control" id="txtProduto" [(ngModel)]="Produto_Pedido.idProduto"
+                            name="Produto">
+                    </div>
+
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-4">
+                        <label for="txtPreco">Preço</label>
+                        <input type="text" class="form-control" id="Preco" [(ngModel)]="Produto_Pedido.preco"
+                            name="preco">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="txtPreco">Quantidade</label>
+                        <input type="text" class="form-control" id="Preco" [(ngModel)]="Produto_Pedido.quantidade"
+                            name="preco">
+                    </div>
+                    <div class="form-group col-md-4">
+                        <label for="txtPreco">Desconto</label>
+                        <input type="text" class="form-control" id="Preco" [(ngModel)]="Produto_Pedido.desconto"
+                            name="preco">
+                    </div>
+                </div>
+
+                <div>
+                    <button type="button" class="btn btn-secondary mb-3 mt-3 rounded-pill"
+                        (click)="AdicionarProduto()">Adicionar</button>
+                    <button type="button" class="btn btn-secondary ml-5 pl-4 pr-4 rounded-pill"
+                        (click)="limparProduto()">Novo</button>
+                </div>
+                <table class="table">
+                    <thead class="tabelas">
+                        <tr>
+                            <th scope="col">Produto</th>
+                            <th scope="col">Preço</th>
+                            <th scope="col">Quantidade</th>
+                            <th scope="col">Desconto</th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let Produto_Pedido of Produtos_Pedido">
+                            <td>{{Produto_Pedido.idProduto}}</td>
+                            <td>{{Produto_Pedido.preco}}</td>
+                            <td>{{Produto_Pedido.quantidade}}</td>
+                            <td>{{Produto_Pedido.desconto}}</td>
+                            <td><button class="btn btn-info btnselecionar btn-sm"
+                                    (click)="selecionarProdutoPedido(Produto_Pedido)">
+                                    <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">
+                                        done_outline</mat-icon>
+                                </button></td>
+                            <td><button class="btn btn-info btnselecionar btn-sm"
+                                    (click)="excluirProdutoPedido(Produto_Pedido)">
+                                    <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">clear
+                                    </mat-icon>
+                                </button></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+
+
+
+            <app-footer>
+                <span rodape>
+                    <button type="submit" class="btn btn-secondary ml-5 rounded-pill" (click)="Gravar()">Salvar</button>
+                    <button type="button" class="btn btn-secondary ml-5 rounded-pill">Novo</button>
+                </span>
+            </app-footer>
+
+        </form>
+
+    </div>
+</app-page-logada>
