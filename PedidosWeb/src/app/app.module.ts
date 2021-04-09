@@ -6,7 +6,7 @@ import { MenuComponent } from './Componentes/menu/menu.component';
 import { FooterComponent } from './Componentes/footer/footer.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HomeComponent } from './pages/home/home.component';
-import { CadastroFuncionarioComponent } from './pages/cadastro-funcionario/cadastro-funcionario.component';
+import { CadastroPessoaComponent } from './pages/cadastro-pessoa/cadastro-pessoa.component';
 import { LoginComponent } from './pages/login/login.component';
 import { AuthenticationComponent } from './pages/authentication/authentication.component';
 import { FormsModule } from '@angular/forms';
@@ -48,7 +48,7 @@ import { MatExpansionModule, MatAccordion } from '@angular/material/expansion';
     MenuComponent,
     FooterComponent,
     HomeComponent,
-    CadastroFuncionarioComponent,
+    CadastroPessoaComponent,
     LoginComponent,
     AuthenticationComponent,
     PageLogadaComponent,

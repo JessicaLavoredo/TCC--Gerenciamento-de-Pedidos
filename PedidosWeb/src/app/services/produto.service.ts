@@ -21,4 +21,13 @@ export class ProdutoService {
       return result;
     }
   }
+
+  async BuscarPorFiltro(Filtros: any) {
+    const json = JSON.stringify(Filtros);
+    const result: any = await Api.post('/Produto/buscarPorFiltro', json);
+    if (result.data) {
+      return result.data;
+    }
+
+  }
 }

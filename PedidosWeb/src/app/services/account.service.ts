@@ -19,7 +19,7 @@ export class AccountService {
   async login(user: Usuario) {
 
     const result = await this.http.post<any>(environment.api + 'Usuario/Login', user).toPromise();
-    if (result.length >= 0) {
+    if (result.length > 0) {
       window.localStorage.setItem('token', '123');
       return true;
     }

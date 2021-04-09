@@ -8,39 +8,40 @@ import { Router } from '@angular/router';
   templateUrl: './cadastro-cat-telefone.component.html',
   styleUrls: ['./cadastro-cat-telefone.component.css']
 })
-export class CadastroCatTelefoneComponent implements OnInit { 
+export class CadastroCatTelefoneComponent implements OnInit {
   public categorias: CategoriaTelefone[] = [];
   public filter;
   public categoria: CategoriaTelefone = new CategoriaTelefone();
-  constructor( private CategoriaTelefoneService: CategoriaTelefoneService, private router: Router) { }
+  constructor(private CategoriaTelefoneService: CategoriaTelefoneService, private router: Router) { }
 
   ngOnInit(): void {
     this.listar();
   }
 
-  public listar(){
-    this.CategoriaTelefoneService.buscarTodos().subscribe( result => {
+  public listar() {
+    this.CategoriaTelefoneService.buscarTodos().subscribe(result => {
       this.categorias = result;
-  });
-    }
-  public async Gravar(){
-    try{
+    });
+  }
+  public async Gravar() {
+    try {
       await this.CategoriaTelefoneService.gravar(this.categoria);
       this.listar();
       this.categoria = new CategoriaTelefone();
-      }catch (error){
-        console.error(error);
-      }
-  }
-
-  public selecionarCategoria(categoria: CategoriaTelefone) {
-    if ( categoria ) {
-      this.categoria = categoria;
+    } catch (error) {
+      console.error(error);
     }
   }
 
+  public selecionarCategoria(categoria: CategoriaTelefone) {
+    if (categoria) {
+      this.categoria = categoria;
+    }
+    this.listar();
+  }
+
   public Limpar() {
-      this.categoria = new CategoriaTelefone();
+    this.categoria = new CategoriaTelefone();
   }
 
 }

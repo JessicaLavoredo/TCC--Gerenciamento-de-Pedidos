@@ -1,32 +1,33 @@
+import { Estado } from './../../class/estado';
 import { emailRetorno } from './../../class/emailRetorno';
 import { telefoneRetorno } from './../../class/telefoneRetorno';
 import { enderecoRetorno } from './../../class/enderecoRetorno';
 import { Vinculo } from './../../class/vinculo';
 import { endereco } from './../../class/endereco';
-import { Cidade } from './../../interface/cidade';
-import { FuncionarioService } from './../../services/funcionario.service';
-import { Component, OnInit, } from '@angular/core';
+import { Cidade } from './../../class/cidade';
+import { PessoaService } from './../../services/pessoa.service';
+import { Component, ElementRef, OnInit, ViewChild, } from '@angular/core';
 import { Router } from '@angular/router';
 import { CategoriaEndereco } from 'src/app/class/categoria-endereco';
 import { CategoriaEmail } from 'src/app/class/categoria-email';
 import { CategoriaTelefone } from 'src/app/class/categoria-telefone';
 import { Pessoa } from 'src/app/class/Pessoa';
-import { textChangeRangeIsUnchanged } from 'typescript';
 
 @Component({
-  selector: 'app-cadastro-funcionario',
-  templateUrl: './cadastro-funcionario.component.html',
-  styleUrls: ['./cadastro-funcionario.component.css']
+  selector: 'app-cadastro-pessoa',
+  templateUrl: './cadastro-pessoa.component.html',
+  styleUrls: ['./cadastro-pessoa.component.css']
 })
-export class CadastroFuncionarioComponent implements OnInit {
+export class CadastroPessoaComponent implements OnInit {
   public paginaAtual = 1;
   public Cidades: Cidade[] = [];
-  public cidade: Cidade = { IdCidade: '', IdEstado: '', Codigo_IBGE: '', Nome: '' };
+  public cidade: Cidade = new Cidade();
   public filter;
   public categoriasEndereco: CategoriaEndereco[] = [];
   public categoriasEmail: CategoriaEmail[] = [];
   public categoriasTelefone: CategoriaTelefone[] = [];
   public Pessoa: Pessoa = new Pessoa();
+  public Pessoas: Pessoa[] = [];
   public enderecos: enderecoRetorno[] = [];
   public Endereco: enderecoRetorno = new enderecoRetorno();
   public telefone: telefoneRetorno = new telefoneRetorno();
@@ -42,9 +43,14 @@ export class CadastroFuncionarioComponent implements OnInit {
   public cpfMask = '000.000.000-00';
   public rgMask = '00.000.000-0';
   public desativado = false;
+  public botao: boolean = false;
+  public filtros: any;
 
 
-  constructor(private FuncionarioService: FuncionarioService, private router: Router) { }
+  @ViewChild('modalSearchPessoa') modalSearchPessoa: ElementRef;
+  @ViewChild('modalSearchCidade') modalSearchCidade: ElementRef;
+
+  constructor(private PessoaService: PessoaService, private router: Router) { }
 
   ngOnInit(): void {
     this.limparTela()
@@ -67,41 +73,59 @@ export class CadastroFuncionarioComponent implements OnInit {
     this.listarCatEmail();
     this.listarCatTelefone();
     this.listarVinculo();
+    this.ListarTodasCidades();
+    this.filtros = {};
   }
 
   public PesquisarCidade() {
-    this.FuncionarioService.buscarTodasCidades().subscribe(result => {
+    if (this.Endereco.nomeCidade == '') {
+      this.modalSearchCidade.nativeElement.click();
+    } else {
+      let CidadeRetorno = this.Cidades.filter(Cidade => Cidade.nome === this.Endereco.nomeCidade.toLowerCase());
+      this.Endereco.idCidade = CidadeRetorno[0].idCidade;
+      this.Endereco.nomeCidade = CidadeRetorno[0].nome;
+    }
+  }
+
+  public ListarTodasCidades() {
+    this.PessoaService.buscarTodasCidades().subscribe(result => {
       this.Cidades = result;
+    });
+  }
+
+  public ListarTodasPessoas() {
+    this.PessoaService.buscarTodos().subscribe(result => {
+      this.Pessoas = result;
     });
   }
 
   public selecionarCidade(Cidade: Cidade) {
     if (Cidade) {
-      this.Endereco.idCidade = Cidade.IdCidade;
-      this.Endereco.nomeCidade = Cidade.Nome;
+      this.Endereco.idCidade = Cidade.idCidade;
+      this.Endereco.nomeCidade = Cidade.nome;
     }
   }
 
   public listarCatEndereco() {
-    this.FuncionarioService.buscarTodosCatEnderecos().subscribe(result => {
+    this.PessoaService.buscarTodosCatEnderecos().subscribe(result => {
       this.categoriasEndereco = result;
     });
   }
 
   public listarCatEmail() {
-    this.FuncionarioService.buscarTodosCatEmails().subscribe(result => {
+    this.PessoaService.buscarTodosCatEmails().subscribe(result => {
       this.categoriasEmail = result;
     });
   }
 
   public listarCatTelefone() {
-    this.FuncionarioService.buscarTodosCatTelefones().subscribe(result => {
+    this.PessoaService.buscarTodosCatTelefones().subscribe(result => {
       this.categoriasTelefone = result;
     });
   }
 
   public listarVinculo() {
-    this.FuncionarioService.buscarTodosVinculos().subscribe(result => {
+    this.PessoaService.buscarTodosVinculos().subscribe(result => {
       this.Vinculos = result;
     });
   }
@@ -110,7 +134,7 @@ export class CadastroFuncionarioComponent implements OnInit {
     try {
       this.Pessoa.enderecos = this.enderecos;
       this.Pessoa.telefones = this.telefones;
-      let retorno = await this.FuncionarioService.gravar(this.Pessoa);
+      let retorno = await this.PessoaService.gravar(this.Pessoa);
       alert(retorno.data)
     } catch (error) {
       console.error(error);
@@ -234,11 +258,45 @@ export class CadastroFuncionarioComponent implements OnInit {
 
   async buscarPorCep() {
     if (this.Endereco.cep.length == 8) {
-      let retorno: any = await this.FuncionarioService.buscaPorCEP(this.Endereco.cep);
-      this.Endereco.logradouro = retorno.logradouro;
-      this.Endereco.bairro = retorno.bairro;
+      let retorno: any = await this.PessoaService.buscaPorCEP(this.Endereco.cep);
+      if (retorno.logradouro != '') {
+        this.Endereco.logradouro = retorno.logradouro;
+      }
+      if (retorno.logradouro != '') {
+        this.Endereco.bairro = retorno.bairro;
+      }
+      if (retorno.ibge) {
+        let CidadeRetorno = this.Cidades.filter(Cidade => Cidade.codigoIBGE === retorno.ibge);
+        this.Endereco.idCidade = CidadeRetorno[0].idCidade;
+        this.Endereco.nomeCidade = CidadeRetorno[0].nome;
+      }
     }
 
+  }
+
+  async Pesquisar() {
+    if (this.Pessoa.idPessoa == '') {
+      this.ListarTodasPessoas();
+      this.modalSearchPessoa.nativeElement.click();
+    } else {
+      this.filtros.idPessoa = this.Pessoa.idPessoa;
+      let resultado = await this.PessoaService.BuscarPorFiltro(this.filtros);
+      this.Pessoa.idPessoa = resultado[0].IdPessoa;
+      this.Pessoa.tipoPessoa = resultado[0].TipoPessoa;
+      this.Pessoa.nomeRazao = resultado[0].NomeRazao;
+      this.Pessoa.apelidoFantasia = resultado[0].ApelidoFantasia;
+      this.Pessoa.cpfCnpj = resultado[0].CPFCNPJ;
+      this.Pessoa.rgInscricao = resultado[0].RGInscricao;
+      this.Pessoa.dataNascimento = resultado[0].DataNascimento;
+      this.Pessoa.genero = resultado[0].Genero;
+      if (resultado[0].Inativo == 0) {
+        this.Pessoa.inativo = false
+      } else {
+        this.Pessoa.inativo = true
+      }
+
+      this.Pessoa.dataInclusao = resultado[0].DataInclusao;
+    }
   }
 
 }

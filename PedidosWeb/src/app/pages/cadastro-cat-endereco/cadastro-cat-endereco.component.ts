@@ -37,6 +37,7 @@ export class CadastroCatEnderecoComponent implements OnInit {
     if (categoria) {
       this.categoria = categoria;
     }
+    this.listar();
   }
 
 

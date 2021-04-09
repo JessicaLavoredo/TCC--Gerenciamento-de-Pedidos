@@ -7,11 +7,21 @@
 
   <div class="container corpo">
     <div class="form-row">
-      <div class="form-group col-md-2">
+      <div class="form-group col-md-1">
         <label for="txtCodigo">Código</label>
         <input type="text" class="form-control" id="txtCodigo" name="Codigo" [(ngModel)]="Pessoa.idPessoa">
       </div>
-      <div class="form-group col-md-5">
+      <button type="button" #modalSearchPessoa class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
+        data-target="#ModalPesquisaPessoa">
+        <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+      </button>
+      <div class="form-group mt-4 col-md-0.5 mr-2">
+        <button type="button" class="btn btn-info btnsearch " (click)='Pesquisar()'>
+          <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+        </button>
+      </div>
+
+      <div class="form-group col-md-5 mr-2">
         <label for="txtNome">{{labelNome}}</label>
         <input type="text" class="form-control" id="txtNome" name="Nome" [(ngModel)]="Pessoa.nomeRazao">
       </div>
@@ -121,9 +131,12 @@
           <div class="form-group">
             <input type="hidden" class="form-control" id="txtcatEnd" name="CatEnd" [(ngModel)]="Endereco.idCidade">
           </div>
+          <button type="button" #modalSearchCidade class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
+            data-target="#ModalCidade">
+            <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+          </button>
           <div class="form-group mt-4 col-md-1">
-            <button class="btn btn-info btnsearch btn-sm" (click)="PesquisarCidade()" data-toggle="modal"
-              data-target="#ModalCidade">
+            <button class="btn btn-info btnsearch btn-sm" (click)="PesquisarCidade()">
               <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
             </button>
           </div>
@@ -334,8 +347,8 @@
 
   <app-footer>
     <span rodape>
-      <button type="submit" class="btn btn-secondary ml-5 rounded-pill" (click)="Gravar()">Salvar</button>
-      <button type="button" class="btn btn-secondary ml-5 rounded-pill">Novo</button>
+      <button type="submit" class="btn btn-secondary ml-5 " (click)="Gravar()">Salvar</button>
+      <button type="button" class="btn btn-secondary ml-5 " (click)="limparTela()">Novo</button>
     </span>
   </app-footer>
 
@@ -369,9 +382,9 @@
             <tbody>
               <tr
                 *ngFor="let cidade of Cidades| filter:filter| paginate: { itemsPerPage: 5, currentPage: paginaAtual }; let i = index ">
-                <th scope="row">{{cidade.IdCidade}}</th>
-                <td>{{cidade.Nome}}</td>
-                <td>{{cidade.IdEstado}}</td>
+                <th scope="row">{{cidade.idCidade}}</th>
+                <td>{{cidade.nome}}</td>
+                <td>{{cidade.estado.sigla}}</td>
                 <td><button class="btn btn-info btnselecionar btn-sm" data-dismiss="modal" aria-label="Close"
                     (click)="selecionarCidade(cidade)">
                     <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">done_outline</mat-icon>
@@ -391,4 +404,59 @@
   </div>
 
 
+</div>
+
+
+<div class="modal fade" id="ModalPesquisaPessoa" tabindex="-1" role="dialog" aria-labelledby="ModalPesquisaPessoaLabel"
+  aria-hidden="true">
+  <div class="modal-dialog modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="ModalPesquisaLabel">Pesquisa de Usuário</h2>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="form-row mb-2">
+          <label for="txtCodigo" class="col-md-1">Pesquisa</label>
+          <input class="form-control col-md-11" type="text" name="search">
+        </div>
+        <div class="Teste">
+          <table class="table table-striped">
+            <thead class="tabelas">
+              <tr>
+                <th scope="col">Código</th>
+                <th scope="col">{{labelNome}}</th>
+                <th scope="col">{{labelFantasia}}</th>
+                <th scope="col">{{labelCPFCNPJ}}</th>
+                <th scope="col">Genero</th>
+                <th scope="col">Selecionar</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr
+                *ngFor="let pessoa of Pessoas| filter:filter| paginate: { itemsPerPage: 5, currentPage: paginaAtual }; let i = index ">
+                <th scope="row">{{pessoa.idPessoa}}</th>
+                <td>{{pessoa.nomeRazao}}</td>
+                <td>{{pessoa.apelidoFantasia}}</td>
+                <td>{{pessoa.cpfCnpj}}</td>
+                <td>{{pessoa.genero}}</td>
+                <td><button class="btn btn-info btnselecionar btn-sm" data-dismiss="modal" aria-label="Close"
+                    (click)="selecionarCidade(cidade)">
+                    <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">done_outline</mat-icon>
+                  </button></td>
+              </tr>
+            </tbody>
+            <tbody>
+
+            </tbody>
+          </table>
+        </div>
+
+
+      </div>
+
+    </div>
+  </div>
 </div>

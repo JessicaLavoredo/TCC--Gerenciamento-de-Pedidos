@@ -1,3 +1,4 @@
+import { Pessoa } from 'src/app/class/Pessoa';
 import { CadastroVinculoEmpresaComponent } from './pages/cadastro-vinculo-empresa/cadastro-vinculo-empresa.component';
 import { CadastroPedidoComponent } from './pages/cadastro-pedido/cadastro-pedido.component';
 import { RelatorioFuncionarioComponent } from './pages/relatorio-funcionario/relatorio-funcionario.component';
@@ -6,7 +7,7 @@ import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Routes, RouterModule } from '@angular/router';
 import { HomeComponent } from './pages/home/home.component';
-import { CadastroFuncionarioComponent } from './pages/cadastro-funcionario/cadastro-funcionario.component';
+import { CadastroPessoaComponent } from './pages/cadastro-pessoa/cadastro-pessoa.component';
 import { CadastroCatEmailComponent } from './pages/cadastro-cat-email/cadastro-cat-email.component';
 import { CadastroCatEnderecoComponent } from './pages/cadastro-cat-endereco/cadastro-cat-endereco.component';
 import { CadastroCatTelefoneComponent } from './pages/cadastro-cat-telefone/cadastro-cat-telefone.component';
@@ -24,11 +25,12 @@ import { RelatorioClienteComponent } from './pages/relatorio-cliente/relatorio-c
 import { RelatorioPedidoComponent } from './pages/relatorio-pedido/relatorio-pedido.component';
 
 const routes: Routes = [
-  { path: '', component: PageLogadaComponent ,
+  {
+    path: '', component: PageLogadaComponent,
     children: [
-      { path: '', redirectTo: 'home', pathMatch: 'full'},
-      { path: 'home', component: HomeComponent},
-      { path: 'CadastroFuncionario', component: CadastroFuncionarioComponent },
+      { path: '', redirectTo: 'home', pathMatch: 'full' },
+      { path: 'home', component: HomeComponent },
+      { path: 'CadastroPessoa', component: CadastroPessoaComponent },
       { path: 'CadastroCatEmail', component: CadastroCatEmailComponent },
       { path: 'CadastroCatEndereco', component: CadastroCatEnderecoComponent },
       { path: 'CadastroCatTelefone', component: CadastroCatTelefoneComponent },
@@ -47,12 +49,13 @@ const routes: Routes = [
     ],
     // canActivate: [AuthGuard]
   },
-  { path: '', component: AuthenticationComponent ,
-  children: [
-    { path: '', redirectTo: 'login', pathMatch: 'full'},
-    { path: 'login', component: LoginComponent },
-  ]
-},
+  {
+    path: '', component: AuthenticationComponent,
+    children: [
+      { path: '', redirectTo: 'login', pathMatch: 'full' },
+      { path: 'login', component: LoginComponent },
+    ]
+  },
 
 
 ];

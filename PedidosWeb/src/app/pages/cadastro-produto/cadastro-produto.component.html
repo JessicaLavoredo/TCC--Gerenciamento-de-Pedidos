@@ -13,12 +13,21 @@
                         <input type="text" class="form-control" id="txtCodigo" name="Codigo"
                             [(ngModel)]="Produto.idProduto">
                     </div>
-                    <div class="form-group col-md-5">
+                    <button type="button" #modalSearch class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
+                        data-target="#ModalPesquisa">
+                        <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+                    </button>
+                    <div class="form-group mt-4 col-md-0.5 mr-2">
+                        <button type="button" class="btn btn-info btnsearch " (click)='Pesquisar()'>
+                            <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+                        </button>
+                    </div>
+                    <div class="form-group col-md-4">
                         <label for="txtNome">Nome Técnico</label>
                         <input type="text" class="form-control" id="txtNome" name="Nome"
                             [(ngModel)]="Produto.nomeTecnico">
                     </div>
-                    <div class="form-group col-md-5">
+                    <div class="form-group col-md-4">
                         <label for="txtNomeComercial">Nome Comercial</label>
                         <input type="text" class="form-control" name="NomeComercial" id="txtNomeComercial"
                             [(ngModel)]="Produto.nomeComercial">
@@ -26,7 +35,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-4">
-                        <label for="txtCpf">Codigo Interno</label>
+                        <label for="txtCpf">Código Interno</label>
                         <input type="text" class="form-control" id="txtCodigointerno" name="CodigoInterno"
                             [(ngModel)]="Produto.codigoInterno">
                     </div>
@@ -38,7 +47,7 @@
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-4">
-                        <label for="txtCpf">Preço à vista</label>
+                        <label for="txtCpf">Preço à Vista</label>
                         <input type="text" class="form-control" id="txtVista" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
                             [(ngModel)]="Produto.vista" name="vista">
                     </div>
@@ -53,10 +62,66 @@
             <app-footer>
                 <span rodape>
                     <button type="submit" (click)="Gravar()" class="btn btn-secondary ml-5 rounded-pill">Salvar</button>
-                    <button type="button" class="btn btn-secondary ml-5 rounded-pill">Novo</button>
+                    <button type="button" (click)="Limpar()" class="btn btn-secondary ml-5 rounded-pill">Novo</button>
                 </span>
             </app-footer>
 
         </form>
+
+        <div class="modal fade" id="ModalPesquisa" tabindex="-1" role="dialog" aria-labelledby="ModalPesquisa"
+            aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2 class="modal-title" id="ModalPesquisaLabel">Pesquisa de Produtos</h2>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-row mb-2">
+                            <label for="txtCodigo" class="col-md-1">Pesquisa</label>
+                            <input class="form-control col-md-11" type="text" name="search">
+                        </div>
+                        <div class="Teste">
+                            <table class="table table-striped">
+                                <thead class="tabelas">
+                                    <tr>
+                                        <th scope="col">Código</th>
+                                        <th scope="col">Nome Técnico</th>
+                                        <th scope="col">Nome Comercial</th>
+                                        <th scope="col">Código Interno</th>
+                                        <th scope="col">Descrição</th>
+                                        <th scope="col">Selecionar</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr
+                                        *ngFor="let Produto of Produtos| filter:filter| paginate: { itemsPerPage: 5, currentPage: paginaAtual }; let i = index ">
+                                        <th scope="row">{{Produto.IdProduto}}</th>
+                                        <td>{{Produto.NomeTecnico}}</td>
+                                        <td>{{Produto.NomeComercial}}</td>
+                                        <td>{{Produto.CodigoInterno}}</td>
+                                        <td>{{Produto.Descricao}}</td>
+
+                                        <td><button class="btn btn-info btnselecionar btn-sm" data-dismiss="modal"
+                                                aria-label="Close" (click)="selecionarProduto(Produto)">
+                                                <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">
+                                                    done_outline</mat-icon>
+                                            </button></td>
+                                    </tr>
+                                </tbody>
+                                <tbody>
+
+                                </tbody>
+                            </table>
+                        </div>
+
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
     </div>
 </app-page-logada>
