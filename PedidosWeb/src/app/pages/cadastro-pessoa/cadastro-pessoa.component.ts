@@ -12,6 +12,9 @@ import { CategoriaEndereco } from 'src/app/class/categoria-endereco';
 import { CategoriaEmail } from 'src/app/class/categoria-email';
 import { CategoriaTelefone } from 'src/app/class/categoria-telefone';
 import { Pessoa } from 'src/app/class/Pessoa';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
+import { triggerAsyncId } from 'async_hooks';
+import { forEachChild } from 'typescript';
 
 @Component({
   selector: 'app-cadastro-pessoa',
@@ -81,9 +84,11 @@ export class CadastroPessoaComponent implements OnInit {
     if (this.Endereco.nomeCidade == '') {
       this.modalSearchCidade.nativeElement.click();
     } else {
-      let CidadeRetorno = this.Cidades.filter(Cidade => Cidade.nome === this.Endereco.nomeCidade.toLowerCase());
-      this.Endereco.idCidade = CidadeRetorno[0].idCidade;
-      this.Endereco.nomeCidade = CidadeRetorno[0].nome;
+      let CidadeRetorno = this.Cidades.filter(Cidade => Cidade.nome == this.Endereco.nomeCidade.toLowerCase());
+      if (CidadeRetorno.length > 0) {
+        this.Endereco.idCidade = CidadeRetorno[0].idCidade;
+        this.Endereco.nomeCidade = CidadeRetorno[0].nome;
+      }
     }
   }
 
@@ -134,6 +139,7 @@ export class CadastroPessoaComponent implements OnInit {
     try {
       this.Pessoa.enderecos = this.enderecos;
       this.Pessoa.telefones = this.telefones;
+      this.Pessoa.emails = this.emails;
       let retorno = await this.PessoaService.gravar(this.Pessoa);
       alert(retorno.data)
     } catch (error) {
@@ -279,23 +285,18 @@ export class CadastroPessoaComponent implements OnInit {
       this.ListarTodasPessoas();
       this.modalSearchPessoa.nativeElement.click();
     } else {
-      this.filtros.idPessoa = this.Pessoa.idPessoa;
-      let resultado = await this.PessoaService.BuscarPorFiltro(this.filtros);
-      this.Pessoa.idPessoa = resultado[0].IdPessoa;
-      this.Pessoa.tipoPessoa = resultado[0].TipoPessoa;
-      this.Pessoa.nomeRazao = resultado[0].NomeRazao;
-      this.Pessoa.apelidoFantasia = resultado[0].ApelidoFantasia;
-      this.Pessoa.cpfCnpj = resultado[0].CPFCNPJ;
-      this.Pessoa.rgInscricao = resultado[0].RGInscricao;
-      this.Pessoa.dataNascimento = resultado[0].DataNascimento;
-      this.Pessoa.genero = resultado[0].Genero;
-      if (resultado[0].Inativo == 0) {
-        this.Pessoa.inativo = false
-      } else {
-        this.Pessoa.inativo = true
+      let retorno: any = await this.PessoaService.BuscarPorId(this.Pessoa.idPessoa)
+      if (retorno) {
+        this.Pessoa = retorno;
+        if (retorno.inativo == 0) {
+          this.Pessoa.inativo = false;
+        } else {
+          this.Pessoa.inativo = true;
+        }
+        this.telefones = retorno.telefones.length > 0 ? retorno.telefones : [];
+        this.enderecos = retorno.enderecos.length > 0 ? retorno.enderecos : [];
+        this.emails = retorno.emails.length > 0 ? retorno.emails : [];
       }
-
-      this.Pessoa.dataInclusao = resultado[0].DataInclusao;
     }
   }
 

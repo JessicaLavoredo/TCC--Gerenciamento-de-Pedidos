@@ -10,18 +10,18 @@ import Api from './Api';
 export class ClienteService {
   constructor(private http: HttpClient) { }
 
-  public buscarTodos(){
+  public buscarTodos() {
     return this.http.get<Cliente[]>(environment.api + 'CategoriaEmail/buscartodos');
   }
 
-  async gravar(cliente: Cliente){
+  async gravar(cliente: Cliente) {
     const json = JSON.stringify(cliente);
-    const result: any =  await Api.post('CategoriaEmail/gravar', json);
-    if (result.length > 0){
-        console.log(result);
-        return true;
-      }else{
+    const result: any = await Api.post('CategoriaEmail/gravar', json);
+    if (result.length > 0) {
+      console.log(result);
+      return true;
+    } else {
       return false;
-      }
     }
+  }
 }

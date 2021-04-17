@@ -22,7 +22,7 @@ export class PessoaService {
   async gravar(pessoa: Pessoa) {
     const json = JSON.stringify(pessoa);
     const result: any = await Api.post('Pessoa/gravar', json);
-    if (result.length > 0) {
+    if (result > 0) {
       return result;
     }
   }
@@ -61,6 +61,13 @@ export class PessoaService {
     if (result.data) {
       return result.data;
     }
+  }
 
+  async BuscarPorId(Codigo: String) {
+    return new Promise(resolve => {
+      this.http.get(environment.api + '/Pessoa/buscarPorId/' + Codigo).subscribe(result => {
+        resolve(result);
+      });
+    })
   }
 }
