@@ -1,9 +1,13 @@
+import { FormControl } from '@angular/forms';
 import { PerfilUsuario } from './../../class/perfil-usuario';
 import { UsuarioService } from './../../services/usuario.service';
 import { PerfilUsuarioService } from './../../services/perfil-usuario.service';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { Usuario } from 'src/app/class/usuario';
+import { Pessoa } from 'src/app/class/Pessoa';
+import { Observable } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-cadastro-usuario',
@@ -16,14 +20,21 @@ export class CadastroUsuarioComponent implements OnInit {
   public paginaAtual = 1;
   botao: boolean = false;
   public Usuario: Usuario = new Usuario();
+  NomePessoa: string = '';
   ConfirmacaoSenha: string = '';
   Perfis: PerfilUsuario[] = [];
+  public filter;
   Perfil: PerfilUsuario = new PerfilUsuario();
+  public Pessoas: Pessoa[] = [];
+  @ViewChild('modalSearchPessoa') modalSearchPessoa: ElementRef;
+  queryPessoa = new FormControl();
+  resultados: Observable<any>;
 
   constructor(private UsuarioService: UsuarioService, private router: Router, private PerfilUsuarioService: PerfilUsuarioService) { }
 
   ngOnInit(): void {
-    this.listarPerfil()
+    this.listarPerfil();
+    this.Limpar()
   }
 
   public listarPerfil() {
@@ -52,5 +63,41 @@ export class CadastroUsuarioComponent implements OnInit {
   }
   Limpar() {
     this.Usuario = new Usuario();
+    this.NomePessoa = '';
+    this.PesquisaReativaFuncionario();
+  }
+
+  PesquisaReativaFuncionario() {
+    this.queryPessoa.valueChanges.pipe(
+      map(value => value.trim()),
+      filter(value => value.length > 0),
+      debounceTime(200),
+      distinctUntilChanged(),
+      switchMap(value => this.UsuarioService.BuscarPorId(this.Usuario.idPessoa)),
+      map((result: any) => {
+        if (result) {
+          this.NomePessoa = result.nomeRazao;
+        }
+      }
+      )
+    ).subscribe();
+  }
+
+  async pesquisarFuncionario() {
+    if (this.Usuario.idPessoa == '') {
+      this.ListarTodasPessoas();
+      this.modalSearchPessoa.nativeElement.click();
+    } else {
+      let retorno: any = await this.UsuarioService.BuscarPorId(this.Usuario.idPessoa)
+      if (retorno) {
+        this.NomePessoa = retorno.nomeRazao;
+      }
+    }
+  }
+
+  public ListarTodasPessoas() {
+    this.UsuarioService.buscarTodosFuncionarios().subscribe(result => {
+      this.Pessoas = result;
+    });
   }
 }

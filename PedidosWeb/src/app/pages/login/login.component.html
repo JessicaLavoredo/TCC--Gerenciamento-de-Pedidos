@@ -1,3 +1,4 @@
+<app-alert aria-live="polite" aria-atomic="true"></app-alert>
 <div class="wrapper">
   <div id="formContent">
     <div id="logintitle">
@@ -5,7 +6,7 @@
     </div>
     <form (ngSubmit)="onSubmit()" #form="ngForm">
       <input class="form-control" type="email" id="Usuario" name="email" placeholder="Usuario"
-        [(ngModel)]="usuario.idUsuario" required>
+        [(ngModel)]="usuario.login" required>
       <input class="form-control" type="password" id="Senha" name="login" placeholder="Senha"
         [(ngModel)]="usuario.senha" required>
       <button type="submit" class="btn btn-primary">Entrar</button>
@@ -13,6 +14,5 @@
     <div id="formFooter">
       <a class="underlineHover" href="#">Esqueceu a senha?</a>
     </div>
-
   </div>
 </div>

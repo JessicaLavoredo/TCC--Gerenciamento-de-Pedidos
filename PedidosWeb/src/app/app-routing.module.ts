@@ -21,10 +21,41 @@ import { HomeAdminComponent } from './pages/home-admin/home-admin.component';
 import { AuthenticationComponent } from './pages/authentication/authentication.component';
 import { LoginComponent } from './pages/login/login.component';
 import { AuthGuard } from './guard/account/auth.guard';
+import { AuthGuardAdm } from './guard/account/authAdm.guard';
 import { RelatorioClienteComponent } from './pages/relatorio-cliente/relatorio-cliente.component';
 import { RelatorioPedidoComponent } from './pages/relatorio-pedido/relatorio-pedido.component';
 
 const routes: Routes = [
+  {
+    path: '', component: PageLogadaComponent,
+    children: [
+      { path: '', redirectTo: 'home', pathMatch: 'full', canActivate: [AuthGuard] },
+      { path: 'home', component: HomeComponent, canActivate: [AuthGuard] },
+      { path: 'CadastroPessoa', component: CadastroPessoaComponent, canActivate: [AuthGuard] },
+      { path: 'CadastroCatEmail', component: CadastroCatEmailComponent, canActivate: [AuthGuardAdm] },
+      { path: 'CadastroCatEndereco', component: CadastroCatEnderecoComponent, canActivate: [AuthGuardAdm] },
+      { path: 'CadastroCatTelefone', component: CadastroCatTelefoneComponent, canActivate: [AuthGuardAdm] },
+      { path: 'CadastroPerfilUsuario', component: CadastroPerfilUsuarioComponent, canActivate: [AuthGuardAdm] },
+      { path: 'CadastroUsuario', component: CadastroUsuarioComponent, canActivate: [AuthGuardAdm] },
+      { path: 'CadastroProduto', component: CadastroProdutoComponent, canActivate: [AuthGuard] },
+      { path: 'CadastroCliente', component: CadastroClienteComponent, canActivate: [AuthGuard] },
+      { path: 'CadastroListaPreco', component: CadastroListaPrecoComponent, canActivate: [AuthGuard] },
+      { path: 'CadastroFormaPagamento', component: CadastroFormaPagamentoComponent, canActivate: [AuthGuardAdm] },
+      { path: 'RelatorioFuncionario', component: RelatorioFuncionarioComponent, canActivate: [AuthGuard] },
+      { path: 'RelatorioCliente', component: RelatorioClienteComponent, canActivate: [AuthGuard] },
+      { path: 'RelatorioPedidos', component: RelatorioPedidoComponent, canActivate: [AuthGuard] },
+      { path: 'CadastroPedido', component: CadastroPedidoComponent, canActivate: [AuthGuard] },
+      { path: 'VinculoEmpresa', component: CadastroVinculoEmpresaComponent, canActivate: [AuthGuardAdm] },
+      { path: 'HomeAdmin', component: HomeAdminComponent, canActivate: [AuthGuard] }
+    ],
+  },
+  {
+    path: '', component: AuthenticationComponent,
+    children: [
+      { path: '', redirectTo: 'login', pathMatch: 'full' },
+      { path: 'login', component: LoginComponent },
+    ]
+  },
   {
     path: '', component: PageLogadaComponent,
     children: [
@@ -47,15 +78,8 @@ const routes: Routes = [
       { path: 'VinculoEmpresa', component: CadastroVinculoEmpresaComponent },
       { path: 'HomeAdmin', component: HomeAdminComponent }
     ],
-    // canActivate: [AuthGuard]
-  },
-  {
-    path: '', component: AuthenticationComponent,
-    children: [
-      { path: '', redirectTo: 'login', pathMatch: 'full' },
-      { path: 'login', component: LoginComponent },
-    ]
-  },
+    canActivate: [AuthGuard]
+  }
 
 
 ];

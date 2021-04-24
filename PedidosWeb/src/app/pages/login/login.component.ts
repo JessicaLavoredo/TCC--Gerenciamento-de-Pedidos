@@ -1,3 +1,4 @@
+import { AlertService } from './../../services/alert.service';
 import { Usuario } from '../../class/usuario';
 import { Router } from '@angular/router';
 import { AccountService } from './../../services/account.service';
@@ -13,27 +14,29 @@ export class LoginComponent implements OnInit {
   public usuario: Usuario = new Usuario();
 
 
-  constructor(private accountService: AccountService, private router: Router) { }
+  constructor(private accountService: AccountService, private router: Router, private AlertService: AlertService) { }
 
 
   ngOnInit(): void {
   }
 
-  // async onSubmit(){
-  //     this.accountService.login(this.usuario).subscribe( result => {
-  //         console.log(result);
-  //         window.localStorage.setItem('token', result.idPessoa);
-  //         this.router.navigate(['']);
-  //     });
-  //   }
 
   async onSubmit() {
     try {
-      await this.accountService.login(this.usuario);
-      alert('logou');
-      this.router.navigate(['']);
+      if (this.usuario.login == '') {
+        this.AlertService.show('Preencha corretamente o campo: Usuário', { classname: 'bg-danger text-light', delay: 3000 });
+      } else if (this.usuario.senha == '') {
+        this.AlertService.show('Preencha corretamente o campo: Senha', { classname: 'bg-danger text-light', delay: 3000 });
+      } else {
+        const autenticado = await this.accountService.login(this.usuario);
+        if (!autenticado) {
+          this.AlertService.show('Usuário ou Senha inválido', { classname: 'bg-danger text-light', delay: 3000 });
+        } else {
+          this.router.navigate(['']);
+        }
+      }
     } catch (error) {
-      console.error(error);
+      this.AlertService.show('erro inesperado', { classname: 'bg-danger text-light', delay: 3000 });
     }
   }
 }

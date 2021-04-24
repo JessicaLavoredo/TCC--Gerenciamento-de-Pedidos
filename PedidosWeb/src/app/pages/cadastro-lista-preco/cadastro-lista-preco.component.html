@@ -1,47 +1,110 @@
 <app-menu></app-menu>
- <div class="TituloPagina">
-   <span>Cadastro de Lista de Preço</span>
- </div>
+<div class="TituloPagina">
+  <span>Cadastro de Lista de Preço</span>
+</div>
 
 <form>
-    <div class="container corpo">
+  <div class="container corpo">
+    <div class="form-row">
+      <div class="form-group col-md-1">
+        <label for="txtCodigo">Código</label>
+        <input type="text" class="form-control" id="txtCodigo" name="codigo" [(ngModel)]="ListaPreco.IdListaPreco">
+      </div>
+      <button #modalSearch class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
+        data-target="#ModalPesquisa">
+        <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+      </button>
+      <div class="form-group mt-4 col-md-1">
+        <button type="button" class="btn btn-info btnsearch ">
+          <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+        </button>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group col-md-5">
+        <label for="txtNome">Descrição</label>
+        <input type="text" class="form-control" id="txtNome" name="descritivo" [(ngModel)]="ListaPreco.Descritivo">
+      </div>
+      <div class="form-group col-md-5">
+        <label for="txtNome">Disponibilidade</label>
         <div class="form-row">
-            <div class="form-group col-md-2">
-                <label for="txtCodigo">Código</label>
-                <input type="text" class="form-control" id="txtCodigo" name="codigo" [(ngModel)]="ListaPreco.IdListaPreco">
-            </div>
-            <div class="form-group col-md-7">
-                <label for="txtNome">Descrição</label>
-                <input type="text" class="form-control" id="txtNome" name="descritivo" [(ngModel)]="ListaPreco.Descritivo">
-            </div>
-           
-        </div>  
-        <table class="table">
-          <thead class="tabelas">
-            <tr>
-              <th scope="col">Código</th>
-              <th scope="col">Descritivo</th>
-              <th scope="col">Selecionar</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let ListaPreco of ListasPreco">
-              <th scope="row">{{ListaPreco.IdListaPreco}}</th>
-              <td>{{ListaPreco.Descritivo}}</td> 
-              <td><button class="btn btn-info btnselecionar btn-sm"
-                (click)="selecionarListaPreco(ListaPreco)">
-                <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">done_outline</mat-icon>
-              </button></td>               
-            </tr>                
-          </tbody>
-        </table>
-     </div>           
- <app-footer>
+          <div class="form-group col-md-0.5">
+            <label for="txtNome">De</label>
+          </div>
+          <div class="form-group col-md-5">
+            <input type="text" class="form-control" id="txtNome" name="descritivo" [(ngModel)]="ListaPreco.Descritivo">
+          </div>
+          <div class="form-group col-md-0.5">
+            <label for="txtNome">Até</label>
+          </div>
+          <div class="form-group col-md-5">
+            <input type="text" class="form-control" id="txtNome" name="descritivo" [(ngModel)]="ListaPreco.Descritivo">
+          </div>
+        </div>
+      </div>
+      <div class="form-group col-md-2">
+        <label for="PerfilId">Estado</label>
+        <select id="PerfilId" class="form-control" [(ngModel)]="ListaPreco.estado" name=" idPerfil">
+          <option [value]=lista.estado *ngFor="let lista of ListasPreco">
+            {{perfil.Nome}}
+          </option>
+        </select>
+      </div>
+    </div>
+    <div class="form-row">
+      <div class="form-group  col-md-1">
+        <label for="txtCodigo">Produto</label>
+        <input type="text" class="form-control" id="txtCodigo" name="codigo" [(ngModel)]="ListaPreco.IdListaPreco">
+      </div>
+      <div class="form-group mt-4 col-md-0.5">
+        <button type="button" class="btn btn-info btnsearch ">
+          <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+        </button>
+      </div>
+      <button #modalSearch class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
+        data-target="#ModalPesquisa">
+        <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+      </button>
+
+      <div class="form-group col-md-5">
+        <label for="txtNome">Descrição</label>
+        <input type="text" class="form-control" id="txtNome" name="descritivo" [(ngModel)]="ListaPreco.Descritivo">
+      </div>
+      <div class="form-group col-md-2">
+        <label for="txtNome">Preço a Vista</label>
+        <input type="text" class="form-control" id="txtNome" name="descritivo" [(ngModel)]="ListaPreco.Descritivo">
+      </div>
+      <div class="form-group col-md-2">
+        <label for="txtNome">Preço a Prazo</label>
+        <input type="text" class="form-control" id="txtNome" name="descritivo" [(ngModel)]="ListaPreco.Descritivo">
+      </div>
+    </div>
+    <table class="table">
+      <thead class="tabelas">
+        <tr>
+          <th scope="col"></th>
+          <th scope="col">Produto</th>
+          <th scope="col">Preço a Vista</th>
+          <th scope="col">Preço a Prazo</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let ListaPreco of ListasPreco">
+          <td><button class="btn btn-info btnselecionar btn-sm" (click)="selecionarListaPreco(ListaPreco)">
+              <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">done_outline</mat-icon>
+            </button></td>
+          <td>{{ListaPreco.IdListaPreco}}</td>
+          <td>{{ListaPreco.Descritivo}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <app-footer>
     <span rodape>
       <button type="button" (click)="Gravar()" class="btn btn-secondary ml-5 rounded-pill">Salvar</button>
       <button type="button" class="btn btn-secondary ml-5 rounded-pill">Excluir</button>
       <button type="button" (click)="Limpar()" class="btn btn-secondary ml-5 rounded-pill">Novo</button>
     </span>
- </app-footer>
+  </app-footer>
 
 </form>

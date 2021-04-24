@@ -1,5 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { BsModalRef } from 'ngx-bootstrap/modal';
+import { AlertService } from './../../services/alert.service';
+import { Component, TemplateRef, OnInit } from '@angular/core';
 
 @Component({
   selector: 'app-alert',
@@ -7,16 +7,9 @@ import { BsModalRef } from 'ngx-bootstrap/modal';
   styleUrls: ['./alert.component.css']
 })
 export class AlertComponent implements OnInit {
-  @Input() message: string;
-  @Input() type = 'success';
+  constructor(public AlertService: AlertService) { }
 
-  constructor(public bsModalRef: BsModalRef) { }
+  ngOnInit(): void { }
 
-  ngOnInit(): void {
-
-  }
-  onClose() {
-    this.bsModalRef.hide();
-  }
-
+  isTemplate(toast) { return toast.textOrTpl instanceof TemplateRef; }
 }

@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs';
 import { Estado } from './../../class/estado';
 import { emailRetorno } from './../../class/emailRetorno';
 import { telefoneRetorno } from './../../class/telefoneRetorno';
@@ -12,9 +13,9 @@ import { CategoriaEndereco } from 'src/app/class/categoria-endereco';
 import { CategoriaEmail } from 'src/app/class/categoria-email';
 import { CategoriaTelefone } from 'src/app/class/categoria-telefone';
 import { Pessoa } from 'src/app/class/Pessoa';
-import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
-import { triggerAsyncId } from 'async_hooks';
-import { forEachChild } from 'typescript';
+import { FormControl } from '@angular/forms';
+import { tap, map, filter, distinct, distinctUntilChanged, debounceTime, switchMap } from 'rxjs/operators';
+import { AlertService } from './../../services/alert.service';
 
 @Component({
   selector: 'app-cadastro-pessoa',
@@ -22,6 +23,7 @@ import { forEachChild } from 'typescript';
   styleUrls: ['./cadastro-pessoa.component.css']
 })
 export class CadastroPessoaComponent implements OnInit {
+  NomePagina: string = "";
   public paginaAtual = 1;
   public Cidades: Cidade[] = [];
   public cidade: Cidade = new Cidade();
@@ -48,18 +50,29 @@ export class CadastroPessoaComponent implements OnInit {
   public desativado = false;
   public botao: boolean = false;
   public filtros: any;
-
+  queryCidade = new FormControl();
+  queryPessoa = new FormControl();
+  resultados: Observable<any>;
 
   @ViewChild('modalSearchPessoa') modalSearchPessoa: ElementRef;
   @ViewChild('modalSearchCidade') modalSearchCidade: ElementRef;
 
-  constructor(private PessoaService: PessoaService, private router: Router) { }
+  constructor(private PessoaService: PessoaService, private router: Router, private AlertService: AlertService) { }
 
   ngOnInit(): void {
     this.limparTela()
+
+    this.queryCidade.valueChanges.pipe(
+      map(value => value.trim()),
+      debounceTime(200),
+      distinctUntilChanged(),
+      tap(value => this.filter = value),
+    ).subscribe();
+
   }
 
   limparTela() {
+    this.filter = '';
     this.Pessoa = new Pessoa();
     this.enderecos = [];
     this.Endereco = new enderecoRetorno();
@@ -78,6 +91,30 @@ export class CadastroPessoaComponent implements OnInit {
     this.listarVinculo();
     this.ListarTodasCidades();
     this.filtros = {};
+    this.queryPessoa.valueChanges.pipe(
+      map(value => value.trim()),
+      filter(value => value.length > 0),
+      debounceTime(200),
+      distinctUntilChanged(),
+      switchMap(value => this.PessoaService.BuscarPorId(this.Pessoa.idPessoa)),
+      map((result: any) => {
+        if (result) {
+          this.Pessoa = result;
+          if (result.inativo == 0) {
+            this.Pessoa.inativo = false;
+          } else {
+            this.Pessoa.inativo = true;
+          }
+          this.telefones = result.telefones.length > 0 ? result.telefones : [];
+          this.enderecos = result.enderecos.length > 0 ? result.enderecos : [];
+          this.emails = result.emails.length > 0 ? result.emails : [];
+        } else {
+
+        }
+      }
+      )
+    ).subscribe();
+    this.ValidarUsuario()
   }
 
   public PesquisarCidade() {
@@ -141,7 +178,12 @@ export class CadastroPessoaComponent implements OnInit {
       this.Pessoa.telefones = this.telefones;
       this.Pessoa.emails = this.emails;
       let retorno = await this.PessoaService.gravar(this.Pessoa);
-      alert(retorno.data)
+      if (retorno.status == 200) {
+        this.AlertService.show(retorno.data, { classname: 'bg-sucess text-light', delay: 3000 });
+      } else {
+        this.AlertService.show(retorno.data, { classname: 'bg-danger text-light', delay: 3000 });
+      }
+
     } catch (error) {
       console.error(error);
     }
@@ -297,6 +339,15 @@ export class CadastroPessoaComponent implements OnInit {
         this.enderecos = retorno.enderecos.length > 0 ? retorno.enderecos : [];
         this.emails = retorno.emails.length > 0 ? retorno.emails : [];
       }
+    }
+  }
+
+  public ValidarUsuario() {
+    let perfil = window.localStorage.getItem("perfil")
+    if (perfil == "1") {
+      this.NomePagina = "Cadastro de Pessoa"
+    } else {
+      this.NomePagina = "Cadastro de Cliente"
     }
   }
 

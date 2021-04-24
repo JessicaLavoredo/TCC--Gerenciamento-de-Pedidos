@@ -1,22 +1,22 @@
 <app-menu></app-menu>
 <div class="TituloPagina">
-  <span>Cadastro de Pessoa</span>
+  <span>{{NomePagina}}</span>
 </div>
-
+<app-alert aria-live="polite" aria-atomic="true"></app-alert>
 <form>
-
   <div class="container corpo">
     <div class="form-row">
       <div class="form-group col-md-1">
         <label for="txtCodigo">Código</label>
-        <input type="text" class="form-control" id="txtCodigo" name="Codigo" [(ngModel)]="Pessoa.idPessoa">
+        <input type="text" class="form-control" [formControl]="queryPessoa" id="txtCodigo" name="Codigo"
+          [(ngModel)]="Pessoa.idPessoa">
       </div>
       <button type="button" #modalSearchPessoa class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
         data-target="#ModalPesquisaPessoa">
         <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
       </button>
       <div class="form-group mt-4 col-md-0.5 mr-2">
-        <button type="button" class="btn btn-info btnsearch " (click)='Pesquisar()'>
+        <button class="btn btn-info btnsearch " (click)='Pesquisar()'>
           <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
         </button>
       </div>
@@ -356,7 +356,7 @@
 
 <!-- Modal -->
 <div class="modal fade" id="ModalCidade" tabindex="-1" aria-labelledby="ModalCidadeLabel" aria-hidden="true">
-  <div class="modal-dialog modal-xl">
+  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
     <div class="modal-content">
       <div class="modal-header">
         <h5 class="modal-title" id="ModalCidadeLabel">Pesquisar Cidade</h5>
@@ -367,36 +367,31 @@
       <div class="modal-body">
         <div class="form-row mb-2">
           <label for="txtCodigo" class="col-md-1">Pesquisa</label>
-          <input class="form-control col-md-11" type="text" name="search" [(ngModel)]="filter">
+          <input class="form-control col-md-11" [formControl]="queryCidade" type="text" name="search">
         </div>
         <div class="Teste">
           <table class="table table-striped">
             <thead class="tabelas">
               <tr>
-                <th scope="col">Código</th>
+                <th scope="col">Selecionar</th>
                 <th scope="col">Nome</th>
                 <th scope="col">Estado</th>
-                <th scope="col">Selecionar</th>
               </tr>
             </thead>
             <tbody>
               <tr
-                *ngFor="let cidade of Cidades| filter:filter| paginate: { itemsPerPage: 5, currentPage: paginaAtual }; let i = index ">
-                <th scope="row">{{cidade.idCidade}}</th>
-                <td>{{cidade.nome}}</td>
-                <td>{{cidade.estado.sigla}}</td>
+                *ngFor="let cidade of Cidades| filter:filter |paginate: { itemsPerPage: 10, currentPage: paginaAtual }; let i = index ">
                 <td><button class="btn btn-info btnselecionar btn-sm" data-dismiss="modal" aria-label="Close"
                     (click)="selecionarCidade(cidade)">
                     <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">done_outline</mat-icon>
                   </button></td>
+                <td>{{cidade.nome}}</td>
+                <td>{{cidade.estado.sigla}}</td>
               </tr>
             </tbody>
           </table>
         </div>
-        <div class="float-right">
-          <pagination-controls previousLabel="Anterior" nextLabel="Proxima" responsive="true" autoHide="true"
-            (pageChange)="handlePageChange($event)"></pagination-controls>
-        </div>
+
 
       </div>
 
@@ -453,10 +448,24 @@
             </tbody>
           </table>
         </div>
-
+        <div class="float-right">
+          <pagination-controls previousLabel="Anterior" nextLabel="Proxima" responsive="true" autoHide="true"
+            (pageChange)="handlePageChange($event)"></pagination-controls>
+        </div>
 
       </div>
 
+    </div>
+  </div>
+</div>
+
+<div class="modal fade" id="modalAlerta" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+  aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+
+      </div>
     </div>
   </div>
 </div>

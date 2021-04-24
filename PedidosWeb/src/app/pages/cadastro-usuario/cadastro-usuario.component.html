@@ -6,25 +6,37 @@
 <form>
     <div class="container corpo">
         <div class="form-row">
-            <div class="form-group col-md-2">
+            <div class="form-group col-md-1">
                 <label for="txtCodigo">Código</label>
                 <input type="text" class="form-control" id="txtCodigo" name="Codigo" [(ngModel)]="Usuario.idUsuario">
             </div>
-
-            <button #modalSearch class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
-                data-target="#ModalPesquisa">
+            <button #ModalPesquisaPessoa class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
+                data-target="#ModalPesquisaPessoa">
                 <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
             </button>
-
             <div class="form-group mt-4 col-md-1">
                 <button type="button" class="btn btn-info btnsearch " (click)='Pesquisar()'>
                     <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
                 </button>
             </div>
-
-            <div class="form-group col-md-6">
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-1">
                 <label for="txtNome">Funcionário</label>
-                <input type="text" class="form-control" id="txtNome" name="Codigo" [(ngModel)]="Usuario.idPessoa">
+                <input type="text" class="form-control" [formControl]="queryPessoa" id="txtNome" name="Codigo"
+                    [(ngModel)]="Usuario.idPessoa">
+            </div>
+            <button type="button" #modalSearchPessoa class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
+                data-target="#ModalPesquisaPessoa">
+                <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+            </button>
+            <div class="form-group mt-4 col-md-0.5 mr-2">
+                <button class="btn btn-info btnsearch " (click)='pesquisarFuncionario()'>
+                    <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+                </button>
+            </div>
+            <div class="form-group col-md-4 mt-5">
+                <label for="txtNome">{{NomePessoa}}</label>
             </div>
             <div class="form-group col-md-3">
                 <label for="PerfilId">Perfil</label>
@@ -58,7 +70,7 @@
         <app-footer>
             <span rodape>
                 <button type="submit" (click)="Gravar()" class="btn btn-secondary ml-5 rounded-pill">Salvar</button>
-                <button type="button" class="btn btn-secondary ml-5 rounded-pill">Novo</button>
+                <button type="button" (click)="Limpar()" class="btn btn-secondary ml-5 rounded-pill">Novo</button>
             </span>
         </app-footer>
     </div>
@@ -67,7 +79,7 @@
 </form>
 
 
-<div class="modal fade" id="ModalPesquisa" tabindex="-1" role="dialog" aria-labelledby="ModalPesquisaLabel"
+<div class="modal fade" id="ModalPesquisaPessoa" tabindex="-1" role="dialog" aria-labelledby="ModalPesquisaPessoaLabel"
     aria-hidden="true">
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
@@ -88,16 +100,32 @@
                             <tr>
                                 <th scope="col">Código</th>
                                 <th scope="col">Nome</th>
-                                <th scope="col">Estado</th>
+                                <th scope="col">Genero</th>
                                 <th scope="col">Selecionar</th>
                             </tr>
                         </thead>
+                        <tbody>
+                            <tr
+                                *ngFor="let Pessoa of Pessoas| filter:filter| paginate: { itemsPerPage: 5, currentPage: paginaAtual }; let i = index ">
+                                <th scope="row">{{pessoa.idPessoa}}</th>
+                                <td>{{pessoa.nomeRazao}}</td>
+                                <td>{{pessoa.apelidoFantasia}}</td>
+                                <td><button class="btn btn-info btnselecionar btn-sm" data-dismiss="modal"
+                                        aria-label="Close" (click)="selecionarCidade(cidade)">
+                                        <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">
+                                            done_outline</mat-icon>
+                                    </button></td>
+                            </tr>
+                        </tbody>
                         <tbody>
 
                         </tbody>
                     </table>
                 </div>
-
+                <div class="float-right">
+                    <pagination-controls previousLabel="Anterior" nextLabel="Proxima" responsive="true" autoHide="true"
+                        (pageChange)="handlePageChange($event)"></pagination-controls>
+                </div>
 
             </div>
 

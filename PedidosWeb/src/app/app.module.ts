@@ -9,7 +9,7 @@ import { HomeComponent } from './pages/home/home.component';
 import { CadastroPessoaComponent } from './pages/cadastro-pessoa/cadastro-pessoa.component';
 import { LoginComponent } from './pages/login/login.component';
 import { AuthenticationComponent } from './pages/authentication/authentication.component';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PageLogadaComponent } from './pages/page-logada/page-logada.component';
 import { CadastroCatEmailComponent } from './pages/cadastro-cat-email/cadastro-cat-email.component';
 import { CadastroCatEnderecoComponent } from './pages/cadastro-cat-endereco/cadastro-cat-endereco.component';
@@ -88,7 +88,7 @@ import { MatExpansionModule, MatAccordion } from '@angular/material/expansion';
     MatSelectModule,
     NgxPaginationModule,
     MatDialogModule,
-
+    ReactiveFormsModule
   ],
   providers: [],
   bootstrap: [AppComponent]

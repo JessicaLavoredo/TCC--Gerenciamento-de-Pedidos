@@ -12,21 +12,20 @@ export class AccountService {
 
   constructor(private http: HttpClient) { }
 
-  // public login(user: Usuario): Observable<Usuario>{
-  //   return this.http.post<Usuario>(environment.api, user);
-  // }
-
   async login(user: Usuario) {
-
-    const result = await this.http.post<any>(environment.api + 'Usuario/Login', user).toPromise();
+    const json = JSON.stringify(user);
+    const result = await this.http.post<any>(environment.api + 'Usuario/login', json).toPromise();
     if (result.length > 0) {
-      window.localStorage.setItem('token', '123');
-      return true;
+      if (result[0].IdUsuario > 0) {
+        window.localStorage.setItem('token', '123');
+        window.localStorage.setItem('logado', result[0].IdUsuario);
+        window.localStorage.setItem('perfil', result[0].IdPerfil);
+        return true;
+      }
     }
     return false;
   }
 
 
 }
-
 

@@ -1,6 +1,8 @@
-<div class="alert alert-{{type}}" role="alert">
-    {{message}}
-    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-    </button>
-</div>
+<ngb-toast *ngFor="let toast of AlertService.toasts" [class]="toast.classname" [autohide]="true"
+    [delay]="toast.delay || 5000" (hide)="AlertService.remove(toast)">
+    <ng-template [ngIf]="isTemplate(toast)" [ngIfElse]="text">
+        <ng-template [ngTemplateOutlet]="toast.textOrTpl"></ng-template>
+    </ng-template>
+
+    <ng-template #text>{{ toast.textOrTpl }}</ng-template>
+</ngb-toast>

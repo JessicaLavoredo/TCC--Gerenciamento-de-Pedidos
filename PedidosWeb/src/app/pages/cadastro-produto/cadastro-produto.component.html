@@ -22,38 +22,43 @@
                             <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
                         </button>
                     </div>
-                    <div class="form-group col-md-4">
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-8">
                         <label for="txtNome">Nome Técnico</label>
                         <input type="text" class="form-control" id="txtNome" name="Nome"
                             [(ngModel)]="Produto.nomeTecnico">
                     </div>
-                    <div class="form-group col-md-4">
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-8">
                         <label for="txtNomeComercial">Nome Comercial</label>
                         <input type="text" class="form-control" name="NomeComercial" id="txtNomeComercial"
                             [(ngModel)]="Produto.nomeComercial">
                     </div>
                 </div>
                 <div class="form-row">
-                    <div class="form-group col-md-4">
+                    <div class="form-group col-md-2">
                         <label for="txtCpf">Código Interno</label>
                         <input type="text" class="form-control" id="txtCodigointerno" name="CodigoInterno"
                             [(ngModel)]="Produto.codigoInterno">
                     </div>
-                    <div class="form-group col-md-4">
-                        <label for="txtRg">Descrição</label>
-                        <input type="text" class="form-control" id="txtDescricao" [(ngModel)]="Produto.descricao"
-                            name="Decricao">
-                    </div>
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-md-4">
+                    <div class="form-group col-md-3">
                         <label for="txtCpf">Preço à Vista</label>
                         <input type="text" class="form-control" id="txtVista" ng-pattern="/^[0-9]+(\.[0-9]{1,2})?$/"
                             [(ngModel)]="Produto.vista" name="vista">
                     </div>
-                    <div class="form-group col-md-4">
+                    <div class="form-group col-md-3">
                         <label for="txtRg">Preço à Prazo</label>
                         <input type="text" class="form-control" id="txtPrazo" [(ngModel)]="Produto.prazo" name="Prazo">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-8">
+                        <label for="txtRg">Descrição</label>
+                        <textarea class="form-control" id="txtDescricao" [(ngModel)]="Produto.descricao" rows="3"
+                            name="Decricao">
+                        </textarea>
                     </div>
                 </div>
             </div>
