@@ -6,6 +6,7 @@ import { Produto_Pedido } from 'src/app/class/Produto_Pedido';
 import { PedidoService } from './../../services/pedido.service';
 import { MatAccordion } from '@angular/material/expansion';
 import { Cliente } from 'src/app/class/cliente';
+import { Pessoa } from 'src/app/class/Pessoa';
 
 @Component({
   selector: 'app-cadastro-pedido',
@@ -13,10 +14,16 @@ import { Cliente } from 'src/app/class/cliente';
   styleUrls: ['./cadastro-pedido.component.css']
 })
 export class CadastroPedidoComponent implements OnInit {
+  public paginaAtual = 1;
+  public filter;
   public Pedido: Pedido = new Pedido();
-  public Cliente: Cliente = new Cliente();
+  public ClienteEscolhido: boolean;
+  public Cliente: Pessoa = new Pessoa();
+  public Clientes: Cliente[] = [];
   public Produto_Pedido: Produto_Pedido = new Produto_Pedido();
   public Produtos_Pedido: Produto_Pedido[] = [];
+  public Filtros = [];
+  Filtro = '';
   public FormasPagamento: FormaPagamento[] = [];
   @ViewChild(MatAccordion) accordion: MatAccordion;
   panelOpenState = false;
@@ -24,7 +31,7 @@ export class CadastroPedidoComponent implements OnInit {
 
   ngOnInit(): void {
     this.listarFormaPagamento()
-    this.Cliente.nomeRazao = 'Jessica Maiara Lavoredo'
+    this.ClienteEscolhido = false;
   }
 
   public async Gravar() {
@@ -62,5 +69,9 @@ export class CadastroPedidoComponent implements OnInit {
     if (Produto_Pedido) {
       this.Produto_Pedido = Produto_Pedido;
     }
+  }
+
+  public SelecionarCliente() {
+
   }
 }

@@ -32,6 +32,9 @@ label{
   padding:0;
   margin:auto;
 }
+.grande{
+    width: 100%;
+}
 
 mat-form-field {
     width: 100%;

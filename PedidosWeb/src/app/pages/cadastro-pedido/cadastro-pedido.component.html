@@ -1,126 +1,238 @@
-<app-page-logada>
-    <div Logadas>
+<app-menu></app-menu>
+<div class="TituloPagina">
+    <span>Cadastro de Pedido</span>
+</div>
 
-        <app-menu></app-menu>
-        <div class="TituloPagina">
-            <span>Cadastro de Pedido</span>
+<form>
+    <div class="container corpo">
+        <div class="form-row">
+            <div class="form-group col-md-1 mr-5">
+                <label for="txtCodigo">Código</label>
+                <input type="text" class="form-control" id="txtCodigo" name="Codigo" [(ngModel)]="Pedido.idPedido">
+            </div>
+
+            <div class="form-group col-md-1 mr-5">
+                <label><b>Criado em:</b></label>
+                <label></label>
+            </div>
+            <div class="form-group col-md-5">
+                <label><b>Situação:</b></label><br>
+                <button class="btn  btn-success mb-3">Aberto</button>
+            </div>
+
+        </div>
+        <div class="form-row" *ngIf="!ClienteEscolhido">
+            <div class="form-group col-md-12">
+                <button type="button" class="btn btn-info mb-3 mt-3 btn-lg grande" data-toggle="modal"
+                    data-target="#ModalPesquisaCliente">Selecionar Cliente</button>
+            </div>
         </div>
 
-        <form>
-            <div class="container corpo">
+        <mat-accordion *ngIf="ClienteEscolhido">
+            <mat-expansion-panel class="mb-3" (opened)="panelOpenState = true" (closed)="panelOpenState = false">
+                <mat-expansion-panel-header>
+                    <mat-panel-title>
+                        <b>Cliente:</b> {{Cliente.nomeRazao}} / {{Cliente.apelidoFantasia}}
+                    </mat-panel-title>
+                    <mat-panel-description>
+                    </mat-panel-description>
+                </mat-expansion-panel-header>
                 <div class="form-row">
                     <div class="form-group col-md-2">
-                        <label for="txtCodigo">Código</label>
-                        <input type="text" class="form-control" id="txtCodigo" name="Codigo"
-                            [(ngModel)]="Pedido.idPedido">
+                        <label><b>CPF:</b> {{Cliente.cpfCnpj}} </label>
+                    </div>
+                    <div class="form-group col-md-2">
+                        <label><b>RG:</b> {{Cliente.rgInscricao}}</label>
                     </div>
                 </div>
-                <mat-accordion>
-                    <mat-expansion-panel (opened)="panelOpenState = true" (closed)="panelOpenState = false">
-                        <mat-expansion-panel-header>
-                            <mat-panel-title>
-                                Cliente: {{Cliente.nomeRazao}}
-                            </mat-panel-title>
-                            <mat-panel-description>
-
-                            </mat-panel-description>
-                        </mat-expansion-panel-header>
-                        <div class="form-group col-md-2">
-                            <label for="txtCodigoPedido">Codigo</label>
-                            <input type="text" class="form-control" id="txtCodigoPedido" name="Nome"
-                                [(ngModel)]="Pedido.idPessoa">
-                        </div>
-                    </mat-expansion-panel>
-                </mat-accordion>
-
                 <div class="form-row">
-                    <div class="form-group col-md-4">
-                        <label for="txtFormaPagamento">Forma de Pagamento</label>
-                        <select id="txtFormaPagamento" class="form-control" [(ngModel)]="Pedido.idFormaPagamento"
-                            name=" idFormaPagamento">
-                            <option [value]=FormaPagamento.IdFormaPagamento
-                                *ngFor="let FormaPagamento of FormasPagamento">
-                                {{FormaPagamento.Descritivo}}
+                    <div class="form-group col-md-12">
+                        <label><b>Endereço:</b></label>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label><b>Endereço Cobrança:</b></label>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label><b>Telefone:</b></label>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group col-md-12">
+                        <label><b>Contato:</b></label>
+                    </div>
+                </div>
+
+                <button type="button" (click)="Gravar()" class="btn btn-secondary ml-1 rounded-pill">Trocar
+                    Cliente</button>
+                <button type="button" class="btn btn-secondary ml-3 rounded-pill">Alterar Cadastro</button>
+            </mat-expansion-panel>
+        </mat-accordion>
+
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="txtFormaPagamento">Lista de Preço</label>
+                <select id="txtFormaPagamento" class="form-control" [(ngModel)]="Pedido.idFormaPagamento"
+                    name=" idFormaPagamento">
+                    <option [value]=FormaPagamento.IdFormaPagamento *ngFor="let FormaPagamento of FormasPagamento">
+                        {{FormaPagamento.Descritivo}}
+                    </option>
+                </select>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="txtFormaPagamento">Forma de Pagamento</label>
+                <select id="txtFormaPagamento" class="form-control" [(ngModel)]="Pedido.idFormaPagamento"
+                    name=" idFormaPagamento">
+                    <option [value]=FormaPagamento.IdFormaPagamento *ngFor="let FormaPagamento of FormasPagamento">
+                        {{FormaPagamento.Descritivo}}
+                    </option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group  col-md-0.5">
+                <label for="txtCodigo">Produto</label><br>
+                <button type="button" class="btn btn-info btnsearch ">
+                    <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+                </button>
+            </div>
+            <div class="form-group mt-2  col-md-1">
+                <label for="txtNome"></label>
+                <input type="text" class="form-control" id="txtCodigo" name="codigo">
+            </div>
+
+            <button #modalSearch class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
+                data-target="#ModalPesquisa">
+                <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+            </button>
+
+            <div class="form-group mt-2 col-md-6">
+                <label for="txtNome"></label>
+                <input type="text" class="form-control" id="txtNome" name="descritivo">
+            </div>
+            <div class="form-group col-md-2">
+                <label for="txtNome">Preço</label>
+                <input type="text" class="form-control" id="txtNome" name="descritivo">
+            </div>
+            <div class="form-group col-md-1">
+                <label for="txtNome">Quantidade</label>
+                <input type="text" class="form-control" id="txtNome" name="descritivo">
+            </div>
+            <div class="form-group mt-2 col-md-0.5">
+                <button type="button" class="btn btn-secondary mb-3 mt-3 rounded-pill"
+                    (click)="AdicionarProduto()">Adicionar</button>
+            </div>
+        </div>
+        <table class="table">
+            <thead class="tabelas">
+                <tr>
+                    <th scope="col"></th>
+                    <th scope="col">Produto</th>
+                    <th scope="col">Preço</th>
+                    <th scope="col">Quantidade</th>
+                    <th scope="col">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr *ngFor="let Produto_Pedido of Produtos_Pedido">
+                    <td><button class="btn btn-info btnselecionar btn-sm"
+                            (click)="excluirProdutoPedido(Produto_Pedido)">
+                            <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">clear
+                            </mat-icon>
+                        </button></td>
+                    <td>{{Produto_Pedido.idProduto}}</td>
+                    <td>{{Produto_Pedido.preco}}</td>
+                    <td>{{Produto_Pedido.quantidade}}</td>
+                    <td>{{Produto_Pedido.desconto}}</td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td>
+                        <p class="text-center"> Nenhum Produto adicionado</p>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tbody>
+            <tfoot class="tabelas">
+                <tr>
+                    <td>Totais</td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+
+
+    <app-footer>
+        <span rodape>
+            <button type="submit" class="btn btn-secondary ml-5 rounded-pill" (click)="Gravar()">Salvar</button>
+            <button type="button" class="btn btn-secondary ml-5 rounded-pill">Novo</button>
+        </span>
+    </app-footer>
+
+</form>
+
+
+<div class="modal fade" id="ModalPesquisaCliente" tabindex="-1" role="dialog" aria-labelledby="ModalPesquisaPessoaLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title" id="ModalPesquisaLabel">Pesquisa de Cliente</h1>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row mb-2">
+                    <div class="form-group col-md-3">
+                        <label>Cargo</label>
+                        <select id="CboCategoriaemail" class="form-control" [(ngModel)]="Filtro"
+                            name="idCategoriaEmail">
+                            <option [value]=categoriaEmail.IdCategoriaEmail *ngFor="let Filtro of Filtros">
+
                             </option>
                         </select>
                     </div>
+                    <div class="form-group col-md-9">
+                        <label for="txtCodigo" class="col-md-1">Pesquisa</label>
+                        <input class="form-control" type="text" name="search">
+                    </div>
+                </div>
+                <div class="Teste">
+                    <table class="table table-striped">
+                        <thead class="tabelas">
+                            <tr>
+                                <th scope="col"></th>
+                                <th scope="col">Nome/Razão Social</th>
+                                <th scope="col"> Apelido/Nome Fantasia</th>
+                                <th scope="col">Endereço</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+
+                            </tr>
+                        </tbody>
+                        <tbody>
+
+                        </tbody>
+                    </table>
                 </div>
 
-                <div class="form-row">
-                    <div class="form-group col-md-10">
-                        <label for="txtProduto">Produto</label>
-                        <input type="text" class="form-control" id="txtProduto" [(ngModel)]="Produto_Pedido.idProduto"
-                            name="Produto">
-                    </div>
-
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-md-4">
-                        <label for="txtPreco">Preço</label>
-                        <input type="text" class="form-control" id="Preco" [(ngModel)]="Produto_Pedido.preco"
-                            name="preco">
-                    </div>
-                    <div class="form-group col-md-4">
-                        <label for="txtPreco">Quantidade</label>
-                        <input type="text" class="form-control" id="Preco" [(ngModel)]="Produto_Pedido.quantidade"
-                            name="preco">
-                    </div>
-                    <div class="form-group col-md-4">
-                        <label for="txtPreco">Desconto</label>
-                        <input type="text" class="form-control" id="Preco" [(ngModel)]="Produto_Pedido.desconto"
-                            name="preco">
-                    </div>
-                </div>
-
-                <div>
-                    <button type="button" class="btn btn-secondary mb-3 mt-3 rounded-pill"
-                        (click)="AdicionarProduto()">Adicionar</button>
-                    <button type="button" class="btn btn-secondary ml-5 pl-4 pr-4 rounded-pill"
-                        (click)="limparProduto()">Novo</button>
-                </div>
-                <table class="table">
-                    <thead class="tabelas">
-                        <tr>
-                            <th scope="col">Produto</th>
-                            <th scope="col">Preço</th>
-                            <th scope="col">Quantidade</th>
-                            <th scope="col">Desconto</th>
-                            <th scope="col"></th>
-                            <th scope="col"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr *ngFor="let Produto_Pedido of Produtos_Pedido">
-                            <td>{{Produto_Pedido.idProduto}}</td>
-                            <td>{{Produto_Pedido.preco}}</td>
-                            <td>{{Produto_Pedido.quantidade}}</td>
-                            <td>{{Produto_Pedido.desconto}}</td>
-                            <td><button class="btn btn-info btnselecionar btn-sm"
-                                    (click)="selecionarProdutoPedido(Produto_Pedido)">
-                                    <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">
-                                        done_outline</mat-icon>
-                                </button></td>
-                            <td><button class="btn btn-info btnselecionar btn-sm"
-                                    (click)="excluirProdutoPedido(Produto_Pedido)">
-                                    <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">clear
-                                    </mat-icon>
-                                </button></td>
-                        </tr>
-                    </tbody>
-                </table>
 
             </div>
 
-
-
-            <app-footer>
-                <span rodape>
-                    <button type="submit" class="btn btn-secondary ml-5 rounded-pill" (click)="Gravar()">Salvar</button>
-                    <button type="button" class="btn btn-secondary ml-5 rounded-pill">Novo</button>
-                </span>
-            </app-footer>
-
-        </form>
-
+        </div>
     </div>
-</app-page-logada>
+</div>

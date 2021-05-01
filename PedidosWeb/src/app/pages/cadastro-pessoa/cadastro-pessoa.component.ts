@@ -16,6 +16,9 @@ import { Pessoa } from 'src/app/class/Pessoa';
 import { FormControl } from '@angular/forms';
 import { tap, map, filter, distinct, distinctUntilChanged, debounceTime, switchMap } from 'rxjs/operators';
 import { AlertService } from './../../services/alert.service';
+import { cpf } from 'cpf-cnpj-validator';
+import { cnpj } from 'cpf-cnpj-validator';
+import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-cadastro-pessoa',
@@ -23,6 +26,7 @@ import { AlertService } from './../../services/alert.service';
   styleUrls: ['./cadastro-pessoa.component.css']
 })
 export class CadastroPessoaComponent implements OnInit {
+
   NomePagina: string = "";
   public paginaAtual = 1;
   public Cidades: Cidade[] = [];
@@ -50,6 +54,7 @@ export class CadastroPessoaComponent implements OnInit {
   public desativado = false;
   public botao: boolean = false;
   public filtros: any;
+  dataNascimento: string;
   queryCidade = new FormControl();
   queryPessoa = new FormControl();
   resultados: Observable<any>;
@@ -68,7 +73,6 @@ export class CadastroPessoaComponent implements OnInit {
       distinctUntilChanged(),
       tap(value => this.filter = value),
     ).subscribe();
-
   }
 
   limparTela() {
@@ -174,6 +178,24 @@ export class CadastroPessoaComponent implements OnInit {
 
   public async Gravar() {
     try {
+      if (this.Pessoa.tipoPessoa == 'F' && !cpf.isValid(this.Pessoa.cpfCnpj)) {
+        this.AlertService.show("Cpf Inválido", { classname: 'bg-danger text-light', delay: 3000 });
+      }
+
+      if (this.Pessoa.tipoPessoa == 'J' && !cnpj.isValid(this.Pessoa.cpfCnpj)) {
+        this.AlertService.show("Cnpj Inválido", { classname: 'bg-danger text-light', delay: 3000 });
+      }
+
+      var data = new Date(this.dataNascimento);
+      console.log(this.dataNascimento)
+      console.log(data)
+
+
+      const format = 'yyyy-dd-MMT00:00:00Z';
+      const locale = 'en-US';
+      const formattedDate = formatDate(data, format, locale);
+      console.log(formattedDate)
+
       this.Pessoa.enderecos = this.enderecos;
       this.Pessoa.telefones = this.telefones;
       this.Pessoa.emails = this.emails;

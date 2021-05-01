@@ -1,5 +1,5 @@
 import { Vinculo } from './../class/vinculo';
-import { Cidade } from './../Class/cidade';
+import { Cidade } from './../class/cidade';
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';

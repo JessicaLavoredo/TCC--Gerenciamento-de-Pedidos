@@ -19,9 +19,9 @@ export class CadastroListaPrecoComponent implements OnInit {
   }
 
   public listar() {
-    this.ListaPrecoService.buscarTodos().subscribe(result => {
-      this.ListasPreco = result;
-    });
+    // this.ListaPrecoService.buscarTodos().subscribe(result => {
+    //   this.ListasPreco = result;
+    // });
   }
   public async Gravar() {
     try {
