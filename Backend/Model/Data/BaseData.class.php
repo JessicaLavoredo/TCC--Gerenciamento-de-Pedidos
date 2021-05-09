@@ -125,7 +125,7 @@
             foreach($propriedades as $prop) {
                 $getProp = 'get'.ucfirst($prop);
                 if($entidade->$getProp()) {
-                    $sql.= $prop." = :".$prop;
+                    $sql.= "UPPER(".$prop.") like UPPER(:'".$prop."')";
                 } else {
                     unset($propriedades[array_search($prop, $propriedades)]);
                 }

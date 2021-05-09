@@ -71,6 +71,37 @@
             }
         }
 
+        function buscarPorFiltro($entidade){
+            $classe = str_ireplace('Data', '', get_class($entidade));
+            $propriedades = Funcoes::getPropriedades($classe);
+
+            $sql = "SELECT * FROM ".$classe."\n";
+            $sql.= "WHERE ";
+
+            foreach($propriedades as $prop) {
+                $getProp = 'get'.ucfirst($prop);
+                if($entidade->$getProp()) {
+                    $sql.= $prop." LIKE '%:".$prop."%'";
+                } else {
+                    unset($propriedades[array_search($prop, $propriedades)]);
+                }
+            }
+            $sql.= "\nAND Inativo = 0";
+
+            foreach($propriedades as $prop){
+                $getProp = 'get'.ucfirst($prop);
+                $sql = str_replace(":".$prop, $entidade->$getProp(), $sql);
+            }
+
+            $stm = $this->db->prepare($sql);
+            $stm->execute();
+            $linhas = $stm->fetchAll();
+            foreach($linhas as $linha){
+                $ret[] = Funcoes::criarEntidade("Pessoa", $linha);
+            }
+            return $ret;
+        }
+
         function buscarPorId($idPessoa) {
             try {
                 $sql = "SELECT * FROM Pessoa P\n";

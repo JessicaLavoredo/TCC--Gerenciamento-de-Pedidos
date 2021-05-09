@@ -8,7 +8,7 @@
 
             foreach($propriedades as $prop) {
                 $get = "get".ucfirst($prop);
-                $ret[$prop] = $this->$get();
+                $ret[ucfirst($prop)] = $this->$get();
             }
             
             return $ret;

@@ -12,7 +12,8 @@
             $classeEntidade = str_ireplace('Controller', '', $controller);
             $entidade = Funcoes::criarEntidade($classeEntidade, $obj);
             $ret = (New UsuarioData())->autenticarUsuario($entidade);
-            return $ret;
+            // return New RestResponse(200, 'OK', ['Authorization'=>AuthController::gerarToken($ret->getIdUsuario(), $ret->getIdPerfil())]);
+            return ['Authorization' => AuthController::gerarToken($ret->getIdUsuario(), $ret->getIdPerfil())];
         }
     }
 

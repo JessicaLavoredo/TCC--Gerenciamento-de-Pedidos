@@ -19,7 +19,8 @@
                 $stm->execute();
                 $this->db = null;
                 $resultado = $stm->fetchAll();
-                return $resultado;
+                $ret = Funcoes::criarEntidade('Usuario', $resultado[0]);
+                return $ret;
             } catch (Exception $e) {
                 return "Erro: ".$e->getMessage();
             }

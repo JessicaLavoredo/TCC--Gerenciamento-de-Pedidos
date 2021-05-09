@@ -17,21 +17,24 @@
             return isset($array[0]) ? $array[0] : $padrao;
         }
 
-        //ANTIGO
-        // static function criarEntidade(string $classe, $objeto) {
-        //     $retorno = New $classe();
-        //     $propriedades = self::getPropriedades($classe);
-        //     foreach($propriedades as $prop){
-        //         $set = 'set'.ucfirst($prop);
-        //         $chaves = array_keys($objeto);
-        //         $indice = array_search(strtoupper($prop), array_map(function($x){return strtoupper($x);}, $chaves));
-        //         if (gettype($indice) === "integer" && $indice >= 0) {
-        //             $retorno->$set($objeto[$chaves[$indice]]);
-        //         }
-        //     }
-        //     return $retorno;
-        // }
-    
+
+        static function base64UrlEncode(string $string)
+        {
+            return str_replace(
+                ['+', '/', '='],
+                ['-', '_', ''],
+                base64_encode($string)
+            );
+        }
+
+        static function base64UrlDecode(string $string)
+        {
+            return str_replace(
+                ['-', '_', ''],
+                ['+', '/', '='],
+                base64_decode($string)
+            );
+        }   
 
         //NOVO
         static function criarEntidade(string $classe, $objeto) {
