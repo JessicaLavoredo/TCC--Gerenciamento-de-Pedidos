@@ -1,5 +1,5 @@
 <?php
-    class RestResponse {
+    class RestResponse implements JsonSerializable{
         private $statusCode;
         private $message;
         private $data;
@@ -16,6 +16,20 @@
             $this->setStatusCode($statusCode);
             $this->setMessage($message);
             $this->setData($data);
+
+            return json_encode($data);
+        }
+
+        public function jsonSerialize(){
+            $propriedades = Funcoes::getPropriedades($this);
+
+            foreach($propriedades as $prop) {
+                $get = "get".ucfirst($prop);
+                $valor = $this->$get() ?? '';
+                $ret[$prop] = $valor;
+            }
+            
+            return $ret;
         }
     }
 ?>

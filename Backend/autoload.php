@@ -33,7 +33,7 @@
             // }
 
         } catch (Exception $e){
-            die ($e);
+            throw $e; // 404
         }
     });
 
