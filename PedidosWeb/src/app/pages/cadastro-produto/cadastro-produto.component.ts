@@ -2,7 +2,8 @@ import { ProdutoService } from './../../services/produto.service';
 import { Produto } from './../../class/produto';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-
+import { FormControl } from '@angular/forms';
+import { tap, map, filter, distinct, distinctUntilChanged, debounceTime, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-cadastro-produto',
@@ -14,15 +15,17 @@ export class CadastroProdutoComponent implements OnInit {
   public Produtos: Produto[] = [];
   public paginaAtual = 1;
   public filter;
+  queryProduto = new FormControl();
 
   @ViewChild('modalSearch') modalSearch: ElementRef;
   constructor(private ProdutoService: ProdutoService, private router: Router) { }
   ngOnInit(): void {
-
+    this.Limpar()
   }
 
   public Limpar() {
     this.Produto = new Produto();
+    this.DepoisBuscar()
   }
 
   public async Gravar() {
@@ -47,17 +50,36 @@ export class CadastroProdutoComponent implements OnInit {
     if (this.Produto.idProduto == '') {
       this.modalSearch.nativeElement.click();
     } else {
-      let ProdutoRetorno = this.Produtos.filter(produto => produto.idProduto === this.Produto.idProduto);
-      this.Produto = ProdutoRetorno[0];
+      let retorno: any = await this.ProdutoService.BuscarPorId(this.Produto.idProduto)
+      if (retorno) {
+        this.Produto = retorno;
+      }
     }
   }
 
   public selecionarProduto(Produto: Produto) {
     if (Produto) {
-      this.Produto = Produto;
+      this.Produto.idProduto = Produto.idProduto;
+      this.Pesquisar();
     }
   }
 
+  public DepoisBuscar() {
+    this.queryProduto.valueChanges.pipe(
+      map(value => value.trim()),
+      filter(value => value.length > 0),
+      debounceTime(200),
+      distinctUntilChanged(),
+      switchMap(value => this.ProdutoService.BuscarPorId(this.Produto.idProduto)),
+      map((result: any) => {
+        if (result) {
+          this.Produto = result;
+        } else {
 
+        }
+      }
+      )
+    ).subscribe();
+  }
 
 }

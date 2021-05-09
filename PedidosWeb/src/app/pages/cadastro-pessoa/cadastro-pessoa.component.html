@@ -65,9 +65,9 @@
       </div>
 
       <div class="form-group col-md-4" *ngIf="!isJuridico">
-
         <label for="txtDataNasc">Data de Nascimento</label>
-        <input type="date" class="form-control" id="txtDataNasc" name="dataNascimento" [(ngModel)]="dataNascimento">
+        <input type="text" class="form-control" [minDate]="minDate" [maxDate]="maxDate" #dp="bsDatepicker" bsDatepicker
+          [(bsValue)]="dataNascimento " [bsConfig]="dpConfig" [(ngModel)]="dataNascimento">
       </div>
       <div class="form-group col-md-4">
         <label>Cargo</label>
@@ -414,8 +414,25 @@
       </div>
       <div class="modal-body">
         <div class="form-row mb-2">
-          <label for="txtCodigo" class="col-md-1">Pesquisa</label>
-          <input class="form-control col-md-11" type="text" name="search">
+          <div class="form-group col-md-3">
+            <label for="inputState">Pesquisa</label>
+            <select id="inputState" class="form-control" [(ngModel)]="FiltroPesquisa"
+              (ngModelChange)="SelecionarCategoriaEndereco()" name=" idCategoriaEndereco">
+              <option [value]=filtro.Codigo *ngFor="let filtro of Filtros">
+                {{filtro.Descricao}}
+              </option>
+            </select>
+          </div>
+          <div class="form-group col-md-7 mt-2">
+            <label for="inputState"></label>
+            <input class="form-control" type="text" name="search" [(ngModel)]="InputFiltroPesquisa">
+          </div>
+          <div class="form-group col-md-1 mt-2">
+            <label for="inputState"></label>
+            <button class="btn btn-info btnsearch " (click)='PesquisarUsuarioPorFiltro()'>
+              Pesquisar
+            </button>
+          </div>
         </div>
         <div class="Teste">
           <table class="table table-striped">
@@ -431,7 +448,7 @@
             </thead>
             <tbody>
               <tr
-                *ngFor="let pessoa of Pessoas| filter:filter| paginate: { itemsPerPage: 5, currentPage: paginaAtual }; let i = index ">
+                *ngFor="let pessoa of Pessoas| paginate: { itemsPerPage: 5, currentPage: paginaAtual }; let i = index ">
                 <th scope="row">{{pessoa.idPessoa}}</th>
                 <td>{{pessoa.nomeRazao}}</td>
                 <td>{{pessoa.apelidoFantasia}}</td>
@@ -455,17 +472,6 @@
 
       </div>
 
-    </div>
-  </div>
-</div>
-
-<div class="modal fade" id="modalAlerta" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-  aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-body">
-
-      </div>
     </div>
   </div>
 </div>

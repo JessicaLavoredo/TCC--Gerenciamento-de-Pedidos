@@ -10,19 +10,26 @@ import Api from './Api';
 export class FormaPagamentoService {
   constructor(private http: HttpClient) { }
 
-  public buscarTodos(){
+  public buscarTodos() {
     return this.http.get<FormaPagamento[]>(environment.api + 'FormaPagamento/buscartodos');
   }
 
-  async gravar(formapag: FormaPagamento){
+  async gravar(formapag: FormaPagamento) {
     const json = JSON.stringify(formapag);
-    const result: any =  await Api.post('FormaPagamento/gravar', json);
+    const result: any = await Api.post('FormaPagamento/gravar', json);
     console.log(result);
-    if (result.length > 0){
-   
-        return true;
-      }else{
-      return false;
-      }
+    if (result) {
+      return result;
     }
+  }
+
+  async excluir(formapag: FormaPagamento) {
+    const json = JSON.stringify(formapag);
+    const result: any = await Api.post('FormaPagamento/deletar', json);
+    console.log(result);
+    if (result) {
+      return result;
+    }
+  }
+
 }

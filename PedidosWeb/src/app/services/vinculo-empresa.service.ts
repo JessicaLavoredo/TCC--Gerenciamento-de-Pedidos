@@ -10,18 +10,24 @@ import Api from './Api';
 export class VinculoEmpresaService {
   constructor(private http: HttpClient) { }
 
-  public buscarTodos(){
+  public buscarTodos() {
     return this.http.get<Vinculo[]>(environment.api + 'Vinculo/buscartodos');
   }
 
-  async gravar(vinculo: Vinculo){
+  async gravar(vinculo: Vinculo) {
     const json = JSON.stringify(vinculo);
-    const result: any =  await Api.post('Vinculo/gravar', json);
-    console.log(result);
-    if (result.length > 0){
-        return true;
-      }else{
-      return false;
-      }
+    const result: any = await Api.post('Vinculo/gravar', json);
+    if (result) {
+      return result;
     }
+  }
+
+  async excluir(vinculo: Vinculo) {
+    const json = JSON.stringify(vinculo);
+    const result: any = await Api.post('Vinculo/deletar', json);
+    console.log(result);
+    if (result) {
+      return result;
+    }
+  }
 }

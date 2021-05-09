@@ -31,4 +31,6 @@ export class PedidoService {
   public buscarTodasFormasPagamento() {
     return this.http.get<FormaPagamento[]>(environment.api + 'FormaPagamento/buscartodos');
   }
+
+
 }

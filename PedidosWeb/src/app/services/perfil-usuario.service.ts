@@ -9,18 +9,23 @@ import Api from './Api';
 })
 export class PerfilUsuarioService {
   constructor(private http: HttpClient) { }
-  public buscarTodos(){
+  public buscarTodos() {
     return this.http.get<PerfilUsuario[]>(environment.api + 'Perfil/buscartodos');
   }
 
-  async gravar(Perfil: PerfilUsuario){
+  async gravar(Perfil: PerfilUsuario) {
     const json = JSON.stringify(Perfil);
-    const result: any =  await Api.post('Perfil/gravar', json);
-    if (result.length > 0){
-        console.log(result);
-        return true;
-      }else{
-      return false;
-      }
+    const result: any = await Api.post('Perfil/gravar', json);
+    if (result) {
+      return result;
     }
+  }
+
+  async excluir(Perfil: PerfilUsuario) {
+    const json = JSON.stringify(Perfil);
+    const result: any = await Api.post('Perfil/deletar', json);
+    if (result) {
+      return result;
+    }
+  }
 }

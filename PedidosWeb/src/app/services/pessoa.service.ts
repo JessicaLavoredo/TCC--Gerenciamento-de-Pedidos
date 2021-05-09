@@ -22,7 +22,7 @@ export class PessoaService {
   async gravar(pessoa: Pessoa) {
     const json = JSON.stringify(pessoa);
     const result: any = await Api.post('Pessoa/gravar', json);
-    if (result > 0) {
+    if (result) {
       return result;
     }
   }

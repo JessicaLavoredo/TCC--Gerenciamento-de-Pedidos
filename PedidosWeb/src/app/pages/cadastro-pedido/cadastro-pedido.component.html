@@ -5,6 +5,7 @@
 
 <form>
     <div class="container corpo">
+        <app-alert aria-live="polite" aria-atomic="true"></app-alert>
         <div class="form-row">
             <div class="form-group col-md-1 mr-5">
                 <label for="txtCodigo">Código</label>
@@ -28,7 +29,7 @@
             </div>
         </div>
 
-        <mat-accordion *ngIf="ClienteEscolhido">
+        <mat-accordion *ngIf="!ClienteEscolhido">
             <mat-expansion-panel class="mb-3" (opened)="panelOpenState = true" (closed)="panelOpenState = false">
                 <mat-expansion-panel-header>
                     <mat-panel-title>

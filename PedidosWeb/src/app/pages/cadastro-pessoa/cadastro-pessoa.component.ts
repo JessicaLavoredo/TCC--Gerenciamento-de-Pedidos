@@ -19,6 +19,11 @@ import { AlertService } from './../../services/alert.service';
 import { cpf } from 'cpf-cnpj-validator';
 import { cnpj } from 'cpf-cnpj-validator';
 import { formatDate } from '@angular/common';
+import { BsDatepickerConfig, BsLocaleService } from 'ngx-bootstrap/datepicker';
+import { defineLocale } from 'ngx-bootstrap/chronos';
+import { ptBrLocale } from 'ngx-bootstrap/locale';
+import { ThrowStmt } from '@angular/compiler';
+defineLocale('pt-br', ptBrLocale);
 
 @Component({
   selector: 'app-cadastro-pessoa',
@@ -36,6 +41,7 @@ export class CadastroPessoaComponent implements OnInit {
   public categoriasEmail: CategoriaEmail[] = [];
   public categoriasTelefone: CategoriaTelefone[] = [];
   public Pessoa: Pessoa = new Pessoa();
+  public PessoaFiltro: Pessoa = new Pessoa();
   public Pessoas: Pessoa[] = [];
   public enderecos: enderecoRetorno[] = [];
   public Endereco: enderecoRetorno = new enderecoRetorno();
@@ -54,25 +60,31 @@ export class CadastroPessoaComponent implements OnInit {
   public desativado = false;
   public botao: boolean = false;
   public filtros: any;
-  dataNascimento: string;
+  FiltroPesquisa: string;
+  dataNascimento: Date;
+  Filtros: any[];
   queryCidade = new FormControl();
   queryPessoa = new FormControl();
   resultados: Observable<any>;
+  public dpConfig: Partial<BsDatepickerConfig> = new BsDatepickerConfig();
 
   @ViewChild('modalSearchPessoa') modalSearchPessoa: ElementRef;
   @ViewChild('modalSearchCidade') modalSearchCidade: ElementRef;
+  InputFiltroPesquisa: string;
 
-  constructor(private PessoaService: PessoaService, private router: Router, private AlertService: AlertService) { }
+  constructor(private PessoaService: PessoaService, private router: Router, private AlertService: AlertService, private localeService: BsLocaleService) { }
 
   ngOnInit(): void {
     this.limparTela()
-
     this.queryCidade.valueChanges.pipe(
       map(value => value.trim()),
       debounceTime(200),
       distinctUntilChanged(),
       tap(value => this.filter = value),
     ).subscribe();
+    this.dpConfig.isAnimated = true;
+    this.dpConfig.dateInputFormat = 'DD/MM/YYYY';
+    this.localeService.use('pt-br');
   }
 
   limparTela() {
@@ -95,6 +107,12 @@ export class CadastroPessoaComponent implements OnInit {
     this.listarVinculo();
     this.ListarTodasCidades();
     this.filtros = {};
+    this.DepoisBuscar();
+    this.ValidarUsuario()
+    this.PreecherComboFiltro();
+  }
+
+  public DepoisBuscar() {
     this.queryPessoa.valueChanges.pipe(
       map(value => value.trim()),
       filter(value => value.length > 0),
@@ -109,16 +127,40 @@ export class CadastroPessoaComponent implements OnInit {
           } else {
             this.Pessoa.inativo = true;
           }
+          var data = this.Pessoa.dataNascimento.toString();
+          var teste = data.split("-");
+          this.dataNascimento = new Date(Number(teste[0]), Number(teste[1]) - 1, Number(teste[2]));
           this.telefones = result.telefones.length > 0 ? result.telefones : [];
+          this.telefones.forEach(telefone => {
+            var categoriaResult = this.categoriasTelefone.find(categoria => telefone.idCategoriaTelefone == categoria.IdCategoriaTelefone)
+            if (categoriaResult) {
+              telefone.decricaoCategoriaTelefone = categoriaResult.Nome;
+            }
+          });
           this.enderecos = result.enderecos.length > 0 ? result.enderecos : [];
+          this.enderecos.forEach(endereco => {
+            var categoriaResult = this.categoriasEndereco.find(categoria => categoria.IdCategoriaEndereco == endereco.idCategoriaEndereco)
+            if (categoriaResult) {
+              endereco.descricaoCategoriaEndereco = categoriaResult.Nome;
+            }
+            var cidade = this.Cidades.find(cidade => cidade.idCidade == endereco.idCidade)
+            if (cidade) {
+              endereco.nomeCidade = cidade.nome;
+            }
+          });
           this.emails = result.emails.length > 0 ? result.emails : [];
+          this.emails.forEach(email => {
+            var categoriaResult = this.categoriasEmail.find(categoria => email.idCategoriaEmail == categoria.IdCategoriaEmail)
+            if (categoriaResult) {
+              email.descricaoCategoriaEmail = categoriaResult.Nome;
+            }
+          });
         } else {
 
         }
       }
       )
     ).subscribe();
-    this.ValidarUsuario()
   }
 
   public PesquisarCidade() {
@@ -185,23 +227,13 @@ export class CadastroPessoaComponent implements OnInit {
       if (this.Pessoa.tipoPessoa == 'J' && !cnpj.isValid(this.Pessoa.cpfCnpj)) {
         this.AlertService.show("Cnpj Inválido", { classname: 'bg-danger text-light', delay: 3000 });
       }
-
-      var data = new Date(this.dataNascimento);
-      console.log(this.dataNascimento)
-      console.log(data)
-
-
-      const format = 'yyyy-dd-MMT00:00:00Z';
-      const locale = 'en-US';
-      const formattedDate = formatDate(data, format, locale);
-      console.log(formattedDate)
-
+      this.Pessoa.dataNascimento = this.dataNascimento;
       this.Pessoa.enderecos = this.enderecos;
       this.Pessoa.telefones = this.telefones;
       this.Pessoa.emails = this.emails;
       let retorno = await this.PessoaService.gravar(this.Pessoa);
       if (retorno.status == 200) {
-        this.AlertService.show(retorno.data, { classname: 'bg-sucess text-light', delay: 3000 });
+        this.AlertService.show(retorno.data, { classname: 'bg-success text-light', delay: 3000 });
       } else {
         this.AlertService.show(retorno.data, { classname: 'bg-danger text-light', delay: 3000 });
       }
@@ -346,7 +378,6 @@ export class CadastroPessoaComponent implements OnInit {
 
   async Pesquisar() {
     if (this.Pessoa.idPessoa == '') {
-      this.ListarTodasPessoas();
       this.modalSearchPessoa.nativeElement.click();
     } else {
       let retorno: any = await this.PessoaService.BuscarPorId(this.Pessoa.idPessoa)
@@ -358,9 +389,33 @@ export class CadastroPessoaComponent implements OnInit {
           this.Pessoa.inativo = true;
         }
         this.telefones = retorno.telefones.length > 0 ? retorno.telefones : [];
+        this.telefones.forEach(telefone => {
+          var categoriaResult = this.categoriasTelefone.find(categoria => telefone.idCategoriaTelefone == categoria.IdCategoriaTelefone)
+          if (categoriaResult) {
+            telefone.decricaoCategoriaTelefone = categoriaResult.Nome;
+          }
+        });
         this.enderecos = retorno.enderecos.length > 0 ? retorno.enderecos : [];
+        this.enderecos.forEach(endereco => {
+          var categoriaResult = this.categoriasEndereco.find(categoria => categoria.IdCategoriaEndereco == endereco.idCategoriaEndereco)
+          if (categoriaResult) {
+            endereco.descricaoCategoriaEndereco = categoriaResult.Nome;
+          }
+          var cidade = this.Cidades.find(cidade => cidade.idCidade == endereco.idCidade)
+          if (cidade) {
+            endereco.nomeCidade = cidade.nome;
+          }
+        });
         this.emails = retorno.emails.length > 0 ? retorno.emails : [];
+        this.emails.forEach(email => {
+          var categoriaResult = this.categoriasEmail.find(categoria => email.idCategoriaEmail == categoria.IdCategoriaEmail)
+          if (categoriaResult) {
+            email.descricaoCategoriaEmail = categoriaResult.Nome;
+          }
+        });
       }
+
+
     }
   }
 
@@ -370,6 +425,31 @@ export class CadastroPessoaComponent implements OnInit {
       this.NomePagina = "Cadastro de Pessoa"
     } else {
       this.NomePagina = "Cadastro de Cliente"
+    }
+  }
+
+  public PreecherComboFiltro() {
+    this.Filtros = [
+      {
+        Codigo: "1",
+        Descricao: this.labelNome
+      },
+      {
+        Codigo: "2",
+        Descricao: this.labelFantasia
+      },
+      {
+        Codigo: "3",
+        Descricao: this.labelCPFCNPJ
+      }
+    ]
+  }
+
+  async PesquisarUsuarioPorFiltro() {
+    if (this.FiltroPesquisa == "1") {
+      var pesquisa = { nomeRazao: this.InputFiltroPesquisa }
+      let retorno: any = await this.PessoaService.BuscarPorFiltro(pesquisa);
+      this.Pessoas = retorno
     }
   }
 

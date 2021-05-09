@@ -10,18 +10,27 @@ import Api from './Api';
 export class ListaPrecoService {
   constructor(private http: HttpClient) { }
 
-  public buscarTodos(){
+  public buscarTodos() {
     return this.http.get<ListaPreco[]>(environment.api + 'ListaPreco/buscartodos');
   }
 
-  async gravar(listapreco: ListaPreco){
+  async gravar(listapreco: ListaPreco) {
     const json = JSON.stringify(listapreco);
-    const result: any =  await Api.post('ListaPreco/gravar', json);
-    if (result.length > 0){
-        console.log(result);
-        return true;
-      }else{
+    const result: any = await Api.post('ListaPreco/gravar', json);
+    if (result.length > 0) {
+      return true;
+    } else {
       return false;
-      }
     }
+  }
+
+  async excluir(listapreco: ListaPreco) {
+    const json = JSON.stringify(listapreco);
+    const result: any = await Api.post('ListaPreco/deletar', json);
+    if (result) {
+      return result;
+    } else {
+      return '';
+    }
+  }
 }

@@ -20,7 +20,6 @@ import { CadastroUsuarioComponent } from './pages/cadastro-usuario/cadastro-usua
 import { CadastroProdutoComponent } from './pages/cadastro-produto/cadastro-produto.component';
 import { CadastroListaPrecoComponent } from './pages/cadastro-lista-preco/cadastro-lista-preco.component';
 import { CadastroFormaPagamentoComponent } from './pages/cadastro-forma-pagamento/cadastro-forma-pagamento.component';
-import { CadastroClienteComponent } from './pages/cadastro-cliente/cadastro-cliente.component';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxMaskModule, IConfig } from 'ngx-mask';
 import { HttpClientModule } from '@angular/common/http';
@@ -41,6 +40,8 @@ import { AlertComponent } from './componentes/alert/alert.component';
 import { ModalModule } from 'ngx-bootstrap/modal';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { MatExpansionModule, MatAccordion } from '@angular/material/expansion';
+import { DatepickerModule, BsDatepickerModule } from 'ngx-bootstrap/datepicker';
+
 
 @NgModule({
   declarations: [
@@ -61,7 +62,6 @@ import { MatExpansionModule, MatAccordion } from '@angular/material/expansion';
     CadastroProdutoComponent,
     CadastroListaPrecoComponent,
     CadastroFormaPagamentoComponent,
-    CadastroClienteComponent,
     RelatorioFuncionarioComponent,
     RelatorioClienteComponent,
     RelatorioPedidoComponent,
@@ -88,7 +88,9 @@ import { MatExpansionModule, MatAccordion } from '@angular/material/expansion';
     MatSelectModule,
     NgxPaginationModule,
     MatDialogModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    BsDatepickerModule.forRoot(),
+    DatepickerModule.forRoot()
   ],
   providers: [],
   bootstrap: [AppComponent]

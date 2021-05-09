@@ -14,7 +14,6 @@ import { CadastroCatTelefoneComponent } from './pages/cadastro-cat-telefone/cada
 import { CadastroPerfilUsuarioComponent } from './pages/cadastro-perfil-usuario/cadastro-perfil-usuario.component';
 import { CadastroUsuarioComponent } from './pages/cadastro-usuario/cadastro-usuario.component';
 import { CadastroProdutoComponent } from './pages/cadastro-produto/cadastro-produto.component';
-import { CadastroClienteComponent } from './pages/cadastro-cliente/cadastro-cliente.component';
 import { CadastroListaPrecoComponent } from './pages/cadastro-lista-preco/cadastro-lista-preco.component';
 import { CadastroFormaPagamentoComponent } from './pages/cadastro-forma-pagamento/cadastro-forma-pagamento.component';
 import { HomeAdminComponent } from './pages/home-admin/home-admin.component';
@@ -38,7 +37,6 @@ const routes: Routes = [
       { path: 'CadastroPerfilUsuario', component: CadastroPerfilUsuarioComponent, canActivate: [AuthGuardAdm] },
       { path: 'CadastroUsuario', component: CadastroUsuarioComponent, canActivate: [AuthGuardAdm] },
       { path: 'CadastroProduto', component: CadastroProdutoComponent, canActivate: [AuthGuard] },
-      { path: 'CadastroCliente', component: CadastroClienteComponent, canActivate: [AuthGuard] },
       { path: 'CadastroListaPreco', component: CadastroListaPrecoComponent, canActivate: [AuthGuard] },
       { path: 'CadastroFormaPagamento', component: CadastroFormaPagamentoComponent, canActivate: [AuthGuardAdm] },
       { path: 'RelatorioFuncionario', component: RelatorioFuncionarioComponent, canActivate: [AuthGuard] },
@@ -68,7 +66,6 @@ const routes: Routes = [
       { path: 'CadastroPerfilUsuario', component: CadastroPerfilUsuarioComponent },
       { path: 'CadastroUsuario', component: CadastroUsuarioComponent },
       { path: 'CadastroProduto', component: CadastroProdutoComponent },
-      { path: 'CadastroCliente', component: CadastroClienteComponent },
       { path: 'CadastroListaPreco', component: CadastroListaPrecoComponent },
       { path: 'CadastroFormaPagamento', component: CadastroFormaPagamentoComponent },
       { path: 'RelatorioFuncionario', component: RelatorioFuncionarioComponent },

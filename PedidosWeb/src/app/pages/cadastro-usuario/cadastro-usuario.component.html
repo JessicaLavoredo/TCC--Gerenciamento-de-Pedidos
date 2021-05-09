@@ -6,9 +6,11 @@
 <form>
     <div class="container corpo">
         <div class="form-row">
+            <app-alert aria-live="polite" aria-atomic="true"></app-alert>
             <div class="form-group col-md-1">
                 <label for="txtCodigo">Código</label>
-                <input type="text" class="form-control" id="txtCodigo" name="Codigo" [(ngModel)]="Usuario.idUsuario">
+                <input type="text" class="form-control" [formControl]="queryUsuario" id="txtCodigo" name="Codigo"
+                    [(ngModel)]="Usuario.idUsuario">
             </div>
             <button #ModalPesquisaPessoa class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
                 data-target="#ModalPesquisaPessoa">
@@ -35,7 +37,7 @@
                     <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
                 </button>
             </div>
-            <div class="form-group col-md-4 mt-5">
+            <div class="form-group col-md-3 mt-5">
                 <label for="txtNome">{{NomePessoa}}</label>
             </div>
             <div class="form-group col-md-3">
@@ -46,10 +48,9 @@
                     </option>
                 </select>
             </div>
-        </div>
-        <div class="form-row">
-
-
+            <div class="form-group col-md-3 ml-5 mt-4 checkboxInativo">
+                <mat-checkbox color="primary" name="inativo"> Inativo </mat-checkbox>
+            </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-4">

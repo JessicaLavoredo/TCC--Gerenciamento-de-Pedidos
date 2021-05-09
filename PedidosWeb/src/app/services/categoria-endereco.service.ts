@@ -12,18 +12,23 @@ export class CategoriaEnderecoService {
 
   constructor(private http: HttpClient) { }
 
-  public buscarTodos(){
+  public buscarTodos() {
     return this.http.get<CategoriaEndereco[]>(environment.api + 'CategoriaEndereco/buscartodos');
   }
 
-  async gravar(categoria: CategoriaEndereco){
+  async gravar(categoria: CategoriaEndereco) {
     const json = JSON.stringify(categoria);
-    const result: any =  await Api.post('CategoriaEndereco/gravar', json);
-    if (result.length > 0){
-        console.log(result);
-        return true;
-      }else{
-      return false;
-      }
+    const result: any = await Api.post('CategoriaEndereco/gravar', json);
+    if (result) {
+      return result;
     }
+  }
+
+  async excluir(categoria: CategoriaEndereco) {
+    const json = JSON.stringify(categoria);
+    const result: any = await Api.post('CategoriaEndereco/deletar', json);
+    if (result) {
+      return result;
+    }
+  }
 }

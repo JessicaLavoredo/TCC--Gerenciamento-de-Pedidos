@@ -2,6 +2,7 @@ import { CategoriaTelefone } from './../../class/categoria-telefone';
 import { CategoriaTelefoneService } from './../../services/categoria-telefone.service';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { AlertService } from './../../services/alert.service';
 
 @Component({
   selector: 'app-cadastro-cat-telefone',
@@ -12,7 +13,7 @@ export class CadastroCatTelefoneComponent implements OnInit {
   public categorias: CategoriaTelefone[] = [];
   public filter;
   public categoria: CategoriaTelefone = new CategoriaTelefone();
-  constructor(private CategoriaTelefoneService: CategoriaTelefoneService, private router: Router) { }
+  constructor(private CategoriaTelefoneService: CategoriaTelefoneService, private router: Router, private AlertService: AlertService) { }
 
   ngOnInit(): void {
     this.listar();
@@ -25,7 +26,12 @@ export class CadastroCatTelefoneComponent implements OnInit {
   }
   public async Gravar() {
     try {
-      await this.CategoriaTelefoneService.gravar(this.categoria);
+      let retorno = await this.CategoriaTelefoneService.gravar(this.categoria);
+      if (retorno.status == 200) {
+        this.AlertService.show(retorno.data, { classname: 'bg-success text-light', delay: 3000 });
+      } else {
+        this.AlertService.show(retorno.data, { classname: 'bg-danger text-light', delay: 3000 });
+      }
       this.listar();
       this.categoria = new CategoriaTelefone();
     } catch (error) {
@@ -44,4 +50,18 @@ export class CadastroCatTelefoneComponent implements OnInit {
     this.categoria = new CategoriaTelefone();
   }
 
+  public async Excluir() {
+    try {
+      let retorno = await this.CategoriaTelefoneService.excluir(this.categoria);
+      if (retorno.status == 200) {
+        this.AlertService.show(retorno.data, { classname: 'bg-success text-light', delay: 3000 });
+      } else {
+        this.AlertService.show(retorno.data, { classname: 'bg-danger text-light', delay: 3000 });
+      }
+      this.listar();
+      this.categoria = new CategoriaTelefone();
+    } catch (error) {
+      console.error(error);
+    }
+  }
 }

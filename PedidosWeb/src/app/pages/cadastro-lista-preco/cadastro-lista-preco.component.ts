@@ -42,4 +42,6 @@ export class CadastroListaPrecoComponent implements OnInit {
   public Limpar() {
     this.ListaPreco = new ListaPreco();
   }
+
+
 }

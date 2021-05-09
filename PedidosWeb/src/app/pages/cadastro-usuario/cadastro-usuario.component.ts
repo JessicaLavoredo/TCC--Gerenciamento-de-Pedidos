@@ -1,3 +1,4 @@
+import { PessoaService } from './../../services/pessoa.service';
 import { FormControl } from '@angular/forms';
 import { PerfilUsuario } from './../../class/perfil-usuario';
 import { UsuarioService } from './../../services/usuario.service';
@@ -8,6 +9,7 @@ import { Usuario } from 'src/app/class/usuario';
 import { Pessoa } from 'src/app/class/Pessoa';
 import { Observable } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, map, switchMap } from 'rxjs/operators';
+import { AlertService } from './../../services/alert.service';
 
 @Component({
   selector: 'app-cadastro-usuario',
@@ -27,15 +29,37 @@ export class CadastroUsuarioComponent implements OnInit {
   Perfil: PerfilUsuario = new PerfilUsuario();
   public Pessoas: Pessoa[] = [];
   @ViewChild('modalSearchPessoa') modalSearchPessoa: ElementRef;
+  queryUsuario = new FormControl();
   queryPessoa = new FormControl();
   resultados: Observable<any>;
 
-  constructor(private UsuarioService: UsuarioService, private router: Router, private PerfilUsuarioService: PerfilUsuarioService) { }
+  constructor(private UsuarioService: UsuarioService, private PerfilUsuarioService: PerfilUsuarioService, private AlertService: AlertService, private PessoaService: PessoaService) { }
 
   ngOnInit(): void {
     this.listarPerfil();
-    this.Limpar()
+    this.Limpar();
   }
+
+  public DepoisBuscar() {
+    this.queryUsuario.valueChanges.pipe(
+      map(value => value.trim()),
+      filter(value => value.length > 0),
+      debounceTime(200),
+      distinctUntilChanged(),
+      switchMap(value => this.UsuarioService.BuscarPorId(this.Usuario.idUsuario)),
+      map((result: any) => {
+        if (result) {
+          this.Usuario = result
+          this.ConfirmacaoSenha = result.senha;
+          this.pesquisarFuncionario();
+        } else {
+
+        }
+      }
+      )
+    ).subscribe();
+  }
+
 
   public listarPerfil() {
     this.PerfilUsuarioService.buscarTodos().subscribe(result => {
@@ -53,10 +77,13 @@ export class CadastroUsuarioComponent implements OnInit {
 
   public async Gravar() {
     try {
-      let retorno = await this.UsuarioService.gravar(this.Usuario)
-      alert(retorno.data)
-      this.Limpar();
+      if (this.Usuario.senha === this.ConfirmacaoSenha) {
+        let retorno = await this.UsuarioService.gravar(this.Usuario)
+        this.AlertService.show(retorno.data, { classname: 'bg-success text-light', delay: 3000 });
+        this.Limpar();
+      } else {
 
+      }
     } catch (error) {
       console.error(error);
     }
@@ -65,6 +92,7 @@ export class CadastroUsuarioComponent implements OnInit {
     this.Usuario = new Usuario();
     this.NomePessoa = '';
     this.PesquisaReativaFuncionario();
+    this.DepoisBuscar()
   }
 
   PesquisaReativaFuncionario() {
@@ -73,7 +101,7 @@ export class CadastroUsuarioComponent implements OnInit {
       filter(value => value.length > 0),
       debounceTime(200),
       distinctUntilChanged(),
-      switchMap(value => this.UsuarioService.BuscarPorId(this.Usuario.idPessoa)),
+      switchMap(value => this.PessoaService.BuscarPorId(this.Usuario.idPessoa)),
       map((result: any) => {
         if (result) {
           this.NomePessoa = result.nomeRazao;
@@ -88,7 +116,7 @@ export class CadastroUsuarioComponent implements OnInit {
       this.ListarTodasPessoas();
       this.modalSearchPessoa.nativeElement.click();
     } else {
-      let retorno: any = await this.UsuarioService.BuscarPorId(this.Usuario.idPessoa)
+      let retorno: any = await this.PessoaService.BuscarPorId(this.Usuario.idPessoa)
       if (retorno) {
         this.NomePessoa = retorno.nomeRazao;
       }

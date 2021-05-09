@@ -23,7 +23,7 @@ export class UsuarioService {
 
   async BuscarPorId(Codigo: String) {
     return new Promise(resolve => {
-      this.http.get(environment.api + '/Pessoa/buscarPorId/' + Codigo).subscribe(result => {
+      this.http.get(environment.api + '/Usuario/buscarPorId/' + Codigo).subscribe(result => {
         resolve(result);
       });
     })

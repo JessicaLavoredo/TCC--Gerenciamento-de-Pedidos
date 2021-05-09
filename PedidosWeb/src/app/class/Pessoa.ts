@@ -10,7 +10,7 @@ export class Pessoa {
     apelidoFantasia: string;
     cpfCnpj: string;
     rgInscricao: string;
-    dataNascimento: string;
+    dataNascimento: Date;
     genero: string;
     inativo: boolean;
     dataInclusao: Date;
@@ -27,7 +27,7 @@ export class Pessoa {
         this.apelidoFantasia = '';
         this.cpfCnpj = '';
         this.rgInscricao = '';
-        this.dataNascimento = '';
+        this.dataNascimento = new Date(1900, 1, 1);
         this.genero = '';
         this.inativo = false;
         this.dataInclusao = new Date;

@@ -30,4 +30,12 @@ export class ProdutoService {
     }
 
   }
+
+  async BuscarPorId(Codigo: String) {
+    return new Promise(resolve => {
+      this.http.get(environment.api + '/Produto/buscarPorId/' + Codigo).subscribe(result => {
+        resolve(result);
+      });
+    })
+  }
 }

@@ -1,49 +1,47 @@
 <app-menu></app-menu>
- <div class="TituloPagina">
-   <span>Cadastro de Perfil de Usuário</span>
- </div>
+<div class="TituloPagina">
+  <span>Cadastro de Perfil de Usuário</span>
+</div>
 
 <form>
-    <div class="container corpo">
-        <div class="form-row">
-            <div class="form-group col-md-2">
-                <label for="txtCodigo">Código</label>
-                <input type="text" class="form-control" name="codigo" id="txtCodigo" [(ngModel)]="perfilUsuario.IdPerfil">
-            </div>
-            <div class="form-group col-md-10">
-                <label for="txtNome">Nome</label>
-                <input type="text" class="form-control" name="nome" id="txtNome" [(ngModel)]="perfilUsuario.Nome">
-            </div>
-           
-        </div>  
-        <table class="table">
-          <thead class="tabelas">
-            <tr>
-              <th scope="col">Código</th>
-              <th scope="col">Nome</th>
-              <th scope="col">Selecionar</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let perfilUsuario of PerfisUsuario">
-              <th scope="row">{{perfilUsuario.IdPerfil}}</th>
-              <td>{{perfilUsuario.Nome}}</td>    
-              <td><button class="btn btn-info btnselecionar btn-sm"
-                (click)="selecionarPerfil(perfilUsuario)">
-                <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">done_outline</mat-icon>
-              </button></td>             
-            </tr>                
-          </tbody>
-        </table>
-     </div>           
- <app-footer>
+  <div class="container corpo">
+    <app-alert aria-live="polite" aria-atomic="true"></app-alert>
+    <div class="form-row">
+      <div class="form-group col-md-2">
+        <label for="txtCodigo">Código</label>
+        <input type="text" class="form-control" name="codigo" id="txtCodigo" [(ngModel)]="perfilUsuario.IdPerfil">
+      </div>
+      <div class="form-group col-md-10">
+        <label for="txtNome">Nome</label>
+        <input type="text" class="form-control" name="nome" id="txtNome" [(ngModel)]="perfilUsuario.Nome">
+      </div>
+
+    </div>
+    <table class="table">
+      <thead class="tabelas">
+        <tr>
+          <th scope="col">Código</th>
+          <th scope="col">Nome</th>
+          <th scope="col">Selecionar</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let perfilUsuario of PerfisUsuario">
+          <th scope="row">{{perfilUsuario.IdPerfil}}</th>
+          <td>{{perfilUsuario.Nome}}</td>
+          <td><button class="btn btn-info btnselecionar btn-sm" (click)="selecionarPerfil(perfilUsuario)">
+              <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">done_outline</mat-icon>
+            </button></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <app-footer>
     <span rodape>
       <button type="button" (click)="Gravar()" class="btn btn-secondary ml-5 rounded-pill">Salvar</button>
-      <button type="button" class="btn btn-secondary ml-5 rounded-pill">Excluir</button>
+      <button type="button" (click)="Excluir()" class="btn btn-secondary ml-5 rounded-pill">Excluir</button>
       <button type="button" (click)="Limpar()" class="btn btn-secondary ml-5 rounded-pill">Novo</button>
     </span>
- </app-footer>
+  </app-footer>
 
 </form>
-
-

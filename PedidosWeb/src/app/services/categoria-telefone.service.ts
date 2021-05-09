@@ -10,18 +10,22 @@ import Api from './Api';
 export class CategoriaTelefoneService {
   constructor(private http: HttpClient) { }
 
-  public buscarTodos(){
+  public buscarTodos() {
     return this.http.get<CategoriaTelefone[]>(environment.api + 'CategoriaTelefone/buscartodos');
   }
 
-  async gravar(categoria: CategoriaTelefone){
+  async gravar(categoria: CategoriaTelefone) {
     const json = JSON.stringify(categoria);
-    const result: any =  await Api.post('CategoriaTelefone/gravar', json);
-    if (result.length > 0){
-        console.log(result);
-        return true;
-      }else{
-      return false;
-      }
+    const result: any = await Api.post('CategoriaTelefone/gravar', json);
+    if (result) {
+      return result;
     }
+  }
+  async excluir(categoria: CategoriaTelefone) {
+    const json = JSON.stringify(categoria);
+    const result: any = await Api.post('CategoriaTelefone/deletar', json);
+    if (result) {
+      return result;
+    }
+  }
 }
