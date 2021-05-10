@@ -11,7 +11,6 @@
     date_default_timezone_set('America/Sao_Paulo');
 
     try {
-        throw new Exception ('ERRO TESTE');
 
         if (!isset($_REQUEST['url']) || count(explode('/', $_REQUEST['url'])) < 2) {
             http_response_code(404);
