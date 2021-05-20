@@ -26,11 +26,11 @@ export class CadastroVinculoEmpresaComponent implements OnInit {
   }
   public async Gravar() {
     try {
-      let retorno = await this.VinculoEmpresaService.gravar(this.vinculo);
+      let retorno: any = await this.VinculoEmpresaService.gravar(this.vinculo);
       if (retorno.status == 200) {
-        this.AlertService.show(retorno.data, { classname: 'bg-success text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
       } else {
-        this.AlertService.show(retorno.data, { classname: 'bg-danger text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
       }
       this.listar();
       this.vinculo = new Vinculo();
@@ -51,11 +51,11 @@ export class CadastroVinculoEmpresaComponent implements OnInit {
 
   public async Excluir() {
     try {
-      let retorno = await this.VinculoEmpresaService.excluir(this.vinculo);
+      let retorno: any = await this.VinculoEmpresaService.excluir(this.vinculo);
       if (retorno.status == 200) {
-        this.AlertService.show(retorno.data, { classname: 'bg-success text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
       } else {
-        this.AlertService.show(retorno.data, { classname: 'bg-danger text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
       }
       this.listar();
       this.vinculo = new Vinculo();

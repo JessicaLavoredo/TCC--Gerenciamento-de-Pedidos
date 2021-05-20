@@ -26,11 +26,11 @@ export class CadastroPerfilUsuarioComponent implements OnInit {
   }
   public async Gravar() {
     try {
-      let retorno = await this.PerfilUsuarioService.gravar(this.perfilUsuario);
+      let retorno: any = await this.PerfilUsuarioService.gravar(this.perfilUsuario);
       if (retorno.status == 200) {
-        this.AlertService.show(retorno.data, { classname: 'bg-success text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
       } else {
-        this.AlertService.show(retorno.data, { classname: 'bg-danger text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
       }
       this.listar();
       this.perfilUsuario = new PerfilUsuario();
@@ -48,14 +48,14 @@ export class CadastroPerfilUsuarioComponent implements OnInit {
   public Limpar() {
     this.perfilUsuario = new PerfilUsuario();
   }
-  
+
   public async Excluir() {
     try {
-      let retorno = await this.PerfilUsuarioService.excluir(this.perfilUsuario);
+      let retorno: any = await this.PerfilUsuarioService.excluir(this.perfilUsuario);
       if (retorno.status == 200) {
-        this.AlertService.show(retorno.data, { classname: 'bg-success text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
       } else {
-        this.AlertService.show(retorno.data, { classname: 'bg-danger text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
       }
       this.listar();
       this.perfilUsuario = new PerfilUsuario();

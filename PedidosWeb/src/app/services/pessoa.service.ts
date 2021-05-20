@@ -1,30 +1,40 @@
 import { Vinculo } from './../class/vinculo';
 import { Cidade } from './../class/cidade';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { environment } from 'src/environments/environment';
-import Api from './Api';
 import { CategoriaEndereco } from '../class/categoria-endereco';
 import { CategoriaEmail } from '../class/categoria-email';
 import { CategoriaTelefone } from '../class/categoria-telefone';
 import { Pessoa } from '../class/Pessoa';
 
+
 @Injectable({
   providedIn: 'root'
 })
 export class PessoaService {
-  constructor(private http: HttpClient) { }
 
+  constructor(private http: HttpClient) { }
   public buscarTodos() {
-    return this.http.get<Pessoa[]>(environment.api + 'Pessoa/buscartodos');
+    return this.http.get<Pessoa[]>('api/Pessoa/buscartodos');
   }
 
   async gravar(pessoa: Pessoa) {
-    const json = JSON.stringify(pessoa);
-    const result: any = await Api.post('Pessoa/gravar', json);
-    if (result) {
-      return result;
-    }
+    return new Promise(resolve => {
+      const json = JSON.stringify(pessoa);
+      this.http.post('api/Pessoa/gravar', json).subscribe(result => {
+        let resultado = {
+          resultado: result,
+          status: 200
+        };
+        resolve(resultado);
+      }, error => {
+        let resultado = {
+          resultado: error,
+          status: 401
+        };
+        resolve(resultado);
+      });
+    })
   }
 
   buscaPorCEP(Cep: String) {
@@ -36,36 +46,47 @@ export class PessoaService {
   }
 
   public buscarTodasCidades() {
-    return this.http.get<Cidade[]>(environment.api + '/Cidade/buscartodos');
+    return this.http.get<Cidade[]>('api/Cidade/buscartodos');
   }
 
   public buscarTodosCatEnderecos() {
-    return this.http.get<CategoriaEndereco[]>(environment.api + '/CategoriaEndereco/buscartodos');
+    return this.http.get<CategoriaEndereco[]>('api/CategoriaEndereco/buscartodos');
   }
 
   public buscarTodosCatEmails() {
-    return this.http.get<CategoriaEmail[]>(environment.api + '/CategoriaEmail/buscartodos');
+    return this.http.get<CategoriaEmail[]>('api/CategoriaEmail/buscartodos');
   }
 
   public buscarTodosCatTelefones() {
-    return this.http.get<CategoriaTelefone[]>(environment.api + '/CategoriaTelefone/buscartodos');
+    return this.http.get<CategoriaTelefone[]>('api/CategoriaTelefone/buscartodos');
   }
 
   public buscarTodosVinculos() {
-    return this.http.get<Vinculo[]>(environment.api + '/Vinculo/buscartodos');
+    return this.http.get<Vinculo[]>('api/Vinculo/buscartodos');
   }
 
   async BuscarPorFiltro(Filtros: any) {
-    const json = JSON.stringify(Filtros);
-    const result: any = await Api.post('/Pessoa/buscarPorFiltro', json);
-    if (result.data) {
-      return result.data;
-    }
+    return new Promise(resolve => {
+      const json = JSON.stringify(Filtros);
+      this.http.post('api/Pessoa/buscarPorFiltro', json).subscribe(result => {
+        let resultado = {
+          resultado: result,
+          status: 200
+        };
+        resolve(resultado);
+      }, error => {
+        let resultado = {
+          resultado: error,
+          status: 401
+        };
+        resolve(resultado);
+      });
+    })
   }
 
   async BuscarPorId(Codigo: String) {
     return new Promise(resolve => {
-      this.http.get(environment.api + '/Pessoa/buscarPorId/' + Codigo).subscribe(result => {
+      this.http.get('api/Pessoa/buscarPorId/' + Codigo).subscribe(result => {
         resolve(result);
       });
     })

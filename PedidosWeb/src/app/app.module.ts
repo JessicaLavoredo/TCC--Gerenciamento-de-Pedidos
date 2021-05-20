@@ -41,7 +41,8 @@ import { ModalModule } from 'ngx-bootstrap/modal';
 import { NgxPaginationModule } from 'ngx-pagination';
 import { MatExpansionModule, MatAccordion } from '@angular/material/expansion';
 import { DatepickerModule, BsDatepickerModule } from 'ngx-bootstrap/datepicker';
-
+import { httpInterceptorProviders } from './http-interceptors';
+import { SomenteNumerosDirective } from './directives/somente-numeros.directive';
 
 @NgModule({
   declarations: [
@@ -69,6 +70,7 @@ import { DatepickerModule, BsDatepickerModule } from 'ngx-bootstrap/datepicker';
     CadastroVinculoEmpresaComponent,
     RecuperarSenhaComponent,
     AlertComponent,
+    SomenteNumerosDirective,
   ],
   imports: [
     BrowserModule,
@@ -92,7 +94,9 @@ import { DatepickerModule, BsDatepickerModule } from 'ngx-bootstrap/datepicker';
     BsDatepickerModule.forRoot(),
     DatepickerModule.forRoot()
   ],
-  providers: [],
+  providers: [
+    httpInterceptorProviders
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

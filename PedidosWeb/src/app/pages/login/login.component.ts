@@ -23,9 +23,9 @@ export class LoginComponent implements OnInit {
 
   async onSubmit() {
     try {
-      if (this.usuario.login == '') {
+      if (this.usuario.Login == '') {
         this.AlertService.show('Preencha corretamente o campo: Usuário', { classname: 'bg-danger text-light', delay: 3000 });
-      } else if (this.usuario.senha == '') {
+      } else if (this.usuario.Senha == '') {
         this.AlertService.show('Preencha corretamente o campo: Senha', { classname: 'bg-danger text-light', delay: 3000 });
       } else {
         const autenticado = await this.accountService.login(this.usuario);

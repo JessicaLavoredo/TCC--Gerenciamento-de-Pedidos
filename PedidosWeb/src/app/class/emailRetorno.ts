@@ -1,14 +1,14 @@
 export class emailRetorno {
-    endereco: string;
-    idCategoriaEmail: string;
-    descricaoCategoriaEmail: string;
-    observacao: string;
+    Endereco: string;
+    IdCategoriaEmail: string;
+    DescricaoCategoriaEmail: string;
+    Observacao: string;
 
     constructor() {
-        this.endereco = '';
-        this.idCategoriaEmail = '';
-        this.observacao = '';
-        this.descricaoCategoriaEmail = '';
+        this.Endereco = '';
+        this.IdCategoriaEmail = '';
+        this.Observacao = '';
+        this.DescricaoCategoriaEmail = '';
     }
 }
 

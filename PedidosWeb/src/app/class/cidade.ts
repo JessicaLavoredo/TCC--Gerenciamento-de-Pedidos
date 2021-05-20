@@ -1,15 +1,15 @@
 import { Estado } from './estado';
 export class Cidade {
-  idCidade: string;
-  nome: string;
-  codigoIBGE: string;
-  estado: Estado;
+  IdCidade: string;
+  Nome: string;
+  CodigoIBGE: string;
+  Estado: Estado;
 
   constructor() {
-    this.idCidade = '';
-    this.nome = '';
-    this.codigoIBGE = '';
-    this.estado = new Estado;
+    this.IdCidade = '';
+    this.Nome = '';
+    this.CodigoIBGE = '';
+    this.Estado = new Estado;
   }
 }
 

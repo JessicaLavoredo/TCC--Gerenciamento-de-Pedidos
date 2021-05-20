@@ -11,26 +11,44 @@ export class ListaPrecoService {
   constructor(private http: HttpClient) { }
 
   public buscarTodos() {
-    return this.http.get<ListaPreco[]>(environment.api + 'ListaPreco/buscartodos');
+    return this.http.get<ListaPreco[]>('api/ListaPreco/buscartodos');
   }
 
   async gravar(listapreco: ListaPreco) {
-    const json = JSON.stringify(listapreco);
-    const result: any = await Api.post('ListaPreco/gravar', json);
-    if (result.length > 0) {
-      return true;
-    } else {
-      return false;
-    }
+    return new Promise(resolve => {
+      const json = JSON.stringify(listapreco);
+      this.http.post('api/ListaPreco/gravar', json).subscribe(result => {
+        let resultado = {
+          resultado: result,
+          status: 200
+        };
+        resolve(resultado);
+      }, error => {
+        let resultado = {
+          resultado: error,
+          status: 401
+        };
+        resolve(resultado);
+      });
+    })
   }
 
   async excluir(listapreco: ListaPreco) {
-    const json = JSON.stringify(listapreco);
-    const result: any = await Api.post('ListaPreco/deletar', json);
-    if (result) {
-      return result;
-    } else {
-      return '';
-    }
+    return new Promise(resolve => {
+      const json = JSON.stringify(listapreco);
+      this.http.post('api/ListaPreco/deletar', json).subscribe(result => {
+        let resultado = {
+          resultado: result,
+          status: 200
+        };
+        resolve(resultado);
+      }, error => {
+        let resultado = {
+          resultado: error,
+          status: 401
+        };
+        resolve(resultado);
+      });
+    })
   }
 }

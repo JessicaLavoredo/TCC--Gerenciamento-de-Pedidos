@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  api: 'http://localhost/TCC--Gerenciamento-de-Pedidos/Backend/'
+  api: 'http://localhost/TCC--Gerenciamento-de-Pedidos/Backend/',
+  BASE_URL: '/api'
 };
 
 /*

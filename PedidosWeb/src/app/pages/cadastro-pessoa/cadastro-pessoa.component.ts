@@ -8,7 +8,7 @@ import { endereco } from './../../class/endereco';
 import { Cidade } from './../../class/cidade';
 import { PessoaService } from './../../services/pessoa.service';
 import { Component, ElementRef, OnInit, ViewChild, } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { CategoriaEndereco } from 'src/app/class/categoria-endereco';
 import { CategoriaEmail } from 'src/app/class/categoria-email';
 import { CategoriaTelefone } from 'src/app/class/categoria-telefone';
@@ -23,6 +23,7 @@ import { BsDatepickerConfig, BsLocaleService } from 'ngx-bootstrap/datepicker';
 import { defineLocale } from 'ngx-bootstrap/chronos';
 import { ptBrLocale } from 'ngx-bootstrap/locale';
 import { ThrowStmt } from '@angular/compiler';
+import { AccountService } from './../../services/account.service';
 defineLocale('pt-br', ptBrLocale);
 
 @Component({
@@ -34,6 +35,7 @@ export class CadastroPessoaComponent implements OnInit {
 
   NomePagina: string = "";
   public paginaAtual = 1;
+  public paginaAtualP = 1;
   public Cidades: Cidade[] = [];
   public cidade: Cidade = new Cidade();
   public filter;
@@ -61,18 +63,22 @@ export class CadastroPessoaComponent implements OnInit {
   public botao: boolean = false;
   public filtros: any;
   FiltroPesquisa: string;
-  dataNascimento: Date;
+  InputFiltroPesquisa: string;
   Filtros: any[];
+  dataNascimento: Date;
   queryCidade = new FormControl();
   queryPessoa = new FormControl();
   resultados: Observable<any>;
   public dpConfig: Partial<BsDatepickerConfig> = new BsDatepickerConfig();
-
+  perfil: string = '';
+  Idpessoa: string = '';
   @ViewChild('modalSearchPessoa') modalSearchPessoa: ElementRef;
   @ViewChild('modalSearchCidade') modalSearchCidade: ElementRef;
-  InputFiltroPesquisa: string;
 
-  constructor(private PessoaService: PessoaService, private router: Router, private AlertService: AlertService, private localeService: BsLocaleService) { }
+
+  constructor(private PessoaService: PessoaService, private route: ActivatedRoute, private router: Router, private AlertService: AlertService, private accountService: AccountService, private localeService: BsLocaleService) {
+
+  }
 
   ngOnInit(): void {
     this.limparTela()
@@ -85,6 +91,17 @@ export class CadastroPessoaComponent implements OnInit {
     this.dpConfig.isAnimated = true;
     this.dpConfig.dateInputFormat = 'DD/MM/YYYY';
     this.localeService.use('pt-br');
+    if (this.Idpessoa != '') {
+      this.Pessoa.IdPessoa = this.Idpessoa
+    }
+
+    this.route.queryParams
+      .subscribe(params => {
+        if (params) {
+          this.Pessoa.IdPessoa = params.id;
+        }
+      }
+      );
   }
 
   limparTela() {
@@ -97,8 +114,9 @@ export class CadastroPessoaComponent implements OnInit {
     this.email = new emailRetorno();
     this.emails = [];
     this.Vinculos = [];
-    this.Pessoa.tipoPessoa = 'F';
-    this.telefone.dDI = '55'
+    this.Pessoa.TipoPessoa = 'F';
+    this.telefone.DDI = '55'
+    this.dataNascimento = null;
     this.alterartipo();
     this.desativado = false;
     this.listarCatEndereco();
@@ -118,59 +136,55 @@ export class CadastroPessoaComponent implements OnInit {
       filter(value => value.length > 0),
       debounceTime(200),
       distinctUntilChanged(),
-      switchMap(value => this.PessoaService.BuscarPorId(this.Pessoa.idPessoa)),
-      map((result: any) => {
-        if (result) {
-          this.Pessoa = result;
-          if (result.inativo == 0) {
-            this.Pessoa.inativo = false;
+      switchMap(value => this.PessoaService.BuscarPorId(this.Pessoa.IdPessoa)),
+      map((retorno: any) => {
+        if (retorno) {
+          this.Pessoa = retorno;
+          this.dataNascimento = new Date(this.Pessoa.DataNascimento + " 00:00:00")
+          if (retorno.Inativo == 0) {
+            this.Pessoa.Inativo = false;
           } else {
-            this.Pessoa.inativo = true;
+            this.Pessoa.Inativo = true;
           }
-          var data = this.Pessoa.dataNascimento.toString();
-          var teste = data.split("-");
-          this.dataNascimento = new Date(Number(teste[0]), Number(teste[1]) - 1, Number(teste[2]));
-          this.telefones = result.telefones.length > 0 ? result.telefones : [];
+          this.telefones = retorno.Telefones.length > 0 ? retorno.Telefones : [];
           this.telefones.forEach(telefone => {
-            var categoriaResult = this.categoriasTelefone.find(categoria => telefone.idCategoriaTelefone == categoria.IdCategoriaTelefone)
+            var categoriaResult = this.categoriasTelefone.find(categoria => telefone.IdCategoriaTelefone == categoria.IdCategoriaTelefone)
             if (categoriaResult) {
-              telefone.decricaoCategoriaTelefone = categoriaResult.Nome;
+              telefone.DecricaoCategoriaTelefone = categoriaResult.Nome;
             }
           });
-          this.enderecos = result.enderecos.length > 0 ? result.enderecos : [];
+          this.enderecos = retorno.Enderecos.length > 0 ? retorno.Enderecos : [];
           this.enderecos.forEach(endereco => {
-            var categoriaResult = this.categoriasEndereco.find(categoria => categoria.IdCategoriaEndereco == endereco.idCategoriaEndereco)
+            var categoriaResult = this.categoriasEndereco.find(categoria => categoria.IdCategoriaEndereco == endereco.IdCategoriaEndereco)
             if (categoriaResult) {
-              endereco.descricaoCategoriaEndereco = categoriaResult.Nome;
+              endereco.DescricaoCategoriaEndereco = categoriaResult.Nome;
             }
-            var cidade = this.Cidades.find(cidade => cidade.idCidade == endereco.idCidade)
+            var cidade = this.Cidades.find(cidade => cidade.IdCidade == endereco.IdCidade)
             if (cidade) {
-              endereco.nomeCidade = cidade.nome;
+              endereco.NomeCidade = cidade.Nome;
             }
           });
-          this.emails = result.emails.length > 0 ? result.emails : [];
+          this.emails = retorno.Emails.length > 0 ? retorno.Emails : [];
           this.emails.forEach(email => {
-            var categoriaResult = this.categoriasEmail.find(categoria => email.idCategoriaEmail == categoria.IdCategoriaEmail)
+            var categoriaResult = this.categoriasEmail.find(categoria => email.IdCategoriaEmail == categoria.IdCategoriaEmail)
             if (categoriaResult) {
-              email.descricaoCategoriaEmail = categoriaResult.Nome;
+              email.DescricaoCategoriaEmail = categoriaResult.Nome;
             }
           });
-        } else {
-
-        }
+        } 
       }
       )
     ).subscribe();
   }
 
   public PesquisarCidade() {
-    if (this.Endereco.nomeCidade == '') {
+    if (this.Endereco.NomeCidade == '') {
       this.modalSearchCidade.nativeElement.click();
     } else {
-      let CidadeRetorno = this.Cidades.filter(Cidade => Cidade.nome == this.Endereco.nomeCidade.toLowerCase());
+      let CidadeRetorno = this.Cidades.filter(Cidade => Cidade.Nome == this.Endereco.NomeCidade.toLowerCase());
       if (CidadeRetorno.length > 0) {
-        this.Endereco.idCidade = CidadeRetorno[0].idCidade;
-        this.Endereco.nomeCidade = CidadeRetorno[0].nome;
+        this.Endereco.IdCidade = CidadeRetorno[0].IdCidade;
+        this.Endereco.NomeCidade = CidadeRetorno[0].Nome;
       }
     }
   }
@@ -189,8 +203,14 @@ export class CadastroPessoaComponent implements OnInit {
 
   public selecionarCidade(Cidade: Cidade) {
     if (Cidade) {
-      this.Endereco.idCidade = Cidade.idCidade;
-      this.Endereco.nomeCidade = Cidade.nome;
+      this.Endereco.IdCidade = Cidade.IdCidade;
+      this.Endereco.NomeCidade = Cidade.Nome;
+    }
+  }
+
+  public selecionarPessoa(Pessoa: Pessoa) {
+    if (Pessoa) {
+      this.Pessoa.IdPessoa = Pessoa.IdPessoa;
     }
   }
 
@@ -220,22 +240,31 @@ export class CadastroPessoaComponent implements OnInit {
 
   public async Gravar() {
     try {
-      if (this.Pessoa.tipoPessoa == 'F' && !cpf.isValid(this.Pessoa.cpfCnpj)) {
+      if (this.Pessoa.TipoPessoa == 'F' && !cpf.isValid(this.Pessoa.CpfCnpj)) {
         this.AlertService.show("Cpf Inválido", { classname: 'bg-danger text-light', delay: 3000 });
+        this.Pessoa.CpfCnpj = '';
+        return;
       }
 
-      if (this.Pessoa.tipoPessoa == 'J' && !cnpj.isValid(this.Pessoa.cpfCnpj)) {
+      if (this.Pessoa.TipoPessoa == 'J' && !cnpj.isValid(this.Pessoa.CpfCnpj)) {
         this.AlertService.show("Cnpj Inválido", { classname: 'bg-danger text-light', delay: 3000 });
+        this.Pessoa.CpfCnpj = '';
+        return;
       }
-      this.Pessoa.dataNascimento = this.dataNascimento;
-      this.Pessoa.enderecos = this.enderecos;
-      this.Pessoa.telefones = this.telefones;
-      this.Pessoa.emails = this.emails;
-      let retorno = await this.PessoaService.gravar(this.Pessoa);
+      if (this.perfil == "2") {
+        this.Pessoa.Vinculos.push("2")
+      }
+
+      this.Pessoa.DataNascimento = this.dataNascimento;
+      this.Pessoa.Enderecos = this.enderecos;
+      this.Pessoa.Telefones = this.telefones;
+      this.Pessoa.Emails = this.emails;
+      let retorno: any = await this.PessoaService.gravar(this.Pessoa);
       if (retorno.status == 200) {
-        this.AlertService.show(retorno.data, { classname: 'bg-success text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
+        this.limparTela();
       } else {
-        this.AlertService.show(retorno.data, { classname: 'bg-danger text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
       }
 
     } catch (error) {
@@ -263,8 +292,8 @@ export class CadastroPessoaComponent implements OnInit {
 
   public SelecionarCategoriaEndereco() {
     this.categoriasEndereco.forEach(CatEndereco => {
-      if (CatEndereco.IdCategoriaEndereco == this.Endereco.idCategoriaEndereco) {
-        this.Endereco.descricaoCategoriaEndereco = CatEndereco.Nome;
+      if (CatEndereco.IdCategoriaEndereco == this.Endereco.IdCategoriaEndereco) {
+        this.Endereco.DescricaoCategoriaEndereco = CatEndereco.Nome;
       }
     })
   }
@@ -293,8 +322,8 @@ export class CadastroPessoaComponent implements OnInit {
 
   public SelecionarCategoriaTelefone() {
     this.categoriasTelefone.forEach(CatTelefone => {
-      if (CatTelefone.IdCategoriaTelefone == this.telefone.idCategoriaTelefone) {
-        this.telefone.decricaoCategoriaTelefone = CatTelefone.Nome;
+      if (CatTelefone.IdCategoriaTelefone == this.telefone.IdCategoriaTelefone) {
+        this.telefone.DecricaoCategoriaTelefone = CatTelefone.Nome;
       }
     })
   }
@@ -324,8 +353,8 @@ export class CadastroPessoaComponent implements OnInit {
 
   public SelecionarCategoriaEmail() {
     this.categoriasEmail.forEach(CatEmail => {
-      if (CatEmail.IdCategoriaEmail == this.email.idCategoriaEmail) {
-        this.email.descricaoCategoriaEmail = CatEmail.Nome;
+      if (CatEmail.IdCategoriaEmail == this.email.IdCategoriaEmail) {
+        this.email.DescricaoCategoriaEmail = CatEmail.Nome;
       }
     })
   }
@@ -335,7 +364,7 @@ export class CadastroPessoaComponent implements OnInit {
   }
 
   public alterartipo() {
-    if (this.Pessoa.tipoPessoa == 'F') {
+    if (this.Pessoa.TipoPessoa == 'F') {
       this.isJuridico = false;
       this.labelNome = 'Nome';
       this.labelFantasia = 'Apelido';
@@ -359,58 +388,59 @@ export class CadastroPessoaComponent implements OnInit {
   }
 
   async buscarPorCep() {
-    if (this.Endereco.cep.length == 8) {
-      let retorno: any = await this.PessoaService.buscaPorCEP(this.Endereco.cep);
+    if (this.Endereco.Cep.length == 8) {
+      let retorno: any = await this.PessoaService.buscaPorCEP(this.Endereco.Cep);
       if (retorno.logradouro != '') {
-        this.Endereco.logradouro = retorno.logradouro;
+        this.Endereco.Logradouro = retorno.logradouro;
       }
       if (retorno.logradouro != '') {
-        this.Endereco.bairro = retorno.bairro;
+        this.Endereco.Bairro = retorno.bairro;
       }
       if (retorno.ibge) {
-        let CidadeRetorno = this.Cidades.filter(Cidade => Cidade.codigoIBGE === retorno.ibge);
-        this.Endereco.idCidade = CidadeRetorno[0].idCidade;
-        this.Endereco.nomeCidade = CidadeRetorno[0].nome;
+        let CidadeRetorno = this.Cidades.filter(Cidade => Cidade.CodigoIBGE === retorno.ibge);
+        this.Endereco.IdCidade = CidadeRetorno[0].IdCidade;
+        this.Endereco.NomeCidade = CidadeRetorno[0].Nome;
       }
     }
 
   }
 
   async Pesquisar() {
-    if (this.Pessoa.idPessoa == '') {
+    if (this.Pessoa.IdPessoa == '') {
       this.modalSearchPessoa.nativeElement.click();
     } else {
-      let retorno: any = await this.PessoaService.BuscarPorId(this.Pessoa.idPessoa)
+      let retorno: any = await this.PessoaService.BuscarPorId(this.Pessoa.IdPessoa)
       if (retorno) {
         this.Pessoa = retorno;
-        if (retorno.inativo == 0) {
-          this.Pessoa.inativo = false;
+        this.dataNascimento = new Date(this.Pessoa.DataNascimento + " 00:00:00")
+        if (retorno.Inativo == 0) {
+          this.Pessoa.Inativo = false;
         } else {
-          this.Pessoa.inativo = true;
+          this.Pessoa.Inativo = true;
         }
-        this.telefones = retorno.telefones.length > 0 ? retorno.telefones : [];
+        this.telefones = retorno.Telefones.length > 0 ? retorno.Telefones : [];
         this.telefones.forEach(telefone => {
-          var categoriaResult = this.categoriasTelefone.find(categoria => telefone.idCategoriaTelefone == categoria.IdCategoriaTelefone)
+          var categoriaResult = this.categoriasTelefone.find(categoria => telefone.IdCategoriaTelefone == categoria.IdCategoriaTelefone)
           if (categoriaResult) {
-            telefone.decricaoCategoriaTelefone = categoriaResult.Nome;
+            telefone.DecricaoCategoriaTelefone = categoriaResult.Nome;
           }
         });
-        this.enderecos = retorno.enderecos.length > 0 ? retorno.enderecos : [];
+        this.enderecos = retorno.Enderecos.length > 0 ? retorno.Enderecos : [];
         this.enderecos.forEach(endereco => {
-          var categoriaResult = this.categoriasEndereco.find(categoria => categoria.IdCategoriaEndereco == endereco.idCategoriaEndereco)
+          var categoriaResult = this.categoriasEndereco.find(categoria => categoria.IdCategoriaEndereco == endereco.IdCategoriaEndereco)
           if (categoriaResult) {
-            endereco.descricaoCategoriaEndereco = categoriaResult.Nome;
+            endereco.DescricaoCategoriaEndereco = categoriaResult.Nome;
           }
-          var cidade = this.Cidades.find(cidade => cidade.idCidade == endereco.idCidade)
+          var cidade = this.Cidades.find(cidade => cidade.IdCidade == endereco.IdCidade)
           if (cidade) {
-            endereco.nomeCidade = cidade.nome;
+            endereco.NomeCidade = cidade.Nome;
           }
         });
-        this.emails = retorno.emails.length > 0 ? retorno.emails : [];
+        this.emails = retorno.Emails.length > 0 ? retorno.Emails : [];
         this.emails.forEach(email => {
-          var categoriaResult = this.categoriasEmail.find(categoria => email.idCategoriaEmail == categoria.IdCategoriaEmail)
+          var categoriaResult = this.categoriasEmail.find(categoria => email.IdCategoriaEmail == categoria.IdCategoriaEmail)
           if (categoriaResult) {
-            email.descricaoCategoriaEmail = categoriaResult.Nome;
+            email.DescricaoCategoriaEmail = categoriaResult.Nome;
           }
         });
       }
@@ -420,8 +450,8 @@ export class CadastroPessoaComponent implements OnInit {
   }
 
   public ValidarUsuario() {
-    let perfil = window.localStorage.getItem("perfil")
-    if (perfil == "1") {
+    this.perfil = this.accountService.getTipoUser();
+    if (this.perfil == "1") {
       this.NomePagina = "Cadastro de Pessoa"
     } else {
       this.NomePagina = "Cadastro de Cliente"
@@ -431,26 +461,34 @@ export class CadastroPessoaComponent implements OnInit {
   public PreecherComboFiltro() {
     this.Filtros = [
       {
-        Codigo: "1",
-        Descricao: this.labelNome
+        Codigo: "NR",
+        Descricao: "Nome/Razão Social"
       },
       {
-        Codigo: "2",
-        Descricao: this.labelFantasia
+        Codigo: "AF",
+        Descricao: "Apelido/Nome Fantasia"
       },
       {
-        Codigo: "3",
-        Descricao: this.labelCPFCNPJ
+        Codigo: "C",
+        Descricao: "CPF/CNPJ"
       }
     ]
   }
 
   async PesquisarUsuarioPorFiltro() {
-    if (this.FiltroPesquisa == "1") {
-      var pesquisa = { nomeRazao: this.InputFiltroPesquisa }
-      let retorno: any = await this.PessoaService.BuscarPorFiltro(pesquisa);
-      this.Pessoas = retorno
+    let pesquisa: any;
+    if (this.FiltroPesquisa == "NR") {
+      pesquisa = { NomeRazao: this.InputFiltroPesquisa }
+    } else if (this.FiltroPesquisa == "AF") {
+      pesquisa = { ApelidoFantasia: this.InputFiltroPesquisa }
+    } else if (this.FiltroPesquisa == "C") {
+      pesquisa = { CpfCnpj: this.InputFiltroPesquisa }
+    } else {
+      this.AlertService.show("Selecione o filtro de Pesquisa", { classname: 'bg-warning text-light', delay: 3000 });
+      return
     }
+    let retorno: any = await this.PessoaService.BuscarPorFiltro(pesquisa);
+    this.Pessoas = retorno.resultado
   }
 
 }

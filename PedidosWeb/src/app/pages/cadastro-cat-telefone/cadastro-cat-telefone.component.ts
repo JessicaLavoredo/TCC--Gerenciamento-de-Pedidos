@@ -26,11 +26,11 @@ export class CadastroCatTelefoneComponent implements OnInit {
   }
   public async Gravar() {
     try {
-      let retorno = await this.CategoriaTelefoneService.gravar(this.categoria);
+      let retorno: any = await this.CategoriaTelefoneService.gravar(this.categoria);
       if (retorno.status == 200) {
-        this.AlertService.show(retorno.data, { classname: 'bg-success text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
       } else {
-        this.AlertService.show(retorno.data, { classname: 'bg-danger text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
       }
       this.listar();
       this.categoria = new CategoriaTelefone();
@@ -52,11 +52,11 @@ export class CadastroCatTelefoneComponent implements OnInit {
 
   public async Excluir() {
     try {
-      let retorno = await this.CategoriaTelefoneService.excluir(this.categoria);
+      let retorno: any = await this.CategoriaTelefoneService.excluir(this.categoria);
       if (retorno.status == 200) {
-        this.AlertService.show(retorno.data, { classname: 'bg-success text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
       } else {
-        this.AlertService.show(retorno.data, { classname: 'bg-danger text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
       }
       this.listar();
       this.categoria = new CategoriaTelefone();

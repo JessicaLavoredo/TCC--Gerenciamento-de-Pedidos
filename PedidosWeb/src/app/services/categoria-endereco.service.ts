@@ -13,22 +13,45 @@ export class CategoriaEnderecoService {
   constructor(private http: HttpClient) { }
 
   public buscarTodos() {
-    return this.http.get<CategoriaEndereco[]>(environment.api + 'CategoriaEndereco/buscartodos');
+    return this.http.get<CategoriaEndereco[]>('api/CategoriaEndereco/buscartodos');
   }
 
   async gravar(categoria: CategoriaEndereco) {
-    const json = JSON.stringify(categoria);
-    const result: any = await Api.post('CategoriaEndereco/gravar', json);
-    if (result) {
-      return result;
-    }
+    return new Promise(resolve => {
+      const json = JSON.stringify(categoria);
+      this.http.post('api/CategoriaEndereco/gravar', json).subscribe(result => {
+        let resultado = {
+          resultado: result,
+          status: 200
+        };
+        resolve(resultado);
+      }, error => {
+        let resultado = {
+          resultado: error,
+          status: 401
+        };
+        resolve(resultado);
+      });
+    })
+
   }
 
   async excluir(categoria: CategoriaEndereco) {
-    const json = JSON.stringify(categoria);
-    const result: any = await Api.post('CategoriaEndereco/deletar', json);
-    if (result) {
-      return result;
-    }
+    return new Promise(resolve => {
+      const json = JSON.stringify(categoria);
+      this.http.post('api/CategoriaEndereco/deletar', json).subscribe(result => {
+        let resultado = {
+          resultado: result,
+          status: 200
+        };
+        resolve(resultado);
+      }, error => {
+        let resultado = {
+          resultado: error,
+          status: 401
+        };
+        resolve(resultado);
+      });
+    })
   }
 }

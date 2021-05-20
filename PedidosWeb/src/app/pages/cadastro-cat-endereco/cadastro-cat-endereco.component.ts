@@ -26,11 +26,11 @@ export class CadastroCatEnderecoComponent implements OnInit {
   }
   public async Gravar() {
     try {
-      let retorno = await this.CategoriaEnderecoService.gravar(this.categoria);
+      let retorno: any = await this.CategoriaEnderecoService.gravar(this.categoria);
       if (retorno.status == 200) {
-        this.AlertService.show(retorno.data, { classname: 'bg-success text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
       } else {
-        this.AlertService.show(retorno.data, { classname: 'bg-danger text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
       }
       this.listar();
       this.categoria = new CategoriaEndereco();
@@ -53,11 +53,11 @@ export class CadastroCatEnderecoComponent implements OnInit {
 
   public async Excluir() {
     try {
-      let retorno = await this.CategoriaEnderecoService.excluir(this.categoria);
+      let retorno: any = await this.CategoriaEnderecoService.excluir(this.categoria);
       if (retorno.status == 200) {
-        this.AlertService.show(retorno.data, { classname: 'bg-success text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
       } else {
-        this.AlertService.show(retorno.data, { classname: 'bg-danger text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
       }
       this.listar();
       this.categoria = new CategoriaEndereco();

@@ -24,11 +24,11 @@ export class CadastroFormaPagamentoComponent implements OnInit {
   }
   public async Gravar() {
     try {
-      let retorno = await this.FormaPagamentoService.gravar(this.FormaPagamento);
+      let retorno: any = await this.FormaPagamentoService.gravar(this.FormaPagamento);
       if (retorno.status == 200) {
-        this.AlertService.show(retorno.data, { classname: 'bg-success text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
       } else {
-        this.AlertService.show(retorno.data, { classname: 'bg-danger text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
       }
       this.listar();
       this.FormaPagamento = new FormaPagamento();
@@ -49,11 +49,11 @@ export class CadastroFormaPagamentoComponent implements OnInit {
 
   public async Excluir() {
     try {
-      let retorno = await this.FormaPagamentoService.excluir(this.FormaPagamento);
+      let retorno: any = await this.FormaPagamentoService.excluir(this.FormaPagamento);
       if (retorno.status == 200) {
-        this.AlertService.show(retorno.data, { classname: 'bg-success text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
       } else {
-        this.AlertService.show(retorno.data, { classname: 'bg-danger text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
       }
       this.listar();
       this.FormaPagamento = new FormaPagamento();

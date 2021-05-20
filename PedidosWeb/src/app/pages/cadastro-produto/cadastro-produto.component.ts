@@ -4,6 +4,7 @@ import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import { tap, map, filter, distinct, distinctUntilChanged, debounceTime, switchMap } from 'rxjs/operators';
+import { AlertService } from './../../services/alert.service';
 
 @Component({
   selector: 'app-cadastro-produto',
@@ -16,24 +17,57 @@ export class CadastroProdutoComponent implements OnInit {
   public paginaAtual = 1;
   public filter;
   queryProduto = new FormControl();
+  FiltroPesquisa: string;
+  InputFiltroPesquisa: string;
+  Filtros: any[];
+
 
   @ViewChild('modalSearch') modalSearch: ElementRef;
-  constructor(private ProdutoService: ProdutoService, private router: Router) { }
+  constructor(private ProdutoService: ProdutoService, private router: Router, private AlertService: AlertService) { }
   ngOnInit(): void {
     this.Limpar()
   }
 
   public Limpar() {
     this.Produto = new Produto();
-    this.DepoisBuscar()
+    this.DepoisBuscar();
+    this.PreecherComboFiltro();
+  }
+
+  public PreecherComboFiltro() {
+    this.Filtros = [
+      {
+        Codigo: "C",
+        Descricao: "Código"
+      },
+      {
+        Codigo: "CI",
+        Descricao: "Código Interno"
+      },
+      {
+        Codigo: "NT",
+        Descricao: "Nome Técnico"
+      },
+      {
+        Codigo: "NC",
+        Descricao: "Nome Comercial"
+      },
+      {
+        Codigo: "D",
+        Descricao: "Descrição"
+      }
+    ]
   }
 
   public async Gravar() {
     try {
-      var retorno = await this.ProdutoService.gravar(this.Produto)
-      alert(retorno.data)
+      let retorno: any = await this.ProdutoService.gravar(this.Produto)
+      if (retorno.status == 200) {
+        this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
+      } else {
+        this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
+      }
       this.Limpar();
-
     } catch (error) {
       console.error(error);
     }
@@ -47,10 +81,10 @@ export class CadastroProdutoComponent implements OnInit {
 
   async Pesquisar() {
     this.ListarTodos();
-    if (this.Produto.idProduto == '') {
+    if (this.Produto.IdProduto == '') {
       this.modalSearch.nativeElement.click();
     } else {
-      let retorno: any = await this.ProdutoService.BuscarPorId(this.Produto.idProduto)
+      let retorno: any = await this.ProdutoService.BuscarPorId(this.Produto.IdProduto)
       if (retorno) {
         this.Produto = retorno;
       }
@@ -59,7 +93,7 @@ export class CadastroProdutoComponent implements OnInit {
 
   public selecionarProduto(Produto: Produto) {
     if (Produto) {
-      this.Produto.idProduto = Produto.idProduto;
+      this.Produto.IdProduto = Produto.IdProduto;
       this.Pesquisar();
     }
   }
@@ -70,7 +104,7 @@ export class CadastroProdutoComponent implements OnInit {
       filter(value => value.length > 0),
       debounceTime(200),
       distinctUntilChanged(),
-      switchMap(value => this.ProdutoService.BuscarPorId(this.Produto.idProduto)),
+      switchMap(value => this.ProdutoService.BuscarPorId(this.Produto.IdProduto)),
       map((result: any) => {
         if (result) {
           this.Produto = result;
@@ -81,5 +115,14 @@ export class CadastroProdutoComponent implements OnInit {
       )
     ).subscribe();
   }
+
+  async PesquisarPorFiltro() {
+    if (this.FiltroPesquisa == "NT") {
+      var pesquisa = { nomeTecnico: this.InputFiltroPesquisa }
+      let retorno: any = await this.ProdutoService.BuscarPorFiltro(pesquisa);
+      this.Produtos = retorno
+    }
+  }
+
 
 }

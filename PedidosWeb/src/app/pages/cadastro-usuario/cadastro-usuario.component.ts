@@ -32,12 +32,16 @@ export class CadastroUsuarioComponent implements OnInit {
   queryUsuario = new FormControl();
   queryPessoa = new FormControl();
   resultados: Observable<any>;
+  FiltroPesquisa: string;
+  InputFiltroPesquisa: string;
+  Filtros: any[];
 
   constructor(private UsuarioService: UsuarioService, private PerfilUsuarioService: PerfilUsuarioService, private AlertService: AlertService, private PessoaService: PessoaService) { }
 
   ngOnInit(): void {
     this.listarPerfil();
     this.Limpar();
+    this.PreecherComboFiltro()
   }
 
   public DepoisBuscar() {
@@ -46,11 +50,11 @@ export class CadastroUsuarioComponent implements OnInit {
       filter(value => value.length > 0),
       debounceTime(200),
       distinctUntilChanged(),
-      switchMap(value => this.UsuarioService.BuscarPorId(this.Usuario.idUsuario)),
+      switchMap(value => this.UsuarioService.BuscarPorId(this.Usuario.IdUsuario)),
       map((result: any) => {
         if (result) {
           this.Usuario = result
-          this.ConfirmacaoSenha = result.senha;
+          this.ConfirmacaoSenha = result.Senha;
           this.pesquisarFuncionario();
         } else {
 
@@ -77,12 +81,16 @@ export class CadastroUsuarioComponent implements OnInit {
 
   public async Gravar() {
     try {
-      if (this.Usuario.senha === this.ConfirmacaoSenha) {
-        let retorno = await this.UsuarioService.gravar(this.Usuario)
-        this.AlertService.show(retorno.data, { classname: 'bg-success text-light', delay: 3000 });
+      if (this.Usuario.Senha === this.ConfirmacaoSenha) {
+        let retorno: any = await this.UsuarioService.gravar(this.Usuario)
+        if (retorno.status == 200) {
+          this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
+        } else {
+          this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
+        }
         this.Limpar();
       } else {
-
+        this.AlertService.show("As senhas não conferem", { classname: 'bg-warning text-light', delay: 3000 });
       }
     } catch (error) {
       console.error(error);
@@ -101,10 +109,10 @@ export class CadastroUsuarioComponent implements OnInit {
       filter(value => value.length > 0),
       debounceTime(200),
       distinctUntilChanged(),
-      switchMap(value => this.PessoaService.BuscarPorId(this.Usuario.idPessoa)),
+      switchMap(value => this.PessoaService.BuscarPorId(this.Usuario.IdPessoa)),
       map((result: any) => {
         if (result) {
-          this.NomePessoa = result.nomeRazao;
+          this.NomePessoa = result.NomeRazao;
         }
       }
       )
@@ -112,20 +120,52 @@ export class CadastroUsuarioComponent implements OnInit {
   }
 
   async pesquisarFuncionario() {
-    if (this.Usuario.idPessoa == '') {
-      this.ListarTodasPessoas();
+    if (this.Usuario.IdPessoa == '') {
       this.modalSearchPessoa.nativeElement.click();
     } else {
-      let retorno: any = await this.PessoaService.BuscarPorId(this.Usuario.idPessoa)
+      let retorno: any = await this.PessoaService.BuscarPorId(this.Usuario.IdPessoa)
       if (retorno) {
-        this.NomePessoa = retorno.nomeRazao;
+        this.NomePessoa = retorno.NomeRazao;
       }
     }
   }
 
-  public ListarTodasPessoas() {
-    this.UsuarioService.buscarTodosFuncionarios().subscribe(result => {
-      this.Pessoas = result;
-    });
+  public PreecherComboFiltro() {
+    this.Filtros = [
+      {
+        Codigo: "NR",
+        Descricao: "Nome/Razão Social"
+      },
+      {
+        Codigo: "AF",
+        Descricao: "Apelido/Nome Fantasia"
+      },
+      {
+        Codigo: "C",
+        Descricao: "CPF/CNPJ"
+      }
+    ]
+  }
+
+  async PesquisarUsuarioPorFiltro() {
+    let pesquisa: any;
+    if (this.FiltroPesquisa == "NR") {
+      pesquisa = { NomeRazao: this.InputFiltroPesquisa }
+    } else if (this.FiltroPesquisa == "AF") {
+      pesquisa = { ApelidoFantasia: this.InputFiltroPesquisa }
+    } else if (this.FiltroPesquisa == "C") {
+      pesquisa = { CpfCnpj: this.InputFiltroPesquisa }
+    } else {
+      this.AlertService.show("Selecione o filtro de Pesquisa", { classname: 'bg-warning text-light', delay: 3000 });
+      return
+    }
+    let retorno: any = await this.PessoaService.BuscarPorFiltro(pesquisa);
+    this.Pessoas = retorno.resultado
+  }
+
+  public selecionarPessoa(Pessoa: Pessoa) {
+    if (Pessoa) {
+      this.Usuario.IdPessoa = Pessoa.IdPessoa;
+    }
   }
 }

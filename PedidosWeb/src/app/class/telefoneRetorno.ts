@@ -1,20 +1,20 @@
 export class telefoneRetorno {
-    dDI: string;
-    dDD: string;
-    numero: string;
-    ramal: string;
-    idCategoriaTelefone: string;
-    observacao: string;
-    decricaoCategoriaTelefone: String;
+    DDI: string;
+    DDD: string;
+    Numero: string;
+    Ramal: string;
+    IdCategoriaTelefone: string;
+    Observacao: string;
+    DecricaoCategoriaTelefone: String;
 
     constructor() {
-        this.dDI = '';
-        this.dDD = '';
-        this.numero = '';
-        this.ramal = '';
-        this.idCategoriaTelefone = '';
-        this.observacao = '';
-        this.decricaoCategoriaTelefone = '';
+        this.DDI = '';
+        this.DDD = '';
+        this.Numero = '';
+        this.Ramal = '';
+        this.IdCategoriaTelefone = '';
+        this.Observacao = '';
+        this.DecricaoCategoriaTelefone = '';
     }
 
 }

@@ -22,18 +22,16 @@ export class MenuComponent {
 
   async PreencherUsuarioLogado() {
     const usuario = this.accountService.getUsuario();
-    //let usuario = window.localStorage.getItem("logado")
     if (usuario) {
       let retorno: any = await this.PessoaService.BuscarPorId(usuario)
       if (retorno) {
-        if (retorno.apelidoFantasia != '') {
-          this.UsuarioLogado = retorno.apelidoFantasia;
+        if (retorno.ApelidoFantasia != '') {
+          this.UsuarioLogado = retorno.ApelidoFantasia;
         } else {
-          this.UsuarioLogado = retorno.nomeRazao;
+          this.UsuarioLogado = retorno.NomeRazao;
         }
       }
       const perfil = this.accountService.getTipoUser();
-      //let perfil = window.localStorage.getItem("perfil")
       if (perfil == "1") {
         this.admin = true;
         this.nomePaginaPessoa = "Cadastro de Pessoa"
@@ -47,7 +45,6 @@ export class MenuComponent {
   public sair() {
     try {
       window.localStorage.removeItem('token');
-      console.log('saiu');
       this.router.navigate(['login']);
     } catch (error) {
       console.error(error);

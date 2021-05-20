@@ -1,19 +1,19 @@
 export class Produto {
-    public idProduto: string;
-    public nomeTecnico: string;
-    public nomeComercial: string;
-    public codigoInterno: string;
-    public descricao: string;
-    public vista: string;
-    public prazo: string;
+    public IdProduto: string;
+    public NomeTecnico: string;
+    public NomeComercial: string;
+    public CodigoInterno: string;
+    public Descricao: string;
+    public Vista: string;
+    public Prazo: string;
 
     constructor() {
-        this.idProduto = '';
-        this.nomeTecnico = '';
-        this.nomeComercial = '';
-        this.codigoInterno = '';
-        this.descricao = '';
-        this.vista = '';
-        this.prazo = '';
+        this.IdProduto = '';
+        this.NomeTecnico = '';
+        this.NomeComercial = '';
+        this.CodigoInterno = '';
+        this.Descricao = '';
+        this.Vista = '';
+        this.Prazo = '';
     }
 }

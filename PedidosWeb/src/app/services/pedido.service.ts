@@ -14,12 +14,12 @@ export class PedidoService {
 
   }
   public buscarTodos() {
-    return this.http.get<Pedido[]>(environment.api + 'Pedido/buscartodos');
+    return this.http.get<Pedido[]>('api/Pedido/buscartodos');
   }
 
   async gravar(Pedido: Pedido) {
     const json = JSON.stringify(Pedido);
-    const result: any = await Api.post('Pedido/gravar', json);
+    const result: any = await Api.post('api/Pedido/gravar', json);
     if (result.length > 0) {
       console.log(result);
       return true;
@@ -29,7 +29,7 @@ export class PedidoService {
   }
 
   public buscarTodasFormasPagamento() {
-    return this.http.get<FormaPagamento[]>(environment.api + 'FormaPagamento/buscartodos');
+    return this.http.get<FormaPagamento[]>('api/FormaPagamento/buscartodos');
   }
 
 

@@ -12,7 +12,7 @@
                     <div class="form-group col-md-2">
                         <label for="txtCodigo">Código</label>
                         <input type="text" class="form-control" [formControl]="queryProduto" id="txtCodigo"
-                            name="Codigo" [(ngModel)]="Produto.idProduto">
+                            name="Codigo" [(ngModel)]="Produto.IdProduto">
                     </div>
                     <button type="button" #modalSearch class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
                         data-target="#ModalPesquisa">
@@ -28,37 +28,37 @@
                     <div class="form-group col-md-8">
                         <label for="txtNome">Nome Técnico</label>
                         <input type="text" class="form-control" id="txtNome" name="Nome"
-                            [(ngModel)]="Produto.nomeTecnico">
+                            [(ngModel)]="Produto.NomeTecnico">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-8">
                         <label for="txtNomeComercial">Nome Comercial</label>
                         <input type="text" class="form-control" name="NomeComercial" id="txtNomeComercial"
-                            [(ngModel)]="Produto.nomeComercial">
+                            [(ngModel)]="Produto.NomeComercial">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-2">
-                        <label for="txtCpf">Código Interno</label>
+                        <label for="txtCodigointerno">Código Interno</label>
                         <input type="text" class="form-control" id="txtCodigointerno" name="CodigoInterno"
-                            [(ngModel)]="Produto.codigoInterno">
+                            [(ngModel)]="Produto.CodigoInterno">
                     </div>
                     <div class="form-group col-md-3">
                         <label for="txtCpf">Preço à Vista</label>
-                        <input type="number" class="form-control" id="txtVista" [(ngModel)]="Produto.vista"
+                        <input type="number" class="form-control" id="txtVista" [(ngModel)]="Produto.Vista"
                             name="vista">
                     </div>
                     <div class="form-group col-md-3">
                         <label for="txtRg">Preço à Prazo</label>
-                        <input type="number" class="form-control" id="txtPrazo" [(ngModel)]="Produto.prazo"
+                        <input type="number" class="form-control" id="txtPrazo" [(ngModel)]="Produto.Prazo"
                             name="Prazo">
                     </div>
                 </div>
                 <div class="form-row">
                     <div class="form-group col-md-8">
                         <label for="txtRg">Descrição</label>
-                        <textarea class="form-control" id="txtDescricao" [(ngModel)]="Produto.descricao" rows="3"
+                        <textarea class="form-control" id="txtDescricao" [(ngModel)]="Produto.Descricao" rows="3"
                             name="Decricao">
                         </textarea>
                     </div>
@@ -87,10 +87,27 @@
                     </div>
                     <div class="modal-body">
                         <div class="form-row mb-2">
-                            <label for="txtCodigo" class="col-md-1">Pesquisa</label>
-                            <input class="form-control col-md-11" type="text" name="search">
+                            <div class="form-group col-md-3">
+                                <label for="inputState">Pesquisa</label>
+                                <select id="inputState" class="form-control" [(ngModel)]="FiltroPesquisa"
+                                    name=" idpesquisa">
+                                    <option [value]=filtro.Codigo *ngFor="let filtro of Filtros">
+                                        {{filtro.Descricao}}
+                                    </option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-7 mt-2">
+                                <label for="inputState"></label>
+                                <input class="form-control" type="text" name="search" [(ngModel)]="InputFiltroPesquisa">
+                            </div>
+                            <div class="form-group col-md-1 mt-2">
+                                <label for="inputState"></label>
+                                <button class="btn btn-info btnsearch " (click)='PesquisarPorFiltro()'>
+                                    Pesquisar
+                                </button>
+                            </div>
                         </div>
-                        <div class="Teste">
+                        <div class="grades">
                             <table class="table table-striped">
                                 <thead class="tabelas">
                                     <tr>
@@ -104,7 +121,7 @@
                                 </thead>
                                 <tbody>
                                     <tr
-                                        *ngFor="let Produto of Produtos| filter:filter| paginate: { itemsPerPage: 5, currentPage: paginaAtual }; let i = index ">
+                                        *ngFor="let Produto of Produtos| paginate: { itemsPerPage: 5, currentPage: paginaAtual }; let i = index ">
                                         <th scope="row">{{Produto.IdProduto}}</th>
                                         <td>{{Produto.NomeTecnico}}</td>
                                         <td>{{Produto.NomeComercial}}</td>

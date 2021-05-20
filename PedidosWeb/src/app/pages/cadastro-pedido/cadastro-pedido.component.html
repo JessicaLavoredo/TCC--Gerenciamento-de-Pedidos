@@ -29,21 +29,21 @@
             </div>
         </div>
 
-        <mat-accordion *ngIf="!ClienteEscolhido">
+        <mat-accordion *ngIf="ClienteEscolhido">
             <mat-expansion-panel class="mb-3" (opened)="panelOpenState = true" (closed)="panelOpenState = false">
                 <mat-expansion-panel-header>
                     <mat-panel-title>
-                        <b>Cliente:</b> {{Cliente.nomeRazao}} / {{Cliente.apelidoFantasia}}
+                        <b>Cliente:</b> {{Cliente.NomeRazao}} / {{Cliente.ApelidoFantasia}}
                     </mat-panel-title>
                     <mat-panel-description>
                     </mat-panel-description>
                 </mat-expansion-panel-header>
                 <div class="form-row">
                     <div class="form-group col-md-2">
-                        <label><b>CPF:</b> {{Cliente.cpfCnpj}} </label>
+                        <label><b>CPF:</b> {{Cliente.CpfCnpj}} </label>
                     </div>
                     <div class="form-group col-md-2">
-                        <label><b>RG:</b> {{Cliente.rgInscricao}}</label>
+                        <label><b>RG:</b> {{Cliente.RgInscricao}}</label>
                     </div>
                 </div>
                 <div class="form-row">
@@ -67,14 +67,18 @@
                     </div>
                 </div>
 
-                <button type="button" (click)="Gravar()" class="btn btn-secondary ml-1 rounded-pill">Trocar
+                <button type="button" data-target="#ModalPesquisaCliente" data-toggle="modal"
+                    class="btn btn-secondary ml-1 rounded-pill">Trocar
                     Cliente</button>
-                <button type="button" class="btn btn-secondary ml-3 rounded-pill">Alterar Cadastro</button>
+                <a routerLink="/CadastroPessoa" [queryParams]="{ id: Cliente.IdPessoa}" target="_blank"><button
+                        type="button" class="btn btn-secondary ml-3 rounded-pill">
+                        Alterar
+                        Cadastro </button> </a>
             </mat-expansion-panel>
         </mat-accordion>
 
         <div class="form-row">
-            <div class="form-group col-md-4">
+            <!-- <div class="form-group col-md-4">
                 <label for="txtFormaPagamento">Lista de Preço</label>
                 <select id="txtFormaPagamento" class="form-control" [(ngModel)]="Pedido.idFormaPagamento"
                     name=" idFormaPagamento">
@@ -82,7 +86,7 @@
                         {{FormaPagamento.Descritivo}}
                     </option>
                 </select>
-            </div>
+            </div> -->
             <div class="form-group col-md-4">
                 <label for="txtFormaPagamento">Forma de Pagamento</label>
                 <select id="txtFormaPagamento" class="form-control" [(ngModel)]="Pedido.idFormaPagamento"
@@ -95,33 +99,40 @@
         </div>
 
         <div class="form-row">
-            <div class="form-group  col-md-0.5">
-                <label for="txtCodigo">Produto</label><br>
+            <div class="form-group mt-4  col-md-0.5">
                 <button type="button" class="btn btn-info btnsearch ">
                     <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
                 </button>
             </div>
-            <div class="form-group mt-2  col-md-1">
-                <label for="txtNome"></label>
-                <input type="text" class="form-control" id="txtCodigo" name="codigo">
+            <div class="form-group col-md-1">
+                <label for="txtCodigo">Cod. Produto</label>
+                <input type="text" class="form-control" [formControl]="queryProduto" id="txtCodigo" name="Codigo"
+                    [(ngModel)]="Produto_PedidoRetorno.IdProduto">
             </div>
 
             <button #modalSearch class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
                 data-target="#ModalPesquisa">
                 <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
             </button>
-
-            <div class="form-group mt-2 col-md-6">
-                <label for="txtNome"></label>
-                <input type="text" class="form-control" id="txtNome" name="descritivo">
+            <div class="form-group col-md-1">
+                <label for="txtCodigoInt">Cod. Interno</label>
+                <input type="text" class="form-control" [formControl]="queryProdutoCodInterno" id="txtCodigoInt"
+                    name="Codigo" [(ngModel)]="Produto_PedidoRetorno.CodInternoProduto">
             </div>
-            <div class="form-group col-md-2">
-                <label for="txtNome">Preço</label>
-                <input type="text" class="form-control" id="txtNome" name="descritivo">
+            <div class="form-group col-md-6">
+                <label for="txtNome">Produto</label>
+                <input type="text" class="form-control" id="txtNome" name="descritivo"
+                    [(ngModel)]="Produto_PedidoRetorno.Descricao">
             </div>
             <div class="form-group col-md-1">
-                <label for="txtNome">Quantidade</label>
-                <input type="text" class="form-control" id="txtNome" name="descritivo">
+                <label for="txtPreco">Preço</label>
+                <input #myInput type="text" class="form-control" id="txtPreco" name="preco" appSomenteNumeros
+                    decimals="2" [(ngModel)]="Produto_PedidoRetorno.Preco">
+            </div>
+            <div class="form-group col-md-1">
+                <label for="txtQuantidade">Quantidade</label>
+                <input type="text" class="form-control" id="txtQuantidade" name="quantidade"
+                    [(ngModel)]="Produto_PedidoRetorno.Quantidade">
             </div>
             <div class="form-group mt-2 col-md-0.5">
                 <button type="button" class="btn btn-secondary mb-3 mt-3 rounded-pill"
@@ -139,16 +150,16 @@
                 </tr>
             </thead>
             <tbody>
-                <tr *ngFor="let Produto_Pedido of Produtos_Pedido">
+                <tr *ngFor="let Produto_PedidoRetorno of Produtos_PedidoRetorno">
                     <td><button class="btn btn-info btnselecionar btn-sm"
                             (click)="excluirProdutoPedido(Produto_Pedido)">
                             <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">clear
                             </mat-icon>
                         </button></td>
-                    <td>{{Produto_Pedido.idProduto}}</td>
-                    <td>{{Produto_Pedido.preco}}</td>
-                    <td>{{Produto_Pedido.quantidade}}</td>
-                    <td>{{Produto_Pedido.desconto}}</td>
+                    <td>{{Produto_PedidoRetorno.Descricao}}</td>
+                    <td>{{Produto_PedidoRetorno.Preco}}</td>
+                    <td>{{Produto_PedidoRetorno.Quantidade}}</td>
+                    <td>{{Produto_PedidoRetorno.Total}}</td>
                 </tr>
                 <tr>
                     <td></td>
@@ -198,31 +209,48 @@
                 <div class="form-row mb-2">
                     <div class="form-group col-md-3">
                         <label>Cargo</label>
-                        <select id="CboCategoriaemail" class="form-control" [(ngModel)]="Filtro"
-                            name="idCategoriaEmail">
-                            <option [value]=categoriaEmail.IdCategoriaEmail *ngFor="let Filtro of Filtros">
-
+                        <select id="CboFiltroCliente" class="form-control" [(ngModel)]="FiltroCliente"
+                            name="CboFiltroCliente">
+                            <option [value]=filtro.Codigo *ngFor="let filtro of FiltrosClientes">
+                                {{filtro.Descricao}}
                             </option>
                         </select>
                     </div>
-                    <div class="form-group col-md-9">
-                        <label for="txtCodigo" class="col-md-1">Pesquisa</label>
-                        <input class="form-control" type="text" name="search">
+                    <div class="form-group col-md-7 mt-2">
+                        <label for="inputState"></label>
+                        <input class="form-control" type="text" name="search" [(ngModel)]="InputFiltroPesquisa">
+                    </div>
+                    <div class="form-group col-md-1 mt-2">
+                        <label for="inputState"></label>
+                        <button class="btn btn-info btnsearch " (click)='PesquisarClientePorFiltro()'>
+                            Pesquisar
+                        </button>
                     </div>
                 </div>
-                <div class="Teste">
+                <div class="grades">
                     <table class="table table-striped">
                         <thead class="tabelas">
                             <tr>
-                                <th scope="col"></th>
-                                <th scope="col">Nome/Razão Social</th>
-                                <th scope="col"> Apelido/Nome Fantasia</th>
-                                <th scope="col">Endereço</th>
+                                <th scope="col">Código</th>
+                                <th scope="col">Nome/Razão Social </th>
+                                <th scope="col">Apelido/Nome Fantasia</th>
+                                <th scope="col">CPF/CNPJ</th>
+                                <th scope="col">Genero</th>
+                                <th scope="col">Selecionar</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-
+                            <tr *ngFor="let Cliente of Clientes">
+                                <th scope="row">{{Cliente.IdPessoa}}</th>
+                                <td>{{Cliente.NomeRazao}}</td>
+                                <td>{{Cliente.ApelidoFantasia}}</td>
+                                <td>{{Cliente.CpfCnpj}}</td>
+                                <td>{{Cliente.Genero}}</td>
+                                <td><button class="btn btn-info btnselecionar btn-sm" data-dismiss="modal"
+                                        aria-label="Close" (click)="selecionarCliente(Cliente)">
+                                        <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">
+                                            done_outline</mat-icon>
+                                    </button></td>
                             </tr>
                         </tbody>
                         <tbody>

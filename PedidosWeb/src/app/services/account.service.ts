@@ -16,14 +16,11 @@ export class AccountService {
 
 
   async login(user: Usuario) {
-    //const result = await this.http.post<any>(environment.api + 'Usuario/login', JSON.stringify(user)).toPromise();
-    console.log(jwtDecode("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJBcmFwb25nYS1CYWNrZW5kIiwiaWF0Ijp7ImRhdGUiOiIyMDIxLTA1LTA2IDE5OjM3OjA1Ljc2OTA1MyIsInRpbWV6b25lX3R5cGUiOjMsInRpbWV6b25lIjoiQW1lcmljYVwvU2FvX1BhdWxvIn0sIm5iZiI6eyJkYXRlIjoiMjAyMS0wNS0wNiAxOTozNzowNS43NjkwNjMiLCJ0aW1lem9uZV90eXBlIjozLCJ0aW1lem9uZSI6IkFtZXJpY2FcL1Nhb19QYXVsbyJ9LCJleHAiOnsiZGF0ZSI6IjIwMjEtMDUtMDYgMjA6Mzc6MDUuNzY5MDY2IiwidGltZXpvbmVfdHlwZSI6MywidGltZXpvbmUiOiJBbWVyaWNhXC9TYW9fUGF1bG8ifSwiaWRfdXN1YXJpbyI6IjEiLCJpZF9wZXJmaWwiOiIxIn0.LzNOUuDwIdqalpHYS-jSq2f9zqDNp6VNeT2CKrfEElU"))
-    // if (result.length > 0) {
-    //   if (result[0].IdUsuario > 0) {
-    //     window.localStorage.setItem('token', '123');
-    //     return true;
-    //   }
-    // }
+    const result = await this.http.post<any>('api/Usuario/login', JSON.stringify(user)).toPromise();
+    if (result && result.Authorization) {
+      window.localStorage.setItem('token', result.Authorization);
+      return true;
+    }
     return false;
   }
 
@@ -33,9 +30,9 @@ export class AccountService {
     if (decoded.exp === undefined) {
       return null
     }
-
+    const dateexp = new Date(decoded.exp)
     const date = new Date(0);
-    date.setUTCSeconds(decoded.exp);
+    date.setUTCSeconds(dateexp.valueOf());
     return date;
   }
 
@@ -52,7 +49,7 @@ export class AccountService {
   }
 
   isUserLoggedIn() {
-    const token = this.getAutorizationToken();
+    const token = this.getAuthorizationToken();
     if (!token) {
       return false;
     } else if (this.isTokenExpired(token)) {
@@ -62,13 +59,13 @@ export class AccountService {
     return true;
   }
 
-  getAutorizationToken() {
+  getAuthorizationToken() {
     const token = window.localStorage.getItem("token")
     return token
   }
 
   getTipoUser() {
-    const token = this.getAutorizationToken();
+    const token = this.getAuthorizationToken();
     if (!token) {
       return ""
     } else {
@@ -81,7 +78,7 @@ export class AccountService {
   }
 
   getUsuario() {
-    const token = this.getAutorizationToken();
+    const token = this.getAuthorizationToken();
     if (!token) {
       return ""
     } else {

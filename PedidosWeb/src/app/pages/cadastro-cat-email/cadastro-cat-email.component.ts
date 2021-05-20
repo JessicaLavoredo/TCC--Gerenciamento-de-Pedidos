@@ -1,3 +1,4 @@
+import { state } from '@angular/animations';
 import { CategoriaEmailService } from '../../services/categoria-email.service';
 import { CategoriaEmail } from '../../class/categoria-email';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
@@ -29,11 +30,11 @@ export class CadastroCatEmailComponent implements OnInit {
 
   public async Gravar() {
     try {
-      let retorno = await this.CategoriaEmailService.gravar(this.categoria);
+      let retorno: any = await this.CategoriaEmailService.gravar(this.categoria);
       if (retorno.status == 200) {
-        this.AlertService.show(retorno.data, { classname: 'bg-success text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
       } else {
-        this.AlertService.show(retorno.data, { classname: 'bg-danger text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
       }
       this.listar();
       this.categoria = new CategoriaEmail();
@@ -55,11 +56,11 @@ export class CadastroCatEmailComponent implements OnInit {
 
   public async Excluir() {
     try {
-      let retorno = await this.CategoriaEmailService.excluir(this.categoria);
+      let retorno: any = await this.CategoriaEmailService.excluir(this.categoria);
       if (retorno.status == 200) {
-        this.AlertService.show(retorno.data, { classname: 'bg-success text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
       } else {
-        this.AlertService.show(retorno.data, { classname: 'bg-danger text-light', delay: 3000 });
+        this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
       }
       this.listar();
       this.categoria = new CategoriaEmail();

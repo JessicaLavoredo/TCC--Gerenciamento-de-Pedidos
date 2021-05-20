@@ -10,7 +10,7 @@ export class AuthGuardAdm implements CanActivate {
 
   constructor(private router: Router, private AccountService: AccountService) { }
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {
-    const token = this.AccountService.getAutorizationToken();
+    const token = this.AccountService.getAuthorizationToken();
     const tipo = this.AccountService.getTipoUser();
     if (token && tipo == '1') {
       return true;

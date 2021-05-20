@@ -11,7 +11,7 @@ export class ClienteService {
   constructor(private http: HttpClient) { }
 
   public buscarTodos() {
-    return this.http.get<Cliente[]>(environment.api + 'CategoriaEmail/buscartodos');
+    return this.http.get<Cliente[]>('api/CategoriaEmail/buscartodos');
   }
 
   async gravar(cliente: Cliente) {

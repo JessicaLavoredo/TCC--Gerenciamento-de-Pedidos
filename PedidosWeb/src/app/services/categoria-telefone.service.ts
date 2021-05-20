@@ -11,21 +11,45 @@ export class CategoriaTelefoneService {
   constructor(private http: HttpClient) { }
 
   public buscarTodos() {
-    return this.http.get<CategoriaTelefone[]>(environment.api + 'CategoriaTelefone/buscartodos');
+    return this.http.get<CategoriaTelefone[]>('api/CategoriaTelefone/buscartodos');
   }
 
   async gravar(categoria: CategoriaTelefone) {
-    const json = JSON.stringify(categoria);
-    const result: any = await Api.post('CategoriaTelefone/gravar', json);
-    if (result) {
-      return result;
-    }
+    return new Promise(resolve => {
+      const json = JSON.stringify(categoria);
+      this.http.post('api/CategoriaTelefone/gravar', json).subscribe(result => {
+        let resultado = {
+          resultado: result,
+          status: 200
+        };
+        resolve(resultado);
+      }, error => {
+        let resultado = {
+          resultado: error,
+          status: 401
+        };
+        resolve(resultado);
+      });
+    })
   }
   async excluir(categoria: CategoriaTelefone) {
-    const json = JSON.stringify(categoria);
-    const result: any = await Api.post('CategoriaTelefone/deletar', json);
-    if (result) {
-      return result;
-    }
+    return new Promise(resolve => {
+      const json = JSON.stringify(categoria);
+      this.http.post('api/CategoriaTelefone/deletar', json).subscribe(result => {
+        let resultado = {
+          resultado: result,
+          status: 200
+        };
+        resolve(resultado);
+      }, error => {
+        let resultado = {
+          resultado: error,
+          status: 401
+        };
+        resolve(resultado);
+      });
+    })
   }
 }
+
+

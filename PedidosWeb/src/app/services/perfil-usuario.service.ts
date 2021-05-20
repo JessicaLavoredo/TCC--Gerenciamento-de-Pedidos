@@ -10,22 +10,45 @@ import Api from './Api';
 export class PerfilUsuarioService {
   constructor(private http: HttpClient) { }
   public buscarTodos() {
-    return this.http.get<PerfilUsuario[]>(environment.api + 'Perfil/buscartodos');
+    return this.http.get<PerfilUsuario[]>('api/Perfil/buscartodos');
   }
 
   async gravar(Perfil: PerfilUsuario) {
-    const json = JSON.stringify(Perfil);
-    const result: any = await Api.post('Perfil/gravar', json);
-    if (result) {
-      return result;
-    }
+    return new Promise(resolve => {
+      const json = JSON.stringify(Perfil);
+      this.http.post('api/Perfil/gravar', json).subscribe(result => {
+        let resultado = {
+          resultado: result,
+          status: 200
+        };
+        resolve(resultado);
+      }, error => {
+        let resultado = {
+          resultado: error,
+          status: 401
+        };
+        resolve(resultado);
+      });
+    })
   }
 
   async excluir(Perfil: PerfilUsuario) {
-    const json = JSON.stringify(Perfil);
-    const result: any = await Api.post('Perfil/deletar', json);
-    if (result) {
-      return result;
-    }
+    return new Promise(resolve => {
+      const json = JSON.stringify(Perfil);
+      this.http.post('api/Perfil/deletar', json).subscribe(result => {
+        let resultado = {
+          resultado: result,
+          status: 200
+        };
+        resolve(resultado);
+      }, error => {
+        let resultado = {
+          resultado: error,
+          status: 401
+        };
+        resolve(resultado);
+      });
+    })
   }
 }
+

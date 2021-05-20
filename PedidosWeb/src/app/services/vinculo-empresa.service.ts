@@ -11,23 +11,44 @@ export class VinculoEmpresaService {
   constructor(private http: HttpClient) { }
 
   public buscarTodos() {
-    return this.http.get<Vinculo[]>(environment.api + 'Vinculo/buscartodos');
+    return this.http.get<Vinculo[]>('api/Vinculo/buscartodos');
   }
 
   async gravar(vinculo: Vinculo) {
-    const json = JSON.stringify(vinculo);
-    const result: any = await Api.post('Vinculo/gravar', json);
-    if (result) {
-      return result;
-    }
+    return new Promise(resolve => {
+      const json = JSON.stringify(vinculo);
+      this.http.post('api/Vinculo/gravar', json).subscribe(result => {
+        let resultado = {
+          resultado: result,
+          status: 200
+        };
+        resolve(resultado);
+      }, error => {
+        let resultado = {
+          resultado: error,
+          status: 401
+        };
+        resolve(resultado);
+      });
+    })
   }
 
   async excluir(vinculo: Vinculo) {
-    const json = JSON.stringify(vinculo);
-    const result: any = await Api.post('Vinculo/deletar', json);
-    console.log(result);
-    if (result) {
-      return result;
-    }
+    return new Promise(resolve => {
+      const json = JSON.stringify(vinculo);
+      this.http.post('api/Vinculo/deletar', json).subscribe(result => {
+        let resultado = {
+          resultado: result,
+          status: 200
+        };
+        resolve(resultado);
+      }, error => {
+        let resultado = {
+          resultado: error,
+          status: 401
+        };
+        resolve(resultado);
+      });
+    })
   }
 }

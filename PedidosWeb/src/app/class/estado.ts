@@ -1,17 +1,15 @@
 export class Estado {
-  idEstado: string;
-  nome: string;
-  sigla: string;
-  regiao: string;
-  codigoIBGE: string;
+  IdEstado: string;
+  Nome: string;
+  Sigla: string;
+  Regiao: string;
+  CodigoIBGE: string;
 
   constructor() {
-    this.idEstado = '';
-    this.nome = '';
-    this.sigla = '';
-    this.regiao = '';
-    this.codigoIBGE = '';
+    this.IdEstado = '';
+    this.Nome = '';
+    this.Sigla = '';
+    this.Regiao = '';
+    this.CodigoIBGE = '';
   }
 }
-
-

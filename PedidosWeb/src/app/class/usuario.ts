@@ -1,16 +1,16 @@
 export class Usuario {
-    public idUsuario: string;
-    public idPessoa: string;
-    public login: string;
-    public senha: string;
-    public idPerfil: string;
+    public IdUsuario: string;
+    public IdPessoa: string;
+    public Login: string;
+    public Senha: string;
+    public IdPerfil: string;
 
     constructor() {
-        this.idPerfil = '';
-        this.idPessoa = '';
-        this.idUsuario = '';
-        this.login = '';
-        this.senha = '';
+        this.IdPerfil = '';
+        this.IdPessoa = '';
+        this.IdUsuario = '';
+        this.Login = '';
+        this.Senha = '';
     }
 
 }

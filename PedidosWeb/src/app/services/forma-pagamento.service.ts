@@ -11,25 +11,48 @@ export class FormaPagamentoService {
   constructor(private http: HttpClient) { }
 
   public buscarTodos() {
-    return this.http.get<FormaPagamento[]>(environment.api + 'FormaPagamento/buscartodos');
+    return this.http.get<FormaPagamento[]>('api/FormaPagamento/buscartodos');
   }
 
   async gravar(formapag: FormaPagamento) {
-    const json = JSON.stringify(formapag);
-    const result: any = await Api.post('FormaPagamento/gravar', json);
-    console.log(result);
-    if (result) {
-      return result;
-    }
+    return new Promise(resolve => {
+      const json = JSON.stringify(formapag);
+      this.http.post('api/FormaPagamento/gravar', json).subscribe(result => {
+        let resultado = {
+          resultado: result,
+          status: 200
+        };
+        resolve(resultado);
+      }, error => {
+        let resultado = {
+          resultado: error,
+          status: 401
+        };
+        resolve(resultado);
+      });
+    })
   }
 
   async excluir(formapag: FormaPagamento) {
-    const json = JSON.stringify(formapag);
-    const result: any = await Api.post('FormaPagamento/deletar', json);
-    console.log(result);
-    if (result) {
-      return result;
-    }
+    return new Promise(resolve => {
+      const json = JSON.stringify(formapag);
+      this.http.post('api/FormaPagamento/deletar', json).subscribe(result => {
+        let resultado = {
+          resultado: result,
+          status: 200
+        };
+        resolve(resultado);
+      }, error => {
+        let resultado = {
+          resultado: error,
+          status: 401
+        };
+        resolve(resultado);
+      });
+    })
+
   }
 
 }
+
+

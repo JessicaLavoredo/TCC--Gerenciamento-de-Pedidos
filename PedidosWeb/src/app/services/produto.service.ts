@@ -11,29 +11,56 @@ export class ProdutoService {
   constructor(private http: HttpClient) { }
 
   public buscarTodos() {
-    return this.http.get<Produto[]>(environment.api + 'Produto/buscartodos');
+    return this.http.get<Produto[]>('api/Produto/buscartodos');
   }
 
   async gravar(Produto: Produto) {
-    const json = JSON.stringify(Produto);
-    const result: any = await Api.post('Produto/gravar', json);
-    if (result) {
-      return result;
-    }
+    return new Promise(resolve => {
+      const json = JSON.stringify(Produto);
+      this.http.post('api/Produto/gravar', json).subscribe(result => {
+        console.log(result)
+        let resultado = {
+          resultado: result,
+          status: 200
+        };
+        resolve(resultado);
+      }, error => {
+        console.log(error)
+        let resultado = {
+          resultado: error,
+          status: 401
+        };
+        resolve(resultado);
+      });
+    })
   }
 
   async BuscarPorFiltro(Filtros: any) {
-    const json = JSON.stringify(Filtros);
-    const result: any = await Api.post('/Produto/buscarPorFiltro', json);
-    if (result.data) {
-      return result.data;
-    }
+    return new Promise(resolve => {
+      const json = JSON.stringify(Filtros);
+      console.log(json)
+      this.http.post('api/Produto/buscarPorFiltro', json).subscribe(result => {
+        console.log(result)
+        let resultado = {
+          resultado: result,
+          status: 200
+        };
+        resolve(resultado);
+      }, error => {
+        let resultado = {
+          resultado: error,
+          status: 401
+        };
+        resolve(resultado);
+      });
+    })
+
 
   }
 
   async BuscarPorId(Codigo: String) {
     return new Promise(resolve => {
-      this.http.get(environment.api + '/Produto/buscarPorId/' + Codigo).subscribe(result => {
+      this.http.get('api/Produto/buscarPorId/' + Codigo).subscribe(result => {
         resolve(result);
       });
     })

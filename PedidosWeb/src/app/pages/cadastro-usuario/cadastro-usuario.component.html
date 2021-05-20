@@ -10,7 +10,7 @@
             <div class="form-group col-md-1">
                 <label for="txtCodigo">Código</label>
                 <input type="text" class="form-control" [formControl]="queryUsuario" id="txtCodigo" name="Codigo"
-                    [(ngModel)]="Usuario.idUsuario">
+                    [(ngModel)]="Usuario.IdUsuario">
             </div>
             <button #ModalPesquisaPessoa class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
                 data-target="#ModalPesquisaPessoa">
@@ -26,7 +26,7 @@
             <div class="form-group col-md-1">
                 <label for="txtNome">Funcionário</label>
                 <input type="text" class="form-control" [formControl]="queryPessoa" id="txtNome" name="Codigo"
-                    [(ngModel)]="Usuario.idPessoa">
+                    [(ngModel)]="Usuario.IdPessoa">
             </div>
             <button type="button" #modalSearchPessoa class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
                 data-target="#ModalPesquisaPessoa">
@@ -42,7 +42,7 @@
             </div>
             <div class="form-group col-md-3">
                 <label for="PerfilId">Perfil</label>
-                <select id="PerfilId" class="form-control" [(ngModel)]="Usuario.idPerfil" name=" idPerfil">
+                <select id="PerfilId" class="form-control" [(ngModel)]="Usuario.IdPerfil" name=" idPerfil">
                     <option [value]=perfil.IdPerfil *ngFor="let perfil of Perfis">
                         {{perfil.Nome}}
                     </option>
@@ -55,11 +55,11 @@
         <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="inputState">Email de Login</label>
-                <input type="text" class="form-control" id="txtCpf" name="Codigo" [(ngModel)]="Usuario.login">
+                <input type="text" class="form-control" id="txtCpf" name="Codigo" [(ngModel)]="Usuario.Login">
             </div>
             <div class="form-group col-md-4">
                 <label for="txtCpf">Senha</label>
-                <input type="password" class="form-control" id="txtCpf" name="Codigo" [(ngModel)]="Usuario.senha">
+                <input type="password" class="form-control" id="txtCpf" name="Codigo" [(ngModel)]="Usuario.Senha">
             </div>
             <div class="form-group col-md-4">
                 <label for="txtRg">Confirmação de Senha</label>
@@ -85,6 +85,82 @@
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
+                <h2 class="modal-title" id="ModalPesquisaLabel">Pesquisa de Funcionário</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row mb-2">
+                    <div class="form-group col-md-3">
+                        <label for="inputState">Pesquisa</label>
+                        <select id="inputState" class="form-control" [(ngModel)]="FiltroPesquisa"
+                            name=" idFiltroPesquisa">
+                            <option [value]=filtro.Codigo *ngFor="let filtro of Filtros">
+                                {{filtro.Descricao}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-7 mt-2">
+                        <label for="inputState"></label>
+                        <input class="form-control" type="text" name="search" [(ngModel)]="InputFiltroPesquisa">
+                    </div>
+                    <div class="form-group col-md-1 mt-2">
+                        <label for="inputState"></label>
+                        <button class="btn btn-info btnsearch " (click)='PesquisarUsuarioPorFiltro()'>
+                            Pesquisar
+                        </button>
+                    </div>
+                </div>
+                <div class="grades">
+                    <table class="table table-striped">
+                        <thead class="tabelas">
+                            <tr>
+                                <th scope="col">Código</th>
+                                <th scope="col">Nome/RazãoSocial </th>
+                                <th scope="col">Apelido/Nome Fantasia</th>
+                                <th scope="col">CPF/CNPJ</th>
+                                <th scope="col">Genero</th>
+                                <th scope="col">Selecionar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let pessoa of Pessoas ">
+                                <th scope="row">{{pessoa.IdPessoa}}</th>
+                                <td>{{pessoa.NomeRazao}}</td>
+                                <td>{{pessoa.ApelidoFantasia}}</td>
+                                <td>{{pessoa.CpfCnpj}}</td>
+                                <td>{{pessoa.Genero}}</td>
+                                <td><button class="btn btn-info btnselecionar btn-sm" data-dismiss="modal"
+                                        aria-label="Close" (click)="selecionarPessoa(pessoa)">
+                                        <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">
+                                            done_outline</mat-icon>
+                                    </button></td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="float-right">
+                    <pagination-controls previousLabel="Anterior" nextLabel="Proxima" responsive="true" autoHide="true"
+                        (pageChange)="handlePageChange($event)"></pagination-controls>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+
+<div class="modal fade" id="ModalPesquisaUsuario" tabindex="-1" role="dialog"
+    aria-labelledby="ModalPesquisaUsuarioLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
                 <h2 class="modal-title" id="ModalPesquisaLabel">Pesquisa de Usuário</h2>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
@@ -92,27 +168,47 @@
             </div>
             <div class="modal-body">
                 <div class="form-row mb-2">
-                    <label for="txtCodigo" class="col-md-1">Pesquisa</label>
-                    <input class="form-control col-md-11" type="text" name="search">
+                    <div class="form-group col-md-3">
+                        <label for="inputState">Pesquisa</label>
+                        <select id="inputState" class="form-control" [(ngModel)]="FiltroPesquisa"
+                            name=" idFiltroPesquisa">
+                            <option [value]=filtro.Codigo *ngFor="let filtro of Filtros">
+                                {{filtro.Descricao}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-7 mt-2">
+                        <label for="inputState"></label>
+                        <input class="form-control" type="text" name="search" [(ngModel)]="InputFiltroPesquisa">
+                    </div>
+                    <div class="form-group col-md-1 mt-2">
+                        <label for="inputState"></label>
+                        <button class="btn btn-info btnsearch " (click)='PesquisarUsuarioPorFiltro()'>
+                            Pesquisar
+                        </button>
+                    </div>
                 </div>
-                <div class="Teste">
+                <div class="grades">
                     <table class="table table-striped">
                         <thead class="tabelas">
                             <tr>
                                 <th scope="col">Código</th>
-                                <th scope="col">Nome</th>
+                                <th scope="col">Nome/RazãoSocial </th>
+                                <th scope="col">Apelido/Nome Fantasia</th>
+                                <th scope="col">CPF/CNPJ</th>
                                 <th scope="col">Genero</th>
                                 <th scope="col">Selecionar</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr
-                                *ngFor="let Pessoa of Pessoas| filter:filter| paginate: { itemsPerPage: 5, currentPage: paginaAtual }; let i = index ">
-                                <th scope="row">{{pessoa.idPessoa}}</th>
-                                <td>{{pessoa.nomeRazao}}</td>
-                                <td>{{pessoa.apelidoFantasia}}</td>
+                            <tr *ngFor="let pessoa of Pessoas ">
+                                <th scope="row">{{pessoa.IdPessoa}}</th>
+                                <td>{{pessoa.NomeRazao}}</td>
+                                <td>{{pessoa.ApelidoFantasia}}</td>
+                                <td>{{pessoa.CpfCnpj}}</td>
+                                <td>{{pessoa.Genero}}</td>
                                 <td><button class="btn btn-info btnselecionar btn-sm" data-dismiss="modal"
-                                        aria-label="Close" (click)="selecionarCidade(cidade)">
+                                        aria-label="Close" (click)="selecionarPessoa(pessoa)">
                                         <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">
                                             done_outline</mat-icon>
                                     </button></td>
