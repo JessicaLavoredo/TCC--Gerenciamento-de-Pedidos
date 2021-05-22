@@ -77,11 +77,10 @@ export class CadastroPessoaComponent implements OnInit {
 
 
   constructor(private PessoaService: PessoaService, private route: ActivatedRoute, private router: Router, private AlertService: AlertService, private accountService: AccountService, private localeService: BsLocaleService) {
-
   }
 
   ngOnInit(): void {
-    this.limparTela()
+    this.limparTela();
     this.queryCidade.valueChanges.pipe(
       map(value => value.trim()),
       debounceTime(200),
@@ -98,7 +97,7 @@ export class CadastroPessoaComponent implements OnInit {
     this.route.queryParams
       .subscribe(params => {
         if (params) {
-          this.Pessoa.IdPessoa = params.id;
+          this.Pessoa.IdPessoa = params.id ? params.id : '';
         }
       }
       );
@@ -107,6 +106,7 @@ export class CadastroPessoaComponent implements OnInit {
   limparTela() {
     this.filter = '';
     this.Pessoa = new Pessoa();
+    this.Pessoa.IdPessoa = '';
     this.enderecos = [];
     this.Endereco = new enderecoRetorno();
     this.telefone = new telefoneRetorno();
@@ -125,9 +125,9 @@ export class CadastroPessoaComponent implements OnInit {
     this.listarVinculo();
     this.ListarTodasCidades();
     this.filtros = {};
-    this.DepoisBuscar();
     this.ValidarUsuario()
     this.PreecherComboFiltro();
+    this.DepoisBuscar();
   }
 
   public DepoisBuscar() {
@@ -171,7 +171,9 @@ export class CadastroPessoaComponent implements OnInit {
               email.DescricaoCategoriaEmail = categoriaResult.Nome;
             }
           });
-        } 
+        } else {
+          this.AlertService.show("Registro não encontrado", { classname: 'bg-danger text-light', delay: 3000 });
+        }
       }
       )
     ).subscribe();
