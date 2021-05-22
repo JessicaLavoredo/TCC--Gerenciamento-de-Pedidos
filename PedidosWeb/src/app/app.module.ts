@@ -23,8 +23,6 @@ import { CadastroFormaPagamentoComponent } from './pages/cadastro-forma-pagament
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { NgxMaskModule, IConfig } from 'ngx-mask';
 import { HttpClientModule } from '@angular/common/http';
-import { RelatorioFuncionarioComponent } from './pages/relatorio-funcionario/relatorio-funcionario.component';
-import { RelatorioClienteComponent } from './pages/relatorio-cliente/relatorio-cliente.component';
 import { RelatorioPedidoComponent } from './pages/relatorio-pedido/relatorio-pedido.component';
 import { CadastroPedidoComponent } from './pages/cadastro-pedido/cadastro-pedido.component';
 import { CadastroVinculoEmpresaComponent } from './pages/cadastro-vinculo-empresa/cadastro-vinculo-empresa.component';
@@ -43,6 +41,7 @@ import { MatExpansionModule, MatAccordion } from '@angular/material/expansion';
 import { DatepickerModule, BsDatepickerModule } from 'ngx-bootstrap/datepicker';
 import { httpInterceptorProviders } from './http-interceptors';
 import { SomenteNumerosDirective } from './directives/somente-numeros.directive';
+import { RelatorioPessoaComponent } from './pages/relatorio-pessoa/relatorio-pessoa.component';
 
 @NgModule({
   declarations: [
@@ -63,14 +62,13 @@ import { SomenteNumerosDirective } from './directives/somente-numeros.directive'
     CadastroProdutoComponent,
     CadastroListaPrecoComponent,
     CadastroFormaPagamentoComponent,
-    RelatorioFuncionarioComponent,
-    RelatorioClienteComponent,
     RelatorioPedidoComponent,
     CadastroPedidoComponent,
     CadastroVinculoEmpresaComponent,
     RecuperarSenhaComponent,
     AlertComponent,
     SomenteNumerosDirective,
+    RelatorioPessoaComponent,
   ],
   imports: [
     BrowserModule,

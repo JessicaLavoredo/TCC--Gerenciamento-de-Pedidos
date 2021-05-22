@@ -1,0 +1,135 @@
+<app-menu></app-menu>
+<div class="TituloPagina">
+    <span>{{NomePagina}}</span>
+</div>
+<app-alert aria-live="polite" aria-atomic="true"></app-alert>
+
+<form>
+    <div class="container corpo">
+        <div class="form-row">
+            <div class="form-group col-md-6">
+                <label for="txtNome">Nome/Razão Social</label>
+                <input type="text" class="form-control" id="txtNome" name="Nome" [(ngModel)]="PessoaFiltro.NomeRazao">
+            </div>
+            <div class="form-group col-md-6">
+                <label for="txtApelido">Apelido/Fantasia</label>
+                <input type="text" class="form-control" id="txtApelido" name="Apelido"
+                    [(ngModel)]="PessoaFiltro.ApelidoFantasia">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <section>
+                    <div>
+                        <label class="tipo">Tipo:</label>
+                    </div>
+                    <mat-radio-group [(ngModel)]="PessoaFiltro.TipoPessoa" color="primary" name="tipo"
+                        (ngModelChange)="alterartipo()">
+                        <mat-radio-button class="tipo" value="F">Fisico</mat-radio-button>
+                        <mat-radio-button class="tipo ml-3" value="J">Jurídico</mat-radio-button>
+                    </mat-radio-group>
+                </section>
+            </div>
+            <div class="form-group col-md-4">
+                <label for="txtCpf">Cpf/Cnpj</label>
+                <input type="text" class="form-control" id="txtCpf" [mask]="cpfMask" name="Cpf"
+                    [(ngModel)]="Pessoa.CpfCnpj">
+            </div>
+            <div class="form-group col-md-4">
+                <label for="txtRg">Rg/Inscrição Estadual</label>
+                <input type="text" class="form-control" id="txtRg" [mask]="rgMask" name="Rg"
+                    [(ngModel)]="PessoaFiltro.RgInscricao">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <section>
+                    <div>
+                        <label class="tipo">Genero:</label>
+                    </div>
+                    <mat-radio-group [(ngModel)]="PessoaFiltro.Genero" color="primary" name="genero">
+                        <mat-radio-button class="genero" value="M">Masculino</mat-radio-button>
+                        <mat-radio-button class="genero ml-3" value="F">Feminino</mat-radio-button>
+                    </mat-radio-group>
+                </section>
+            </div>
+
+            <div class="form-group col-md-4">
+                <label for="txtDataNasc">Data de Nascimento</label>
+                <input type="text" class="form-control" [minDate]="minDate" [maxDate]="maxDate" #dp="bsDatepicker"
+                    bsDatepicker name="DataNascimento" [(bsValue)]="dataNascimento " [bsConfig]="dpConfig"
+                    [(ngModel)]="DataNascimento">
+            </div>
+            <div class="form-group col-md-4" *ngIf="perfil=='1'">
+                <label>Cargo</label>
+                <mat-form-field appearance="outline">
+                    <mat-select multiple [(ngModel)]="PessoaFiltro.Vinculos" placeholder="Selecione um cargo"
+                        name="vinculos">
+                        <mat-option *ngFor="let Vinculo of Vinculos" [value]="Vinculo.IdVinculo">
+                            {{Vinculo.Nome}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4 checkboxInativo">
+                <mat-checkbox color="primary" [(ngModel)]="PessoaFiltro.Inativo" name="inativo"> inativo </mat-checkbox>
+            </div>
+
+            <div class="form-group col-md-4">
+                <label for="txtDataNasc">Data de Inclusão</label>
+                <input type="text" class="form-control" [minDate]="minDate" [maxDate]="maxDate" #dp="bsDatepicker"
+                    bsDatepicker name="DataNascimento" [(bsValue)]="dataNascimento " [bsConfig]="dpConfig"
+                    [(ngModel)]="DataNascimento">
+            </div>
+        </div>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+                    aria-selected="true">Relatório</a>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                <table class="table">
+                    <thead class="tabelas">
+                        <tr>
+                            <th scope="col">Nome/Razão Social</th>
+                            <th scope="col">Apelido/Fantasia</th>
+                            <th scope="col">Tipo</th>
+                            <th scope="col">Cpf/Cnpj</th>
+                            <th scope="col">Rg/Inscrição Estadual</th>
+                            <th scope="col">Genero</th>
+                            <th scope="col">Data de Nascimento</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let pessoa of PessoaFiltro">
+                            <td>{{pessoa.NomeRazao}}</td>
+                            <td>{{pessoa.ApelidoFantasia}}</td>
+                            <td>{{pessoa.TipoPessoa}}</td>
+                            <td>{{pessoa.CpfCnpj}}</td>
+                            <td>{{pessoa.RgInscricao}}</td>
+                            <td>{{pessoa.Genero}}</td>
+                            <td>{{pessoa.DataNascimento}}</td>
+                            <td>{{pessoa.DataInclusao}}</td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <app-footer>
+        <span rodape>
+            <button type="submit" class="btn btn-secondary ml-5 " (click)="Gerar()">Gerar</button>
+            <button type="button" class="btn btn-secondary ml-5 " (click)="limparTela()">Novo</button>
+        </span>
+    </app-footer>
+
+</form>

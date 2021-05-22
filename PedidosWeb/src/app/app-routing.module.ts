@@ -1,7 +1,6 @@
 import { Pessoa } from 'src/app/class/Pessoa';
 import { CadastroVinculoEmpresaComponent } from './pages/cadastro-vinculo-empresa/cadastro-vinculo-empresa.component';
 import { CadastroPedidoComponent } from './pages/cadastro-pedido/cadastro-pedido.component';
-import { RelatorioFuncionarioComponent } from './pages/relatorio-funcionario/relatorio-funcionario.component';
 import { PageLogadaComponent } from './pages/page-logada/page-logada.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
@@ -21,8 +20,8 @@ import { AuthenticationComponent } from './pages/authentication/authentication.c
 import { LoginComponent } from './pages/login/login.component';
 import { AuthGuard } from './guard/account/auth.guard';
 import { AuthGuardAdm } from './guard/account/authAdm.guard';
-import { RelatorioClienteComponent } from './pages/relatorio-cliente/relatorio-cliente.component';
 import { RelatorioPedidoComponent } from './pages/relatorio-pedido/relatorio-pedido.component';
+import { RelatorioPessoaComponent } from './pages/relatorio-pessoa/relatorio-pessoa.component';
 
 const routes: Routes = [
   {
@@ -39,8 +38,7 @@ const routes: Routes = [
       { path: 'CadastroProduto', component: CadastroProdutoComponent, canActivate: [AuthGuard] },
       { path: 'CadastroListaPreco', component: CadastroListaPrecoComponent, canActivate: [AuthGuard] },
       { path: 'CadastroFormaPagamento', component: CadastroFormaPagamentoComponent, canActivate: [AuthGuardAdm] },
-      { path: 'RelatorioFuncionario', component: RelatorioFuncionarioComponent, canActivate: [AuthGuard] },
-      { path: 'RelatorioCliente', component: RelatorioClienteComponent, canActivate: [AuthGuard] },
+      { path: 'RelatorioPessoa', component: RelatorioPessoaComponent, canActivate: [AuthGuard] },
       { path: 'RelatorioPedidos', component: RelatorioPedidoComponent, canActivate: [AuthGuard] },
       { path: 'CadastroPedido', component: CadastroPedidoComponent, canActivate: [AuthGuard] },
       { path: 'VinculoEmpresa', component: CadastroVinculoEmpresaComponent, canActivate: [AuthGuardAdm] },
@@ -68,8 +66,6 @@ const routes: Routes = [
       { path: 'CadastroProduto', component: CadastroProdutoComponent },
       { path: 'CadastroListaPreco', component: CadastroListaPrecoComponent },
       { path: 'CadastroFormaPagamento', component: CadastroFormaPagamentoComponent },
-      { path: 'RelatorioFuncionario', component: RelatorioFuncionarioComponent },
-      { path: 'RelatorioCliente', component: RelatorioClienteComponent },
       { path: 'RelatorioPedidos', component: RelatorioPedidoComponent },
       { path: 'CadastroPedido', component: CadastroPedidoComponent },
       { path: 'VinculoEmpresa', component: CadastroVinculoEmpresaComponent },
