@@ -12,6 +12,7 @@
 
     try {
 
+        // Valida se existe um caminho na requisição e se possui ao menos 2 parametros Controller e Método
         if (!isset($_REQUEST['url']) || count(explode('/', $_REQUEST['url'])) < 2) {
             http_response_code(404);
             return;
@@ -46,14 +47,15 @@
             return $ret;
         } 
 
-        $cabecalhos = apache_request_headers();
-        if (!isset($cabecalhos['Authorization'])){
-            http_response_code(401);
+        $cabecalhos = array_change_key_case(apache_request_headers(), CASE_UPPER);
+        if (!isset($cabecalhos['AUTHORIZATION'])){
+            http_response_code(400);
             return;
         }
-        $authorization = $cabecalhos['Authorization'];
-        $token = explode(' ', $authorization)[1];
 
+        $authorization = $cabecalhos['AUTHORIZATION'];
+        $token = explode(' ', $authorization)[1];
+        
         if (!AuthController::validarToken($token)) {
             http_response_code(401);
             return;
@@ -66,9 +68,10 @@
         $retorno = ['Exception' => $e->getMessage() . ' in ' . $e->getFile() . ' line ' . $e->getLine()];
     }
 
+    if (is_null($retorno)) {
+        return;
+    }
     $ret = json_encode($retorno);
-    $ret = file_put_contents("php://output", $ret);
-    return $ret;
+    return file_put_contents("php://output", $ret);
 
-  
 ?>

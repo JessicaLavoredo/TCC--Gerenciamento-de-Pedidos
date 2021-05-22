@@ -109,6 +109,9 @@
                 $stm = $this->db->prepare($sql);
                 $stm->execute();
                 $objPessoa = $stm->fetch();
+                if ($objPessoa === false) {
+                    return;
+                }
                 $pessoa = Funcoes::criarEntidade("Pessoa", $objPessoa);
 
                 $sql = "SELECT * FROM Endereco E\n";
