@@ -112,6 +112,9 @@
             $stm = $this->db->prepare($sql);
             $stm->execute();
             $ret = $stm->fetch();
+            if ($ret === false) {
+                return;
+            }
             return Funcoes::criarEntidade($classe, $ret);
         }
 

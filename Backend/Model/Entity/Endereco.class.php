@@ -12,7 +12,7 @@
         
         function getIdEndereco():?int {return $this->idEndereco;}
         function getIdPessoa():?int {return $this->idPessoa;}
-        function getCep():?string {return $this->cep;}
+        function getCEP():?string {return $this->cep;}
         function getLogradouro():?string {return $this->logradouro;}
         function getNumero():?string {return $this->numero;}
         function getBairro():?string {return $this->bairro;}
@@ -22,7 +22,7 @@
 
         function setIdEndereco(?int $idEndereco) {$this->idEndereco = $idEndereco;}
         function setIdPessoa(?int $idPessoa) {$this->idPessoa = $idPessoa;}
-        function setCep(?string $cep) {$this->cep = $cep;}
+        function setCEP(?string $cep) {$this->cep = $cep;}
         function setLogradouro(?string $logradouro) {$this->logradouro = $logradouro;}
         function setNumero(?string $numero) {$this->numero = $numero;}
         function setBairro(?string $bairro) {$this->bairro = $bairro;}

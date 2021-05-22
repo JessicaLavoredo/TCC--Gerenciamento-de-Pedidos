@@ -69,5 +69,9 @@
                 return "Erro ao gravar no banco.";
             }
         }
+        
+        function buscarPorId($id) {
+            return;
+        }
     }
 ?>
