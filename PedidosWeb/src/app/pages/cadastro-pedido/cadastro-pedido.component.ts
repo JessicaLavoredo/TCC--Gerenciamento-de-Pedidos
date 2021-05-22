@@ -10,7 +10,6 @@ import { MatAccordion } from '@angular/material/expansion';
 import { Pessoa } from 'src/app/class/Pessoa';
 import { AlertService } from './../../services/alert.service';
 import { PessoaService } from './../../services/pessoa.service';
-import { Console } from 'console';
 import { FormControl } from '@angular/forms';
 import { tap, map, filter, distinct, distinctUntilChanged, debounceTime, switchMap } from 'rxjs/operators';
 import { ProdutoService } from './../../services/produto.service';
@@ -84,32 +83,6 @@ export class CadastroPedidoComponent implements OnInit {
       )
     ).subscribe();
 
-    // this.queryValor.valueChanges.pipe(
-    //   map(value => value.trim()),
-    //   filter(value => value.length > 0),
-    //   debounceTime(200),
-    //   distinctUntilChanged(),
-    //   switchMap(value => this.Produto_PedidoRetorno.Preco = parseFloat(this.Produto_PedidoRetorno.Preco).toFixed(2)),
-    //   map((result: any) => {
-    //     if (result) {
-    //       console.log(result)
-    //       this.Produto = result;
-
-    //       this.Produto_PedidoRetorno.Descricao = this.Produto.NomeComercial
-    //       this.Produto_PedidoRetorno.IdProduto = this.Produto.IdProduto
-    //       this.Produto_PedidoRetorno.CodInternoProduto = this.Produto.CodigoInterno
-    //       if (this.Pedido.idFormaPagamento == "1") {
-    //         this.Produto_PedidoRetorno.Preco = this.Produto.Vista
-    //       } else if (this.Pedido.idFormaPagamento == "2") {
-    //         this.Produto_PedidoRetorno.Preco = this.Produto.Prazo
-    //       } else {
-    //         // alert
-    //       }
-
-    //     }
-    //   }
-    //   )
-    // ).subscribe();
   }
 
   setTwoNumberDecimal() {

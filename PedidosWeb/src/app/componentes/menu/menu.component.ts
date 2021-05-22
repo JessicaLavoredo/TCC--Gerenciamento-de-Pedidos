@@ -13,6 +13,7 @@ export class MenuComponent {
   UsuarioLogado: string = "";
   admin = false;
   nomePaginaPessoa: string;
+  nomePaginaPessoaRelatorio: string;
   constructor(private PessoaService: PessoaService, private accountService: AccountService, private router: Router,) { }
 
   ngOnInit(): void {
@@ -35,9 +36,11 @@ export class MenuComponent {
       if (perfil == "1") {
         this.admin = true;
         this.nomePaginaPessoa = "Cadastro de Pessoa"
+        this.nomePaginaPessoaRelatorio = "Relatório de Pessoa"
       } else {
         this.admin = false;
         this.nomePaginaPessoa = "Cadastro de Cliente"
+        this.nomePaginaPessoaRelatorio = "Relatório de Cliente"
       }
     }
   }
