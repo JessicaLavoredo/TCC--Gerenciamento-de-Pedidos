@@ -54,16 +54,17 @@
         </div>
         <div class="form-row">
             <div class="form-group col-md-4">
-                <label for="inputState">Email de Login</label>
-                <input type="text" class="form-control" id="txtCpf" name="Codigo" [(ngModel)]="Usuario.Login">
+                <label for="txtlogin">Email de Login</label>
+                <input type="text" class="form-control" id="txtlogin" name="txtlogin" [(ngModel)]="Usuario.Login">
             </div>
             <div class="form-group col-md-4">
                 <label for="txtCpf">Senha</label>
-                <input type="password" class="form-control" id="txtCpf" name="Codigo" [(ngModel)]="Usuario.Senha">
+                <input type="password" class="form-control" id="txtCpf" name="txtsenha" [(ngModel)]="Usuario.Senha">
             </div>
             <div class="form-group col-md-4">
                 <label for="txtRg">Confirmação de Senha</label>
-                <input type="password" class="form-control" id="txtRg" name="Codigo" [(ngModel)]="ConfirmacaoSenha">
+                <input type="password" class="form-control" id="txtRg" name="txtconfirmasenha"
+                    [(ngModel)]="ConfirmacaoSenha">
             </div>
         </div>
 

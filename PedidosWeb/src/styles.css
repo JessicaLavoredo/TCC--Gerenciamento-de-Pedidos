@@ -47,12 +47,14 @@ mat-form-field {
     border-top-width: 0;
   }
 
-  .modal-dialog {
+  /* .modal-dialog {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-94%, -70%) !important;
-  }
+  } */
+
+
   
   .grades{
       height: 370px;

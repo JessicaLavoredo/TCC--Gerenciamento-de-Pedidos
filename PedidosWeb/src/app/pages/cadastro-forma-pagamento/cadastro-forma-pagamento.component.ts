@@ -12,6 +12,7 @@ import { AlertService } from './../../services/alert.service';
 export class CadastroFormaPagamentoComponent implements OnInit {
   public FormasPagamento: FormaPagamento[] = [];
   public FormaPagamento: FormaPagamento = new FormaPagamento();
+  validacao: boolean;
   constructor(private FormaPagamentoService: FormaPagamentoService, private router: Router, private AlertService: AlertService) { }
   ngOnInit(): void {
     this.listar();
@@ -24,6 +25,15 @@ export class CadastroFormaPagamentoComponent implements OnInit {
   }
   public async Gravar() {
     try {
+      this.validacao = true;
+      if (this.FormaPagamento.Descritivo == '') {
+        this.AlertService.show("Preencha corretamente o campo Descritivo", { classname: 'bg-danger text-light', delay: 3000 });
+        this.validacao = false;
+      }
+
+      if (!this.validacao) {
+        return
+      }
       let retorno: any = await this.FormaPagamentoService.gravar(this.FormaPagamento);
       if (retorno.status == 200) {
         this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });

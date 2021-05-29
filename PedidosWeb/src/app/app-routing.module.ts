@@ -1,3 +1,4 @@
+import { AlterarSenhaComponent } from './pages/alterar-senha/alterar-senha.component';
 import { Pessoa } from 'src/app/class/Pessoa';
 import { CadastroVinculoEmpresaComponent } from './pages/cadastro-vinculo-empresa/cadastro-vinculo-empresa.component';
 import { CadastroPedidoComponent } from './pages/cadastro-pedido/cadastro-pedido.component';
@@ -20,6 +21,7 @@ import { AuthenticationComponent } from './pages/authentication/authentication.c
 import { LoginComponent } from './pages/login/login.component';
 import { AuthGuard } from './guard/account/auth.guard';
 import { AuthGuardAdm } from './guard/account/authAdm.guard';
+import { AuthGuardGer } from './guard/account/authGer.guard';
 import { RelatorioPedidoComponent } from './pages/relatorio-pedido/relatorio-pedido.component';
 import { RelatorioPessoaComponent } from './pages/relatorio-pessoa/relatorio-pessoa.component';
 
@@ -40,9 +42,10 @@ const routes: Routes = [
       { path: 'CadastroFormaPagamento', component: CadastroFormaPagamentoComponent, canActivate: [AuthGuardAdm] },
       { path: 'RelatorioPessoa', component: RelatorioPessoaComponent, canActivate: [AuthGuard] },
       { path: 'RelatorioPedidos', component: RelatorioPedidoComponent, canActivate: [AuthGuard] },
-      { path: 'CadastroPedido', component: CadastroPedidoComponent, canActivate: [AuthGuard] },
+      { path: 'CadastroPedido', component: CadastroPedidoComponent, canActivate: [AuthGuardGer] },
       { path: 'VinculoEmpresa', component: CadastroVinculoEmpresaComponent, canActivate: [AuthGuardAdm] },
-      { path: 'HomeAdmin', component: HomeAdminComponent, canActivate: [AuthGuard] }
+      { path: 'HomeAdmin', component: HomeAdminComponent, canActivate: [AuthGuard] },
+      { path: 'AlterarSenha', component: AlterarSenhaComponent, canActivate: [AuthGuard] },
     ],
   },
   {
@@ -52,28 +55,6 @@ const routes: Routes = [
       { path: 'login', component: LoginComponent },
     ]
   },
-  {
-    path: '', component: PageLogadaComponent,
-    children: [
-      { path: '', redirectTo: 'home', pathMatch: 'full' },
-      { path: 'home', component: HomeComponent },
-      { path: 'CadastroPessoa', component: CadastroPessoaComponent },
-      { path: 'CadastroCatEmail', component: CadastroCatEmailComponent },
-      { path: 'CadastroCatEndereco', component: CadastroCatEnderecoComponent },
-      { path: 'CadastroCatTelefone', component: CadastroCatTelefoneComponent },
-      { path: 'CadastroPerfilUsuario', component: CadastroPerfilUsuarioComponent },
-      { path: 'CadastroUsuario', component: CadastroUsuarioComponent },
-      { path: 'CadastroProduto', component: CadastroProdutoComponent },
-      { path: 'CadastroListaPreco', component: CadastroListaPrecoComponent },
-      { path: 'CadastroFormaPagamento', component: CadastroFormaPagamentoComponent },
-      { path: 'RelatorioPedidos', component: RelatorioPedidoComponent },
-      { path: 'CadastroPedido', component: CadastroPedidoComponent },
-      { path: 'VinculoEmpresa', component: CadastroVinculoEmpresaComponent },
-      { path: 'HomeAdmin', component: HomeAdminComponent }
-    ],
-    canActivate: [AuthGuard]
-  }
-
 
 ];
 

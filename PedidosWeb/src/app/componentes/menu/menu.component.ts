@@ -1,3 +1,4 @@
+import { UsuarioService } from './../../services/usuario.service';
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AccountService } from 'src/app/services/account.service';
@@ -14,7 +15,8 @@ export class MenuComponent {
   admin = false;
   nomePaginaPessoa: string;
   nomePaginaPessoaRelatorio: string;
-  constructor(private PessoaService: PessoaService, private accountService: AccountService, private router: Router,) { }
+  gerent: boolean;
+  constructor(private PessoaService: PessoaService, private accountService: AccountService, private router: Router, private UsuarioService: UsuarioService) { }
 
   ngOnInit(): void {
     this.PreencherUsuarioLogado()
@@ -24,7 +26,8 @@ export class MenuComponent {
   async PreencherUsuarioLogado() {
     const usuario = this.accountService.getUsuario();
     if (usuario) {
-      let retorno: any = await this.PessoaService.BuscarPorId(usuario)
+      let retornoUsuario: any = await this.UsuarioService.BuscarPorId(usuario);
+      let retorno: any = await this.PessoaService.BuscarPorId(retornoUsuario.IdPessoa);
       if (retorno) {
         if (retorno.ApelidoFantasia != '') {
           this.UsuarioLogado = retorno.ApelidoFantasia;
@@ -35,12 +38,19 @@ export class MenuComponent {
       const perfil = this.accountService.getTipoUser();
       if (perfil == "1") {
         this.admin = true;
+        this.gerent = true;
         this.nomePaginaPessoa = "Cadastro de Pessoa"
         this.nomePaginaPessoaRelatorio = "Relatório de Pessoa"
-      } else {
+      } else if (perfil == "2") {
         this.admin = false;
+        this.gerent = true;
         this.nomePaginaPessoa = "Cadastro de Cliente"
         this.nomePaginaPessoaRelatorio = "Relatório de Cliente"
+      } else {
+        this.nomePaginaPessoa = "Cadastro de Cliente"
+        this.nomePaginaPessoaRelatorio = "Relatório de Cliente"
+        this.admin = false;
+        this.gerent = false;
       }
     }
   }

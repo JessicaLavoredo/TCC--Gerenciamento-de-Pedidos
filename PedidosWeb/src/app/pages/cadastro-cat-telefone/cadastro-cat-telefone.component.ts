@@ -13,6 +13,7 @@ export class CadastroCatTelefoneComponent implements OnInit {
   public categorias: CategoriaTelefone[] = [];
   public filter;
   public categoria: CategoriaTelefone = new CategoriaTelefone();
+  validacao: boolean;
   constructor(private CategoriaTelefoneService: CategoriaTelefoneService, private router: Router, private AlertService: AlertService) { }
 
   ngOnInit(): void {
@@ -26,6 +27,15 @@ export class CadastroCatTelefoneComponent implements OnInit {
   }
   public async Gravar() {
     try {
+      this.validacao = true;
+      if (this.categoria.Nome == '') {
+        this.AlertService.show("Preencha corretamente o campo Nome", { classname: 'bg-danger text-light', delay: 3000 });
+        this.validacao = false;
+      }
+
+      if (!this.validacao) {
+        return
+      }
       let retorno: any = await this.CategoriaTelefoneService.gravar(this.categoria);
       if (retorno.status == 200) {
         this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });

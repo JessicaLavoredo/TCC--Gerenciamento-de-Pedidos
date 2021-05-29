@@ -1,3 +1,4 @@
+import { CategoriaEnderecoService } from './../../services/categoria-endereco.service';
 import { Observable } from 'rxjs';
 import { Estado } from './../../class/estado';
 import { emailRetorno } from './../../class/emailRetorno';
@@ -74,6 +75,7 @@ export class CadastroPessoaComponent implements OnInit {
   Idpessoa: string = '';
   @ViewChild('modalSearchPessoa') modalSearchPessoa: ElementRef;
   @ViewChild('modalSearchCidade') modalSearchCidade: ElementRef;
+  validacao: boolean;
 
 
   constructor(private PessoaService: PessoaService, private route: ActivatedRoute, private router: Router, private AlertService: AlertService, private accountService: AccountService, private localeService: BsLocaleService) {
@@ -242,19 +244,45 @@ export class CadastroPessoaComponent implements OnInit {
 
   public async Gravar() {
     try {
+      this.validacao = true;
       if (this.Pessoa.TipoPessoa == 'F' && !cpf.isValid(this.Pessoa.CpfCnpj)) {
         this.AlertService.show("Cpf Inválido", { classname: 'bg-danger text-light', delay: 3000 });
         this.Pessoa.CpfCnpj = '';
-        return;
+        this.validacao = false;
       }
 
       if (this.Pessoa.TipoPessoa == 'J' && !cnpj.isValid(this.Pessoa.CpfCnpj)) {
         this.AlertService.show("Cnpj Inválido", { classname: 'bg-danger text-light', delay: 3000 });
         this.Pessoa.CpfCnpj = '';
-        return;
+        this.validacao = false;
       }
+
+      if (this.Pessoa.NomeRazao == '') {
+        this.AlertService.show("Preencha corretamente o campo " + this.labelNome, { classname: 'bg-danger text-light', delay: 3000 });
+        this.validacao = false;
+      }
+
       if (this.perfil == "2") {
         this.Pessoa.Vinculos.push("2")
+      }
+
+      if (this.Pessoa.Vinculos.length <= 0) {
+        this.AlertService.show("Preencha corretamente o campo Cargo", { classname: 'bg-danger text-light', delay: 3000 });
+        this.validacao = false;
+      }
+
+      if (this.enderecos.length <= 0) {
+        this.AlertService.show("Informe pelo menos um endereço", { classname: 'bg-danger text-light', delay: 3000 });
+        this.validacao = false;
+      }
+
+      if (this.telefones.length <= 0) {
+        this.AlertService.show("Informe pelo menos um telefone", { classname: 'bg-danger text-light', delay: 3000 });
+        this.validacao = false;
+      }
+
+      if (!this.validacao) {
+        return
       }
 
       this.Pessoa.DataNascimento = this.dataNascimento;
@@ -275,6 +303,37 @@ export class CadastroPessoaComponent implements OnInit {
   }
 
   public async AdicionarEndereco() {
+    if (this.Endereco.Logradouro == '') {
+      this.AlertService.show("Preencha corretamente o campo Logradouro", { classname: 'bg-danger text-light', delay: 3000 });
+      return
+    }
+    if (this.Endereco.Numero == '') {
+      this.AlertService.show("Preencha corretamente o campo Número", { classname: 'bg-danger text-light', delay: 3000 });
+      return
+    }
+
+    if (this.Endereco.Bairro == '') {
+      this.AlertService.show("Preencha corretamente o campo Bairro", { classname: 'bg-danger text-light', delay: 3000 });
+      return
+    }
+
+    if (this.Endereco.Cep == '') {
+      this.AlertService.show("Preencha corretamente o campo CEP", { classname: 'bg-danger text-light', delay: 3000 });
+      return
+    }
+
+
+    if (this.Endereco.IdCidade == '') {
+      this.AlertService.show("Preencha corretamente o campo Cidade", { classname: 'bg-danger text-light', delay: 3000 });
+      return
+    }
+
+    if (this.Endereco.IdCategoriaEndereco == '') {
+      this.AlertService.show("Preencha corretamente o campo Categoria", { classname: 'bg-danger text-light', delay: 3000 });
+      return
+    }
+
+
     this.enderecos.push(this.Endereco)
     this.Endereco = new enderecoRetorno();
   }
@@ -312,6 +371,26 @@ export class CadastroPessoaComponent implements OnInit {
   }
 
   public async AdicionarTelefone() {
+    if (this.telefone.DDI == '') {
+      this.AlertService.show("Preencha corretamente o campo DDI", { classname: 'bg-danger text-light', delay: 3000 });
+      return
+    }
+
+    if (this.telefone.DDD == '') {
+      this.AlertService.show("Preencha corretamente o campo DDD", { classname: 'bg-danger text-light', delay: 3000 });
+      return
+    }
+
+    if (this.telefone.Numero == '') {
+      this.AlertService.show("Preencha corretamente o campo Número", { classname: 'bg-danger text-light', delay: 3000 });
+      return
+    }
+
+    if (this.telefone.IdCategoriaTelefone == '') {
+      this.AlertService.show("Preencha corretamente o campo Categoria de Telefone", { classname: 'bg-danger text-light', delay: 3000 });
+      return
+    }
+
     this.telefones.push(this.telefone)
     this.telefone = new telefoneRetorno();
   }
@@ -336,6 +415,16 @@ export class CadastroPessoaComponent implements OnInit {
 
 
   public async AdicionarEmail() {
+    if (!this.validEmail(this.email.Endereco)) {
+      this.AlertService.show("Preencha corretamente o campo Endereço de Email", { classname: 'bg-danger text-light', delay: 3000 });
+      return
+    }
+
+    if (this.email.IdCategoriaEmail == '') {
+      this.AlertService.show("Preencha corretamente o campo Categoria de Email", { classname: 'bg-danger text-light', delay: 3000 });
+      return
+    }
+
     this.emails.push(this.email)
     this.email = new emailRetorno();
   }
@@ -491,6 +580,13 @@ export class CadastroPessoaComponent implements OnInit {
     }
     let retorno: any = await this.PessoaService.BuscarPorFiltro(pesquisa);
     this.Pessoas = retorno.resultado
+  }
+
+
+  validEmail(email) {
+    let regex_validation = /^([a-z]){1,}([a-z0-9._-]){1,}([@]){1}([a-z]){2,}([.]){1}([a-z]){2,}([.]?){1}([a-z]?){2,}$/i;
+    console.log(regex_validation.test(email))
+    return regex_validation.test(email)
   }
 
 }

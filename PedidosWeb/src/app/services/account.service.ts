@@ -44,7 +44,8 @@ export class AccountService {
     if (date === undefined) {
       return false;
     }
-    return !(date.valueOf() > new Date().valueOf());
+
+    return (date.valueOf() < new Date().valueOf());
 
   }
 
@@ -83,10 +84,10 @@ export class AccountService {
       return ""
     } else {
       const decoded: any = jwtDecode(token);
-      if (decoded.idPerfil === undefined) {
+      if (decoded.idUsuario === undefined) {
         return null
       }
-      return decoded.idPerfil
+      return decoded.idUsuario
     }
   }
 

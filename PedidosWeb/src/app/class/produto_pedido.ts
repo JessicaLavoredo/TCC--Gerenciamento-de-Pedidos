@@ -1,15 +1,15 @@
 
 export class Produto_Pedido {
-    public idProduto: string;
-    public preco: string;
-    public quantidade: string;
-    public desconto: string;
+    public IdProduto: string;
+    public Preco: string;
+    public Quantidade: string;
+    public Desconto: string;
 
     constructor() {
-        this.idProduto = '';
-        this.preco = '';
-        this.quantidade = '';
-        this.desconto = '';
+        this.IdProduto = '';
+        this.Preco = '';
+        this.Quantidade = '';
+        this.Desconto = '';
     }
 
 }

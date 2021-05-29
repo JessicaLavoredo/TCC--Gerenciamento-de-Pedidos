@@ -13,6 +13,7 @@ export class CadastroPerfilUsuarioComponent implements OnInit {
 
   public PerfisUsuario: PerfilUsuario[] = [];
   public perfilUsuario: PerfilUsuario = new PerfilUsuario();
+  validacao: boolean;
   constructor(private PerfilUsuarioService: PerfilUsuarioService, private router: Router, private AlertService: AlertService) { }
 
   ngOnInit(): void {
@@ -26,6 +27,15 @@ export class CadastroPerfilUsuarioComponent implements OnInit {
   }
   public async Gravar() {
     try {
+      this.validacao = true;
+      if (this.perfilUsuario.Nome == '') {
+        this.AlertService.show("Preencha corretamente o campo Nome", { classname: 'bg-danger text-light', delay: 3000 });
+        this.validacao = false;
+      }
+
+      if (!this.validacao) {
+        return
+      }
       let retorno: any = await this.PerfilUsuarioService.gravar(this.perfilUsuario);
       if (retorno.status == 200) {
         this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
