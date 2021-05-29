@@ -9,23 +9,23 @@
         private $idCategoriaTelefone;
         private $observacao;
         
-        function getIdTelefone() {return $this->idTelefone;}
-        function getIdPessoa() {return $this->idPessoa;}
-        function getDDI() {return $this->dDI;}
-        function getDDD() {return $this->dDD;}
-        function getNumero() {return $this->numero;}
-        function getRamal() {return $this->ramal;}
-        function getIdCategoriaTelefone() {return $this->idCategoriaTelefone;}
-        function getObservacao() {return $this->observacao;}
+        function getIdTelefone():?int {return $this->idTelefone;}
+        function getIdPessoa():?int {return $this->idPessoa;}
+        function getDDI():?string {return $this->dDI;}
+        function getDDD():?string {return $this->dDD;}
+        function getNumero():?string {return $this->numero;}
+        function getRamal():?string {return $this->ramal;}
+        function getIdCategoriaTelefone():?int {return $this->idCategoriaTelefone;}
+        function getObservacao():?string {return $this->observacao;}
 
-        function setIdTelefone($idTelefone) {$this->idTelefone = $idTelefone;}
-        function setIdPessoa($idPessoa) {$this->idPessoa = $idPessoa;}
-        function setDDI($dDI) {$this->dDI = $dDI;}
-        function setDDD($dDD) {$this->dDD = $dDD;}
-        function setNumero($numero) {$this->numero = $numero;}
-        function setRamal($ramal) {$this->ramal = $ramal;}
-        function setIdCategoriaTelefone($idCategoriaTelefone) {$this->idCategoriaTelefone = $idCategoriaTelefone;}
-        function setObservacao($observacao) {$this->observacao = $observacao;}
+        function setIdTelefone(?int $idTelefone) {$this->idTelefone = $idTelefone;}
+        function setIdPessoa(?int $idPessoa) {$this->idPessoa = $idPessoa;}
+        function setDDI(?string $dDI) {$this->dDI = $dDI;}
+        function setDDD(?string $dDD) {$this->dDD = $dDD;}
+        function setNumero(?string $numero) {$this->numero = $numero;}
+        function setRamal(?string $ramal) {$this->ramal = $ramal;}
+        function setIdCategoriaTelefone(?int $idCategoriaTelefone) {$this->idCategoriaTelefone = $idCategoriaTelefone;}
+        function setObservacao(?string $observacao) {$this->observacao = $observacao;}
 
         function __construct($idTelefone=null, $idPessoa=null, $dDI=null, $dDD=null, $numero=null, $ramal=null, $idCategoriaTelefone=null, $observacao=null) {
             $this->setIdTelefone($idTelefone);
