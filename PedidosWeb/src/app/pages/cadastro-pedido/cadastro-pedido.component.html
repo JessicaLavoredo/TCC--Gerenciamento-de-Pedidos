@@ -105,7 +105,7 @@
                 </button>
             </div>
             <div class="form-group col-md-1">
-                <label for="txtCodigo">Cod. Produto</label>
+                <label for="txtCodigo">Produto</label>
                 <input type="text" class="form-control" [formControl]="queryProduto" id="txtCodigo" name="Codigo"
                     [(ngModel)]="Produto_PedidoRetorno.IdProduto">
             </div>
@@ -114,13 +114,8 @@
                 data-target="#ModalPesquisa">
                 <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
             </button>
-            <div class="form-group col-md-1">
-                <label for="txtCodigoInt">Cod. Interno</label>
-                <input type="text" class="form-control" [formControl]="queryProdutoCodInterno" id="txtCodigoInt"
-                    name="Codigo" [(ngModel)]="Produto_PedidoRetorno.CodInternoProduto">
-            </div>
-            <div class="form-group col-md-6">
-                <label for="txtNome">Produto</label>
+            <div class="form-group col-md-7">
+                <label for="txtNome"> Nome</label>
                 <input type="text" class="form-control" id="txtNome" name="descritivo"
                     [(ngModel)]="Produto_PedidoRetorno.Descricao">
             </div>
@@ -208,7 +203,7 @@
             <div class="modal-body">
                 <div class="form-row mb-2">
                     <div class="form-group col-md-3">
-                        <label>Cargo</label>
+                        <label>Filtrar por:</label>
                         <select id="CboFiltroCliente" class="form-control" [(ngModel)]="FiltroCliente"
                             name="CboFiltroCliente">
                             <option [value]=filtro.Codigo *ngFor="let filtro of FiltrosClientes">

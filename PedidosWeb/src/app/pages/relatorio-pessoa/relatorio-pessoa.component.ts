@@ -13,7 +13,7 @@ export class RelatorioPessoaComponent implements OnInit {
   public PessoaFiltro: Pessoa = new Pessoa();
   NomePagina: string = "";
   perfil: string = '';
-  dataNascimento: Date;
+  DataNascimento: Date;
   constructor(private PessoaService: PessoaService, private AlertService: AlertService, private accountService: AccountService) { }
 
   ngOnInit(): void {

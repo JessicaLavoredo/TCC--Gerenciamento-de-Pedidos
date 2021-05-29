@@ -26,7 +26,7 @@ export class Pessoa {
         this.CpfCnpj = '';
         this.RgInscricao = '';
         this.DataNascimento = new Date(1900, 1, 1);
-        this.Genero = '';
+        this.Genero = 'M';
         this.Inativo = false;
         this.DataInclusao = new Date;
         this.Vinculos = [];

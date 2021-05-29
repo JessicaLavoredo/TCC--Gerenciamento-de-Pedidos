@@ -62,6 +62,7 @@ export class CadastroPedidoComponent implements OnInit {
       distinctUntilChanged(),
       switchMap(value => this.ProdutoService.BuscarPorId(this.Produto_PedidoRetorno.IdProduto)),
       map((result: any) => {
+        console.log(result)
         if (result) {
           this.Produto = result;
           this.Produto_PedidoRetorno.Descricao = this.Produto.NomeComercial
