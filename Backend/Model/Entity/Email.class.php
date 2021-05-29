@@ -1,10 +1,10 @@
 <?php
     class Email extends BaseEntity {
-        private $idEmail;
-        private $idPessoa;
-        private $endereco;
-        private $idCategoriaEmail;
-        private $observacao;
+        private ?int $idEmail;
+        private ?int $idPessoa;
+        private ?string $endereco;
+        private ?int $idCategoriaEmail;
+        private ?string $observacao;
 
         function getIdEmail() {return $this->idEmail;}
         function getIdPessoa() {return $this->idPessoa;}

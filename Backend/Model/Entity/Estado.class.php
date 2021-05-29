@@ -1,11 +1,11 @@
 <?php
 
     class Estado extends BaseEntity {
-        private $idEstado;
-        private $nome;
-        private $sigla;
-        private $regiao;
-        private $codigoIBGE;
+        private ?int $idEstado;
+        private ?string $nome;
+        private ?string $sigla;
+        private ?string $regiao;
+        private ?int $codigoIBGE;
 
         function getIdEstado() {return $this->idEstado;}
         function getNome() {return $this->nome;}

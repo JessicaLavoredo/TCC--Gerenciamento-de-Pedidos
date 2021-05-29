@@ -16,7 +16,7 @@
         function getLogradouro():?string {return $this->logradouro;}
         function getNumero():?string {return $this->numero;}
         function getBairro():?string {return $this->bairro;}
-        function getIdCidade():?string {return $this->idCidade;}
+        function getIdCidade():?int {return $this->idCidade;}
         function getIdCategoriaEndereco():?int {return $this->idCategoriaEndereco;}
         function getObservacao():?string {return $this->observacao;}
 

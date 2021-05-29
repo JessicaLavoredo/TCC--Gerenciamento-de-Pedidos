@@ -1,19 +1,19 @@
 <?php
     class Pessoa extends BaseEntity {
-        private $idPessoa;
-        private $tipoPessoa;
-        private $nomeRazao;
-        private $apelidoFantasia;
-        private $cpfCnpj;
-        private $rgInscricao;
-        private $dataNascimento;
-        private $genero;
-        private $inativo;
-        private $dataInclusao;
-        private Array $vinculos;
-        private Array $enderecos;
-        private Array $telefones;
-        private Array $emails;
+        private ?int $idPessoa;
+        private ?string $tipoPessoa;
+        private ?string $nomeRazao;
+        private ?string $apelidoFantasia;
+        private ?string $cpfCnpj;
+        private ?string $rgInscricao;
+        private ?string $dataNascimento;
+        private ?string $genero;
+        private ?int $inativo;
+        private ?string $dataInclusao;
+        private array $vinculos;
+        private array $enderecos;
+        private array $telefones;
+        private array $emails;
 
         function getIdPessoa() {return $this->idPessoa;}
         function getTipoPessoa() {return $this->tipoPessoa;}
@@ -44,7 +44,9 @@
         function setVinculos($vinculos) {
             $this->vinculos = array();
             if (isset($vinculos)) {
-                $this->vinculos = $vinculos;
+                foreach ($vinculos as $vin){
+                    $this->vinculos[] = (int) $vin;
+                }
             }
         }
         
