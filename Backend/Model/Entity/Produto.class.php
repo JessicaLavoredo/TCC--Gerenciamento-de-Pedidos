@@ -1,12 +1,12 @@
 <?php
     class Produto extends BaseEntity {
-        private $idProduto;
-        private $nomeTecnico;
-        private $nomeComercial;
-        private $codigoInterno;
-        private $descricao;
-        private $vista;
-        private $prazo;
+        private ?int $idProduto;
+        private ?string $nomeTecnico;
+        private ?string $nomeComercial;
+        private ?string $codigoInterno;
+        private ?string $descricao;
+        private ?float $vista;
+        private ?float $prazo;
         
         function getIdProduto() {return $this->idProduto;}
         function getNomeTecnico() {return $this->nomeTecnico;}
