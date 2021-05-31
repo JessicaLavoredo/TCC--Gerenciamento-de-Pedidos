@@ -12,7 +12,7 @@
                     <div class="form-group col-md-2">
                         <label for="txtCodigo">Código</label>
                         <input type="text" class="form-control" [formControl]="queryProduto" id="txtCodigo"
-                            name="Codigo" [(ngModel)]="Produto.IdProduto">
+                            appSomenteNumeros name="Codigo" [(ngModel)]="Produto.IdProduto">
                     </div>
                     <button type="button" #modalSearch class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
                         data-target="#ModalPesquisa">
@@ -42,17 +42,17 @@
                     <div class="form-group col-md-2">
                         <label for="txtCodigointerno">Código Interno</label>
                         <input type="text" class="form-control" id="txtCodigointerno" name="CodigoInterno"
-                            [(ngModel)]="Produto.CodigoInterno">
+                            [formControl]="queryProdutoCodigoInterno" [(ngModel)]="Produto.CodigoInterno">
                     </div>
                     <div class="form-group col-md-3">
                         <label for="txtCpf">Preço à Vista</label>
-                        <input type="number" class="form-control" id="txtVista" [(ngModel)]="Produto.Vista"
-                            name="vista">
+                        <input type="text" class=" form-control" id="txtVista" [(ngModel)]="Produto.Vista"
+                            appSomenteNumeros decimals="2" name="vista">
                     </div>
                     <div class="form-group col-md-3">
                         <label for="txtRg">Preço à Prazo</label>
-                        <input type="number" class="form-control" id="txtPrazo" [(ngModel)]="Produto.Prazo"
-                            name="Prazo">
+                        <input type="text" class="form-control" id="txtPrazo" [(ngModel)]="Produto.Prazo"
+                            appSomenteNumeros decimals="2" name="Prazo">
                     </div>
                 </div>
                 <div class="form-row">
@@ -147,5 +147,26 @@
                 </div>
             </div>
         </div>
+
+        <!-- <button type="button" #abrirmodalConfirmacao class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
+            data-target="#Modalconfirmacao">
+            <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+        </button>
+
+        <div class="modal fade modalConfirmacao" id="Modalconfirmacao" tabindex="-1" role="dialog"
+            aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-body">
+                        <h2>Já existe um produto com este codigo interno deseja carregar esse produto?</h2>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" (click)="CancelarpreencheProduto()"
+                            data-dismiss="modal">ok</button>
+                    </div>
+                </div>
+            </div>
+        </div> -->
+
     </div>
 </app-page-logada>

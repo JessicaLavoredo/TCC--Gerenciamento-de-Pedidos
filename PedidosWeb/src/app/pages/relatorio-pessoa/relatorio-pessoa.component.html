@@ -1,4 +1,4 @@
-<!-- <app-menu></app-menu>
+<app-menu></app-menu>
 <div class="TituloPagina">
     <span>{{NomePagina}}</span>
 </div>
@@ -23,8 +23,7 @@
                     <div>
                         <label class="tipo">Tipo:</label>
                     </div>
-                    <mat-radio-group [(ngModel)]="PessoaFiltro.TipoPessoa" color="primary" name="tipo"
-                        (ngModelChange)="alterartipo()">
+                    <mat-radio-group [(ngModel)]="PessoaFiltro.TipoPessoa" color="primary" name="tipo">
                         <mat-radio-button class="tipo" value="F">Fisico</mat-radio-button>
                         <mat-radio-button class="tipo ml-3" value="J">Jurídico</mat-radio-button>
                     </mat-radio-group>
@@ -33,7 +32,7 @@
             <div class="form-group col-md-4">
                 <label for="txtCpf">Cpf/Cnpj</label>
                 <input type="text" class="form-control" id="txtCpf" [mask]="cpfMask" name="Cpf"
-                    [(ngModel)]="Pessoa.CpfCnpj">
+                    [(ngModel)]="PessoaFiltro.CpfCnpj">
             </div>
             <div class="form-group col-md-4">
                 <label for="txtRg">Rg/Inscrição Estadual</label>
@@ -56,15 +55,13 @@
 
             <div class="form-group col-md-4">
                 <label for="txtDataNasc">Data de Nascimento</label>
-                <input type="text" class="form-control" [minDate]="minDate" [maxDate]="maxDate" #dp="bsDatepicker"
-                    bsDatepicker name="DataNascimento" [(bsValue)]="dataNascimento " [bsConfig]="dpConfig"
-                    [(ngModel)]="DataNascimento">
+                <input type="text" class="form-control" #dp="bsDatepicker" bsDatepicker name="DataNascimento"
+                    [(bsValue)]="dataNascimento " [bsConfig]="dpConfig" [(ngModel)]="DataNascimento">
             </div>
             <div class="form-group col-md-4" *ngIf="perfil=='1'">
                 <label>Cargo</label>
                 <mat-form-field appearance="outline">
-                    <mat-select multiple [(ngModel)]="PessoaFiltro.Vinculos" placeholder="Selecione um cargo"
-                        name="vinculos">
+                    <mat-select multiple [(ngModel)]="FiltroVinculos" placeholder="Selecione um cargo" name="vinculos">
                         <mat-option *ngFor="let Vinculo of Vinculos" [value]="Vinculo.IdVinculo">
                             {{Vinculo.Nome}}</mat-option>
                     </mat-select>
@@ -79,9 +76,8 @@
 
             <div class="form-group col-md-4">
                 <label for="txtDataNasc">Data de Inclusão</label>
-                <input type="text" class="form-control" [minDate]="minDate" [maxDate]="maxDate" #dp="bsDatepicker"
-                    bsDatepicker name="DataNascimento" [(bsValue)]="dataNascimento " [bsConfig]="dpConfig"
-                    [(ngModel)]="DataNascimento">
+                <input type="text" class="form-control" #dp="bsDatepicker" bsDatepicker name="DataNascimento"
+                    [(bsValue)]="dataNascimento " [bsConfig]="dpConfig" [(ngModel)]="DataNascimento">
             </div>
         </div>
         <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -105,7 +101,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr *ngFor="let pessoa of PessoaFiltro">
+                        <tr *ngFor="let pessoa of PessoasFiltro">
                             <td>{{pessoa.NomeRazao}}</td>
                             <td>{{pessoa.ApelidoFantasia}}</td>
                             <td>{{pessoa.TipoPessoa}}</td>
@@ -132,4 +128,11 @@
         </span>
     </app-footer>
 
-</form> -->
+</form>
+
+<script>
+    $('.datepicker').datepicker({
+        format: 'dd/mm/yyyy',
+        language: 'pt-BR'
+    });
+</script>

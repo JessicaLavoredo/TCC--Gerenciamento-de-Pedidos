@@ -38,7 +38,6 @@ export class ProdutoService {
   async BuscarPorFiltro(Filtros: any) {
     return new Promise(resolve => {
       const json = JSON.stringify(Filtros);
-      console.log(json)
       this.http.post('api/Produto/buscarPorFiltro', json).subscribe(result => {
         console.log(result)
         let resultado = {
@@ -61,6 +60,7 @@ export class ProdutoService {
   async BuscarPorId(Codigo: String) {
     return new Promise(resolve => {
       this.http.get('api/Produto/buscarPorId/' + Codigo).subscribe(result => {
+        console.log(result)
         resolve(result);
       });
     })

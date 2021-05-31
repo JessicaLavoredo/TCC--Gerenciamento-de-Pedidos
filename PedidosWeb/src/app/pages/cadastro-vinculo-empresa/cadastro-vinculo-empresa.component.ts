@@ -13,6 +13,7 @@ export class CadastroVinculoEmpresaComponent implements OnInit {
 
   public vinculos: Vinculo[] = [];
   public vinculo: Vinculo = new Vinculo();
+  validacao: boolean;
   constructor(private VinculoEmpresaService: VinculoEmpresaService, private router: Router, private AlertService: AlertService) { }
 
   ngOnInit(): void {
@@ -26,6 +27,15 @@ export class CadastroVinculoEmpresaComponent implements OnInit {
   }
   public async Gravar() {
     try {
+      this.validacao = true;
+      if (this.vinculo.Nome == '') {
+        this.AlertService.show("Preencha corretamente o campo Nome", { classname: 'bg-danger text-light', delay: 3000 });
+        this.validacao = false;
+      }
+
+      if (!this.validacao) {
+        return
+      }
       let retorno: any = await this.VinculoEmpresaService.gravar(this.vinculo);
       if (retorno.status == 200) {
         this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });

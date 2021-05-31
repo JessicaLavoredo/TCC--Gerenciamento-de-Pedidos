@@ -26,7 +26,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { RelatorioPedidoComponent } from './pages/relatorio-pedido/relatorio-pedido.component';
 import { CadastroPedidoComponent } from './pages/cadastro-pedido/cadastro-pedido.component';
 import { CadastroVinculoEmpresaComponent } from './pages/cadastro-vinculo-empresa/cadastro-vinculo-empresa.component';
-import { RecuperarSenhaComponent } from './pages/recuperar-senha/recuperar-senha.component';
+import { AlterarSenhaComponent } from './pages/alterar-senha/alterar-senha.component';
 import { MatIconModule } from '@angular/material/icon';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatRadioModule } from '@angular/material/radio';
@@ -65,7 +65,7 @@ import { RelatorioPessoaComponent } from './pages/relatorio-pessoa/relatorio-pes
     RelatorioPedidoComponent,
     CadastroPedidoComponent,
     CadastroVinculoEmpresaComponent,
-    RecuperarSenhaComponent,
+    AlterarSenhaComponent,
     AlertComponent,
     SomenteNumerosDirective,
     RelatorioPessoaComponent,

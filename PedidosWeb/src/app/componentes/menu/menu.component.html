@@ -21,7 +21,7 @@
         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
           <a class="dropdown-item" href="CadastroPessoa">{{nomePaginaPessoa}}</a>
           <a class="dropdown-item" href="CadastroUsuario" *ngIf="admin">Usuário</a>
-          <a class="dropdown-item" href="CadastroProduto">Produto</a>
+          <a class="dropdown-item" href="CadastroProduto" *ngIf="gerent">Produto</a>
         </div>
       </li>
       <li class="nav-item dropdown">
@@ -54,6 +54,7 @@
           {{UsuarioLogado}}
         </a>
         <div class="dropdown-menu" aria-labelledby="navbarDropdownMenuLink">
+          <a class="dropdown-item" href="AlterarSenha">Alterar Senha</a>
           <a class="dropdown-item" (click)='sair()'>Sair</a>
         </div>
       </li>

@@ -6,22 +6,20 @@ import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Rout
 @Injectable({
   providedIn: 'root'
 })
-export class AuthGuard implements CanActivate {
+export class AuthGuardGer implements CanActivate {
 
   constructor(private router: Router, private AccountService: AccountService) { }
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {
     const token = this.AccountService.getAuthorizationToken();
     const tokenexpired = this.AccountService.isTokenExpired(token);
     const tipo = this.AccountService.getTipoUser();
-    if (token && !tokenexpired && (tipo == '1' || tipo == '2' || tipo == '3')) {
+    if (token && !tokenexpired && (tipo == '2' || tipo == '1')) {
       return true;
     } else {
-      this.router.navigate(['login']);
+      this.router.navigate(['home']);
       window.localStorage.removeItem('token');
       return false;
     }
-
-
   }
 
 }

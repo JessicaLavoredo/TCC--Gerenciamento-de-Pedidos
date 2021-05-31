@@ -3,6 +3,8 @@ import { Component, OnInit } from '@angular/core';
 import { Pessoa } from 'src/app/class/Pessoa';
 import { PessoaService } from './../../services/pessoa.service';
 import { AlertService } from './../../services/alert.service';
+import { BsDatepickerConfig, BsLocaleService } from 'ngx-bootstrap/datepicker';
+import { PessoaFiltro } from 'src/app/class/PessoaFiltro';
 
 @Component({
   selector: 'app-relatorio-pessoa',
@@ -10,10 +12,17 @@ import { AlertService } from './../../services/alert.service';
   styleUrls: ['./relatorio-pessoa.component.css']
 })
 export class RelatorioPessoaComponent implements OnInit {
-  public PessoaFiltro: Pessoa = new Pessoa();
+  public PessoaFiltro: PessoaFiltro = new PessoaFiltro();
+  PessoasFiltro: any[];
   NomePagina: string = "";
   perfil: string = '';
   DataNascimento: Date;
+  public cpfMask = '000.000.000-00';
+  public rgMask = '00.000.000-0';
+  dataNascimento: Date;
+  FiltroVinculos: any[];
+  public dpConfig: Partial<BsDatepickerConfig> = new BsDatepickerConfig();
+
   constructor(private PessoaService: PessoaService, private AlertService: AlertService, private accountService: AccountService) { }
 
   ngOnInit(): void {
@@ -34,5 +43,8 @@ export class RelatorioPessoaComponent implements OnInit {
   }
 
   public async Gerar() {
+    let retorno: any = await this.PessoaService.BuscarPorFiltro(this.PessoaFiltro);
+    this.PessoasFiltro = retorno.resultado
+    console.log(this.PessoasFiltro);
   }
 }

@@ -54,10 +54,9 @@ export class CadastroUsuarioComponent implements OnInit {
       map((result: any) => {
         if (result) {
           this.Usuario = result
+          console.log(this.Usuario)
           this.ConfirmacaoSenha = result.Senha;
           this.pesquisarFuncionario();
-        } else {
-
         }
       }
       )

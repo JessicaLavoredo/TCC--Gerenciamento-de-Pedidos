@@ -18,19 +18,36 @@ export class PedidoService {
   }
 
   async gravar(Pedido: Pedido) {
-    const json = JSON.stringify(Pedido);
-    const result: any = await Api.post('api/Pedido/gravar', json);
-    if (result.length > 0) {
-      console.log(result);
-      return true;
-    } else {
-      return false;
-    }
+    console.log(Pedido);
+    return new Promise(resolve => {
+      const json = JSON.stringify(Pedido);
+      this.http.post('api/Pedido/gravar', json).subscribe(result => {
+        let resultado = {
+          resultado: result,
+          status: 200
+        };
+        resolve(resultado);
+      }, error => {
+        let resultado = {
+          resultado: error,
+          status: 401
+        };
+        resolve(resultado);
+      });
+    })
   }
 
   public buscarTodasFormasPagamento() {
     return this.http.get<FormaPagamento[]>('api/FormaPagamento/buscartodos');
   }
 
+  async BuscarPorId(Codigo: String) {
+    return new Promise(resolve => {
+      this.http.get('api/Pedido/buscarPorId/' + Codigo).subscribe(result => {
+        console.log(result);
+        resolve(result);
+      });
+    })
+  }
 
 }

@@ -15,6 +15,7 @@ export class CadastroCatEmailComponent implements OnInit {
   public categorias: CategoriaEmail[] = [];
   public categoria: CategoriaEmail = new CategoriaEmail();
   @ViewChild('modalSearchPessoa') modalSearchPessoa: ElementRef;
+  validacao: boolean;
 
   constructor(private CategoriaEmailService: CategoriaEmailService, private router: Router, private AlertService: AlertService) { }
 
@@ -30,6 +31,17 @@ export class CadastroCatEmailComponent implements OnInit {
 
   public async Gravar() {
     try {
+      this.validacao = true;
+      console.log(this.categoria.Nome)
+      if (this.categoria.Nome == '') {
+        this.AlertService.show("Preencha corretamente o campo Nome", { classname: 'bg-danger text-light', delay: 3000 });
+        this.validacao = false;
+      }
+
+      if (!this.validacao) {
+        return
+      }
+
       let retorno: any = await this.CategoriaEmailService.gravar(this.categoria);
       if (retorno.status == 200) {
         this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });

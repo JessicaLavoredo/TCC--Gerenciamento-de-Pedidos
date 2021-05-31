@@ -1,0 +1,38 @@
+<app-menu></app-menu>
+<div class="TituloPagina">
+    <span>Alterar Senha</span>
+</div>
+
+<form>
+    <div class="container corpo">
+        <app-alert aria-live="polite" aria-atomic="true"></app-alert>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="txtCpf">Senha Atual</label>
+                <input type="password" class="form-control" id="txtCpf" name="Codigo" [(ngModel)]="SenhaAtual">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="txtCpf">Nova Senha</label>
+                <input type="password" class="form-control" id="txtCpf" name="Codigo" [(ngModel)]="SenhaNova">
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="txtRg">Confirmação de Senha</label>
+                <input type="password" class="form-control" id="txtRg" name="Codigo" [(ngModel)]="ConfirmacaoSenha">
+            </div>
+        </div>
+
+
+        <app-footer>
+            <span rodape>
+                <button type="submit" (click)="Gravar()" class="btn btn-secondary ml-5 rounded-pill">Salvar</button>
+                <button type="button" (click)="Limpar()" class="btn btn-secondary ml-5 rounded-pill">Novo</button>
+            </span>
+        </app-footer>
+    </div>
+
+
+</form>

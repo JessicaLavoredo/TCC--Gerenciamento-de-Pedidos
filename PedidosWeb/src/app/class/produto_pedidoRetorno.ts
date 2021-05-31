@@ -6,7 +6,7 @@ export class Produto_PedidoRetorno {
     public Quantidade: number;
     public Desconto: string;
     public Descricao: string;
-    public Total: number;
+    public Total: string;
 
     constructor() {
         this.IdProduto = '';
@@ -15,7 +15,7 @@ export class Produto_PedidoRetorno {
         this.Desconto = '';
         this.CodInternoProduto = '';
         this.Descricao = '';
-        this.Total = null;
+        this.Total = '';
     }
 
 }

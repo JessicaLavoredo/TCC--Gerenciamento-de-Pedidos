@@ -11,11 +11,13 @@ export class AuthGuardAdm implements CanActivate {
   constructor(private router: Router, private AccountService: AccountService) { }
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> | boolean {
     const token = this.AccountService.getAuthorizationToken();
+    const tokenexpired = this.AccountService.isTokenExpired(token);
     const tipo = this.AccountService.getTipoUser();
-    if (token && tipo == '1') {
+    if (token && !tokenexpired && (tipo == '1')) {
       return true;
     } else {
       this.router.navigate(['home']);
+      window.localStorage.removeItem('token');
       return false;
     }
   }
