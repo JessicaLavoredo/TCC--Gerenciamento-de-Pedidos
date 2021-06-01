@@ -1,3 +1,5 @@
+import { Estado } from './../../class/estado';
+import { Cidade } from './../../class/cidade';
 import { promise } from 'protractor';
 import { email } from './../../class/email';
 import { endereco } from './../../class/endereco';
@@ -262,7 +264,7 @@ export class CadastroPedidoComponent implements OnInit {
     if (Cliente) {
       let retorno: any = await this.PessoaService.BuscarPorId(Cliente.IdPessoa)
       if (retorno) {
-        this.Endereco = retorno.Enderecos[0].Logradouro + ', ' + retorno.Enderecos[0].Numero + ', ' + retorno.Enderecos[0].Bairro;
+        this.Endereco = retorno.Enderecos[0].Logradouro + ', ' + retorno.Enderecos[0].Numero + ', ' + retorno.Enderecos[0].Bairro + ', ' + retorno.Enderecos[0].Cidade.Nome + '-' + retorno.Enderecos[0].Cidade.Estado.Sigla;
         this.Telefone = ' (' + retorno.Telefones[0].DDD + ') ' + retorno.Telefones[0].Numero
         this.Email = retorno.Emails[0].Endereco;
         this.Cliente = retorno;
