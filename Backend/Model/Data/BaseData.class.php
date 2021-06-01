@@ -128,17 +128,18 @@
             foreach($propriedades as $prop) {
                 $getProp = 'get'.ucfirst($prop);
                 if($entidade->$getProp()) {
-                    $sql.= "UPPER(".$prop.") like UPPER(:'".$prop."')";
+                    $sql.= $prop." LIKE '%:".$prop."%'";
                 } else {
                     unset($propriedades[array_search($prop, $propriedades)]);
                 }
             }
 
-            $stm = $this->db->prepare($sql);
             foreach($propriedades as $prop){
                 $getProp = 'get'.ucfirst($prop);
-                $stm->bindValue(":".$prop, $entidade->$getProp());
+                $sql = str_replace(":".$prop, $entidade->$getProp(), $sql);
             }
+
+            $stm = $this->db->prepare($sql);
             $stm->execute();
             $ret = $stm->fetchAll();
             return $ret;

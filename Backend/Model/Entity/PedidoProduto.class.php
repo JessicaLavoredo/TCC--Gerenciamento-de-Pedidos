@@ -1,11 +1,11 @@
 <?php
     class PedidoProduto extends BaseEntity {
-        private $idPedidoProduto;
-        private $idPedido;
-        private $idProduto;
-        private $preco;
-        private $quantidade;
-        private $desconto;
+        private ?int $idPedidoProduto;
+        private ?int $idPedido;
+        private ?int $idProduto;
+        private ?float $preco;
+        private ?int $quantidade;
+        private ?float $desconto;
         
         function getIdPedidoProduto() {return $this->idPedidoProduto;}
         function getIdPedido() {return $this->idPedido;}

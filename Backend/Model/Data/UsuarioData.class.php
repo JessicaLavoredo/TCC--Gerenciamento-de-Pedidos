@@ -27,10 +27,10 @@
         }
 
         function getUsuariosPorPerfil($idPerfil) {
-            $sql += "SELECT *";
-            $sql += "FROM usuario U";
-            $sql += "INNER JOIN perfil_usuario PU ON PU.idUsuario = U.idUsuario";
-            $sql += "WHERE PU.idPerfil = ?";
+            $sql = "SELECT *";
+            $sql.= "FROM usuario U";
+            $sql.= "INNER JOIN perfil_usuario PU ON PU.idUsuario = U.idUsuario";
+            $sql.= "WHERE PU.idPerfil = ?";
 
             try {
                 $stm = $this->db->prepare($sql);
@@ -41,6 +41,20 @@
                 return $resultado;
             } catch (Exception $e) {
                 die ($e->getMessage());
+            }
+        }
+
+        function inativar($id){
+            $sql = "UPDATE Usuario\n";
+            $sql.= "SET Inativo = 1\n";
+            $sql.= "WHERE IdUsuario = ".$id;
+
+            try {
+                $stm = $this->db->prepare($sql);
+                $stm->execute();
+                return true;
+            } catch (Exception $e) {
+                throw $e;
             }
         }
         

@@ -71,8 +71,10 @@
         }
         
         function buscarPorId($id) {
-            $sql = "SELECT * FROM Produto \n";
-            $sql.= "WHERE IdProduto = '".$id."' OR CodigoInterno = '".$id."'";
+            $sql = "SELECT P.*, LPP.Vista, LPP.Prazo\n";
+            $sql.= "FROM Produto P\n";
+            $sql.= "INNER JOIN ListaPrecoProduto LPP ON LPP.IdProduto = P.IdProduto\n";
+            $sql.= "WHERE P.IdProduto = '".$id."' OR P.CodigoInterno = '".$id."'";
             $stm = $this->db->prepare($sql);
             $stm->execute();
             $ret = $stm->fetch();

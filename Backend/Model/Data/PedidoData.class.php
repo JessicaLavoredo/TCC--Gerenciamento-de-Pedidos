@@ -44,7 +44,7 @@
                     $stm->execute();
                     $ultimoId = intval($this->db->lastInsertId());
 
-                    $historicoPedido = New HistoricoPedido(null, $ultimoId, 1, getdate(), $entidade->getIdUsuarioMovimentacao());
+                    $historicoPedido = New HistoricoPedido(null, $ultimoId, 1, date_format(date_create(), 'Y-m-d H:m:i'), $entidade->getIdUsuarioMovimentacao());
                     (new HistoricoPedidoData())->gravar($historicoPedido);
                 }
 

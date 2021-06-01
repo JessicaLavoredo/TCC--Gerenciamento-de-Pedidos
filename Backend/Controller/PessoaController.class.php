@@ -4,17 +4,17 @@
         function buscarPorId($id){
             $classe = str_ireplace('Controller', 'Data', get_class($this));
             $pessoa = (New $classe())->buscarPorId($id);
-            $obj = get_object_vars(json_decode(json_encode($pessoa)));
+            $obj = Funcoes::objetoParaArray($pessoa);
             
             $obj["Enderecos"] = array_map(function($x){
                 $endereco = get_object_vars($x);
 
-                $categoriaEndereco = get_object_vars(json_decode(json_encode((New CategoriaEnderecoData)->buscarPorId($endereco["IdCategoriaEndereco"]))));
+                $categoriaEndereco = Funcoes::objetoParaArray((New CategoriaEnderecoData)->buscarPorId($endereco["IdCategoriaEndereco"]));
                 $endereco["CategoriaEndereco"] = $categoriaEndereco;
                 unset($endereco["IdCategoriaEndereco"]);
 
-                $cidade = get_object_vars(json_decode(json_encode((New CidadeData)->buscarPorId($endereco["IdCidade"]))));
-                $estado = get_object_vars(json_decode(json_encode((New EstadoData)->buscarPorId($cidade["IdEstado"]))));
+                $cidade = Funcoes::objetoParaArray((New CidadeData)->buscarPorId($endereco["IdCidade"]));
+                $estado = Funcoes::objetoParaArray((New EstadoData)->buscarPorId($cidade["IdEstado"]));
                 $cidade["Estado"] = $estado;
                 $endereco["Cidade"] = $cidade;
                 unset($cidade["IdEstado"]);
@@ -26,7 +26,7 @@
             $obj["Telefones"] = array_map(function($x){
                 $telefone = get_object_vars($x);
 
-                $categoriaTelefone = get_object_vars(json_decode(json_encode((New CategoriaTelefoneData)->buscarPorId($telefone["IdCategoriaTelefone"]))));
+                $categoriaTelefone = Funcoes::objetoParaArray((New CategoriaTelefoneData)->buscarPorId($telefone["IdCategoriaTelefone"]));
                 $telefone["CategoriaTelefone"] = $categoriaTelefone;
                 unset($telefone["IdCategoriaTelefone"]);
 
@@ -36,7 +36,7 @@
             $obj["Emails"] = array_map(function($x){
                 $email = get_object_vars($x);
 
-                $categoriaEmail = get_object_vars(json_decode(json_encode((New CategoriaEmailData)->buscarPorId($email["IdCategoriaEmail"]))));
+                $categoriaEmail = Funcoes::objetoParaArray((New CategoriaEmailData)->buscarPorId($email["IdCategoriaEmail"]));
                 $email["CategoriaEmail"] = $categoriaEmail;
                 unset($email["IdCategoriaEmail"]);
 
