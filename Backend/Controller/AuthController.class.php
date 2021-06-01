@@ -11,8 +11,10 @@
             $assinaturaValidaBase64Url = Funcoes::base64UrlEncode($assinaturaValida);
 
             $corpo = json_decode(Funcoes::base64UrlDecode($corpoBase64Url));
-
-            if ($assinaturaBase64Url === $assinaturaValidaBase64Url) {
+            $dataExp = date_create($corpo->exp);
+            $dataAgr = date_create();
+            
+            if ($assinaturaBase64Url === $assinaturaValidaBase64Url && $dataAgr < $dataExp) {
                 return true;
             }
 

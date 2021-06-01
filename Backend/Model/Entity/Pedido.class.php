@@ -1,10 +1,10 @@
 <?php
     class Pedido extends BaseEntity {
-        private $idPedido;
-        private $idPessoa;
-        private $idFormaPagamento;
-        private $dataPedido;
-        private $idUsuarioMovimentacao;
+        private ?int $idPedido;
+        private ?int $idPessoa;
+        private ?int $idFormaPagamento;
+        private ?string $dataPedido;
+        private ?int $idUsuarioMovimentacao;
         private Array $produtos;
         
         function getIdPedido() {return $this->idPedido;}
@@ -27,6 +27,7 @@
             $this->produtos = array();
             if(isset($produtos)){
                 foreach($produtos as $prod){
+                    $prod = Funcoes::objetoParaArray($prod);
                     $entidade = Funcoes::criarEntidade("PedidoProduto", $prod);
                     $this->addProduto($entidade);
                 }

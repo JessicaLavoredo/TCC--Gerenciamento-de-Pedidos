@@ -34,7 +34,11 @@
                 ['+', '/', '='],
                 base64_decode($string)
             );
-        }   
+        }
+        
+        static function objetoParaArray($obj){
+            return get_object_vars(json_decode(json_encode($obj)));
+        }
 
         //NOVO
         static function criarEntidade(string $classe, $objeto) {

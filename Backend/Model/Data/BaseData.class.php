@@ -106,10 +106,6 @@
             }
         }
 
-        function inativar($entidade) {
-            
-        }
-
         function buscarPorId(int $id){
             $classe = str_ireplace('Data', '', get_class($this));
             $sql = "SELECT * FROM ".$classe." WHERE Id".$classe." = ".$id;
