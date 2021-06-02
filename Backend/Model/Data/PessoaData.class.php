@@ -78,14 +78,16 @@
             $sql = "SELECT * FROM ".$classe."\n";
             $sql.= "WHERE ";
 
+            $filtros = array();
             foreach($propriedades as $prop) {
                 $getProp = 'get'.ucfirst($prop);
                 if($entidade->$getProp()) {
-                    $sql.= $prop." LIKE '%:".$prop."%'";
+                    $filtros[] = $prop." LIKE '%:".$prop."%'";
                 } else {
                     unset($propriedades[array_search($prop, $propriedades)]);
                 }
             }
+            $sql.= implode("\nAND ", $filtros);
             $sql.= "\nAND Inativo = 0";
 
             foreach($propriedades as $prop){
