@@ -12,12 +12,12 @@
                 <input type="text" class="form-control" [formControl]="queryUsuario" id="txtCodigo" name="Codigo"
                     [(ngModel)]="Usuario.IdUsuario">
             </div>
-            <button #ModalPesquisaPessoa class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
-                data-target="#ModalPesquisaPessoa">
+            <button #ModalSearchUsuario class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
+                data-target="#ModalPesquisaUsuario">
                 <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
             </button>
             <div class="form-group mt-4 col-md-1">
-                <button type="button" class="btn btn-info btnsearch " (click)='Pesquisar()'>
+                <button type="button" class="btn btn-info btnsearch " (click)='PesquisarUsuario()'>
                     <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
                 </button>
             </div>
@@ -108,7 +108,7 @@
                     </div>
                     <div class="form-group col-md-1 mt-2">
                         <label for="inputState"></label>
-                        <button class="btn btn-info btnsearch " (click)='PesquisarUsuarioPorFiltro()'>
+                        <button class="btn btn-info btnsearch " (click)='PesquisarFuncionarioPorFiltro()'>
                             Pesquisar
                         </button>
                     </div>
@@ -171,16 +171,16 @@
                 <div class="form-row mb-2">
                     <div class="form-group col-md-3">
                         <label for="inputState">Pesquisa</label>
-                        <select id="inputState" class="form-control" [(ngModel)]="FiltroPesquisa"
+                        <select id="inputState" class="form-control" [(ngModel)]="FiltroPesquisaUsuario"
                             name=" idFiltroPesquisa">
-                            <option [value]=filtro.Codigo *ngFor="let filtro of Filtros">
+                            <option [value]=filtro.Codigo *ngFor="let filtro of FiltrosUsuario">
                                 {{filtro.Descricao}}
                             </option>
                         </select>
                     </div>
                     <div class="form-group col-md-7 mt-2">
                         <label for="inputState"></label>
-                        <input class="form-control" type="text" name="search" [(ngModel)]="InputFiltroPesquisa">
+                        <input class="form-control" type="text" name="search" [(ngModel)]="InputFiltroPesquisaUsuario">
                     </div>
                     <div class="form-group col-md-1 mt-2">
                         <label for="inputState"></label>
@@ -194,22 +194,20 @@
                         <thead class="tabelas">
                             <tr>
                                 <th scope="col">Código</th>
-                                <th scope="col">Nome/RazãoSocial </th>
-                                <th scope="col">Apelido/Nome Fantasia</th>
-                                <th scope="col">CPF/CNPJ</th>
-                                <th scope="col">Genero</th>
+                                <th scope="col">Funcionario </th>
+                                <th scope="col">Login</th>
+                                <th scope="col">Perfil</th>
                                 <th scope="col">Selecionar</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let pessoa of Pessoas ">
-                                <th scope="row">{{pessoa.IdPessoa}}</th>
-                                <td>{{pessoa.NomeRazao}}</td>
-                                <td>{{pessoa.ApelidoFantasia}}</td>
-                                <td>{{pessoa.CpfCnpj}}</td>
-                                <td>{{pessoa.Genero}}</td>
+                            <tr *ngFor="let usuario of Usuarios ">
+                                <th scope="row">{{usuario.IdUsuario}}</th>
+                                <td>{{usuario.NomePessoa}}</td>
+                                <td>{{usuario.Login}}</td>
+                                <td>{{usuario.NomePerfil}}</td>
                                 <td><button class="btn btn-info btnselecionar btn-sm" data-dismiss="modal"
-                                        aria-label="Close" (click)="selecionarPessoa(pessoa)">
+                                        aria-label="Close" (click)="selecionarUsuario(usuario)">
                                         <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">
                                             done_outline</mat-icon>
                                     </button></td>

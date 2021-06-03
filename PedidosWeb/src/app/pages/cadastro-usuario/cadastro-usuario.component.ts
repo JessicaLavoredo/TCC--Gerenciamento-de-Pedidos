@@ -28,13 +28,19 @@ export class CadastroUsuarioComponent implements OnInit {
   public filter;
   Perfil: PerfilUsuario = new PerfilUsuario();
   public Pessoas: Pessoa[] = [];
+  public Usuarios: Usuario[] = [];
   @ViewChild('modalSearchPessoa') modalSearchPessoa: ElementRef;
+  @ViewChild('ModalSearchUsuario') ModalSearchUsuario: ElementRef;
   queryUsuario = new FormControl();
   queryPessoa = new FormControl();
   resultados: Observable<any>;
   FiltroPesquisa: string;
   InputFiltroPesquisa: string;
   Filtros: any[];
+  FiltroPesquisaUsuario: string;
+  InputFiltroPesquisaUsuario: string;
+  FiltrosUsuario: any[];
+
 
   constructor(private UsuarioService: UsuarioService, private PerfilUsuarioService: PerfilUsuarioService, private AlertService: AlertService, private PessoaService: PessoaService) { }
 
@@ -42,11 +48,11 @@ export class CadastroUsuarioComponent implements OnInit {
     this.listarPerfil();
     this.Limpar();
     this.PreecherComboFiltro()
+    this.PreecherComboFiltroUsuario()
   }
 
   public DepoisBuscar() {
     this.queryUsuario.valueChanges.pipe(
-      map(value => value.trim()),
       filter(value => value.length > 0),
       debounceTime(200),
       distinctUntilChanged(),
@@ -68,10 +74,6 @@ export class CadastroUsuarioComponent implements OnInit {
     this.PerfilUsuarioService.buscarTodos().subscribe(result => {
       this.Perfis = result;
     });
-  }
-
-  Pesquisar() {
-    this.modalSearch.nativeElement.click();
   }
 
   handlePageChange(event) {
@@ -98,19 +100,22 @@ export class CadastroUsuarioComponent implements OnInit {
   Limpar() {
     this.Usuario = new Usuario();
     this.NomePessoa = '';
+    this.FiltroPesquisaUsuario = "P";
     this.PesquisaReativaFuncionario();
     this.DepoisBuscar()
+
   }
 
   PesquisaReativaFuncionario() {
     this.queryPessoa.valueChanges.pipe(
-      map(value => value.trim()),
-      filter(value => value.length > 0),
       debounceTime(200),
       distinctUntilChanged(),
       switchMap(value => this.PessoaService.BuscarPorId(this.Usuario.IdPessoa)),
       map((result: any) => {
-        if (result) {
+        if (result == "Codigo Indefinido") {
+          this.NomePessoa = '';
+          this.Usuario.IdPessoa = '';
+        } else if (result) {
           this.NomePessoa = result.NomeRazao;
         }
       }
@@ -125,6 +130,17 @@ export class CadastroUsuarioComponent implements OnInit {
       let retorno: any = await this.PessoaService.BuscarPorId(this.Usuario.IdPessoa)
       if (retorno) {
         this.NomePessoa = retorno.NomeRazao;
+      }
+    }
+  }
+
+  async PesquisarUsuario() {
+    if (this.Usuario.IdUsuario == '') {
+      this.ModalSearchUsuario.nativeElement.click();
+    } else {
+      let retorno: any = await this.UsuarioService.BuscarPorId(this.Usuario.IdUsuario)
+      if (retorno) {
+        this.Usuario = retorno
       }
     }
   }
@@ -146,7 +162,26 @@ export class CadastroUsuarioComponent implements OnInit {
     ]
   }
 
-  async PesquisarUsuarioPorFiltro() {
+  public PreecherComboFiltroUsuario() {
+    this.FiltrosUsuario = [
+      {
+        Codigo: "P",
+        Descricao: "Perfil"
+      },
+      {
+        Codigo: "L",
+        Descricao: "Login"
+      },
+      {
+        Codigo: "F",
+        Descricao: "Funcionario"
+      }
+
+    ]
+  }
+
+
+  async PesquisarFuncionarioPorFiltro() {
     let pesquisa: any;
     if (this.FiltroPesquisa == "NR") {
       pesquisa = { NomeRazao: this.InputFiltroPesquisa }
@@ -155,16 +190,84 @@ export class CadastroUsuarioComponent implements OnInit {
     } else if (this.FiltroPesquisa == "C") {
       pesquisa = { CpfCnpj: this.InputFiltroPesquisa }
     } else {
-      this.AlertService.show("Selecione o filtro de Pesquisa", { classname: 'bg-warning text-light', delay: 3000 });
+      this.AlertService.show("Selecione o filtro de Pesquisa", { classname: 'bg-danger text-light', delay: 3000 });
       return
     }
     let retorno: any = await this.PessoaService.BuscarPorFiltro(pesquisa);
     this.Pessoas = retorno.resultado
   }
 
+  async PesquisarUsuarioPorFiltro() {
+    this.Usuarios = [];
+    let pesquisa: any;
+    let pesquisaPerfil: any;
+    let pesquisaFunc: any;
+    if (this.FiltroPesquisaUsuario == "P") {
+      pesquisaPerfil = { Nome: this.InputFiltroPesquisaUsuario };
+      let retornoPerfil: any = await this.UsuarioService.BuscarPerfilPorFiltro(pesquisaPerfil);
+      if (retornoPerfil.resultado[0]) {
+        pesquisa = { IdPerfil: retornoPerfil.resultado[0].IdPerfil }
+      }
+    } else if (this.FiltroPesquisaUsuario == "L") {
+      pesquisa = { Login: this.InputFiltroPesquisaUsuario }
+    } else if (this.FiltroPesquisaUsuario == "F") {
+      pesquisaFunc = { NomeRazao: this.InputFiltroPesquisaUsuario };
+      let retornoFunc: any = await this.PessoaService.BuscarPorFiltro(pesquisaFunc);
+      if (retornoFunc.resultado.length > 0) {
+        retornoFunc.resultado.forEach(async resultado => {
+          pesquisa = { IdPessoa: resultado.IdPessoa }
+          let retorno: any = await this.UsuarioService.BuscarUsuarioPorFiltro(pesquisa);
+          if (retorno.resultado[0]) {
+            let resultUsuario: any = retorno.resultado[0]
+            resultUsuario.NomePessoa = resultado.NomeRazao
+            if (retorno.resultado[0].IdPerfil == 1) {
+              resultUsuario.NomePerfil = "Administrador"
+            } else if (retorno.resultado[0].IdPerfil == 2) {
+              resultUsuario.NomePerfil = "Gerente"
+            } else if (retorno.resultado[0].IdPerfil == 3) {
+              resultUsuario.NomePerfil = "Vendedor"
+            }
+            this.Usuarios.push(resultUsuario);
+          }
+        });
+        return
+      }
+    } else {
+      this.AlertService.show("Selecione o filtro de Pesquisa", { classname: 'bg-danger text-light', delay: 3000 });
+      return
+    }
+    let retorno: any = await this.UsuarioService.BuscarUsuarioPorFiltro(pesquisa);
+    retorno.resultado.forEach(async resultado => {
+      let resultUsuario: any = resultado
+      if (resultUsuario.IdPerfil == 1) {
+        resultUsuario.NomePerfil = "Administrador"
+      } else if (resultUsuario.IdPerfil == 2) {
+        resultUsuario.NomePerfil = "Gerente"
+      } else if (resultUsuario.IdPerfil == 3) {
+        resultUsuario.NomePerfil = "Vendedor"
+      };
+      let retornoFunc: any = await this.PessoaService.BuscarPorId(resultado.IdPessoa);
+      resultUsuario.NomePessoa = retornoFunc.NomeRazao
+
+      this.Usuarios.push(resultUsuario)
+    });
+
+  }
+
   public selecionarPessoa(Pessoa: Pessoa) {
     if (Pessoa) {
       this.Usuario.IdPessoa = Pessoa.IdPessoa;
+      this.pesquisarFuncionario()
+      this.PesquisaReativaFuncionario()
+
     }
   }
+
+  public selecionarUsuario(Usuario: any) {
+    if (Usuario) {
+      this.Usuario.IdUsuario = Usuario.IdUsuario;
+    }
+  }
+
+
 }

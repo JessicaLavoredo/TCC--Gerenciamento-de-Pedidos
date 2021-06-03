@@ -66,6 +66,9 @@ export class CadastroPessoaComponent implements OnInit {
   FiltroPesquisa: string;
   InputFiltroPesquisa: string;
   Filtros: any[];
+  FiltroPesquisaCidade: string;
+  InputFiltroPesquisaCidade: string;
+  FiltrosCidade: any[];
   dataNascimento: Date;
   queryCidade = new FormControl();
   queryPessoa = new FormControl();
@@ -125,10 +128,8 @@ export class CadastroPessoaComponent implements OnInit {
     this.listarCatEmail();
     this.listarCatTelefone();
     this.listarVinculo();
-    this.ListarTodasCidades();
     this.filtros = {};
     this.ValidarUsuario()
-    this.PreecherComboFiltro();
     this.DepoisBuscar();
   }
 
@@ -183,6 +184,7 @@ export class CadastroPessoaComponent implements OnInit {
 
   public PesquisarCidade() {
     if (this.Endereco.NomeCidade == '') {
+      this.PreecherComboCidade()
       this.modalSearchCidade.nativeElement.click();
     } else {
       let CidadeRetorno = this.Cidades.filter(Cidade => Cidade.Nome == this.Endereco.NomeCidade.toLowerCase());
@@ -191,12 +193,6 @@ export class CadastroPessoaComponent implements OnInit {
         this.Endereco.NomeCidade = CidadeRetorno[0].Nome;
       }
     }
-  }
-
-  public ListarTodasCidades() {
-    this.PessoaService.buscarTodasCidades().subscribe(result => {
-      this.Cidades = result;
-    });
   }
 
   public ListarTodasPessoas() {
@@ -216,6 +212,7 @@ export class CadastroPessoaComponent implements OnInit {
     if (Pessoa) {
       this.Pessoa.IdPessoa = Pessoa.IdPessoa;
     }
+    this.Pesquisar();
   }
 
   public listarCatEndereco() {
@@ -498,6 +495,8 @@ export class CadastroPessoaComponent implements OnInit {
 
   async Pesquisar() {
     if (this.Pessoa.IdPessoa == '') {
+      this.PreecherComboFiltro();
+      this.FiltroPesquisa = "NR";
       this.modalSearchPessoa.nativeElement.click();
     } else {
       let retorno: any = await this.PessoaService.BuscarPorId(this.Pessoa.IdPessoa)
@@ -538,6 +537,7 @@ export class CadastroPessoaComponent implements OnInit {
 
 
     }
+    this.DepoisBuscar()
   }
 
   public ValidarUsuario() {
@@ -566,6 +566,24 @@ export class CadastroPessoaComponent implements OnInit {
     ]
   }
 
+  public PreecherComboCidade() {
+    this.FiltrosCidade = [
+      {
+        Codigo: "N",
+        Descricao: "Nome"
+      },
+      {
+        Codigo: "C",
+        Descricao: "Código"
+      },
+      {
+        Codigo: "CI",
+        Descricao: "Código IBGE"
+      }
+
+    ]
+  }
+
   async PesquisarUsuarioPorFiltro() {
     let pesquisa: any;
     if (this.FiltroPesquisa == "NR") {
@@ -580,6 +598,28 @@ export class CadastroPessoaComponent implements OnInit {
     }
     let retorno: any = await this.PessoaService.BuscarPorFiltro(pesquisa);
     this.Pessoas = retorno.resultado
+  }
+
+  async PesquisarCidadePorFiltro() {
+    let pesquisa: any;
+    if (this.FiltroPesquisaCidade == "N") {
+      pesquisa = { Nome: this.InputFiltroPesquisaCidade }
+    } else if (this.FiltroPesquisaCidade == "C") {
+      pesquisa = { IdCidade: this.InputFiltroPesquisaCidade }
+    } else if (this.FiltroPesquisaCidade == "CI") {
+      pesquisa = { CodigoIBGE: this.InputFiltroPesquisaCidade }
+    } else {
+      this.AlertService.show("Selecione o filtro de Pesquisa", { classname: 'bg-warning text-light', delay: 3000 });
+      return
+    }
+    let retorno: any = await this.PessoaService.BuscarCidadePorFiltro(pesquisa);
+    let Cidades: Cidade[] = retorno.resultado;
+
+    Cidades.forEach(async cidade => {
+      let retornoEstado: any = await this.PessoaService.BuscarEstadoPorId(cidade.IdEstado);
+      cidade.Estado = retornoEstado
+    });
+    this.Cidades = Cidades;
   }
 
 

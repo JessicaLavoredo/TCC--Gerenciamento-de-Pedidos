@@ -45,4 +45,42 @@ export class UsuarioService {
   public buscarTodosFuncionarios() {
     return this.http.get<Pessoa[]>('api/Pessoa/buscartodos');
   }
+
+  async BuscarUsuarioPorFiltro(Filtros: any) {
+    return new Promise(resolve => {
+      const json = JSON.stringify(Filtros);
+      this.http.post('api/Usuario/buscarPorFiltro', json).subscribe(result => {
+        let resultado = {
+          resultado: result,
+          status: 200
+        };
+        resolve(resultado);
+      }, error => {
+        let resultado = {
+          resultado: error,
+          status: 401
+        };
+        resolve(resultado);
+      });
+    })
+  }
+
+  async BuscarPerfilPorFiltro(Filtros: any) {
+    return new Promise(resolve => {
+      const json = JSON.stringify(Filtros);
+      this.http.post('api/Perfil/buscarPorFiltro', json).subscribe(result => {
+        let resultado = {
+          resultado: result,
+          status: 200
+        };
+        resolve(resultado);
+      }, error => {
+        let resultado = {
+          resultado: error,
+          status: 401
+        };
+        resolve(resultado);
+      });
+    })
+  }
 }

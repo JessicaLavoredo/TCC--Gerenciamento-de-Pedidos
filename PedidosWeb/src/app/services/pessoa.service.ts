@@ -45,10 +45,6 @@ export class PessoaService {
     })
   }
 
-  public buscarTodasCidades() {
-    return this.http.get<Cidade[]>('api/Cidade/buscartodos');
-  }
-
   public buscarTodosCatEnderecos() {
     return this.http.get<CategoriaEndereco[]>('api/CategoriaEndereco/buscartodos');
   }
@@ -84,9 +80,61 @@ export class PessoaService {
     })
   }
 
+  async BuscarCidadePorFiltro(Filtros: any) {
+    return new Promise(resolve => {
+      const json = JSON.stringify(Filtros);
+      this.http.post('api/Cidade/buscarPorFiltro', json).subscribe(result => {
+        let resultado = {
+          resultado: result,
+          status: 200
+        };
+        resolve(resultado);
+      }, error => {
+        let resultado = {
+          resultado: error,
+          status: 401
+        };
+        resolve(resultado);
+      });
+    })
+  }
+
+  async BuscarEstadoPorFiltro(Filtros: any) {
+    return new Promise(resolve => {
+      const json = JSON.stringify(Filtros);
+      this.http.post('api/Estado/buscarPorFiltro', json).subscribe(result => {
+        let resultado = {
+          resultado: result,
+          status: 200
+        };
+        resolve(resultado);
+      }, error => {
+        let resultado = {
+          resultado: error,
+          status: 401
+        };
+        resolve(resultado);
+      });
+    })
+  }
+
+
   async BuscarPorId(Codigo: String) {
     return new Promise(resolve => {
-      this.http.get('api/Pessoa/buscarPorId/' + Codigo).subscribe(result => {
+      if (!Codigo) {
+        resolve("Codigo Indefinido");
+      } else {
+        this.http.get('api/Pessoa/buscarPorId/' + Codigo).subscribe(result => {
+          resolve(result);
+        });
+      }
+
+    })
+  }
+
+  async BuscarEstadoPorId(Codigo: String) {
+    return new Promise(resolve => {
+      this.http.get('api/Estado/buscarPorId/' + Codigo).subscribe(result => {
         resolve(result);
       });
     })

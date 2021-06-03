@@ -4,12 +4,14 @@ export class Cidade {
   Nome: string;
   CodigoIBGE: string;
   Estado: Estado;
+  IdEstado: String;
 
   constructor() {
     this.IdCidade = '';
     this.Nome = '';
     this.CodigoIBGE = '';
     this.Estado = new Estado;
+    this.IdEstado = '';
   }
 }
 
