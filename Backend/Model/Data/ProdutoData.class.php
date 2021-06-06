@@ -83,5 +83,38 @@
             }
             return Funcoes::criarEntidade('Produto', $ret);
         }
+
+        function buscarPorFiltro($entidade){
+            $sql = "SELECT P.*, LPP.Vista, LPP.Prazo\n";
+            $sql.= "FROM Produto P\n";
+            $sql.= "INNER JOIN ListaPrecoProduto LPP ON LPP.IdProduto = P.IdProduto\n";
+            $sql.= "WHERE ";
+
+            $propriedades = Funcoes::getPropriedades("Produto");
+            $filtros = array();
+            foreach($propriedades as $prop) {
+                $getProp = 'get'.ucfirst($prop);
+                $valor = $entidade->$getProp();
+                if ($valor) {
+                    if ($prop === "Vista" || $prop === "Prazo") {
+                        $filtros[] = "LPP.".$prop." LIKE '%".$valor."%'";   
+                    } else {
+                        $filtros[] = "P.".$prop." LIKE '%".$valor."%'";
+                    }
+                } else {
+                    unset($propriedades[array_search($prop, $propriedades)]);
+                }
+            }
+            $sql.= implode("\nAND ", $filtros);
+
+            $stm = $this->db->prepare($sql);
+            $stm->execute();
+            $linhas = $stm->fetchAll();
+            $ret = array();
+            foreach($linhas as $linha){
+                $ret[] = Funcoes::criarEntidade("Produto", $linha);
+            }
+            return $ret;
+        }
     }
 ?>

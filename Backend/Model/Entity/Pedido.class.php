@@ -3,26 +3,21 @@
         private ?int $idPedido;
         private ?int $idPessoa;
         private ?int $idFormaPagamento;
-        private ?string $dataPedido;
-        private ?int $idUsuarioMovimentacao;
+        private ?int $idStatus;
+        private ?float $total;
         private Array $produtos;
         
         function getIdPedido() {return $this->idPedido;}
         function getIdPessoa() {return $this->idPessoa;}
         function getIdFormaPagamento() {return $this->idFormaPagamento;}
-        function getDataPedido() {return $this->dataPedido;}
-        function getIdUsuarioMovimentacao() {return $this->idUsuarioMovimentacao;}
+        function getIdStatus() {return $this->idStatus;}
+        function getTotal() {return array_reduce($this->produtos, function($total, $produto){ return $total + $produto->getPrecoFinal();}, 0.00);}
         function getProdutos() {return $this->produtos;}
 
         function setIdPedido($idPedido) {$this->idPedido = $idPedido;}
         function setIdPessoa($idPessoa) {$this->idPessoa = $idPessoa;}
         function setIdFormaPagamento($idFormaPagamento) {$this->idFormaPagamento = $idFormaPagamento;}
-        function setDataPedido($dataPedido) {$this->dataPedido = $dataPedido;}
-        function setIdUsuarioMovimentacao($idUsuarioMovimentacao) {$this->idUsuarioMovimentacao = $idUsuarioMovimentacao;}
-        
-        private function addProduto(PedidoProduto $produto){
-            $this->produtos[] = $produto;
-        }
+        function setIdStatus($idStatus) {$this->idStatus = $idStatus;}
         function setProdutos($produtos) {
             $this->produtos = array();
             if(isset($produtos)){
@@ -33,13 +28,15 @@
                 }
             }
         }
+        private function addProduto(PedidoProduto $produto){
+            $this->produtos[] = $produto;
+        }
 
-        function __construct($idPedido=null, $idPessoa=null, $idFormaPagamento=null, $dataPedido=null, $idStatusPedido=null, $idUsuarioMovimentacao=null, $produtos=null) {
+        function __construct($idPedido=null, $idPessoa=null, $idFormaPagamento=null, $idStatus=null, $produtos=null) {
             $this->setIdPedido($idPedido);
             $this->setIdPessoa($idPessoa);
             $this->setIdFormaPagamento($idFormaPagamento);
-            $this->setDataPedido($dataPedido);
-            $this->setIdUsuarioMovimentacao($idUsuarioMovimentacao);
+            $this->setIdStatus($idStatus);
             $this->setProdutos($produtos);
         }
     }

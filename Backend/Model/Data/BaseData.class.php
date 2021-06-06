@@ -125,23 +125,24 @@
             $sql = "SELECT * FROM ".$classe."\n";
             $sql.= "WHERE ";
 
+            $parametros = array();
             foreach($propriedades as $prop) {
                 $getProp = 'get'.ucfirst($prop);
                 if($entidade->$getProp()) {
-                    $sql.= $prop." LIKE '%:".$prop."%'";
+                    $parametros[] = $prop." LIKE '%".$entidade->$getProp()."%'";
                 } else {
                     unset($propriedades[array_search($prop, $propriedades)]);
                 }
             }
-
-            foreach($propriedades as $prop){
-                $getProp = 'get'.ucfirst($prop);
-                $sql = str_replace(":".$prop, $entidade->$getProp(), $sql);
-            }
+            $sql.= implode(" AND ", $parametros);
 
             $stm = $this->db->prepare($sql);
             $stm->execute();
-            $ret = $stm->fetchAll();
+            $linhas = $stm->fetchAll();
+            $ret = array();
+            foreach($linhas as $linha){
+                $ret[] = Funcoes::criarEntidade($classe, $linha);
+            }
             return $ret;
         }
 
@@ -150,7 +151,11 @@
             $sql = "SELECT * FROM ".$classe;
             $stm = $this->db->prepare($sql);
             $stm->execute();
-            $ret = $stm->fetchAll();
+            $linhas = $stm->fetchAll();
+            $ret = array();
+            foreach($linhas as $linha){
+                $ret[] = Funcoes::criarEntidade($classe, $linha);
+            }
             return $ret;
         }
 

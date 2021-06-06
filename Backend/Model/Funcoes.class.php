@@ -7,9 +7,10 @@
             return array_values($array);
         }
 
-        static function getPropriedades($classe) {
-            $propriedades = array_filter(get_class_methods($classe), function($x){if (strpos($x,'set') === 0){ return true;}});
-            $propriedades = array_map(function($x){return lcfirst(substr_replace($x,'',0,3));}, $propriedades);
+        static function getPropriedades($classe, $get = false) {
+            $metodoTipo = boolval($get) ? function($x){if (strpos($x,'get') === 0){ return true;}} : function($x){if (strpos($x,'set') === 0){ return true;}};
+            $metodos = array_filter(get_class_methods($classe), $metodoTipo);
+            $propriedades = array_map(function($x){return lcfirst(substr_replace($x,'',0,3));}, $metodos);
             return $propriedades;
         }
 
@@ -37,13 +38,22 @@
         }
         
         static function objetoParaArray($obj){
-            return get_object_vars(json_decode(json_encode($obj)));
+            switch (strtoupper(gettype($obj))){
+                case "OBJECT":
+                    return get_object_vars(json_decode(json_encode($obj)));
+                    break;
+                case "NULL":
+                    return null;
+                    break;
+                default:
+                    return $obj;
+            }
         }
 
         //NOVO
         static function criarEntidade(string $classe, $objeto) {
             $entidade = New $classe();            
-            if ($objeto === null){
+            if ($objeto === null || $objeto === false){
                 return $entidade;
             }
 

@@ -10,6 +10,8 @@
 
     date_default_timezone_set('America/Sao_Paulo');
 
+    $GLOBALS['$USUARIO_LOGADO'] = null;
+
     try {
 
         // Valida se existe um caminho na requisição e se possui ao menos 2 parametros Controller e Método
@@ -49,7 +51,7 @@
 
         $cabecalhos = array_change_key_case(apache_request_headers(), CASE_UPPER);
         if (!isset($cabecalhos['AUTHORIZATION'])){
-            http_response_code(400);
+            http_response_code(401);
             return;
         }
 
@@ -69,6 +71,7 @@
     }
 
     if (is_null($retorno)) {
+        http_response_code(404);
         return;
     }
     $ret = json_encode($retorno);

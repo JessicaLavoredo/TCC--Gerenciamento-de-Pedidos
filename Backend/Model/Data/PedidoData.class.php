@@ -11,45 +11,33 @@
 
                 if ($entidade->getIdPedido() > 0) {
                     $sql = "UPDATE Pedido\n";
-                    $sql .= "SET ";
-                    foreach($propriedadesPedido as $prop) {
-                        $sql.= $prop." = :".$prop.", ";
-                    }
-                    $sql = substr_replace($sql, "\n", -2);
-                    $sql.= "WHERE IdPedido = :IdPedido";
+                    $sql.= "SET IdFormaPagamento=".$entidade->getIdFormaPagamento().", Total=".$entidade->getTotal();
+                    $sql.= "WHERE IdPedido = ".$entidade->getIdPedido();
 
                     $stm = $this->prepare($sql);
-                    $stm->bindValue(":IdPedido", $entidade->getIdPedido());
-                    foreach($propriedadesPedido as $prop){
-                        $get = "get".$prop;
-                        $stm->bindValue(":".$prop, $entidade->$get());
-                    }
                     $stm->execute();
                     $ultimoId = $entidade->getIdPedido();
                 } else {
-                    $sql = "INSERT INTO Pedido (".join(", ", $propriedadesPedido).", IdUsuarioCriadoPor".")\n";
+                    $sql = "INSERT INTO Pedido (IdPessoa, IdFormaPagamento, Total, IdUsuarioCriadoPor, DataCriacao)\n";
                     $sql.= "VALUES (";
-                    foreach($propriedadesPedido as $prop){
-                        $sql.= ":".$prop.", ";
-                    }
-                    $sql.= ":IdUsuarioMovimentacao, ";
-                    $sql = substr_replace($sql,")\n",-2);
+                    $valores[] = $entidade->getIdPessoa();
+                    $valores[] = $entidade->getIdFormaPagamento();
+                    $valores[] = $entidade->getTotal();
+                    $valores[] = $GLOBALS['$USUARIO_LOGADO'];
+                    $valores[] = "'".date_format(date_create(), 'Y-m-d H:i:s')."'";
+                    $sql.= implode(", ", $valores);
+                    $sql.= ")";
 
                     $stm = $this->db->prepare($sql);
-                    $stm->bindValue(":IdUsuarioMovimentacao", $entidade->getIdUsuarioMovimentacao());
-                    foreach($propriedadesPedido as $prop){
-                        $get = "get".$prop;
-                        $stm->bindValue(":".$prop, $entidade->$get());
-                    }
                     $stm->execute();
                     $ultimoId = intval($this->db->lastInsertId());
 
-                    $historicoPedido = New HistoricoPedido(null, $ultimoId, 1, date_format(date_create(), 'Y-m-d H:m:i'), $entidade->getIdUsuarioMovimentacao());
+                    $historicoPedido = New HistoricoPedido(null, $ultimoId, 1, date_format(date_create(), 'Y-m-d H:i:s'), $GLOBALS['$USUARIO_LOGADO']);
                     (new HistoricoPedidoData())->gravar($historicoPedido);
                 }
 
-                (new PedidoProdutoData())->deletarTodosPorIdPedido($ultimoId);
                 $pedidoProdutoData = new PedidoProdutoData();
+                $pedidoProdutoData->deletarTodosPorIdPedido($ultimoId);
                 $produtos = $entidade->getProdutos();
                 if(count($produtos) > 0 ){
                     foreach($produtos as $produto){
@@ -63,6 +51,32 @@
             }catch (Exception $e){
                 return "Erro ao gravar no banco.";
             }
+        }
+
+        function buscarPorId($id) {
+            $sql = "SELECT * FROM Pedido\n";
+            $sql.= "WHERE IdPedido = ".$id;
+            
+            $stm = $this->db->prepare($sql);
+            $stm->execute();
+            $pedido = $stm->fetch();
+            if (!$pedido){
+                return;
+            }
+            $pedido = Funcoes::criarEntidade("Pedido", $pedido);
+
+            // $sql = "SELECT * FROM HistoricoPedido\n";
+            // $sql.= "WHERE IdPedido = ".$id."\n";
+            // $sql.= "ORDER BY DataMovimentacao DESC";
+            // $stm = $this->db->prepare($sql);
+            // $stm->execute();
+            // $status = $stm->fetchAll();
+            // $pedido->setStatus($status);
+
+            $pedidoProdutos = (New PedidoProdutoData())->buscarTodosPorIdPedido($id);
+            $pedido->setProdutos($pedidoProdutos);
+
+            return $pedido;
         }
     }
 ?>

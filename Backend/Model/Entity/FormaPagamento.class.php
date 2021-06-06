@@ -1,8 +1,8 @@
 <?php
     class FormaPagamento extends BaseEntity {
 
-        private $idFormaPagamento;
-        private $descritivo;
+        private ?int $idFormaPagamento;
+        private ?string $descritivo;
         
         function getIdFormaPagamento() {return $this->idFormaPagamento;}
         function getDescritivo() {return $this->descritivo;}

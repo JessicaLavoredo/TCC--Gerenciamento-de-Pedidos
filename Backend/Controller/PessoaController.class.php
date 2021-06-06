@@ -4,6 +4,9 @@
         function buscarPorId($id){
             $classe = str_ireplace('Controller', 'Data', get_class($this));
             $pessoa = (New $classe())->buscarPorId($id);
+            if (!isset($pessoa)){
+                return;
+            }
             $obj = Funcoes::objetoParaArray($pessoa);
             
             $obj["Enderecos"] = array_map(function($x){

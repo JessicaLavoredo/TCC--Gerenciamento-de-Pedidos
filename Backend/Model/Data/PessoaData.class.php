@@ -98,6 +98,7 @@
             $stm = $this->db->prepare($sql);
             $stm->execute();
             $linhas = $stm->fetchAll();
+            $ret = array();
             foreach($linhas as $linha){
                 $ret[] = Funcoes::criarEntidade("Pessoa", $linha);
             }

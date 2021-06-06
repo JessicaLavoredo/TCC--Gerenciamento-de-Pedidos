@@ -4,7 +4,7 @@
         
         public function jsonSerialize()
         {
-            $propriedades = Funcoes::getPropriedades($this);
+            $propriedades = Funcoes::getPropriedades($this, true);
 
             foreach($propriedades as $prop) {
                 $get = "get".ucfirst($prop);

@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 14-Mar-2021 às 19:11
+-- Tempo de geração: 06-Jun-2021 às 19:56
 -- Versão do servidor: 10.4.11-MariaDB
 -- versão do PHP: 7.4.2
 
@@ -30,19 +30,20 @@ SET time_zone = "+00:00";
 
 CREATE TABLE `categoriaemail` (
   `IdCategoriaEmail` int(11) NOT NULL,
-  `Nome` varchar(45) DEFAULT NULL,
-  `Descricao` varchar(45) DEFAULT NULL
+  `Nome` varchar(50) DEFAULT NULL,
+  `Descricao` varchar(100) DEFAULT NULL,
+  `CategoriaEmailcol` varchar(45) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `categoriaemail`
 --
 
-INSERT INTO `categoriaemail` (`IdCategoriaEmail`, `Nome`, `Descricao`) VALUES
-(1, 'Padrão', NULL),
-(2, 'Cobrança', NULL),
-(3, 'Nota Fiscal', NULL),
-(4, 'Financeiro', NULL);
+INSERT INTO `categoriaemail` (`IdCategoriaEmail`, `Nome`, `Descricao`, `CategoriaEmailcol`) VALUES
+(1, 'Padrão', NULL, NULL),
+(2, 'Cobrança', NULL, NULL),
+(3, 'Nota Fiscal', NULL, NULL),
+(4, 'Financeiro', NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -52,8 +53,8 @@ INSERT INTO `categoriaemail` (`IdCategoriaEmail`, `Nome`, `Descricao`) VALUES
 
 CREATE TABLE `categoriaendereco` (
   `IdCategoriaEndereco` int(11) NOT NULL,
-  `Nome` varchar(45) DEFAULT NULL,
-  `Descricao` varchar(45) DEFAULT NULL
+  `Nome` varchar(50) DEFAULT NULL,
+  `Descricao` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -73,8 +74,8 @@ INSERT INTO `categoriaendereco` (`IdCategoriaEndereco`, `Nome`, `Descricao`) VAL
 
 CREATE TABLE `categoriatelefone` (
   `IdCategoriaTelefone` int(11) NOT NULL,
-  `Nome` varchar(45) DEFAULT NULL,
-  `Descricao` varchar(45) DEFAULT NULL
+  `Nome` varchar(50) DEFAULT NULL,
+  `Descricao` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -5690,7 +5691,7 @@ INSERT INTO `cidade` (`IdCidade`, `Nome`, `CodigoIBGE`, `IdEstado`) VALUES
 CREATE TABLE `email` (
   `IdEmail` bigint(20) NOT NULL,
   `IdPessoa` bigint(20) NOT NULL,
-  `Endereco` varchar(45) DEFAULT NULL,
+  `Endereco` varchar(100) DEFAULT NULL,
   `IdCategoriaEmail` int(11) NOT NULL,
   `Observacao` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -5724,7 +5725,7 @@ CREATE TABLE `estado` (
   `Nome` varchar(50) DEFAULT NULL,
   `Sigla` char(2) DEFAULT NULL,
   `Regiao` varchar(45) DEFAULT NULL,
-  `CodigoIBGE` varchar(45) DEFAULT NULL
+  `CodigoIBGE` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -5732,33 +5733,33 @@ CREATE TABLE `estado` (
 --
 
 INSERT INTO `estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUES
-(1, 'RONDÔNIA', 'RO', 'NORTE', '11'),
-(2, 'ACRE', 'AC', 'NORTE', '12'),
-(3, 'AMAZONAS', 'AM', 'NORTE', '13'),
-(4, 'RORAIMA', 'RR', 'NORTE', '14'),
-(5, 'PARÁ', 'PA', 'NORTE', '15'),
-(6, 'AMAPÁ', 'AM', 'NORTE', '16'),
-(7, 'TOCANTINS', 'TO', 'NORTE', '17'),
-(8, 'MARANHÃO', 'MA', 'NORDESTE', '21'),
-(9, 'PIAUÍ', 'PI', 'NORDESTE', '22'),
-(10, 'CEARÁ', 'CE', 'NORDESTE', '23'),
-(11, 'RIO GRANDE DO NORTE', 'RN', 'NORDESTE', '24'),
-(12, 'PARAÍBA', 'PB', 'NORDESTE', '25'),
-(13, 'PERNAMBUCO', 'PE', 'NORDESTE', '26'),
-(14, 'ALAGOAS', 'AL', 'NORDESTE', '27'),
-(15, 'SERGIPE', 'SE', 'NORDESTE', '28'),
-(16, 'BAHIA', 'BA', 'NORDESTE', '29'),
-(17, 'MINAS GERAIS', 'MG', 'SUDESTE', '31'),
-(18, 'ESPÍRITO SANTO', 'ES', 'SUDESTE', '32'),
-(19, 'RIO DE JANEIRO', 'RJ', 'SUDESTE', '33'),
-(20, 'SÃO PAULO', 'SP', 'SUDESTE', '35'),
-(21, 'PARANÁ', 'PR', 'SUL', '41'),
-(22, 'SANTA CATARINA', 'SC', 'SUL', '42'),
-(23, 'RIO GRANDE DO SUL', 'RS', 'SUL', '43'),
-(24, 'MATO GROSSO DO SUL', 'MS', 'CENTRO-OESTE', '50'),
-(25, 'MATO GROSSO', 'MT', 'CENTRO-OESTE', '51'),
-(26, 'GOIÁS', 'GO', 'CENTRO-OESTE', '52'),
-(27, 'DISTRITO FEDERAL', 'DF', 'CENTRO-OESTE', '53');
+(1, 'RONDÔNIA', 'RO', 'NORTE', 11),
+(2, 'ACRE', 'AC', 'NORTE', 12),
+(3, 'AMAZONAS', 'AM', 'NORTE', 13),
+(4, 'RORAIMA', 'RR', 'NORTE', 14),
+(5, 'PARÁ', 'PA', 'NORTE', 15),
+(6, 'AMAPÁ', 'AM', 'NORTE', 16),
+(7, 'TOCANTINS', 'TO', 'NORTE', 17),
+(8, 'MARANHÃO', 'MA', 'NORDESTE', 21),
+(9, 'PIAUÍ', 'PI', 'NORDESTE', 22),
+(10, 'CEARÁ', 'CE', 'NORDESTE', 23),
+(11, 'RIO GRANDE DO NORTE', 'RN', 'NORDESTE', 24),
+(12, 'PARAÍBA', 'PB', 'NORDESTE', 25),
+(13, 'PERNAMBUCO', 'PE', 'NORDESTE', 26),
+(14, 'ALAGOAS', 'AL', 'NORDESTE', 27),
+(15, 'SERGIPE', 'SE', 'NORDESTE', 28),
+(16, 'BAHIA', 'BA', 'NORDESTE', 29),
+(17, 'MINAS GERAIS', 'MG', 'SUDESTE', 31),
+(18, 'ESPÍRITO SANTO', 'ES', 'SUDESTE', 32),
+(19, 'RIO DE JANEIRO', 'RJ', 'SUDESTE', 33),
+(20, 'SÃO PAULO', 'SP', 'SUDESTE', 35),
+(21, 'PARANÁ', 'PR', 'SUL', 41),
+(22, 'SANTA CATARINA', 'SC', 'SUL', 42),
+(23, 'RIO GRANDE DO SUL', 'RS', 'SUL', 43),
+(24, 'MATO GROSSO DO SUL', 'MS', 'CENTRO-OESTE', 50),
+(25, 'MATO GROSSO', 'MT', 'CENTRO-OESTE', 51),
+(26, 'GOIÁS', 'GO', 'CENTRO-OESTE', 52),
+(27, 'DISTRITO FEDERAL', 'DF', 'CENTRO-OESTE', 53);
 
 -- --------------------------------------------------------
 
@@ -5768,7 +5769,7 @@ INSERT INTO `estado` (`IdEstado`, `Nome`, `Sigla`, `Regiao`, `CodigoIBGE`) VALUE
 
 CREATE TABLE `formapagamento` (
   `IdFormaPagamento` int(11) NOT NULL,
-  `Descritivo` varchar(45) DEFAULT NULL
+  `Descritivo` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -5776,7 +5777,17 @@ CREATE TABLE `formapagamento` (
 --
 
 INSERT INTO `formapagamento` (`IdFormaPagamento`, `Descritivo`) VALUES
-(1, 'A vista');
+(1, 'A Vista'),
+(2, 'A Prazo 1x - 7 dias'),
+(3, 'A Prazo 1x - 15 dias'),
+(4, 'A Prazo 2x - 15 30 dias'),
+(5, 'A Prazo 3x - 15 30 45 dias'),
+(6, 'A Prazo 4x - 15 30 45 60 dias'),
+(7, 'A Prazo 5x - 15 30 45 60 75 dias'),
+(8, 'A Prazo 6x - 15 30 45 60 75 90 dias'),
+(9, 'A Prazo 1x - 30 dias'),
+(10, 'A Prazo 2x - 30 60 dias'),
+(11, 'A Prazo 3x - 30 60 90 dias');
 
 -- --------------------------------------------------------
 
@@ -5800,15 +5811,18 @@ CREATE TABLE `historicopedido` (
 
 CREATE TABLE `listapreco` (
   `IdListaPreco` int(11) NOT NULL,
-  `Descritivo` varchar(45) DEFAULT NULL
+  `Descritivo` varchar(50) DEFAULT NULL,
+  `ValidadeInicio` datetime DEFAULT NULL,
+  `ValidadeFim` datetime DEFAULT NULL,
+  `IdEstado` int(11) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `listapreco`
 --
 
-INSERT INTO `listapreco` (`IdListaPreco`, `Descritivo`) VALUES
-(1, 'Padrão');
+INSERT INTO `listapreco` (`IdListaPreco`, `Descritivo`, `ValidadeInicio`, `ValidadeFim`, `IdEstado`) VALUES
+(1, 'Padrão', NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -5823,6 +5837,30 @@ CREATE TABLE `listaprecoproduto` (
   `Vista` decimal(18,5) DEFAULT NULL,
   `Prazo` decimal(18,5) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `listaprecoproduto`
+--
+
+INSERT INTO `listaprecoproduto` (`IdListaPrecoProduto`, `IdListaPreco`, `IdProduto`, `Vista`, `Prazo`) VALUES
+(1, 1, 1, '42.85000', '45.11000'),
+(2, 1, 2, '46.25000', '48.66000'),
+(3, 1, 3, '48.58000', '51.10000'),
+(4, 1, 4, '53.87000', '56.70000'),
+(5, 1, 5, '49.14000', '51.73000'),
+(6, 1, 6, '52.42000', '55.18000'),
+(7, 1, 7, '57.44000', '60.47000'),
+(8, 1, 8, '61.75000', '65.01000'),
+(9, 1, 9, '52.42000', '55.18000'),
+(10, 1, 10, '57.44000', '60.47000'),
+(11, 1, 11, '89.53000', '94.25000'),
+(12, 1, 12, '116.04000', '122.15000'),
+(13, 1, 13, '80.11000', '84.33000'),
+(14, 1, 14, '69.46000', '73.12000'),
+(15, 1, 15, '52.08000', '54.93000'),
+(16, 1, 16, '62.62000', '65.93000'),
+(17, 1, 17, '86.78000', '91.35000'),
+(18, 1, 18, '98.27000', '108.45000');
 
 -- --------------------------------------------------------
 
@@ -5843,7 +5881,35 @@ CREATE TABLE `parcela` (
 --
 
 INSERT INTO `parcela` (`IdParcela`, `Ordem`, `Dias`, `Peso`, `IdFormaPagamento`) VALUES
-(1, 1, 1, '100.00000', 1);
+(1, 1, 1, '100.00000', 1),
+(2, 1, 7, '100.00000', 2),
+(3, 1, 15, '100.00000', 3),
+(4, 1, 15, '50.00000', 4),
+(5, 2, 30, '50.00000', 4),
+(6, 1, 15, '33.33000', 5),
+(7, 2, 30, '33.33000', 5),
+(8, 3, 45, '33.34000', 5),
+(9, 1, 15, '25.00000', 6),
+(10, 2, 30, '25.00000', 6),
+(11, 3, 45, '25.00000', 6),
+(12, 4, 60, '25.00000', 6),
+(13, 1, 15, '20.00000', 7),
+(14, 2, 30, '20.00000', 7),
+(15, 3, 45, '20.00000', 7),
+(16, 4, 60, '20.00000', 7),
+(17, 5, 75, '20.00000', 7),
+(18, 1, 15, '16.66000', 8),
+(19, 2, 30, '16.66000', 8),
+(20, 3, 45, '16.66000', 8),
+(21, 4, 60, '16.66000', 8),
+(22, 5, 75, '16.66000', 8),
+(23, 6, 90, '16.70000', 8),
+(24, 1, 30, '100.00000', 9),
+(25, 1, 30, '50.00000', 10),
+(26, 2, 60, '50.00000', 10),
+(27, 1, 30, '33.33000', 11),
+(28, 2, 60, '33.33000', 11),
+(29, 3, 90, '33.34000', 11);
 
 -- --------------------------------------------------------
 
@@ -5856,7 +5922,7 @@ CREATE TABLE `pedido` (
   `IdPessoa` bigint(20) NOT NULL,
   `IdFormaPagamento` int(11) NOT NULL,
   `IdUsuarioCriadoPor` bigint(20) NOT NULL,
-  `DataPedido` datetime DEFAULT NULL,
+  `DataCriacao` datetime DEFAULT NULL,
   `Total` decimal(18,5) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -5872,8 +5938,7 @@ CREATE TABLE `pedidoproduto` (
   `IdProduto` bigint(20) NOT NULL,
   `Preco` decimal(18,5) DEFAULT NULL,
   `Quantidade` int(11) DEFAULT NULL,
-  `Desconto` decimal(18,5) DEFAULT NULL,
-  `PedidoProdutocol` varchar(45) DEFAULT NULL
+  `Desconto` decimal(18,5) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
@@ -5884,7 +5949,7 @@ CREATE TABLE `pedidoproduto` (
 
 CREATE TABLE `perfil` (
   `IdPerfil` int(11) NOT NULL,
-  `Nome` varchar(45) DEFAULT NULL
+  `Nome` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -5906,13 +5971,13 @@ INSERT INTO `perfil` (`IdPerfil`, `Nome`) VALUES
 CREATE TABLE `pessoa` (
   `IdPessoa` bigint(20) NOT NULL,
   `TipoPessoa` char(1) DEFAULT NULL,
-  `NomeRazao` varchar(45) DEFAULT NULL,
-  `ApelidoFantasia` varchar(45) DEFAULT NULL,
+  `NomeRazao` varchar(100) DEFAULT NULL,
+  `ApelidoFantasia` varchar(100) DEFAULT NULL,
   `CPFCNPJ` varchar(14) DEFAULT NULL,
   `RGInscricao` varchar(14) DEFAULT NULL,
   `DataNascimento` date DEFAULT NULL,
   `Genero` char(1) DEFAULT NULL,
-  `Inativo` bit(1) DEFAULT NULL,
+  `Inativo` bit(1) DEFAULT b'0',
   `DataInclusao` datetime DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -5921,7 +5986,8 @@ CREATE TABLE `pessoa` (
 --
 
 INSERT INTO `pessoa` (`IdPessoa`, `TipoPessoa`, `NomeRazao`, `ApelidoFantasia`, `CPFCNPJ`, `RGInscricao`, `DataNascimento`, `Genero`, `Inativo`, `DataInclusao`) VALUES
-(1, 'F', 'Administrador', 'Administrador', NULL, NULL, NULL, 'M', b'0', NULL);
+(1, 'F', 'Administrador', 'Administrador', NULL, NULL, NULL, 'M', b'0', NULL),
+(2, 'F', 'João Victor Rodrigues', NULL, '44776646803', '441954625', '1997-01-17', 'M', b'0', '2021-06-06 00:00:00');
 
 -- --------------------------------------------------------
 
@@ -5931,11 +5997,35 @@ INSERT INTO `pessoa` (`IdPessoa`, `TipoPessoa`, `NomeRazao`, `ApelidoFantasia`, 
 
 CREATE TABLE `produto` (
   `IdProduto` bigint(20) NOT NULL,
-  `NomeTecnico` varchar(45) DEFAULT NULL,
-  `NomeComercial` varchar(45) DEFAULT NULL,
+  `NomeTecnico` varchar(100) DEFAULT NULL,
+  `NomeComercial` varchar(50) DEFAULT NULL,
   `CodigoInterno` varchar(20) DEFAULT NULL,
-  `Descricao` varchar(45) DEFAULT NULL
+  `Descricao` varchar(300) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `produto`
+--
+
+INSERT INTO `produto` (`IdProduto`, `NomeTecnico`, `NomeComercial`, `CodigoInterno`, `Descricao`) VALUES
+(1, 'Gaiola de Pinus e Arame Nº 1', 'Gaiola Pinus N1', '1P', 'Gaiola abaulada com arcos e laterais em pinus e grade em arame retrefilado.'),
+(2, 'Gaiola de Pinus e Arame Nº 2', 'Gaiola Pinus N2', '2P', 'Gaiola abaulada com arcos e laterais em pinus e grade em arame retrefilado.'),
+(3, 'Gaiola de Pinus e Arame Nº 3', 'Gaiola Pinus N3', '3P', 'Gaiola abaulada com arcos e laterais em pinus e grade em arame retrefilado.'),
+(4, 'Gaiola de Pinus e Arame Nº 4', 'Gaiola Pinus N4', '4P', 'Gaiola abaulada com arcos e laterais em pinus e grade em arame retrefilado.'),
+(5, 'Gaiola de Eucalipto e Arame Nº 2', 'Gaiola Eucalipto N2', '2EU', 'Gaiola abaulada com arcos em pinus, laterais em eucalipto e grade em arame retrefilado.'),
+(6, 'Gaiola de Eucalipto e Arame Nº 3', 'Gaiola Eucalipto N3', '3EU', 'Gaiola abaulada com arcos em pinus, laterais em eucalipto e grade em arame retrefilado.'),
+(7, 'Gaiola de Eucalipto e Arame Nº 4', 'Gaiola Eucalipto N4', '4EU', 'Gaiola abaulada com arcos em pinus, laterais em eucalipto e grade em arame retrefilado.'),
+(8, 'Gaiola de Eucalipto e Arame Nº 5', 'Gaiola Eucalipto N5', '5EU', 'Gaiola abaulada com arcos em pinus, laterais em eucalipto e grade em arame retrefilado.'),
+(9, 'Gaiola de Pinus Tingida e Arame Nº 3', 'Gaiola Tingida N3', '3TG', 'Gaiola abaulada com arcos em pinus, laterais em pinus tingido e grade em arame retrefilado.'),
+(10, 'Gaiola de Pinus Tingida e Arame Nº 4', 'Gaiola Tingida N4', '4TG', 'Gaiola abaulada com arcos em pinus, laterais em pinus tingido e grade em arame retrefilado.'),
+(11, 'Gaiola de Pinus Filetada e Arame Nº 5', 'Gaiola Filetada N5', '5FT', 'Gaiola abaulada com arcos em pinus, laterais em pinus filetado e grade em arame retrefilado.'),
+(12, 'Gaiola de Eucalipto e Fibra para Sabiá', 'Gaiola Sabiá Eucalipto (Fibra)', 'SB', 'Gaiola arqueada com arcos em pinus, laterais em eucalipto e grade em varetas de fibra de vidro.'),
+(13, 'Gaiola de Eucalipto e Fibra para Picharro', 'Gaiola Picharro Eucalipto (Fibra)', 'PXEU', 'Gaiola arqueada com arcos em pinus, laterais em eucalipto e grade em varetas de fibra de vidro.'),
+(14, 'Gaiola de Pinus Tingido em Preto para Picharro', 'Gaiola Picharro Preta (Fibra)', 'PXP', 'Gaiola arqueada com arcos em pinus, laterais em pinus tingido em preto e grade em varetas de fibra de vidro.'),
+(15, 'Gaiola de Pinus e Arame para Coleira', 'Gaiola Coleira Pinus', 'CL', 'Gaiola arqueada com arcos e laterais em pinus e grade em arame retrefilado.'),
+(16, 'Gaiola de Eucalipto e Arame para Coleira', 'Gaiola Coleira Eucalipto', 'CLEU', 'Gaiola arqueada com arcos em pinus, laterais em eucalipto e grade em arame retrfilado.'),
+(17, 'Gaiola de Eucalipto e Arame para Criação de Coleira', 'Gaiola Criadeira Coleira Eucalipto', 'CRCL', 'Gaiola retangular com estrutura em pinus, laterais em eucalipto e grade em arame retrefilado.'),
+(18, 'Gaiola de Eucalipto e Arame para Criação de Canário', 'Gaiola Criadeira Canário Eucalipto', 'CRCN', 'Gaiola retangular com estrutura em pinus, laterais em eucalipto e grade em arame retrefilado.');
 
 -- --------------------------------------------------------
 
@@ -5945,8 +6035,8 @@ CREATE TABLE `produto` (
 
 CREATE TABLE `statuspedido` (
   `IdStatusPedido` bigint(20) NOT NULL,
-  `Nome` varchar(45) DEFAULT NULL,
-  `Descricao` varchar(45) DEFAULT NULL
+  `Nome` varchar(50) DEFAULT NULL,
+  `Descricao` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -5955,7 +6045,7 @@ CREATE TABLE `statuspedido` (
 
 INSERT INTO `statuspedido` (`IdStatusPedido`, `Nome`, `Descricao`) VALUES
 (1, 'Aberto', 'Pedido aberto para edição.'),
-(2, 'Separação', 'Pedido fechado para edição, em processo de se'),
+(2, 'Separação', 'Pedido fechado para edição, em processo de separação para entrega.'),
 (3, 'Cancelado', 'Pedido cancelado.'),
 (4, 'Entregue', 'Pedido entregue.');
 
@@ -5985,8 +6075,9 @@ CREATE TABLE `telefone` (
 CREATE TABLE `usuario` (
   `IdUsuario` bigint(20) NOT NULL,
   `IdPessoa` bigint(20) NOT NULL,
-  `Login` varchar(15) DEFAULT NULL,
-  `Senha` varchar(45) DEFAULT NULL,
+  `Login` varchar(20) DEFAULT NULL,
+  `Senha` varchar(50) DEFAULT NULL,
+  `Inativo` bit(1) DEFAULT b'0',
   `IdPerfil` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
@@ -5994,8 +6085,9 @@ CREATE TABLE `usuario` (
 -- Extraindo dados da tabela `usuario`
 --
 
-INSERT INTO `usuario` (`IdUsuario`, `IdPessoa`, `Login`, `Senha`, `IdPerfil`) VALUES
-(1, 1, 'Admin', 'Admin', 1);
+INSERT INTO `usuario` (`IdUsuario`, `IdPessoa`, `Login`, `Senha`, `Inativo`, `IdPerfil`) VALUES
+(1, 1, 'Admin', 'Admin', b'0', 1),
+(2, 2, '44776646803', 'Teste321', b'0', 2);
 
 -- --------------------------------------------------------
 
@@ -6005,7 +6097,7 @@ INSERT INTO `usuario` (`IdUsuario`, `IdPessoa`, `Login`, `Senha`, `IdPerfil`) VA
 
 CREATE TABLE `vinculo` (
   `IdVinculo` int(11) NOT NULL,
-  `Nome` varchar(45) DEFAULT NULL
+  `Nome` varchar(50) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
@@ -6029,6 +6121,14 @@ CREATE TABLE `vinculopessoa` (
   `IdVinculo` int(11) NOT NULL,
   `IdPessoa` bigint(20) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `vinculopessoa`
+--
+
+INSERT INTO `vinculopessoa` (`IdVinculoPessoa`, `IdVinculo`, `IdPessoa`) VALUES
+(1, 1, 1),
+(2, 1, 2);
 
 --
 -- Índices para tabelas despejadas
@@ -6101,7 +6201,8 @@ ALTER TABLE `historicopedido`
 -- Índices para tabela `listapreco`
 --
 ALTER TABLE `listapreco`
-  ADD PRIMARY KEY (`IdListaPreco`);
+  ADD PRIMARY KEY (`IdListaPreco`),
+  ADD KEY `fk_ListaPreco_Estado1` (`IdEstado`);
 
 --
 -- Índices para tabela `listaprecoproduto`
@@ -6233,7 +6334,7 @@ ALTER TABLE `endereco`
 -- AUTO_INCREMENT de tabela `formapagamento`
 --
 ALTER TABLE `formapagamento`
-  MODIFY `IdFormaPagamento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `IdFormaPagamento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT de tabela `historicopedido`
@@ -6251,13 +6352,13 @@ ALTER TABLE `listapreco`
 -- AUTO_INCREMENT de tabela `listaprecoproduto`
 --
 ALTER TABLE `listaprecoproduto`
-  MODIFY `IdListaPrecoProduto` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `IdListaPrecoProduto` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT de tabela `parcela`
 --
 ALTER TABLE `parcela`
-  MODIFY `IdParcela` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `IdParcela` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT de tabela `pedido`
@@ -6281,13 +6382,13 @@ ALTER TABLE `perfil`
 -- AUTO_INCREMENT de tabela `pessoa`
 --
 ALTER TABLE `pessoa`
-  MODIFY `IdPessoa` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `IdPessoa` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de tabela `produto`
 --
 ALTER TABLE `produto`
-  MODIFY `IdProduto` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `IdProduto` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT de tabela `statuspedido`
@@ -6305,7 +6406,7 @@ ALTER TABLE `telefone`
 -- AUTO_INCREMENT de tabela `usuario`
 --
 ALTER TABLE `usuario`
-  MODIFY `IdUsuario` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `IdUsuario` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT de tabela `vinculo`
@@ -6317,7 +6418,7 @@ ALTER TABLE `vinculo`
 -- AUTO_INCREMENT de tabela `vinculopessoa`
 --
 ALTER TABLE `vinculopessoa`
-  MODIFY `IdVinculoPessoa` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `IdVinculoPessoa` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- Restrições para despejos de tabelas
@@ -6351,6 +6452,12 @@ ALTER TABLE `historicopedido`
   ADD CONSTRAINT `fk_Historico_Pedido_Pedido1` FOREIGN KEY (`IdPedido`) REFERENCES `pedido` (`IdPedido`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_Historico_Pedido_Status_Pedido1` FOREIGN KEY (`IdStatusPedido`) REFERENCES `statuspedido` (`IdStatusPedido`) ON DELETE NO ACTION ON UPDATE NO ACTION,
   ADD CONSTRAINT `fk_Historico_Pedido_Usuario1` FOREIGN KEY (`IdUsuarioMovimentadoPor`) REFERENCES `usuario` (`IdUsuario`) ON DELETE NO ACTION ON UPDATE NO ACTION;
+
+--
+-- Limitadores para a tabela `listapreco`
+--
+ALTER TABLE `listapreco`
+  ADD CONSTRAINT `fk_ListaPreco_Estado1` FOREIGN KEY (`IdEstado`) REFERENCES `estado` (`IdEstado`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 
 --
 -- Limitadores para a tabela `listaprecoproduto`
