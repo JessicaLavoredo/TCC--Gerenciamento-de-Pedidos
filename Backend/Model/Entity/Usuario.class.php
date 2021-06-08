@@ -1,10 +1,10 @@
 <?php
     class Usuario extends BaseEntity {
-        private $idUsuario;
-        private $idPessoa;
-        private $login;
-        private $senha;
-        private $idPerfil;
+        private ?int $idUsuario;
+        private ?int $idPessoa;
+        private ?string $login;
+        private ?string $senha;
+        private ?int $idPerfil;
         
         function getIdUsuario() {return $this->idUsuario;}
         function getIdPessoa() {return $this->idPessoa;}

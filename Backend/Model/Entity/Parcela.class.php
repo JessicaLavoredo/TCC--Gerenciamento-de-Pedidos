@@ -1,10 +1,10 @@
 <?php
     class Parcela extends BaseEntity {
-        private $idParcela;
-        private $ordem;
-        private $dias;
-        private $peso;
-        private $idFormaPagamento;
+        private ?int $idParcela;
+        private ?int $ordem;
+        private ?int $dias;
+        private ?float $peso;
+        private ?int $idFormaPagamento;
         
         function getIdParcela() {return $this->idParcela;}
         function getOrdem() {return $this->ordem;}

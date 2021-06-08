@@ -11,7 +11,7 @@
         function getIdPessoa() {return $this->idPessoa;}
         function getIdFormaPagamento() {return $this->idFormaPagamento;}
         function getIdStatus() {return $this->idStatus;}
-        function getTotal() {return array_reduce($this->produtos, function($total, $produto){ return $total + $produto->getPrecoFinal();}, 0.00);}
+        function getTotal() {return array_reduce($this->produtos, function($total, $produto){ return $total + ($produto->getPrecoFinal() * $produto->getQuantidade());}, 0.00);}
         function getProdutos() {return $this->produtos;}
 
         function setIdPedido($idPedido) {$this->idPedido = $idPedido;}

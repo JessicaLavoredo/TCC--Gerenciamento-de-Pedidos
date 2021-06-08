@@ -1,8 +1,8 @@
 <?php
     class CategoriaEndereco extends BaseEntity {
-        private $idCategoriaEndereco;
-        private $nome;
-        private $descricao;
+        private ?int $idCategoriaEndereco;
+        private ?string $nome;
+        private ?string $descricao;
         
         function getIdCategoriaEndereco() {return $this->idCategoriaEndereco;}
         function getNome() {return $this->nome;}

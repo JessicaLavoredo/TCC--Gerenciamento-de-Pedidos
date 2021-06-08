@@ -1,7 +1,7 @@
 <?php
     class Vinculo extends BaseEntity {
-        private $idVinculo;
-        private $nome;
+        private ?int $idVinculo;
+        private ?string $nome;
 
         function getIdVinculo() {return $this->idVinculo;}
         function getNome() {return $this->nome;}

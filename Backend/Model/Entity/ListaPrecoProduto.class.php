@@ -1,10 +1,10 @@
 <?php
     class ListaPrecoProduto extends BaseEntity {
-        private $idListaPrecoProduto;
-        private $idListaPreco;
-        private $idProduto;
-        private $vista;
-        private $prazo;
+        private ?int $idListaPrecoProduto;
+        private ?int $idListaPreco;
+        private ?int $idProduto;
+        private ?float $vista;
+        private ?float $prazo;
         
         function getIdListaPrecoProduto() {return $this->idListaPrecoProduto;}
         function getIdListaPreco() {return $this->idListaPreco;}
