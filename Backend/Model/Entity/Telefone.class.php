@@ -1,13 +1,13 @@
 <?php
     class Telefone extends BaseEntity {
-        private $idTelefone;
-        private $idPessoa;
-        private $dDI;
-        private $dDD;
-        private $numero;
-        private $ramal;
-        private $idCategoriaTelefone;
-        private $observacao;
+        private ?int $idTelefone;
+        private ?int $idPessoa;
+        private ?string $dDI;
+        private ?string $dDD;
+        private ?string $numero;
+        private ?string $ramal;
+        private ?int $idCategoriaTelefone;
+        private ?string $observacao;
         
         function getIdTelefone():?int {return $this->idTelefone;}
         function getIdPessoa():?int {return $this->idPessoa;}

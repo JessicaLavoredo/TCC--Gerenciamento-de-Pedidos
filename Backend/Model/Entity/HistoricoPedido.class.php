@@ -1,10 +1,10 @@
 <?php
     class HistoricoPedido extends BaseEntity {
-        private $idHistoricoPedido;
-        private $idPedido;
-        private $idStatusPedido;
-        private $dataMovimentacao;
-        private $idUsuarioMovimentadoPor;
+        private ?int $idHistoricoPedido;
+        private ?int $idPedido;
+        private ?int $idStatusPedido;
+        private ?string $dataMovimentacao;
+        private ?int $idUsuarioMovimentadoPor;
         
         function getIdHistoricoPedido() {return $this->idHistoricoPedido;}
         function getIdPedido() {return $this->idPedido;}

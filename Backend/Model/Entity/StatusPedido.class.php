@@ -1,8 +1,8 @@
 <?php
     class StatusPedido extends BaseEntity {
-        private $idStatusPedido;
-        private $nome;
-        private $descricao;
+        private ?int $idStatusPedido;
+        private ?string $nome;
+        private ?string $descricao;
         
         function getIdStatusPedido() {return $this->idStatusPedido;}
         function getNome() {return $this->nome;}

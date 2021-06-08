@@ -1,7 +1,7 @@
 <?php
     class Perfil extends BaseEntity {
-        private $idPerfil;
-        private $nome;
+        private ?int $idPerfil;
+        private ?string $nome;
         
         function getIdPerfil() {return $this->idPerfil;}
         function getNome() {return $this->nome;}

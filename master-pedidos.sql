@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 06-Jun-2021 às 19:56
+-- Tempo de geração: 08-Jun-2021 às 04:37
 -- Versão do servidor: 10.4.11-MariaDB
 -- versão do PHP: 7.4.2
 
@@ -31,19 +31,18 @@ SET time_zone = "+00:00";
 CREATE TABLE `categoriaemail` (
   `IdCategoriaEmail` int(11) NOT NULL,
   `Nome` varchar(50) DEFAULT NULL,
-  `Descricao` varchar(100) DEFAULT NULL,
-  `CategoriaEmailcol` varchar(45) DEFAULT NULL
+  `Descricao` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `categoriaemail`
 --
 
-INSERT INTO `categoriaemail` (`IdCategoriaEmail`, `Nome`, `Descricao`, `CategoriaEmailcol`) VALUES
-(1, 'Padrão', NULL, NULL),
-(2, 'Cobrança', NULL, NULL),
-(3, 'Nota Fiscal', NULL, NULL),
-(4, 'Financeiro', NULL, NULL);
+INSERT INTO `categoriaemail` (`IdCategoriaEmail`, `Nome`, `Descricao`) VALUES
+(1, 'Padrão', NULL),
+(2, 'Cobrança', NULL),
+(3, 'Nota Fiscal', NULL),
+(4, 'Financeiro', NULL);
 
 -- --------------------------------------------------------
 
@@ -5696,6 +5695,13 @@ CREATE TABLE `email` (
   `Observacao` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
+--
+-- Extraindo dados da tabela `email`
+--
+
+INSERT INTO `email` (`IdEmail`, `IdPessoa`, `Endereco`, `IdCategoriaEmail`, `Observacao`) VALUES
+(1, 2, 'joaojvr7@gmail.com', 1, NULL);
+
 -- --------------------------------------------------------
 
 --
@@ -5713,6 +5719,13 @@ CREATE TABLE `endereco` (
   `IdCategoriaEndereco` int(11) NOT NULL,
   `Observacao` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `endereco`
+--
+
+INSERT INTO `endereco` (`IdEndereco`, `IdPessoa`, `CEP`, `Logradouro`, `Numero`, `Bairro`, `IdCidade`, `IdCategoriaEndereco`, `Observacao`) VALUES
+(1, 2, '17207740', 'Rua José Trofino', '59', 'Jardim Carolina', 3554, 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -6000,32 +6013,33 @@ CREATE TABLE `produto` (
   `NomeTecnico` varchar(100) DEFAULT NULL,
   `NomeComercial` varchar(50) DEFAULT NULL,
   `CodigoInterno` varchar(20) DEFAULT NULL,
-  `Descricao` varchar(300) DEFAULT NULL
+  `Descricao` varchar(300) DEFAULT NULL,
+  `Inativo` bit(1) DEFAULT b'0'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Extraindo dados da tabela `produto`
 --
 
-INSERT INTO `produto` (`IdProduto`, `NomeTecnico`, `NomeComercial`, `CodigoInterno`, `Descricao`) VALUES
-(1, 'Gaiola de Pinus e Arame Nº 1', 'Gaiola Pinus N1', '1P', 'Gaiola abaulada com arcos e laterais em pinus e grade em arame retrefilado.'),
-(2, 'Gaiola de Pinus e Arame Nº 2', 'Gaiola Pinus N2', '2P', 'Gaiola abaulada com arcos e laterais em pinus e grade em arame retrefilado.'),
-(3, 'Gaiola de Pinus e Arame Nº 3', 'Gaiola Pinus N3', '3P', 'Gaiola abaulada com arcos e laterais em pinus e grade em arame retrefilado.'),
-(4, 'Gaiola de Pinus e Arame Nº 4', 'Gaiola Pinus N4', '4P', 'Gaiola abaulada com arcos e laterais em pinus e grade em arame retrefilado.'),
-(5, 'Gaiola de Eucalipto e Arame Nº 2', 'Gaiola Eucalipto N2', '2EU', 'Gaiola abaulada com arcos em pinus, laterais em eucalipto e grade em arame retrefilado.'),
-(6, 'Gaiola de Eucalipto e Arame Nº 3', 'Gaiola Eucalipto N3', '3EU', 'Gaiola abaulada com arcos em pinus, laterais em eucalipto e grade em arame retrefilado.'),
-(7, 'Gaiola de Eucalipto e Arame Nº 4', 'Gaiola Eucalipto N4', '4EU', 'Gaiola abaulada com arcos em pinus, laterais em eucalipto e grade em arame retrefilado.'),
-(8, 'Gaiola de Eucalipto e Arame Nº 5', 'Gaiola Eucalipto N5', '5EU', 'Gaiola abaulada com arcos em pinus, laterais em eucalipto e grade em arame retrefilado.'),
-(9, 'Gaiola de Pinus Tingida e Arame Nº 3', 'Gaiola Tingida N3', '3TG', 'Gaiola abaulada com arcos em pinus, laterais em pinus tingido e grade em arame retrefilado.'),
-(10, 'Gaiola de Pinus Tingida e Arame Nº 4', 'Gaiola Tingida N4', '4TG', 'Gaiola abaulada com arcos em pinus, laterais em pinus tingido e grade em arame retrefilado.'),
-(11, 'Gaiola de Pinus Filetada e Arame Nº 5', 'Gaiola Filetada N5', '5FT', 'Gaiola abaulada com arcos em pinus, laterais em pinus filetado e grade em arame retrefilado.'),
-(12, 'Gaiola de Eucalipto e Fibra para Sabiá', 'Gaiola Sabiá Eucalipto (Fibra)', 'SB', 'Gaiola arqueada com arcos em pinus, laterais em eucalipto e grade em varetas de fibra de vidro.'),
-(13, 'Gaiola de Eucalipto e Fibra para Picharro', 'Gaiola Picharro Eucalipto (Fibra)', 'PXEU', 'Gaiola arqueada com arcos em pinus, laterais em eucalipto e grade em varetas de fibra de vidro.'),
-(14, 'Gaiola de Pinus Tingido em Preto para Picharro', 'Gaiola Picharro Preta (Fibra)', 'PXP', 'Gaiola arqueada com arcos em pinus, laterais em pinus tingido em preto e grade em varetas de fibra de vidro.'),
-(15, 'Gaiola de Pinus e Arame para Coleira', 'Gaiola Coleira Pinus', 'CL', 'Gaiola arqueada com arcos e laterais em pinus e grade em arame retrefilado.'),
-(16, 'Gaiola de Eucalipto e Arame para Coleira', 'Gaiola Coleira Eucalipto', 'CLEU', 'Gaiola arqueada com arcos em pinus, laterais em eucalipto e grade em arame retrfilado.'),
-(17, 'Gaiola de Eucalipto e Arame para Criação de Coleira', 'Gaiola Criadeira Coleira Eucalipto', 'CRCL', 'Gaiola retangular com estrutura em pinus, laterais em eucalipto e grade em arame retrefilado.'),
-(18, 'Gaiola de Eucalipto e Arame para Criação de Canário', 'Gaiola Criadeira Canário Eucalipto', 'CRCN', 'Gaiola retangular com estrutura em pinus, laterais em eucalipto e grade em arame retrefilado.');
+INSERT INTO `produto` (`IdProduto`, `NomeTecnico`, `NomeComercial`, `CodigoInterno`, `Descricao`, `Inativo`) VALUES
+(1, 'Gaiola de Pinus e Arame Nº 1', 'Gaiola Pinus N1', '1P', 'Gaiola abaulada com arcos e laterais em pinus e grade em arame retrefilado.', b'0'),
+(2, 'Gaiola de Pinus e Arame Nº 2', 'Gaiola Pinus N2', '2P', 'Gaiola abaulada com arcos e laterais em pinus e grade em arame retrefilado.', b'0'),
+(3, 'Gaiola de Pinus e Arame Nº 3', 'Gaiola Pinus N3', '3P', 'Gaiola abaulada com arcos e laterais em pinus e grade em arame retrefilado.', b'0'),
+(4, 'Gaiola de Pinus e Arame Nº 4', 'Gaiola Pinus N4', '4P', 'Gaiola abaulada com arcos e laterais em pinus e grade em arame retrefilado.', b'0'),
+(5, 'Gaiola de Eucalipto e Arame Nº 2', 'Gaiola Eucalipto N2', '2EU', 'Gaiola abaulada com arcos em pinus, laterais em eucalipto e grade em arame retrefilado.', b'0'),
+(6, 'Gaiola de Eucalipto e Arame Nº 3', 'Gaiola Eucalipto N3', '3EU', 'Gaiola abaulada com arcos em pinus, laterais em eucalipto e grade em arame retrefilado.', b'0'),
+(7, 'Gaiola de Eucalipto e Arame Nº 4', 'Gaiola Eucalipto N4', '4EU', 'Gaiola abaulada com arcos em pinus, laterais em eucalipto e grade em arame retrefilado.', b'0'),
+(8, 'Gaiola de Eucalipto e Arame Nº 5', 'Gaiola Eucalipto N5', '5EU', 'Gaiola abaulada com arcos em pinus, laterais em eucalipto e grade em arame retrefilado.', b'0'),
+(9, 'Gaiola de Pinus Tingida e Arame Nº 3', 'Gaiola Tingida N3', '3TG', 'Gaiola abaulada com arcos em pinus, laterais em pinus tingido e grade em arame retrefilado.', b'0'),
+(10, 'Gaiola de Pinus Tingida e Arame Nº 4', 'Gaiola Tingida N4', '4TG', 'Gaiola abaulada com arcos em pinus, laterais em pinus tingido e grade em arame retrefilado.', b'0'),
+(11, 'Gaiola de Pinus Filetada e Arame Nº 5', 'Gaiola Filetada N5', '5FT', 'Gaiola abaulada com arcos em pinus, laterais em pinus filetado e grade em arame retrefilado.', b'0'),
+(12, 'Gaiola de Eucalipto e Fibra para Sabiá', 'Gaiola Sabiá Eucalipto (Fibra)', 'SB', 'Gaiola arqueada com arcos em pinus, laterais em eucalipto e grade em varetas de fibra de vidro.', b'0'),
+(13, 'Gaiola de Eucalipto e Fibra para Picharro', 'Gaiola Picharro Eucalipto (Fibra)', 'PXEU', 'Gaiola arqueada com arcos em pinus, laterais em eucalipto e grade em varetas de fibra de vidro.', b'0'),
+(14, 'Gaiola de Pinus Tingido em Preto para Picharro', 'Gaiola Picharro Preta (Fibra)', 'PXP', 'Gaiola arqueada com arcos em pinus, laterais em pinus tingido em preto e grade em varetas de fibra de vidro.', b'0'),
+(15, 'Gaiola de Pinus e Arame para Coleira', 'Gaiola Coleira Pinus', 'CL', 'Gaiola arqueada com arcos e laterais em pinus e grade em arame retrefilado.', b'0'),
+(16, 'Gaiola de Eucalipto e Arame para Coleira', 'Gaiola Coleira Eucalipto', 'CLEU', 'Gaiola arqueada com arcos em pinus, laterais em eucalipto e grade em arame retrfilado.', b'0'),
+(17, 'Gaiola de Eucalipto e Arame para Criação de Coleira', 'Gaiola Criadeira Coleira Eucalipto', 'CRCL', 'Gaiola retangular com estrutura em pinus, laterais em eucalipto e grade em arame retrefilado.', b'0'),
+(18, 'Gaiola de Eucalipto e Arame para Criação de Canário', 'Gaiola Criadeira Canário Eucalipto', 'CRCN', 'Gaiola retangular com estrutura em pinus, laterais em eucalipto e grade em arame retrefilado.', b'0');
 
 -- --------------------------------------------------------
 
@@ -6065,6 +6079,13 @@ CREATE TABLE `telefone` (
   `IdCategoriaTelefone` int(11) NOT NULL,
   `Observacao` text DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Extraindo dados da tabela `telefone`
+--
+
+INSERT INTO `telefone` (`IdTelefone`, `IdPessoa`, `DDI`, `DDD`, `Numero`, `Ramal`, `IdCategoriaTelefone`, `Observacao`) VALUES
+(1, 2, '55', '14', '997480089', NULL, 1, NULL);
 
 -- --------------------------------------------------------
 
@@ -6322,13 +6343,13 @@ ALTER TABLE `cidade`
 -- AUTO_INCREMENT de tabela `email`
 --
 ALTER TABLE `email`
-  MODIFY `IdEmail` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `IdEmail` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `endereco`
 --
 ALTER TABLE `endereco`
-  MODIFY `IdEndereco` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `IdEndereco` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `formapagamento`
@@ -6400,7 +6421,7 @@ ALTER TABLE `statuspedido`
 -- AUTO_INCREMENT de tabela `telefone`
 --
 ALTER TABLE `telefone`
-  MODIFY `IdTelefone` bigint(20) NOT NULL AUTO_INCREMENT;
+  MODIFY `IdTelefone` bigint(20) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de tabela `usuario`

@@ -1,7 +1,7 @@
 <?php
     class ListaPreco {
-        private $idListaPreco;
-        private $descritivo;
+        private ?int $idListaPreco;
+        private ?string $descritivo;
         
         function getIdListaPreco() {return $this->idListaPreco;}
         function getDescritivo() {return $this->descritivo;}
