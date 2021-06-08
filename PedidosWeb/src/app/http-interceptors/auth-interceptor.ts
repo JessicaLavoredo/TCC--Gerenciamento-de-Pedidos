@@ -3,12 +3,13 @@ import { HttpInterceptor, HttpRequest, HttpHandler, HttpErrorResponse } from '@a
 import { throwError } from 'rxjs';
 import { catchError } from 'rxjs/operators';
 import { AccountService } from '../services/account.service';
+import { Router } from '@angular/router';
 
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
 
     constructor(
-        private accountService: AccountService
+        private accountService: AccountService, private router: Router
     ) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler) {
@@ -38,6 +39,10 @@ export class AuthInterceptor implements HttpInterceptor {
             // Erro de client-side ou de rede
             console.error('Ocorreu um erro:', error.error.message);
         } else {
+            if (error.statusText == "Unauthorized") {
+                window.localStorage.removeItem('token');
+                this.router.navigate(['login']);
+            }
             // Erro retornando pelo backend
             console.error(
                 `Código do erro ${error.status}, ` +

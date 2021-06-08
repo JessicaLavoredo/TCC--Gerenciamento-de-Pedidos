@@ -1,3 +1,4 @@
+import { Pedido_Produto } from './../../class/pedido_produto';
 import { Estado } from './../../class/estado';
 import { Cidade } from './../../class/cidade';
 import { promise } from 'protractor';
@@ -7,7 +8,6 @@ import { FormaPagamento } from './../../class/forma-pagamento';
 import { Pedido } from 'src/app/class/pedido';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { Produto_Pedido } from 'src/app/class/Produto_Pedido';
 import { Produto } from 'src/app/class/produto';
 import { PedidoService } from './../../services/pedido.service';
 import { MatAccordion } from '@angular/material/expansion';
@@ -33,8 +33,8 @@ export class CadastroPedidoComponent implements OnInit {
   public ClienteEscolhido: boolean;
   public Cliente: Pessoa = new Pessoa();
   public Clientes: Pessoa[] = [];
-  public Produto_Pedido: Produto_Pedido = new Produto_Pedido();
-  public Produtos_Pedido: Produto_Pedido[] = [];
+  public Pedido_Produto: Pedido_Produto = new Pedido_Produto();
+  public Pedido_Produtos: Pedido_Produto[] = [];
   public Produto: Produto = new Produto();
   public Produto_PedidoRetorno: Produto_PedidoRetorno = new Produto_PedidoRetorno();
   public Produtos_PedidoRetorno: Produto_PedidoRetorno[] = [];
@@ -70,7 +70,6 @@ export class CadastroPedidoComponent implements OnInit {
 
   public DepoisBuscar() {
     this.queryProduto.valueChanges.pipe(
-      map(value => value.trim()),
       filter(value => value.length > 0),
       debounceTime(500),
       distinctUntilChanged(),
@@ -108,16 +107,14 @@ export class CadastroPedidoComponent implements OnInit {
       )
     ).subscribe();
     this.queryPedido.valueChanges.pipe(
-      map(value => value.trim()),
       filter(value => value.length > 0),
       debounceTime(500),
       distinctUntilChanged(),
       switchMap(value => this.pedidoService.BuscarPorId(this.Pedido.IdPedido)),
       map((result: any) => {
-        console.log(result)
         if (result) {
           this.Pedido = result;
-          this.Cliente.IdPessoa = this.Pedido.IdPessoa
+          this.Cliente.IdPessoa = this.Pedido.Pessoa.IdPessoa
           this.selecionarCliente(this.Cliente);
           let mes = new Date(this.Pedido.DataPedido).getMonth() + 1
           let messtring = mes < 10 ? '0' + mes : mes
@@ -146,23 +143,22 @@ export class CadastroPedidoComponent implements OnInit {
   }
 
   setTwoNumberDecimal() {
-    console.log(this.myInput.nativeElement.value);
     this.Produto_PedidoRetorno.Preco = parseFloat(this.myInput.nativeElement.value).toFixed(2);
-    console.log(this.Produto_PedidoRetorno.Preco)
   }
 
   public async Gravar() {
     try {
-      this.Pedido.IdPessoa = this.Cliente.IdPessoa;
+      this.Pedido.Pessoa.IdPessoa = this.Cliente.IdPessoa;
       const usuario = this.accountService.getUsuario();
       this.Pedido.IdUsuarioMovimentacao = usuario;
       for (var x = 0; x < this.Produtos_PedidoRetorno.length; x++) {
-        this.Pedido.Produto_Pedido[x].IdProduto = this.Produtos_PedidoRetorno[x].IdProduto;
-        this.Pedido.Produto_Pedido[x].Preco = this.Produtos_PedidoRetorno[x].Preco
-        this.Pedido.Produto_Pedido[x].Quantidade = this.Produtos_PedidoRetorno[x].Quantidade.toString();
+        this.Pedido.Pedido_Produto[x].IdProduto = this.Produtos_PedidoRetorno[x].IdProduto;
+        this.Pedido.Pedido_Produto[x].Preco = this.Produtos_PedidoRetorno[x].Preco
+        this.Pedido.Pedido_Produto[x].Quantidade = this.Produtos_PedidoRetorno[x].Quantidade.toString();
+        this.Pedido.Pedido_Produto[x].PrecoFinal = this.Produtos_PedidoRetorno[x].Total.toString();
       }
 
-      this.Pedido.Produto_Pedido = this.Produtos_Pedido
+      this.Pedido.Pedido_Produto = this.Pedido_Produtos
       let retorno: any = await this.pedidoService.gravar(this.Pedido);
       if (retorno.status == 200) {
         this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
@@ -201,18 +197,19 @@ export class CadastroPedidoComponent implements OnInit {
   }
 
   public limparProduto() {
-    this.Produto_Pedido = new Produto_Pedido();
+    this.Pedido_Produto = new Pedido_Produto();
 
   }
 
   public excluirProdutoPedido(Produto_Pedido: Produto_PedidoRetorno) {
     if (Produto_Pedido) {
-      this.Produto_Pedido.IdProduto = Produto_Pedido.IdProduto;
-      this.Produto_Pedido.Preco = Produto_Pedido.Preco;
-      this.Produto_Pedido.Quantidade = Produto_Pedido.Quantidade.toString();
+      this.Pedido_Produto.IdProduto = Produto_Pedido.IdProduto;
+      this.Pedido_Produto.Preco = Produto_Pedido.Preco;
+      this.Pedido_Produto.Quantidade = Produto_Pedido.Quantidade.toString();
+      this.Pedido_Produto.PrecoFinal = Produto_Pedido.Total.toString();
 
       this.Produtos_PedidoRetorno.splice(this.Produtos_PedidoRetorno.indexOf(Produto_Pedido), 1)
-      this.Pedido.Produto_Pedido.splice(this.Pedido.Produto_Pedido.indexOf(this.Produto_Pedido), 1)
+      this.Pedido.Pedido_Produto.splice(this.Pedido.Pedido_Produto.indexOf(this.Pedido_Produto), 1)
     }
     if (this.Produtos_PedidoRetorno.length > 0) {
       this.nenhumProduto = false;
@@ -221,9 +218,9 @@ export class CadastroPedidoComponent implements OnInit {
     }
   }
 
-  public selecionarProdutoPedido(Produto_Pedido: Produto_Pedido) {
-    if (Produto_Pedido) {
-      this.Produto_Pedido = Produto_Pedido;
+  public selecionarProdutoPedido(Pedido_Produto: Pedido_Produto) {
+    if (Pedido_Produto) {
+      this.Pedido_Produto = Pedido_Produto;
     }
   }
 

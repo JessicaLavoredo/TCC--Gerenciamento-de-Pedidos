@@ -1,20 +1,23 @@
-import { Produto_Pedido } from './Produto_Pedido';
+import { Pedido_Produto } from './pedido_produto';
+import { Pessoa } from './Pessoa';
+
 
 export class Pedido {
     public IdPedido: string;
-    public IdPessoa: string;
+    public Pessoa: Pessoa;
     public IdFormaPagamento: string;
     public DataPedido: Date;
     public IdUsuarioMovimentacao: string;
-    public Produto_Pedido: Produto_Pedido[];
+    public Pedido_Produto: Pedido_Produto[];
+
 
     constructor() {
-        this.IdPessoa = '';
         this.IdPedido = '';
         this.IdFormaPagamento = '';
         this.IdUsuarioMovimentacao = '';
-        this.Produto_Pedido = [];
+        this.Pedido_Produto = [];
         this.DataPedido = new Date;
+        this.Pessoa = new Pessoa;
     }
 }
 

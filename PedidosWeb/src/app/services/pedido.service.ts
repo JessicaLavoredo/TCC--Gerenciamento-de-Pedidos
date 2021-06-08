@@ -18,7 +18,6 @@ export class PedidoService {
   }
 
   async gravar(Pedido: Pedido) {
-    console.log(Pedido);
     return new Promise(resolve => {
       const json = JSON.stringify(Pedido);
       this.http.post('api/Pedido/gravar', json).subscribe(result => {
@@ -44,7 +43,6 @@ export class PedidoService {
   async BuscarPorId(Codigo: String) {
     return new Promise(resolve => {
       this.http.get('api/Pedido/buscarPorId/' + Codigo).subscribe(result => {
-        console.log(result);
         resolve(result);
       });
     })

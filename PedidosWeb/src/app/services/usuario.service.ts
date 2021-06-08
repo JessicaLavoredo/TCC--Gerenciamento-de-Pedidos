@@ -38,6 +38,9 @@ export class UsuarioService {
     return new Promise(resolve => {
       this.http.get('api/Usuario/buscarPorId/' + Codigo).subscribe(result => {
         resolve(result);
+      }, error => {
+        console.log(error);
+        resolve(error);
       });
     })
   }

@@ -32,7 +32,6 @@ export class CadastroCatEmailComponent implements OnInit {
   public async Gravar() {
     try {
       this.validacao = true;
-      console.log(this.categoria.Nome)
       if (this.categoria.Nome == '') {
         this.AlertService.show("Preencha corretamente o campo Nome", { classname: 'bg-danger text-light', delay: 3000 });
         this.validacao = false;

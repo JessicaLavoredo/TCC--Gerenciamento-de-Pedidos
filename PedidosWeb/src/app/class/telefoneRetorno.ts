@@ -1,9 +1,11 @@
+import { CategoriaTelefone } from "./categoria-telefone";
+
 export class telefoneRetorno {
     DDI: string;
     DDD: string;
     Numero: string;
     Ramal: string;
-    IdCategoriaTelefone: string;
+    CategoriaTelefone: CategoriaTelefone;
     Observacao: string;
     DecricaoCategoriaTelefone: String;
 
@@ -12,7 +14,7 @@ export class telefoneRetorno {
         this.DDD = '';
         this.Numero = '';
         this.Ramal = '';
-        this.IdCategoriaTelefone = '';
+        this.CategoriaTelefone = new CategoriaTelefone;
         this.Observacao = '';
         this.DecricaoCategoriaTelefone = '';
     }

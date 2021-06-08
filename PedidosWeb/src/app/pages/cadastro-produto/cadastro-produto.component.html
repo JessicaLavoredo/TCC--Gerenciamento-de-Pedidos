@@ -27,7 +27,7 @@
                 <div class="form-row">
                     <div class="form-group col-md-8">
                         <label for="txtNome">Nome Técnico</label>
-                        <input type="text" class="form-control" id="txtNome" name="Nome"
+                        <input type="text" class="form-control" id="txtNome" name="Nome" maxlength="100"
                             [(ngModel)]="Produto.NomeTecnico">
                     </div>
                 </div>
@@ -35,7 +35,7 @@
                     <div class="form-group col-md-8">
                         <label for="txtNomeComercial">Nome Comercial</label>
                         <input type="text" class="form-control" name="NomeComercial" id="txtNomeComercial"
-                            [(ngModel)]="Produto.NomeComercial">
+                            maxlength="50" [(ngModel)]="Produto.NomeComercial">
                     </div>
                 </div>
                 <div class="form-row">
@@ -59,7 +59,7 @@
                     <div class="form-group col-md-8">
                         <label for="txtRg">Descrição</label>
                         <textarea class="form-control" id="txtDescricao" [(ngModel)]="Produto.Descricao" rows="3"
-                            name="Decricao">
+                            maxlength="300" name="Decricao">
                         </textarea>
                     </div>
                 </div>

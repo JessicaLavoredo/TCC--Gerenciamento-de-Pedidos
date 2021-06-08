@@ -23,11 +23,12 @@
 
       <div class="form-group col-md-5 mr-2">
         <label for="txtNome">{{labelNome}}</label>
-        <input type="text" class="form-control" id="txtNome" name="Nome" [(ngModel)]="Pessoa.NomeRazao">
+        <input type="text" class="form-control" id="txtNome" name="Nome" [(ngModel)]="Pessoa.NomeRazao" maxlength="100">
       </div>
       <div class="form-group col-md-5">
         <label for="txtApelido">{{labelFantasia}}</label>
-        <input type="text" class="form-control" id="txtApelido" name="Apelido" [(ngModel)]="Pessoa.ApelidoFantasia">
+        <input type="text" class="form-control" id="txtApelido" name="Apelido" [(ngModel)]="Pessoa.ApelidoFantasia"
+          maxlength="100">
       </div>
     </div>
     <div class="form-row">
@@ -72,8 +73,8 @@
       <div class="form-group col-md-4" *ngIf="perfil=='1'">
         <label>Cargo</label>
         <mat-form-field appearance="outline">
-          <mat-select multiple [(ngModel)]="Pessoa.Vinculos" placeholder="Selecione um cargo" name="vinculos">
-            <mat-option *ngFor="let Vinculo of Vinculos" [value]="Vinculo.IdVinculo">
+          <mat-select multiple [(ngModel)]="Pessoa.Vinculos" placeholder="Selecione um cargo" name="Vinculos">
+            <mat-option *ngFor="let Vinculo of Vinculos" [(value)]="Vinculo.IdVinculo">
               {{Vinculo.Nome}}</mat-option>
           </mat-select>
         </mat-form-field>
@@ -105,31 +106,34 @@
         <div class="form-row">
           <div class="form-group col-md-10">
             <label for="txtLogradouro">Logradouro</label>
-            <input type="text" class="form-control" id="txtLogradouro" [(ngModel)]="Endereco.Logradouro"
+            <input type="text" class="form-control" id="txtLogradouro" [(ngModel)]="Endereco.Logradouro" maxlength="45"
               name="logradouro">
           </div>
           <div class="form-group col-md-2">
             <label for="txtNumero">Numero</label>
-            <input type="text" class="form-control" id="txtCtxtNumeroodigo" [(ngModel)]="Endereco.Numero" name="numero">
+            <input type="text" class="form-control" id="txtCtxtNumeroodigo" [(ngModel)]="Endereco.Numero" name="numero"
+              maxlength="8">
           </div>
         </div>
         <div class="form-row">
           <div class="form-group col-md-6">
             <label for="txtBairro">Bairro</label>
-            <input type="text" class="form-control" id="Bairro" [(ngModel)]="Endereco.Bairro" name="bairro">
+            <input type="text" class="form-control" id="Bairro" [(ngModel)]="Endereco.Bairro" name="bairro"
+              maxlength="45">
           </div>
           <div class="form-group col-md-2">
             <label for="txtCep">CEP</label>
-            <input type="text" class="form-control" id="txtCep" mask="00000-000" [(ngModel)]="Endereco.Cep" name="cep"
-              (ngModelChange)="buscarPorCep()">
+            <input type="text" class="form-control" id="txtCep" mask="00000-000" [(ngModel)]="Endereco.CEP" name="cep"
+              maxlength="9" (ngModelChange)="buscarPorCep()">
           </div>
           <div class="form-group col-md-3">
             <label for="txtCidade">Cidade</label>
-            <input type="text" class="form-control" id="txtCidade" name="cidade" [(ngModel)]="Endereco.NomeCidade"
+            <input type="text" class="form-control" id="txtCidade" name="cidade" [(ngModel)]="Endereco.Cidade.Nome"
               name="idCidade">
           </div>
           <div class="form-group">
-            <input type="hidden" class="form-control" id="txtcatEnd" name="CatEnd" [(ngModel)]="Endereco.IdCidade">
+            <input type="hidden" class="form-control" id="txtcatEnd" name="CatEnd"
+              [(ngModel)]="Endereco.Cidade.IdCidade">
           </div>
           <button type="button" #modalSearchCidade class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
             data-target="#ModalCidade">
@@ -144,20 +148,17 @@
         <div class="form-row">
           <div class="form-group col-md-4">
             <label for="inputState">Categoria</label>
-            <select id="inputState" class="form-control" [(ngModel)]="Endereco.IdCategoriaEndereco"
+            <select id="inputState" class="form-control" [(ngModel)]="Endereco.CategoriaEndereco.IdCategoriaEndereco"
               (ngModelChange)="SelecionarCategoriaEndereco()" name=" idCategoriaEndereco">
               <option [value]=categoria.IdCategoriaEndereco *ngFor="let categoria of categoriasEndereco">
                 {{categoria.Nome}}
               </option>
             </select>
           </div>
-          <div class="form-group">
-            <input type="hidden" class="form-control" id="txtcatEnd" name="CatEnd"
-              [(ngModel)]="Endereco.DescricaoCategoriaEndereco">
-          </div>
+
           <div class="form-group col-md-8">
             <label for="txtObservacao">Observação</label>
-            <input type="text" class="form-control" id="txtObservacao" [(ngModel)]="Endereco.Observacao"
+            <input type="text" class="form-control" id="txtObservacao" [(ngModel)]="Endereco.Observacao" maxlength="50"
               name="observacao">
           </div>
         </div>
@@ -186,9 +187,9 @@
               <td>{{endereco.Logradouro}}</td>
               <td>{{endereco.Numero}}</td>
               <td>{{endereco.Bairro}}</td>
-              <td>{{endereco.Cep}}</td>
-              <td>{{endereco.NomeCidade}}</td>
-              <td>{{endereco.DescricaoCategoriaEndereco}}</td>
+              <td>{{endereco.CEP}}</td>
+              <td>{{endereco.Cidade.Nome}}</td>
+              <td>{{endereco.CategoriaEndereco.Nome}}</td>
               <td>{{endereco.Observacao}}</td>
               <td><button class="btn btn-info btnselecionar btn-sm" (click)="selecionarEndereco(endereco)">
                   <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">done_outline</mat-icon>
@@ -208,27 +209,24 @@
           <div class="form-group col-md-12">
             <label for="txtEnderecoEmail">Endereço</label>
             <input type="email" class="form-control" id="txtEnderecoEmail" [(ngModel)]="email.Endereco" name="endereco"
-              email="true">
+              maxlength="100" email="true">
           </div>
         </div>
         <div class="form-row">
           <div class="form-group col-md-4">
             <label for="CboCategoriaemail">Categoria</label>
-            <select id="CboCategoriaemail" class="form-control" [(ngModel)]="email.IdCategoriaEmail"
+            <select id="CboCategoriaemail" class="form-control" [(ngModel)]="email.CategoriaEmail.IdCategoriaEmail"
               (ngModelChange)="SelecionarCategoriaEmail()" name="idCategoriaEmail">
               <option [value]=categoriaEmail.IdCategoriaEmail *ngFor="let categoriaEmail of categoriasEmail">
                 {{categoriaEmail.Nome}}
               </option>
             </select>
           </div>
-          <div class="form-group">
-            <input type="hidden" class="form-control" id="txtcatEma" name="CatEma"
-              [(ngModel)]="email.DescricaoCategoriaEmail">
-          </div>
+
           <div class="form-group col-md-8">
             <label for="txtObservacaoEmail">Observação</label>
             <input type="text" class="form-control" id="txtObservacaoEmail" [(ngModel)]="email.Observacao"
-              name="observacaoEmail">
+              maxlength="50" name="observacaoEmail">
           </div>
         </div>
         <div>
@@ -250,7 +248,7 @@
           <tbody>
             <tr *ngFor="let email of emails">
               <td>{{email.Endereco}}</td>
-              <td>{{email.DescricaoCategoriaEmail}}</td>
+              <td>{{email.CategoriaEmail.Nome}}</td>
               <td>{{email.Observacao}}</td>
               <td><button class="btn btn-info btnselecionar btn-sm" (click)="selecionarEmail(email)">
                   <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">done_outline</mat-icon>
@@ -275,18 +273,20 @@
           </div>
           <div class="form-group col-md-6">
             <label for="txtNumeroTel">Numero</label>
-            <input type="text" class="form-control" id="txtNumeroTel" mask="00000-0000" [(ngModel)]="telefone.Numero"
+            <input type="text" class="form-control" id="txtNumeroTel" [(ngModel)]="telefone.Numero" maxlength="9"
               name="NumeroTel">
           </div>
           <div class="form-group col-md-2">
             <label for="txtRamal">Ramal</label>
-            <input type="text" class="form-control" id="txtRamal" [(ngModel)]="telefone.Ramal" name="Ramal">
+            <input type="text" class="form-control" id="txtRamal" [(ngModel)]="telefone.Ramal" name="Ramal"
+              maxlength="5">
           </div>
         </div>
         <div class="form-row">
           <div class="form-group col-md-3">
             <label for="CboCategoriaTelefone">Categoria</label>
-            <select id="CboCategoriaTelefone" class="form-control" [(ngModel)]="telefone.IdCategoriaTelefone"
+            <select id="CboCategoriaTelefone" class="form-control"
+              [(ngModel)]="telefone.CategoriaTelefone.IdCategoriaTelefone"
               (ngModelChange)="SelecionarCategoriaTelefone()" name="idCategoriaEmail">
               <option [value]=categoriaTelefone.IdCategoriaTelefone
                 *ngFor="let categoriaTelefone of categoriasTelefone">
@@ -301,7 +301,7 @@
           <div class="form-group col-md-9">
             <label for="txtObservacaoTelefone">Observação</label>
             <input type="text" class="form-control" id="txtObservacaoTelefone" [(ngModel)]="telefone.Observacao"
-              name="observacaoTelefone">
+              maxlength="100" name="observacaoTelefone">
           </div>
         </div>
         <div>
@@ -329,7 +329,7 @@
               <td>{{telefone.DDD}}</td>
               <td>{{telefone.Numero}}</td>
               <td>{{telefone.Ramal}}</td>
-              <td>{{telefone.DecricaoCategoriaTelefone}}</td>
+              <td>{{telefone.CategoriaTelefone.Nome}}</td>
               <td>{{telefone.Observacao}}</td>
               <td><button class="btn btn-info btnselecionar btn-sm" (click)="selecionarTelefone(telefone)">
                   <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">done_outline</mat-icon>
