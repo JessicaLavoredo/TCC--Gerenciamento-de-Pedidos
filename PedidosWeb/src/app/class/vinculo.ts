@@ -1,9 +1,9 @@
 export class Vinculo {
-    public IdVinculo: string;
+    public IdVinculo: number;
     public Nome: string;
 
     constructor() {
-        this.IdVinculo = '';
+        this.IdVinculo = 0;
         this.Nome = '';
     }
 }

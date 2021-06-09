@@ -14,11 +14,12 @@
       </div>
       <div class="form-group col-md-5">
         <label for="txtNome">Nome</label>
-        <input type="text" class="form-control" id="txtNome" name="nome" [(ngModel)]="categoria.Nome">
+        <input type="text" class="form-control" id="txtNome" name="nome" [(ngModel)]="categoria.Nome" maxlength="50">
       </div>
       <div class="form-group col-md-5">
         <label for="txtApelido">Descrição</label>
-        <input type="text" class="form-control" id="txtDescricao" name="descricao" [(ngModel)]="categoria.Descricao">
+        <input type="text" class="form-control" id="txtDescricao" name="descricao" [(ngModel)]="categoria.Descricao"
+          maxlength="100">
       </div>
     </div>
     <table class="table">

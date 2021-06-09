@@ -18,14 +18,12 @@ export class ProdutoService {
     return new Promise(resolve => {
       const json = JSON.stringify(Produto);
       this.http.post('api/Produto/gravar', json).subscribe(result => {
-        console.log(result)
         let resultado = {
           resultado: result,
           status: 200
         };
         resolve(resultado);
       }, error => {
-        console.log(error)
         let resultado = {
           resultado: error,
           status: 401
@@ -39,7 +37,6 @@ export class ProdutoService {
     return new Promise(resolve => {
       const json = JSON.stringify(Filtros);
       this.http.post('api/Produto/buscarPorFiltro', json).subscribe(result => {
-        console.log(result)
         let resultado = {
           resultado: result,
           status: 200
@@ -60,7 +57,6 @@ export class ProdutoService {
   async BuscarPorId(Codigo: String) {
     return new Promise(resolve => {
       this.http.get('api/Produto/buscarPorId/' + Codigo).subscribe(result => {
-        console.log(result)
         resolve(result);
       });
     })

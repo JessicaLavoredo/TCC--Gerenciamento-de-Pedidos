@@ -13,7 +13,7 @@ export class Pessoa {
     Genero: string;
     Inativo: boolean;
     DataInclusao: Date;
-    Vinculos: string[];
+    Vinculos: number[];
     Enderecos: endereco[];
     Telefones: telefone[];
     Emails: email[];

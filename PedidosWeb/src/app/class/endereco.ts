@@ -1,5 +1,5 @@
 export class endereco {
-    Cep: string;
+    CEP: string;
     Logradouro: string;
     Numero: string;
     Bairro: string;
@@ -8,7 +8,7 @@ export class endereco {
     Observacao: string;
 
     constructor() {
-        this.Cep = '';
+        this.CEP = '';
         this.Logradouro = '';
         this.Numero = '';
         this.Bairro = '';

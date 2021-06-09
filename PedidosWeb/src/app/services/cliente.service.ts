@@ -18,7 +18,6 @@ export class ClienteService {
     const json = JSON.stringify(cliente);
     const result: any = await Api.post('CategoriaEmail/gravar', json);
     if (result.length > 0) {
-      console.log(result);
       return true;
     } else {
       return false;

@@ -1,3 +1,4 @@
+import { CategoriaEndereco } from './../../class/categoria-endereco';
 import { CategoriaEnderecoService } from './../../services/categoria-endereco.service';
 import { Observable } from 'rxjs';
 import { Estado } from './../../class/estado';
@@ -10,7 +11,7 @@ import { Cidade } from './../../class/cidade';
 import { PessoaService } from './../../services/pessoa.service';
 import { Component, ElementRef, OnInit, ViewChild, } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { CategoriaEndereco } from 'src/app/class/categoria-endereco';
+
 import { CategoriaEmail } from 'src/app/class/categoria-email';
 import { CategoriaTelefone } from 'src/app/class/categoria-telefone';
 import { Pessoa } from 'src/app/class/Pessoa';
@@ -53,6 +54,7 @@ export class CadastroPessoaComponent implements OnInit {
   public email: emailRetorno = new emailRetorno();
   public emails: emailRetorno[] = [];
   public Vinculos: Vinculo[] = [];
+  public VinculosTetorno: Vinculo[] = [];
   public isJuridico = false;
   public labelNome = 'Nome';
   public labelFantasia = 'Apelido';
@@ -79,9 +81,11 @@ export class CadastroPessoaComponent implements OnInit {
   @ViewChild('modalSearchPessoa') modalSearchPessoa: ElementRef;
   @ViewChild('modalSearchCidade') modalSearchCidade: ElementRef;
   validacao: boolean;
+  formControl: string[];
 
 
   constructor(private PessoaService: PessoaService, private route: ActivatedRoute, private router: Router, private AlertService: AlertService, private accountService: AccountService, private localeService: BsLocaleService) {
+
   }
 
   ngOnInit(): void {
@@ -135,7 +139,6 @@ export class CadastroPessoaComponent implements OnInit {
 
   public DepoisBuscar() {
     this.queryPessoa.valueChanges.pipe(
-      map(value => value.trim()),
       filter(value => value.length > 0),
       debounceTime(200),
       distinctUntilChanged(),
@@ -150,30 +153,10 @@ export class CadastroPessoaComponent implements OnInit {
             this.Pessoa.Inativo = true;
           }
           this.telefones = retorno.Telefones.length > 0 ? retorno.Telefones : [];
-          this.telefones.forEach(telefone => {
-            var categoriaResult = this.categoriasTelefone.find(categoria => telefone.IdCategoriaTelefone == categoria.IdCategoriaTelefone)
-            if (categoriaResult) {
-              telefone.DecricaoCategoriaTelefone = categoriaResult.Nome;
-            }
-          });
           this.enderecos = retorno.Enderecos.length > 0 ? retorno.Enderecos : [];
-          this.enderecos.forEach(endereco => {
-            var categoriaResult = this.categoriasEndereco.find(categoria => categoria.IdCategoriaEndereco == endereco.IdCategoriaEndereco)
-            if (categoriaResult) {
-              endereco.DescricaoCategoriaEndereco = categoriaResult.Nome;
-            }
-            var cidade = this.Cidades.find(cidade => cidade.IdCidade == endereco.IdCidade)
-            if (cidade) {
-              endereco.NomeCidade = cidade.Nome;
-            }
-          });
           this.emails = retorno.Emails.length > 0 ? retorno.Emails : [];
-          this.emails.forEach(email => {
-            var categoriaResult = this.categoriasEmail.find(categoria => email.IdCategoriaEmail == categoria.IdCategoriaEmail)
-            if (categoriaResult) {
-              email.DescricaoCategoriaEmail = categoriaResult.Nome;
-            }
-          });
+
+
         } else {
           this.AlertService.show("Registro não encontrado", { classname: 'bg-danger text-light', delay: 3000 });
         }
@@ -189,7 +172,7 @@ export class CadastroPessoaComponent implements OnInit {
     } else {
       let CidadeRetorno = this.Cidades.filter(Cidade => Cidade.Nome == this.Endereco.NomeCidade.toLowerCase());
       if (CidadeRetorno.length > 0) {
-        this.Endereco.IdCidade = CidadeRetorno[0].IdCidade;
+        this.Endereco.Cidade.IdCidade = CidadeRetorno[0].IdCidade;
         this.Endereco.NomeCidade = CidadeRetorno[0].Nome;
       }
     }
@@ -203,7 +186,7 @@ export class CadastroPessoaComponent implements OnInit {
 
   public selecionarCidade(Cidade: Cidade) {
     if (Cidade) {
-      this.Endereco.IdCidade = Cidade.IdCidade;
+      this.Endereco.Cidade.IdCidade = Cidade.IdCidade;
       this.Endereco.NomeCidade = Cidade.Nome;
     }
   }
@@ -260,7 +243,7 @@ export class CadastroPessoaComponent implements OnInit {
       }
 
       if (this.perfil == "2") {
-        this.Pessoa.Vinculos.push("2")
+        this.Pessoa.Vinculos.push(2)
       }
 
       if (this.Pessoa.Vinculos.length <= 0) {
@@ -282,10 +265,35 @@ export class CadastroPessoaComponent implements OnInit {
         return
       }
 
+      if (this.Pessoa.IdPessoa == '') {
+        this.Pessoa.IdPessoa = '0';
+      }
+
       this.Pessoa.DataNascimento = this.dataNascimento;
-      this.Pessoa.Enderecos = this.enderecos;
-      this.Pessoa.Telefones = this.telefones;
-      this.Pessoa.Emails = this.emails;
+      for (let x = 0; x < this.enderecos.length; x++) {
+        this.Pessoa.Enderecos[0].Bairro = this.enderecos[x].Bairro;
+        this.Pessoa.Enderecos[0].CEP = this.enderecos[x].CEP;
+        this.Pessoa.Enderecos[0].IdCategoriaEndereco = this.enderecos[x].CategoriaEndereco.IdCategoriaEndereco;
+        this.Pessoa.Enderecos[0].IdCidade = this.enderecos[x].Cidade.IdCidade;
+        this.Pessoa.Enderecos[0].Logradouro = this.enderecos[x].Logradouro;
+        this.Pessoa.Enderecos[0].Numero = this.enderecos[x].Numero;
+        this.Pessoa.Enderecos[0].Observacao = this.enderecos[x].Observacao;
+      }
+      for (let x = 0; x < this.telefones.length; x++) {
+        this.Pessoa.Telefones[0].DDD = this.telefones[x].DDD;
+        this.Pessoa.Telefones[0].DDI = this.telefones[x].DDI;
+        this.Pessoa.Telefones[0].IdCategoriaTelefone = this.telefones[x].CategoriaTelefone.IdCategoriaTelefone;
+        this.Pessoa.Telefones[0].Ramal = this.telefones[x].Ramal;
+        this.Pessoa.Telefones[0].Numero = this.telefones[x].Numero;
+        this.Pessoa.Telefones[0].Observacao = this.telefones[x].Observacao;
+      }
+
+      for (let x = 0; x < this.emails.length; x++) {
+        this.Pessoa.Emails[0].IdCategoriaEmail = this.emails[x].CategoriaEmail.IdCategoriaEmail;
+        this.Pessoa.Emails[0].Endereco = this.emails[x].Endereco;
+        this.Pessoa.Emails[0].Observacao = this.emails[x].Observacao;
+      }
+
       let retorno: any = await this.PessoaService.gravar(this.Pessoa);
       if (retorno.status == 200) {
         this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
@@ -314,18 +322,18 @@ export class CadastroPessoaComponent implements OnInit {
       return
     }
 
-    if (this.Endereco.Cep == '') {
+    if (this.Endereco.CEP == '') {
       this.AlertService.show("Preencha corretamente o campo CEP", { classname: 'bg-danger text-light', delay: 3000 });
       return
     }
 
 
-    if (this.Endereco.IdCidade == '') {
+    if (this.Endereco.Cidade.IdCidade == '') {
       this.AlertService.show("Preencha corretamente o campo Cidade", { classname: 'bg-danger text-light', delay: 3000 });
       return
     }
 
-    if (this.Endereco.IdCategoriaEndereco == '') {
+    if (this.Endereco.CategoriaEndereco.IdCategoriaEndereco == '') {
       this.AlertService.show("Preencha corretamente o campo Categoria", { classname: 'bg-danger text-light', delay: 3000 });
       return
     }
@@ -338,6 +346,7 @@ export class CadastroPessoaComponent implements OnInit {
   public selecionarEndereco(Endereco: enderecoRetorno) {
     if (Endereco) {
       this.Endereco = Endereco;
+      this.Endereco.CategoriaEndereco.Nome = Endereco.CategoriaEndereco.Nome
       Endereco = new enderecoRetorno();
     }
   }
@@ -350,8 +359,8 @@ export class CadastroPessoaComponent implements OnInit {
 
   public SelecionarCategoriaEndereco() {
     this.categoriasEndereco.forEach(CatEndereco => {
-      if (CatEndereco.IdCategoriaEndereco == this.Endereco.IdCategoriaEndereco) {
-        this.Endereco.DescricaoCategoriaEndereco = CatEndereco.Nome;
+      if (CatEndereco.IdCategoriaEndereco == this.Endereco.CategoriaEndereco.IdCategoriaEndereco) {
+        this.Endereco.CategoriaEndereco.Nome = CatEndereco.Nome;
       }
     })
   }
@@ -383,7 +392,7 @@ export class CadastroPessoaComponent implements OnInit {
       return
     }
 
-    if (this.telefone.IdCategoriaTelefone == '') {
+    if (this.telefone.CategoriaTelefone.IdCategoriaTelefone == '') {
       this.AlertService.show("Preencha corretamente o campo Categoria de Telefone", { classname: 'bg-danger text-light', delay: 3000 });
       return
     }
@@ -400,8 +409,8 @@ export class CadastroPessoaComponent implements OnInit {
 
   public SelecionarCategoriaTelefone() {
     this.categoriasTelefone.forEach(CatTelefone => {
-      if (CatTelefone.IdCategoriaTelefone == this.telefone.IdCategoriaTelefone) {
-        this.telefone.DecricaoCategoriaTelefone = CatTelefone.Nome;
+      if (CatTelefone.IdCategoriaTelefone == this.telefone.CategoriaTelefone.IdCategoriaTelefone) {
+        this.telefone.CategoriaTelefone.Nome = CatTelefone.Nome;
       }
     })
   }
@@ -417,7 +426,7 @@ export class CadastroPessoaComponent implements OnInit {
       return
     }
 
-    if (this.email.IdCategoriaEmail == '') {
+    if (this.email.CategoriaEmail.IdCategoriaEmail == '') {
       this.AlertService.show("Preencha corretamente o campo Categoria de Email", { classname: 'bg-danger text-light', delay: 3000 });
       return
     }
@@ -441,8 +450,8 @@ export class CadastroPessoaComponent implements OnInit {
 
   public SelecionarCategoriaEmail() {
     this.categoriasEmail.forEach(CatEmail => {
-      if (CatEmail.IdCategoriaEmail == this.email.IdCategoriaEmail) {
-        this.email.DescricaoCategoriaEmail = CatEmail.Nome;
+      if (CatEmail.IdCategoriaEmail == this.email.CategoriaEmail.IdCategoriaEmail) {
+        this.email.CategoriaEmail.Nome = CatEmail.Nome;
       }
     })
   }
@@ -476,8 +485,8 @@ export class CadastroPessoaComponent implements OnInit {
   }
 
   async buscarPorCep() {
-    if (this.Endereco.Cep.length == 8) {
-      let retorno: any = await this.PessoaService.buscaPorCEP(this.Endereco.Cep);
+    if (this.Endereco.CEP.length == 8) {
+      let retorno: any = await this.PessoaService.buscaPorCEP(this.Endereco.CEP);
       if (retorno.logradouro != '') {
         this.Endereco.Logradouro = retorno.logradouro;
       }
@@ -485,9 +494,11 @@ export class CadastroPessoaComponent implements OnInit {
         this.Endereco.Bairro = retorno.bairro;
       }
       if (retorno.ibge) {
-        let CidadeRetorno = this.Cidades.filter(Cidade => Cidade.CodigoIBGE === retorno.ibge);
-        this.Endereco.IdCidade = CidadeRetorno[0].IdCidade;
-        this.Endereco.NomeCidade = CidadeRetorno[0].Nome;
+        let CodigoIBGE = { CodigoIBGE: retorno.ibge }
+        let CidadeRetorno: any = await this.PessoaService.BuscarCidadePorFiltro(CodigoIBGE);
+        // let CidadeRetorno = this.Cidades.filter(Cidade => Cidade.CodigoIBGE === retorno.ibge);
+        this.Endereco.Cidade.IdCidade = CidadeRetorno.resultado[0].IdCidade;
+        this.Endereco.Cidade.Nome = CidadeRetorno.resultado[0].Nome;
       }
     }
 
@@ -509,30 +520,30 @@ export class CadastroPessoaComponent implements OnInit {
           this.Pessoa.Inativo = true;
         }
         this.telefones = retorno.Telefones.length > 0 ? retorno.Telefones : [];
-        this.telefones.forEach(telefone => {
-          var categoriaResult = this.categoriasTelefone.find(categoria => telefone.IdCategoriaTelefone == categoria.IdCategoriaTelefone)
-          if (categoriaResult) {
-            telefone.DecricaoCategoriaTelefone = categoriaResult.Nome;
-          }
-        });
+        // this.telefones.forEach(telefone => {
+        //   var categoriaResult = this.categoriasTelefone.find(categoria => telefone.IdCategoriaTelefone == categoria.IdCategoriaTelefone)
+        //   if (categoriaResult) {
+        //     telefone.DecricaoCategoriaTelefone = categoriaResult.Nome;
+        //   }
+        // });
         this.enderecos = retorno.Enderecos.length > 0 ? retorno.Enderecos : [];
-        this.enderecos.forEach(endereco => {
-          var categoriaResult = this.categoriasEndereco.find(categoria => categoria.IdCategoriaEndereco == endereco.IdCategoriaEndereco)
-          if (categoriaResult) {
-            endereco.DescricaoCategoriaEndereco = categoriaResult.Nome;
-          }
-          var cidade = this.Cidades.find(cidade => cidade.IdCidade == endereco.IdCidade)
-          if (cidade) {
-            endereco.NomeCidade = cidade.Nome;
-          }
-        });
+        // this.enderecos.forEach(endereco => {
+        //   var categoriaResult = this.categoriasEndereco.find(categoria => categoria.IdCategoriaEndereco == endereco.IdCategoriaEndereco)
+        //   if (categoriaResult) {
+        //     endereco.DescricaoCategoriaEndereco = categoriaResult.Nome;
+        //   }
+        //   var cidade = this.Cidades.find(cidade => cidade.IdCidade == endereco.IdCidade)
+        //   if (cidade) {
+        //     endereco.NomeCidade = cidade.Nome;
+        //   }
+        // });
         this.emails = retorno.Emails.length > 0 ? retorno.Emails : [];
-        this.emails.forEach(email => {
-          var categoriaResult = this.categoriasEmail.find(categoria => email.IdCategoriaEmail == categoria.IdCategoriaEmail)
-          if (categoriaResult) {
-            email.DescricaoCategoriaEmail = categoriaResult.Nome;
-          }
-        });
+        // this.emails.forEach(email => {
+        //   var categoriaResult = this.categoriasEmail.find(categoria => email.IdCategoriaEmail == categoria.IdCategoriaEmail)
+        //   if (categoriaResult) {
+        //     email.DescricaoCategoriaEmail = categoriaResult.Nome;
+        //   }
+        // });
       }
 
 
@@ -625,7 +636,6 @@ export class CadastroPessoaComponent implements OnInit {
 
   validEmail(email) {
     let regex_validation = /^([a-z]){1,}([a-z0-9._-]){1,}([@]){1}([a-z]){2,}([.]){1}([a-z]){2,}([.]?){1}([a-z]?){2,}$/i;
-    console.log(regex_validation.test(email))
     return regex_validation.test(email)
   }
 

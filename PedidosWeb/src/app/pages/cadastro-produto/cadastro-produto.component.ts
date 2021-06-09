@@ -40,24 +40,16 @@ export class CadastroProdutoComponent implements OnInit {
   public PreecherComboFiltro() {
     this.Filtros = [
       {
-        Codigo: "C",
-        Descricao: "Código"
-      },
-      {
-        Codigo: "CI",
-        Descricao: "Código Interno"
+        Codigo: "NC",
+        Descricao: "Nome Comercial"
       },
       {
         Codigo: "NT",
         Descricao: "Nome Técnico"
       },
       {
-        Codigo: "NC",
-        Descricao: "Nome Comercial"
-      },
-      {
-        Codigo: "D",
-        Descricao: "Descrição"
+        Codigo: "CI",
+        Descricao: "Código Interno"
       }
     ]
   }
@@ -111,7 +103,6 @@ export class CadastroProdutoComponent implements OnInit {
   }
 
   async Pesquisar() {
-    this.ListarTodos();
     if (this.Produto.IdProduto == '') {
       this.modalSearch.nativeElement.click();
     } else {
@@ -131,7 +122,6 @@ export class CadastroProdutoComponent implements OnInit {
 
   public DepoisBuscar() {
     this.queryProduto.valueChanges.pipe(
-      map(value => value.trim()),
       filter(value => value.length > 0),
       debounceTime(200),
       distinctUntilChanged(),
@@ -150,12 +140,23 @@ export class CadastroProdutoComponent implements OnInit {
   }
 
   async PesquisarPorFiltro() {
+    let pesquisa: any;
     if (this.FiltroPesquisa == "NT") {
-      var pesquisa = { nomeTecnico: this.InputFiltroPesquisa }
-      let retorno: any = await this.ProdutoService.BuscarPorFiltro(pesquisa);
-      this.Produtos = retorno
+      pesquisa = { NomeTecnico: this.InputFiltroPesquisa }
+    } else if (this.FiltroPesquisa == "C") {
+      pesquisa = { IdProduto: this.InputFiltroPesquisa }
+    } else if (this.FiltroPesquisa == "CI") {
+      pesquisa = { CodigoInterno: this.InputFiltroPesquisa }
+    } else if (this.FiltroPesquisa == "NC") {
+      pesquisa = { NomeComercial: this.InputFiltroPesquisa }
+    } else {
+      this.AlertService.show("Selecione o filtro de Pesquisa", { classname: 'bg-danger text-light', delay: 3000 });
+      return
     }
+    let retorno: any = await this.ProdutoService.BuscarPorFiltro(pesquisa);
+    this.Produtos = retorno.resultado
   }
+
   // public preencheProduto() {
   //   this.Produto.IdProduto = this.ProdutoRetorno.IdProduto;
   //   this.ProdutoRetorno = new Produto;
@@ -165,6 +166,8 @@ export class CadastroProdutoComponent implements OnInit {
   //   this.Limpar()
   //   this.ProdutoRetorno = new Produto;
   // }
+
+
 
 
 }

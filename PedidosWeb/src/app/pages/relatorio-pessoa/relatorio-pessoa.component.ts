@@ -43,8 +43,8 @@ export class RelatorioPessoaComponent implements OnInit {
   }
 
   public async Gerar() {
+    console.log(this.PessoaFiltro)
     let retorno: any = await this.PessoaService.BuscarPorFiltro(this.PessoaFiltro);
     this.PessoasFiltro = retorno.resultado
-    console.log(this.PessoasFiltro);
   }
 }
