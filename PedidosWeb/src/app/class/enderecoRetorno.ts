@@ -11,17 +11,21 @@ export class enderecoRetorno {
     Observacao: string;
     NomeCidade: string;
     DescricaoCategoriaEndereco: string;
+    IdCidade: string;
+    IdCategoriaEndereco: string;
 
     constructor() {
         this.CEP = '';
         this.Logradouro = '';
         this.Numero = '';
         this.Bairro = '';
-        this.Cidade = new Cidade;
-        this.CategoriaEndereco = new CategoriaEndereco;
+        this.Cidade = new Cidade();
+        this.CategoriaEndereco = new CategoriaEndereco();
         this.Observacao = '';
         this.NomeCidade = '';
         this.DescricaoCategoriaEndereco = '';
+        this.IdCidade = '';
+        this.IdCategoriaEndereco = '';
     }
 
 }

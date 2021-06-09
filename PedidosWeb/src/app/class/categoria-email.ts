@@ -3,8 +3,8 @@ export class CategoriaEmail {
     public Nome: string;
     public Descricao: string;
 
-    constructor(){
-        this.IdCategoriaEmail = '';
+    constructor() {
+        this.IdCategoriaEmail = null;
         this.Nome = '';
         this.Descricao = '';
     }

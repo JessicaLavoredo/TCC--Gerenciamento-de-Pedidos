@@ -3,7 +3,7 @@ export class Vinculo {
     public Nome: string;
 
     constructor() {
-        this.IdVinculo = 0;
+        this.IdVinculo = null;
         this.Nome = '';
     }
 }

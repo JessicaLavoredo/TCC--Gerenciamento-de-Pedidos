@@ -82,6 +82,7 @@ export class CadastroPessoaComponent implements OnInit {
   @ViewChild('modalSearchCidade') modalSearchCidade: ElementRef;
   validacao: boolean;
   formControl: string[];
+  Inativo: boolean;
 
 
   constructor(private PessoaService: PessoaService, private route: ActivatedRoute, private router: Router, private AlertService: AlertService, private accountService: AccountService, private localeService: BsLocaleService) {
@@ -90,12 +91,6 @@ export class CadastroPessoaComponent implements OnInit {
 
   ngOnInit(): void {
     this.limparTela();
-    this.queryCidade.valueChanges.pipe(
-      map(value => value.trim()),
-      debounceTime(200),
-      distinctUntilChanged(),
-      tap(value => this.filter = value),
-    ).subscribe();
     this.dpConfig.isAnimated = true;
     this.dpConfig.dateInputFormat = 'DD/MM/YYYY';
     this.localeService.use('pt-br');
@@ -148,9 +143,9 @@ export class CadastroPessoaComponent implements OnInit {
           this.Pessoa = retorno;
           this.dataNascimento = new Date(this.Pessoa.DataNascimento + " 00:00:00")
           if (retorno.Inativo == 0) {
-            this.Pessoa.Inativo = false;
+            this.Inativo = false;
           } else {
-            this.Pessoa.Inativo = true;
+            this.Inativo = true;
           }
           this.telefones = retorno.Telefones.length > 0 ? retorno.Telefones : [];
           this.enderecos = retorno.Enderecos.length > 0 ? retorno.Enderecos : [];
@@ -187,7 +182,7 @@ export class CadastroPessoaComponent implements OnInit {
   public selecionarCidade(Cidade: Cidade) {
     if (Cidade) {
       this.Endereco.Cidade.IdCidade = Cidade.IdCidade;
-      this.Endereco.NomeCidade = Cidade.Nome;
+      this.Endereco.Cidade.Nome = Cidade.Nome;
     }
   }
 
@@ -265,33 +260,33 @@ export class CadastroPessoaComponent implements OnInit {
         return
       }
 
-      if (this.Pessoa.IdPessoa == '') {
-        this.Pessoa.IdPessoa = '0';
+      if (this.Inativo == false) {
+        this.Pessoa.Inativo = 0;
+      } else {
+        this.Pessoa.Inativo = 1;
       }
 
+      console.log(this.Pessoa);
+
+      if (this.Pessoa.IdPessoa == '') {
+        this.Pessoa.IdPessoa = null;
+      }
       this.Pessoa.DataNascimento = this.dataNascimento;
+
+      this.Pessoa.Enderecos = this.enderecos;
+      this.Pessoa.Telefones = this.telefones;
+      this.Pessoa.Emails = this.emails;
+
       for (let x = 0; x < this.enderecos.length; x++) {
-        this.Pessoa.Enderecos[0].Bairro = this.enderecos[x].Bairro;
-        this.Pessoa.Enderecos[0].CEP = this.enderecos[x].CEP;
-        this.Pessoa.Enderecos[0].IdCategoriaEndereco = this.enderecos[x].CategoriaEndereco.IdCategoriaEndereco;
-        this.Pessoa.Enderecos[0].IdCidade = this.enderecos[x].Cidade.IdCidade;
-        this.Pessoa.Enderecos[0].Logradouro = this.enderecos[x].Logradouro;
-        this.Pessoa.Enderecos[0].Numero = this.enderecos[x].Numero;
-        this.Pessoa.Enderecos[0].Observacao = this.enderecos[x].Observacao;
+        this.Pessoa.Enderecos[x].IdCategoriaEndereco = this.enderecos[x].CategoriaEndereco.IdCategoriaEndereco;
+        this.Pessoa.Enderecos[x].IdCidade = this.enderecos[x].Cidade.IdCidade;
       }
       for (let x = 0; x < this.telefones.length; x++) {
-        this.Pessoa.Telefones[0].DDD = this.telefones[x].DDD;
-        this.Pessoa.Telefones[0].DDI = this.telefones[x].DDI;
-        this.Pessoa.Telefones[0].IdCategoriaTelefone = this.telefones[x].CategoriaTelefone.IdCategoriaTelefone;
-        this.Pessoa.Telefones[0].Ramal = this.telefones[x].Ramal;
-        this.Pessoa.Telefones[0].Numero = this.telefones[x].Numero;
-        this.Pessoa.Telefones[0].Observacao = this.telefones[x].Observacao;
+        this.Pessoa.Telefones[x].IdCategoriaTelefone = this.telefones[x].CategoriaTelefone.IdCategoriaTelefone;
       }
 
       for (let x = 0; x < this.emails.length; x++) {
-        this.Pessoa.Emails[0].IdCategoriaEmail = this.emails[x].CategoriaEmail.IdCategoriaEmail;
-        this.Pessoa.Emails[0].Endereco = this.emails[x].Endereco;
-        this.Pessoa.Emails[0].Observacao = this.emails[x].Observacao;
+        this.Pessoa.Emails[x].IdCategoriaEmail = this.emails[x].CategoriaEmail.IdCategoriaEmail;
       }
 
       let retorno: any = await this.PessoaService.gravar(this.Pessoa);
@@ -391,7 +386,7 @@ export class CadastroPessoaComponent implements OnInit {
       this.AlertService.show("Preencha corretamente o campo Número", { classname: 'bg-danger text-light', delay: 3000 });
       return
     }
-
+    console.log(this.telefone.CategoriaTelefone.IdCategoriaTelefone)
     if (this.telefone.CategoriaTelefone.IdCategoriaTelefone == '') {
       this.AlertService.show("Preencha corretamente o campo Categoria de Telefone", { classname: 'bg-danger text-light', delay: 3000 });
       return
@@ -496,7 +491,7 @@ export class CadastroPessoaComponent implements OnInit {
       if (retorno.ibge) {
         let CodigoIBGE = { CodigoIBGE: retorno.ibge }
         let CidadeRetorno: any = await this.PessoaService.BuscarCidadePorFiltro(CodigoIBGE);
-        // let CidadeRetorno = this.Cidades.filter(Cidade => Cidade.CodigoIBGE === retorno.ibge);
+
         this.Endereco.Cidade.IdCidade = CidadeRetorno.resultado[0].IdCidade;
         this.Endereco.Cidade.Nome = CidadeRetorno.resultado[0].Nome;
       }
@@ -515,35 +510,13 @@ export class CadastroPessoaComponent implements OnInit {
         this.Pessoa = retorno;
         this.dataNascimento = new Date(this.Pessoa.DataNascimento + " 00:00:00")
         if (retorno.Inativo == 0) {
-          this.Pessoa.Inativo = false;
+          this.Inativo = false;
         } else {
-          this.Pessoa.Inativo = true;
+          this.Inativo = true;
         }
         this.telefones = retorno.Telefones.length > 0 ? retorno.Telefones : [];
-        // this.telefones.forEach(telefone => {
-        //   var categoriaResult = this.categoriasTelefone.find(categoria => telefone.IdCategoriaTelefone == categoria.IdCategoriaTelefone)
-        //   if (categoriaResult) {
-        //     telefone.DecricaoCategoriaTelefone = categoriaResult.Nome;
-        //   }
-        // });
         this.enderecos = retorno.Enderecos.length > 0 ? retorno.Enderecos : [];
-        // this.enderecos.forEach(endereco => {
-        //   var categoriaResult = this.categoriasEndereco.find(categoria => categoria.IdCategoriaEndereco == endereco.IdCategoriaEndereco)
-        //   if (categoriaResult) {
-        //     endereco.DescricaoCategoriaEndereco = categoriaResult.Nome;
-        //   }
-        //   var cidade = this.Cidades.find(cidade => cidade.IdCidade == endereco.IdCidade)
-        //   if (cidade) {
-        //     endereco.NomeCidade = cidade.Nome;
-        //   }
-        // });
         this.emails = retorno.Emails.length > 0 ? retorno.Emails : [];
-        // this.emails.forEach(email => {
-        //   var categoriaResult = this.categoriasEmail.find(categoria => email.IdCategoriaEmail == categoria.IdCategoriaEmail)
-        //   if (categoriaResult) {
-        //     email.DescricaoCategoriaEmail = categoriaResult.Nome;
-        //   }
-        // });
       }
 
 
@@ -626,10 +599,10 @@ export class CadastroPessoaComponent implements OnInit {
     let retorno: any = await this.PessoaService.BuscarCidadePorFiltro(pesquisa);
     let Cidades: Cidade[] = retorno.resultado;
 
-    Cidades.forEach(async cidade => {
-      let retornoEstado: any = await this.PessoaService.BuscarEstadoPorId(cidade.IdEstado);
-      cidade.Estado = retornoEstado
-    });
+    // Cidades.forEach(async cidade => {
+    //   let retornoEstado: any = await this.PessoaService.BuscarEstadoPorId(cidade.IdEstado);
+    //   cidade.Estado = retornoEstado
+    // });
     this.Cidades = Cidades;
   }
 

@@ -7,7 +7,8 @@ export class telefoneRetorno {
     Ramal: string;
     CategoriaTelefone: CategoriaTelefone;
     Observacao: string;
-    DecricaoCategoriaTelefone: String;
+    DescricaoCategoriaTelefone: String;
+    IdCategoriaTelefone: string;
 
     constructor() {
         this.DDI = '';
@@ -16,7 +17,8 @@ export class telefoneRetorno {
         this.Ramal = '';
         this.CategoriaTelefone = new CategoriaTelefone;
         this.Observacao = '';
-        this.DecricaoCategoriaTelefone = '';
+        this.DescricaoCategoriaTelefone = '';
+        this.IdCategoriaTelefone = '';
     }
 
 }

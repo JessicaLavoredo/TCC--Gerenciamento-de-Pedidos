@@ -1,3 +1,4 @@
+import { UsuarioLogin } from './../../class/usuariologin';
 import { AlertService } from './../../services/alert.service';
 import { Usuario } from '../../class/usuario';
 import { Router } from '@angular/router';
@@ -11,7 +12,7 @@ import { Component, OnInit, NgModule } from '@angular/core';
 })
 export class LoginComponent implements OnInit {
 
-  public usuario: Usuario = new Usuario();
+  public usuario: UsuarioLogin = new UsuarioLogin();
 
 
   constructor(private accountService: AccountService, private router: Router, private AlertService: AlertService) { }

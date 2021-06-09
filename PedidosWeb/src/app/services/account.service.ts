@@ -1,3 +1,4 @@
+import { UsuarioLogin } from './../class/usuariologin';
 import { environment } from './../../environments/environment';
 import { Usuario } from '../class/usuario';
 import { Injectable } from '@angular/core';
@@ -15,7 +16,8 @@ export class AccountService {
   constructor(private http: HttpClient) { }
 
 
-  async login(user: Usuario) {
+  async login(user: UsuarioLogin) {
+    console.log(JSON.stringify(user))
     const result = await this.http.post<any>('api/Usuario/login', JSON.stringify(user)).toPromise();
     if (result && result.Authorization) {
       window.localStorage.setItem('token', result.Authorization);
