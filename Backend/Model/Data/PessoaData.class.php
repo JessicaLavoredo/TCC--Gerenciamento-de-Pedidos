@@ -29,15 +29,16 @@
                 } else {
                     $sql = "INSERT INTO Pessoa (".join(", ", $propriedadesPessoa).")\n";
                     $sql.= "VALUES (";
+                    $valores = array();
                     foreach($propriedadesPessoa as $prop){
-                        $sql.= ":".$prop.", ";
+                        $valores[] = ":".$prop;
                     }
-                    $sql = substr_replace($sql,")\n",-2);
+                    $sql.= implode(', ', $valores).")";
 
                     $stm = $this->db->prepare($sql);
                     foreach($propriedadesPessoa as $prop){
-                        $get = "get".$prop;
-                        $stm->bindValue(":".$prop, $entidade->$get());
+                        $get = "get".ucfirst($prop);
+                        $stm->bindValue(':'.$prop, $entidade->$get());
                     }
                     $stm->execute();
                     $ultimoId = $this->db->lastInsertId();
@@ -88,7 +89,6 @@
                 }
             }
             $sql.= implode("\nAND ", $filtros);
-            $sql.= "\nAND Inativo = 0";
 
             foreach($propriedades as $prop){
                 $getProp = 'get'.ucfirst($prop);

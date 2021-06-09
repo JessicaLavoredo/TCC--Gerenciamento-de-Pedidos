@@ -7,6 +7,7 @@
         private ?string $descricao;
         private ?float $vista;
         private ?float $prazo;
+        private ?bool $inativo;
         
         function getIdProduto() {return $this->idProduto;}
         function getNomeTecnico() {return $this->nomeTecnico;}
@@ -15,6 +16,7 @@
         function getDescricao() {return $this->descricao;}
         function getVista() {return $this->vista;}
         function getPrazo() {return $this->prazo;}
+        function getInativo() {return $this->inativo;}
 
         function setIdProduto($idProduto) {$this->idProduto = $idProduto;}
         function setNomeTecnico($nomeTecnico) {$this->nomeTecnico = $nomeTecnico;}
@@ -23,8 +25,9 @@
         function setDescricao($descricao) {$this->descricao = $descricao;}
         function setVista($vista) {$this->vista = $vista;}
         function setPrazo($prazo) {$this->prazo = $prazo;}
+        function setInativo($inativo) {$this->inativo = $inativo;}
 
-        function __construct($idProduto=null, $nomeTecnico=null, $nomeComercial=null, $codigoInterno=null, $descricao=null, $vista=0, $prazo=0) {
+        function __construct($idProduto=null, $nomeTecnico=null, $nomeComercial=null, $codigoInterno=null, $descricao=null, $vista=0, $prazo=0, $inativo=null) {
             $this->setIdProduto($idProduto);
             $this->setNomeTecnico($nomeTecnico);
             $this->setNomeComercial($nomeComercial);
@@ -32,6 +35,7 @@
             $this->setDescricao($descricao);
             $this->setVista($vista);
             $this->setPrazo($prazo);
+            $this->setInativo($inativo);
         }
     }
 ?>
