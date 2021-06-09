@@ -8,7 +8,7 @@
         private ?string $rgInscricao;
         private ?string $dataNascimento;
         private ?string $genero;
-        private ?int $inativo;
+        private ?bool $inativo;
         private ?string $dataInclusao;
         private array $vinculos;
         private array $enderecos;
