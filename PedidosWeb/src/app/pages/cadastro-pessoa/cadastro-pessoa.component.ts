@@ -26,6 +26,7 @@ import { defineLocale } from 'ngx-bootstrap/chronos';
 import { ptBrLocale } from 'ngx-bootstrap/locale';
 import { ThrowStmt } from '@angular/compiler';
 import { AccountService } from './../../services/account.service';
+
 defineLocale('pt-br', ptBrLocale);
 
 @Component({
@@ -82,8 +83,8 @@ export class CadastroPessoaComponent implements OnInit {
   @ViewChild('modalSearchCidade') modalSearchCidade: ElementRef;
   validacao: boolean;
   formControl: string[];
-  Inativo: boolean;
-
+  StatusAtual: String;
+  ProximoStatus: String;
 
   constructor(private PessoaService: PessoaService, private route: ActivatedRoute, private router: Router, private AlertService: AlertService, private accountService: AccountService, private localeService: BsLocaleService) {
 
@@ -141,12 +142,7 @@ export class CadastroPessoaComponent implements OnInit {
       map((retorno: any) => {
         if (retorno) {
           this.Pessoa = retorno;
-          this.dataNascimento = new Date(this.Pessoa.DataNascimento + " 00:00:00")
-          if (retorno.Inativo == 0) {
-            this.Inativo = false;
-          } else {
-            this.Inativo = true;
-          }
+          this.dataNascimento = new Date(this.Pessoa.DataNascimento + " 00:00:00");
           this.telefones = retorno.Telefones.length > 0 ? retorno.Telefones : [];
           this.enderecos = retorno.Enderecos.length > 0 ? retorno.Enderecos : [];
           this.emails = retorno.Emails.length > 0 ? retorno.Emails : [];
@@ -260,13 +256,82 @@ export class CadastroPessoaComponent implements OnInit {
         return
       }
 
-      if (this.Inativo == false) {
-        this.Pessoa.Inativo = 0;
-      } else {
-        this.Pessoa.Inativo = 1;
+      if (this.Pessoa.IdPessoa == '') {
+        this.Pessoa.IdPessoa = null;
+      }
+      this.Pessoa.DataNascimento = this.dataNascimento;
+
+      this.Pessoa.Enderecos = this.enderecos;
+      this.Pessoa.Telefones = this.telefones;
+      this.Pessoa.Emails = this.emails;
+
+      for (let x = 0; x < this.enderecos.length; x++) {
+        this.Pessoa.Enderecos[x].IdCategoriaEndereco = this.enderecos[x].CategoriaEndereco.IdCategoriaEndereco;
+        this.Pessoa.Enderecos[x].IdCidade = this.enderecos[x].Cidade.IdCidade;
+      }
+      for (let x = 0; x < this.telefones.length; x++) {
+        this.Pessoa.Telefones[x].IdCategoriaTelefone = this.telefones[x].CategoriaTelefone.IdCategoriaTelefone;
       }
 
-      console.log(this.Pessoa);
+      for (let x = 0; x < this.emails.length; x++) {
+        this.Pessoa.Emails[x].IdCategoriaEmail = this.emails[x].CategoriaEmail.IdCategoriaEmail;
+      }
+
+      let retorno: any = await this.PessoaService.gravar(this.Pessoa);
+      if (retorno.status == 200) {
+        this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
+        this.limparTela();
+      } else {
+        this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
+      }
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
+  public async AlterarStatus() {
+    try {
+      this.validacao = true;
+      if (this.Pessoa.TipoPessoa == 'F' && !cpf.isValid(this.Pessoa.CpfCnpj)) {
+        this.AlertService.show("Cpf Inválido", { classname: 'bg-danger text-light', delay: 3000 });
+        this.Pessoa.CpfCnpj = '';
+        this.validacao = false;
+      }
+
+      if (this.Pessoa.TipoPessoa == 'J' && !cnpj.isValid(this.Pessoa.CpfCnpj)) {
+        this.AlertService.show("Cnpj Inválido", { classname: 'bg-danger text-light', delay: 3000 });
+        this.Pessoa.CpfCnpj = '';
+        this.validacao = false;
+      }
+
+      if (this.Pessoa.NomeRazao == '') {
+        this.AlertService.show("Preencha corretamente o campo " + this.labelNome, { classname: 'bg-danger text-light', delay: 3000 });
+        this.validacao = false;
+      }
+
+      if (this.perfil == "2") {
+        this.Pessoa.Vinculos.push(2)
+      }
+
+      if (this.Pessoa.Vinculos.length <= 0) {
+        this.AlertService.show("Preencha corretamente o campo Cargo", { classname: 'bg-danger text-light', delay: 3000 });
+        this.validacao = false;
+      }
+
+      if (this.enderecos.length <= 0) {
+        this.AlertService.show("Informe pelo menos um endereço", { classname: 'bg-danger text-light', delay: 3000 });
+        this.validacao = false;
+      }
+
+      if (this.telefones.length <= 0) {
+        this.AlertService.show("Informe pelo menos um telefone", { classname: 'bg-danger text-light', delay: 3000 });
+        this.validacao = false;
+      }
+
+      if (!this.validacao) {
+        return
+      }
 
       if (this.Pessoa.IdPessoa == '') {
         this.Pessoa.IdPessoa = null;
@@ -508,12 +573,7 @@ export class CadastroPessoaComponent implements OnInit {
       let retorno: any = await this.PessoaService.BuscarPorId(this.Pessoa.IdPessoa)
       if (retorno) {
         this.Pessoa = retorno;
-        this.dataNascimento = new Date(this.Pessoa.DataNascimento + " 00:00:00")
-        if (retorno.Inativo == 0) {
-          this.Inativo = false;
-        } else {
-          this.Inativo = true;
-        }
+        this.dataNascimento = new Date(this.Pessoa.DataNascimento + " 00:00:00");
         this.telefones = retorno.Telefones.length > 0 ? retorno.Telefones : [];
         this.enderecos = retorno.Enderecos.length > 0 ? retorno.Enderecos : [];
         this.emails = retorno.Emails.length > 0 ? retorno.Emails : [];
