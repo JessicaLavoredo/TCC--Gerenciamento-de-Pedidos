@@ -4,20 +4,19 @@ import { Pessoa } from './Pessoa';
 
 export class Pedido {
     public IdPedido: string;
-    public Pessoa: Pessoa;
     public IdFormaPagamento: string;
     public DataPedido: Date;
     public IdUsuarioMovimentacao: string;
-    public Pedido_Produto: Pedido_Produto[];
-
+    public Produtos: Pedido_Produto[];
+    public IdPessoa: string;
 
     constructor() {
         this.IdPedido = '';
         this.IdFormaPagamento = '';
         this.IdUsuarioMovimentacao = '';
-        this.Pedido_Produto = [];
+        this.Produtos = [];
         this.DataPedido = new Date;
-        this.Pessoa = new Pessoa;
+        this.IdPessoa = '';
     }
 }
 

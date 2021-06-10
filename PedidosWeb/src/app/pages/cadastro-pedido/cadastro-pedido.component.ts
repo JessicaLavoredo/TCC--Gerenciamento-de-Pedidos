@@ -114,11 +114,13 @@ export class CadastroPedidoComponent implements OnInit {
       map((result: any) => {
         if (result) {
           this.Pedido = result;
-          this.Cliente.IdPessoa = this.Pedido.Pessoa.IdPessoa
+          this.Cliente.IdPessoa = this.Pedido.IdPessoa
           this.selecionarCliente(this.Cliente);
           let mes = new Date(this.Pedido.DataPedido).getMonth() + 1
           let messtring = mes < 10 ? '0' + mes : mes
-          this.DataPedido = new Date(this.Pedido.DataPedido).getDate() + '/' + messtring + '/' + new Date(this.Pedido.DataPedido).getFullYear()
+          let dia = new Date(this.Pedido.DataPedido).getDate()
+          let diastring = dia < 10 ? '0' + dia : dia
+          this.DataPedido = diastring + '/' + messtring + '/' + new Date(this.Pedido.DataPedido).getFullYear()
         } else {
           if (this.Pedido.IdPedido != '') {
             this.AlertService.show("Registro não encontrado", { classname: 'bg-danger text-light', delay: 3000 });
@@ -136,7 +138,9 @@ export class CadastroPedidoComponent implements OnInit {
     this.Pedido = new Pedido;
     let mes = this.Pedido.DataPedido.getMonth() + 1
     let messtring = mes < 10 ? '0' + mes : mes
-    this.DataPedido = this.Pedido.DataPedido.getDate() + '/' + messtring + '/' + this.Pedido.DataPedido.getFullYear()
+    let dia = new Date(this.Pedido.DataPedido).getDate()
+    let diastring = dia < 10 ? '0' + dia : dia
+    this.DataPedido = diastring + '/' + messtring + '/' + this.Pedido.DataPedido.getFullYear()
     this.Cliente = new Pessoa;
     this.ClienteEscolhido = false;
     this.DepoisBuscar();
@@ -148,17 +152,26 @@ export class CadastroPedidoComponent implements OnInit {
 
   public async Gravar() {
     try {
-      this.Pedido.Pessoa.IdPessoa = this.Cliente.IdPessoa;
+      this.Pedido.IdPessoa = this.Cliente.IdPessoa;
       const usuario = this.accountService.getUsuario();
       this.Pedido.IdUsuarioMovimentacao = usuario;
-      for (var x = 0; x < this.Produtos_PedidoRetorno.length; x++) {
-        this.Pedido.Pedido_Produto[x].IdProduto = this.Produtos_PedidoRetorno[x].IdProduto;
-        this.Pedido.Pedido_Produto[x].Preco = this.Produtos_PedidoRetorno[x].Preco
-        this.Pedido.Pedido_Produto[x].Quantidade = this.Produtos_PedidoRetorno[x].Quantidade.toString();
-        this.Pedido.Pedido_Produto[x].PrecoFinal = this.Produtos_PedidoRetorno[x].Total.toString();
-      }
+      let Data = this.DataPedido.split("/")
+      let dia = parseInt(Data[0]);
+      let mes = parseInt(Data[1]);
+      let ano = parseInt(Data[2]);
 
-      this.Pedido.Pedido_Produto = this.Pedido_Produtos
+      this.Pedido.DataPedido = new Date(ano, mes, dia, 0, 0)
+      for (var x = 0; x < this.Produtos_PedidoRetorno.length; x++) {
+        let ProdutoPedido: Pedido_Produto = new Pedido_Produto();
+        ProdutoPedido.IdProduto = this.Produtos_PedidoRetorno[x].IdProduto;
+        ProdutoPedido.Preco = this.Produtos_PedidoRetorno[x].Preco.replace(",", ".")
+        ProdutoPedido.Quantidade = this.Produtos_PedidoRetorno[x].Quantidade.toString();
+        ProdutoPedido.Desconto = "0";
+
+        this.Pedido.Produtos.push(ProdutoPedido);
+      }
+      this.Pedido.IdPedido = this.Pedido.IdPedido == "" ? null : this.Pedido.IdPedido;
+      console.log(this.Pedido.IdPedido)
       let retorno: any = await this.pedidoService.gravar(this.Pedido);
       if (retorno.status == 200) {
         this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
@@ -181,9 +194,9 @@ export class CadastroPedidoComponent implements OnInit {
   public async AdicionarProduto() {
     this.Produto_PedidoRetorno.Preco = parseFloat(this.Produto_PedidoRetorno.Preco).toFixed(2).replace(".", ",");
     let preco = this.Produto_PedidoRetorno.Preco.toString().replace(",", ".")
-    let total = this.Produto_PedidoRetorno.Quantidade * parseFloat(preco);
+    let total = parseFloat(this.Produto_PedidoRetorno.Quantidade) * parseFloat(preco);
     this.TotalProdutosGrade = this.TotalProdutosGrade + total;
-    this.Produto_PedidoRetorno.Total = total.toFixed(2).replace(".", ",");
+    this.Produto_PedidoRetorno.PrecoFinal = total.toFixed(2).replace(".", ",");
     this.Produtos_PedidoRetorno.push(this.Produto_PedidoRetorno)
     this.Produto_PedidoRetorno = new Produto_PedidoRetorno();
     this.CodigoProduto = '';
@@ -206,10 +219,9 @@ export class CadastroPedidoComponent implements OnInit {
       this.Pedido_Produto.IdProduto = Produto_Pedido.IdProduto;
       this.Pedido_Produto.Preco = Produto_Pedido.Preco;
       this.Pedido_Produto.Quantidade = Produto_Pedido.Quantidade.toString();
-      this.Pedido_Produto.PrecoFinal = Produto_Pedido.Total.toString();
 
       this.Produtos_PedidoRetorno.splice(this.Produtos_PedidoRetorno.indexOf(Produto_Pedido), 1)
-      this.Pedido.Pedido_Produto.splice(this.Pedido.Pedido_Produto.indexOf(this.Pedido_Produto), 1)
+      this.Pedido.Produtos.splice(this.Pedido.Produtos.indexOf(this.Pedido_Produto), 1)
     }
     if (this.Produtos_PedidoRetorno.length > 0) {
       this.nenhumProduto = false;

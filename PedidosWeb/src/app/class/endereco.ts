@@ -1,4 +1,7 @@
+import { Cidade } from './cidade';
+import { CategoriaEndereco } from "./categoria-endereco";
 export class endereco {
+
     CEP: string;
     Logradouro: string;
     Numero: string;
@@ -6,6 +9,7 @@ export class endereco {
     IdCidade: string;
     IdCategoriaEndereco: string;
     Observacao: string;
+
 
     constructor() {
         this.CEP = '';
@@ -15,6 +19,7 @@ export class endereco {
         this.IdCidade = '';
         this.IdCategoriaEndereco = '';
         this.Observacao = '';
+
     }
 
 }

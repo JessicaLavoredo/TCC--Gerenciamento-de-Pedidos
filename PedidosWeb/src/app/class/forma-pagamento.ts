@@ -3,7 +3,7 @@ export class FormaPagamento {
     public Descritivo: string;
 
     constructor() {
-        this.IdFormaPagamento = '';
+        this.IdFormaPagamento = null;
         this.Descritivo = '';
     }
 }
