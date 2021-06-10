@@ -12,9 +12,9 @@
                 if ($entidade->getIdPedido() > 0) {
                     $sql = "UPDATE Pedido\n";
                     $sql.= "SET IdFormaPagamento=".$entidade->getIdFormaPagamento().", Total=".$entidade->getTotal();
-                    $sql.= "WHERE IdPedido = ".$entidade->getIdPedido();
+                    $sql.= "\nWHERE IdPedido = ".$entidade->getIdPedido();
 
-                    $stm = $this->prepare($sql);
+                    $stm = $this->db->prepare($sql);
                     $stm->execute();
                     $ultimoId = $entidade->getIdPedido();
                 } else {

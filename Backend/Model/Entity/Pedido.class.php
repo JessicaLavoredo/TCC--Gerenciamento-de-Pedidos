@@ -4,6 +4,7 @@
         private ?int $idPessoa;
         private ?int $idFormaPagamento;
         private ?int $idStatus;
+        private ?string $dataCriacao;
         private ?float $total;
         private Array $produtos;
         
@@ -11,6 +12,7 @@
         function getIdPessoa() {return $this->idPessoa;}
         function getIdFormaPagamento() {return $this->idFormaPagamento;}
         function getIdStatus() {return $this->idStatus;}
+        function getDataCriacao() {return $this->dataCriacao;}
         function getTotal() {return array_reduce($this->produtos, function($total, $produto){ return $total + ($produto->getPrecoFinal() * $produto->getQuantidade());}, 0.00);}
         function getProdutos() {return $this->produtos;}
 
@@ -18,6 +20,7 @@
         function setIdPessoa($idPessoa) {$this->idPessoa = $idPessoa;}
         function setIdFormaPagamento($idFormaPagamento) {$this->idFormaPagamento = $idFormaPagamento;}
         function setIdStatus($idStatus) {$this->idStatus = $idStatus;}
+        function setDataCriacao($dataCriacao) {$this->dataCriacao = $dataCriacao;}
         function setProdutos($produtos) {
             $this->produtos = array();
             if(isset($produtos)){
@@ -38,6 +41,7 @@
             $this->setIdFormaPagamento($idFormaPagamento);
             $this->setIdStatus($idStatus);
             $this->setProdutos($produtos);
+            $this->setDataCriacao(null);
         }
     }
 ?>

@@ -15,6 +15,7 @@
             $ret["Status"] = (New HistoricoPedidoData())->buscarStatusPorId($pedido->getIdPedido());
             $ret["FormaPagamento"] = (New FormaPagamentoData())->buscarPorId($pedido->getIdFormaPagamento());
             $ret["Total"] = $pedido->getTotal();
+            $ret["DataCricao"] = $pedido->getDataCriacao();
             $ret["Produtos"] = array_map(function($pedProd){
                 $pedProd = Funcoes::objetoParaArray($pedProd);
                 $pedProd["Produto"] = (new ProdutoData())->buscarPorId($pedProd["IdProduto"]);
