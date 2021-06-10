@@ -17,6 +17,7 @@
                     $stm = $this->db->prepare($sql);
                     $stm->execute();
                     $ultimoId = $entidade->getIdPedido();
+                    $statusPedido = $entidade->getIdStatus();
                 } else {
                     $sql = "INSERT INTO Pedido (IdPessoa, IdFormaPagamento, Total, IdUsuarioCriadoPor, DataCriacao)\n";
                     $sql.= "VALUES (";
@@ -31,10 +32,11 @@
                     $stm = $this->db->prepare($sql);
                     $stm->execute();
                     $ultimoId = intval($this->db->lastInsertId());
-
-                    $historicoPedido = New HistoricoPedido(null, $ultimoId, 1, date_format(date_create(), 'Y-m-d H:i:s'), $GLOBALS['$USUARIO_LOGADO']);
-                    (new HistoricoPedidoData())->gravar($historicoPedido);
+                    $statusPedido = 1;
                 }
+
+                $historicoPedido = New HistoricoPedido(null, $ultimoId, $statusPedido, date_format(date_create(), 'Y-m-d H:i:s'), $GLOBALS['$USUARIO_LOGADO']);
+                (new HistoricoPedidoData())->gravar($historicoPedido);
 
                 $pedidoProdutoData = new PedidoProdutoData();
                 $pedidoProdutoData->deletarTodosPorIdPedido($ultimoId);

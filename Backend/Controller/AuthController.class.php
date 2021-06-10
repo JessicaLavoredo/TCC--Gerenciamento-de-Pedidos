@@ -15,7 +15,8 @@
             $dataAgr = date_create();
             
             if ($assinaturaBase64Url === $assinaturaValidaBase64Url && $dataAgr < $dataExp) {
-                $GLOBALS['$USUARIO_LOGADO'] = (int) $corpo->idUsuario;
+                $GLOBALS['USUARIO_LOGADO'] = (int) $corpo->idUsuario;
+                $GLOBALS['PERFIL_USUARIO_LOGADO'] = (int) $corpo->idPerfil;
                 return true;
             }
 

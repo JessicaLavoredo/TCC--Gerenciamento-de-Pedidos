@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Tempo de geração: 08-Jun-2021 às 04:37
+-- Tempo de geração: 10-Jun-2021 às 04:32
 -- Versão do servidor: 10.4.11-MariaDB
 -- versão do PHP: 7.4.2
 
@@ -5972,8 +5972,7 @@ CREATE TABLE `perfil` (
 INSERT INTO `perfil` (`IdPerfil`, `Nome`) VALUES
 (1, 'Administrador'),
 (2, 'Gerente'),
-(3, 'Vendedor'),
-(4, 'Cliente');
+(3, 'Vendedor');
 
 -- --------------------------------------------------------
 
@@ -6397,7 +6396,7 @@ ALTER TABLE `pedidoproduto`
 -- AUTO_INCREMENT de tabela `perfil`
 --
 ALTER TABLE `perfil`
-  MODIFY `IdPerfil` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `IdPerfil` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT de tabela `pessoa`

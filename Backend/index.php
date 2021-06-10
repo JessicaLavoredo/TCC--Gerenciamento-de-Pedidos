@@ -10,7 +10,8 @@
 
     date_default_timezone_set('America/Sao_Paulo');
 
-    $GLOBALS['$USUARIO_LOGADO'] = null;
+    $GLOBALS['USUARIO_LOGADO'] = null;
+    $GLOBALS['PERFIL_USUARIO_LOGADO'] = null;
 
     try {
 
