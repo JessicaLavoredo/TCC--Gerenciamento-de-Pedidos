@@ -5,7 +5,7 @@
         "changeOrigin": true,
         "logLevel": "debug",
         "pathRewrite": {
-            "^/api": "TCC--Gerenciamento-de-Pedidos/Backend"
+            "^/api": "/TCC--Gerenciamento-de-Pedidos/Backend"
         }
     }
 }

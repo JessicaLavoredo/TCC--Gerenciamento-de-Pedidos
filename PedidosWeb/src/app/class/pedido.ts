@@ -9,6 +9,7 @@ export class Pedido {
     public IdUsuarioMovimentacao: string;
     public Produtos: Pedido_Produto[];
     public IdPessoa: string;
+    public IdStatusPedido: string;
 
     constructor() {
         this.IdPedido = '';
@@ -17,6 +18,7 @@ export class Pedido {
         this.Produtos = [];
         this.DataPedido = new Date;
         this.IdPessoa = '';
+        this.IdStatusPedido = "1";
     }
 }
 

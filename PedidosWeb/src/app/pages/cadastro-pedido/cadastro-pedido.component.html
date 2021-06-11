@@ -17,9 +17,19 @@
                 <label><b>Criado em:</b></label>
                 <label>{{DataPedido}}</label>
             </div>
-            <div class="form-group col-md-5">
+            <!-- <div class="form-group col-md-1">
                 <label><b>Situação:</b></label><br>
-                <button class="btn  btn-success mb-3">Aberto</button>
+                <button class="btn btn-success mb-3">{{StatusAtual}}</button>
+            </div> -->
+
+            <div class="form-group col-md-2">
+                <label for="txtIdStatus">Situação</label>
+                <select id="txtIdStatus" class="form-control {{tipoBtn}}" [(ngModel)]="Pedido.IdStatusPedido"
+                    name=" idStatus" (ngModelChange)="alterarSituacao()">
+                    <option [value]=Status.IdStatusPedido *ngFor="let Status of ComboStatus" class="btn-light">
+                        {{Status.Nome}}
+                    </option>
+                </select>
             </div>
 
         </div>
@@ -143,7 +153,7 @@
             <tbody>
                 <tr *ngFor="let Produto_PedidoRetorno of Produtos_PedidoRetorno">
                     <td><button class="btn btn-info btnselecionar btn-sm"
-                            (click)="excluirProdutoPedido(Produto_Pedido)">
+                            (click)="excluirProdutoPedido(Produto_PedidoRetorno)">
                             <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">clear
                             </mat-icon>
                         </button></td>
@@ -178,8 +188,8 @@
 
     <app-footer>
         <span rodape>
-            <button type="submit" class="btn btn-secondary ml-5 " (click)="Gravar()">Salvar</button>
-            <button type="button" class="btn btn-secondary ml-5 " (click)="limpar()">Novo</button>
+            <button type="submit" class="btn btn-secondary ml-4 " (click)="Gravar()">Salvar</button>
+            <button type="button" class="btn btn-secondary ml-4 " (click)="limpar()">Novo</button>
         </span>
     </app-footer>
 

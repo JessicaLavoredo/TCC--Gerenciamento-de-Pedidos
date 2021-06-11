@@ -48,4 +48,8 @@ export class PedidoService {
     })
   }
 
+  public buscarTodosStatus() {
+    return this.http.get<any[]>('api/StatusPedido/buscartodos');
+  }
+
 }

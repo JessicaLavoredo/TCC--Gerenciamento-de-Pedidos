@@ -53,18 +53,23 @@ export class CadastroPedidoComponent implements OnInit {
   queryValor = new FormControl();
   DataPedido = '';
   @ViewChild('myInput') myInput: ElementRef;
+  tipoBtn = "btn-danger"
+  ComboStatus: any[];
+  classeStatus: string;
 
   public FormasPagamento: FormaPagamento[] = [];
   @ViewChild(MatAccordion) accordion: MatAccordion;
   panelOpenState = false;
   Telefone: string;
   Email: any;
+  Status: any[];
   constructor(private pedidoService: PedidoService, private accountService: AccountService, private router: Router, private AlertService: AlertService, private PessoaService: PessoaService, private ProdutoService: ProdutoService,) { }
 
   ngOnInit(): void {
     this.listarFormaPagamento()
     this.ClienteEscolhido = false;
     this.PreecherComboFiltro();
+    this.listarStatus();
     this.limpar();
   }
 
@@ -113,14 +118,37 @@ export class CadastroPedidoComponent implements OnInit {
       switchMap(value => this.pedidoService.BuscarPorId(this.Pedido.IdPedido)),
       map((result: any) => {
         if (result) {
+          console.log(result);
           this.Pedido = result;
-          this.Cliente.IdPessoa = this.Pedido.IdPessoa
+          this.Pedido.IdStatusPedido = result.Status.IdStatusPedido;
+          this.Cliente.IdPessoa = result.Pessoa.IdPessoa
           this.selecionarCliente(this.Cliente);
-          let mes = new Date(this.Pedido.DataPedido).getMonth() + 1
+          let mes = new Date(result.DataCricao).getMonth() + 1
           let messtring = mes < 10 ? '0' + mes : mes
-          let dia = new Date(this.Pedido.DataPedido).getDate()
+          let dia = new Date(result.DataCricao).getDate()
           let diastring = dia < 10 ? '0' + dia : dia
-          this.DataPedido = diastring + '/' + messtring + '/' + new Date(this.Pedido.DataPedido).getFullYear()
+          this.DataPedido = diastring + '/' + messtring + '/' + new Date(result.DataCricao).getFullYear();
+          result.Produtos.forEach(ProdutoPedido => {
+            let ProdutoPedidoRetorno: Produto_PedidoRetorno = new Produto_PedidoRetorno();
+            ProdutoPedidoRetorno.Preco = parseFloat(ProdutoPedido.Preco).toFixed(2).replace(".", ",");
+            let preco = ProdutoPedido.Preco.toString().replace(",", ".")
+            let total = parseFloat(ProdutoPedido.Quantidade) * parseFloat(preco);
+            this.TotalProdutosGrade = this.TotalProdutosGrade + total;
+            ProdutoPedidoRetorno.PrecoFinal = total.toFixed(2).replace(".", ",");
+            ProdutoPedidoRetorno.Descricao = ProdutoPedido.Produto.NomeComercial;
+            ProdutoPedidoRetorno.IdProduto = ProdutoPedido.Produto.IdProduto;
+            ProdutoPedidoRetorno.Quantidade = ProdutoPedido.Quantidade;
+            this.Produtos_PedidoRetorno.push(ProdutoPedidoRetorno);
+          });
+          this.TotalProdutos = this.TotalProdutosGrade.toFixed(2).replace(".", ",");
+          this.Pedido.IdFormaPagamento = result.FormaPagamento.IdFormaPagamento;
+
+          if (this.Produtos_PedidoRetorno.length > 0) {
+            this.nenhumProduto = false;
+          } else {
+            this.nenhumProduto = true;
+          }
+
         } else {
           if (this.Pedido.IdPedido != '') {
             this.AlertService.show("Registro não encontrado", { classname: 'bg-danger text-light', delay: 3000 });
@@ -143,6 +171,7 @@ export class CadastroPedidoComponent implements OnInit {
     this.DataPedido = diastring + '/' + messtring + '/' + this.Pedido.DataPedido.getFullYear()
     this.Cliente = new Pessoa;
     this.ClienteEscolhido = false;
+    this.alterarSituacao();
     this.DepoisBuscar();
   }
 
@@ -173,12 +202,14 @@ export class CadastroPedidoComponent implements OnInit {
       this.Pedido.IdPedido = this.Pedido.IdPedido == "" ? null : this.Pedido.IdPedido;
       console.log(this.Pedido.IdPedido)
       let retorno: any = await this.pedidoService.gravar(this.Pedido);
+
       if (retorno.status == 200) {
         this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
         this.limpar();
       } else {
         this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
       }
+
     } catch (error) {
       console.error(error);
     }
@@ -188,6 +219,12 @@ export class CadastroPedidoComponent implements OnInit {
   public listarFormaPagamento() {
     this.pedidoService.buscarTodasFormasPagamento().subscribe(result => {
       this.FormasPagamento = result;
+    });
+  }
+
+  public listarStatus() {
+    this.pedidoService.buscarTodosStatus().subscribe(result => {
+      this.ComboStatus = result;
     });
   }
 
@@ -219,9 +256,10 @@ export class CadastroPedidoComponent implements OnInit {
       this.Pedido_Produto.IdProduto = Produto_Pedido.IdProduto;
       this.Pedido_Produto.Preco = Produto_Pedido.Preco;
       this.Pedido_Produto.Quantidade = Produto_Pedido.Quantidade.toString();
-
+      this.TotalProdutosGrade = this.TotalProdutosGrade - parseFloat(Produto_Pedido.PrecoFinal);
+      this.TotalProdutos = this.TotalProdutosGrade.toFixed(2).replace(".", ",");
+      console.log(this.TotalProdutosGrade);
       this.Produtos_PedidoRetorno.splice(this.Produtos_PedidoRetorno.indexOf(Produto_Pedido), 1)
-      this.Pedido.Produtos.splice(this.Pedido.Produtos.indexOf(this.Pedido_Produto), 1)
     }
     if (this.Produtos_PedidoRetorno.length > 0) {
       this.nenhumProduto = false;
@@ -281,6 +319,18 @@ export class CadastroPedidoComponent implements OnInit {
       this.ClienteEscolhido = true;
     }
 
+  }
+
+  public async alterarSituacao() {
+    if (this.Pedido.IdStatusPedido == '1') {
+      this.tipoBtn = 'btn-success'
+    } else if (this.Pedido.IdStatusPedido == '2') {
+      this.tipoBtn = 'btn-dark'
+    } else if (this.Pedido.IdStatusPedido == '3') {
+      this.tipoBtn = 'btn-danger'
+    } else if (this.Pedido.IdStatusPedido == '4') {
+      this.tipoBtn = 'btn-primary'
+    }
   }
 
 
