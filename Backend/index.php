@@ -43,7 +43,11 @@
         } 
 
         if (strtoupper($classe) === 'USUARIOCONTROLLER' && strtoupper($metodo) === 'LOGIN') {
-            $retorno = (New $classe())->$metodo($parametros);    
+            $retorno = (New $classe())->$metodo($parametros);
+            if ($retorno === null) {
+                http_response_code(403);    
+                return;
+            }    
             http_response_code(200);
             $ret = json_encode($retorno);
             $ret = file_put_contents("php://output", $ret);
@@ -66,16 +70,18 @@
             $retorno = (New $classe())->$metodo($parametros);
         }
 
+        if (is_null($retorno)) {
+            http_response_code(404);
+            return;
+        }
+        $ret = json_encode($retorno);
+        return file_put_contents("php://output", $ret);
+
     } catch (Exception $e) {
         http_response_code(500);
         $retorno = ['Exception' => $e->getMessage() . ' in ' . $e->getFile() . ' line ' . $e->getLine()];
     }
 
-    if (is_null($retorno)) {
-        http_response_code(404);
-        return;
-    }
-    $ret = json_encode($retorno);
-    return file_put_contents("php://output", $ret);
+   
 
 ?>

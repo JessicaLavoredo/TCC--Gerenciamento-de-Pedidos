@@ -7,11 +7,11 @@
         }
 
         function login($obj){
-            $controller = get_class($this);
-            $data = str_ireplace('Controller', 'Data', $controller);
-            $classeEntidade = str_ireplace('Controller', '', $controller);
-            $entidade = Funcoes::criarEntidade($classeEntidade, $obj);
+            $entidade = Funcoes::criarEntidade('Usuario', $obj);
             $ret = (New UsuarioData())->autenticarUsuario($entidade);
+            if (gettype($ret) !== 'object' || get_class($ret) !== 'Usuario') {
+                return null;
+            }
             return ['Authorization' => AuthController::gerarToken($ret->getIdUsuario(), $ret->getIdPerfil())];
         }
     }

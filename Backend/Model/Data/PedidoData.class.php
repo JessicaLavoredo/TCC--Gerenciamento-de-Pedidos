@@ -24,7 +24,7 @@
                     $valores[] = $entidade->getIdPessoa();
                     $valores[] = $entidade->getIdFormaPagamento();
                     $valores[] = $entidade->getTotal();
-                    $valores[] = $GLOBALS['$USUARIO_LOGADO'];
+                    $valores[] = $GLOBALS['USUARIO_LOGADO'];
                     $valores[] = "'".date_format(date_create(), 'Y-m-d H:i:s')."'";
                     $sql.= implode(", ", $valores);
                     $sql.= ")";
@@ -35,7 +35,7 @@
                     $statusPedido = 1;
                 }
 
-                $historicoPedido = New HistoricoPedido(null, $ultimoId, $statusPedido, date_format(date_create(), 'Y-m-d H:i:s'), $GLOBALS['$USUARIO_LOGADO']);
+                $historicoPedido = New HistoricoPedido(null, $ultimoId, $statusPedido, date_format(date_create(), 'Y-m-d H:i:s'), $GLOBALS['USUARIO_LOGADO']);
                 (new HistoricoPedidoData())->gravar($historicoPedido);
 
                 $pedidoProdutoData = new PedidoProdutoData();
