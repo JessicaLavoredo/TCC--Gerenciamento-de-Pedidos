@@ -81,6 +81,10 @@ export class CadastroUsuarioComponent implements OnInit {
 
   public async Gravar() {
     try {
+      if (this.Usuario.IdUsuario == '') {
+        this.Usuario.IdUsuario = null;
+      }
+
       if (this.Usuario.Senha === this.ConfirmacaoSenha) {
         let retorno: any = await this.UsuarioService.gravar(this.Usuario)
         if (retorno.status == 200) {

@@ -172,6 +172,7 @@ export class CadastroPedidoComponent implements OnInit {
     this.Cliente = new Pessoa;
     this.ClienteEscolhido = false;
     this.alterarSituacao();
+    this.Produtos_PedidoRetorno = [];
     this.DepoisBuscar();
   }
 

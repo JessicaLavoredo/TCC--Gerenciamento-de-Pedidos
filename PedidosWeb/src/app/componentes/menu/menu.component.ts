@@ -29,10 +29,11 @@ export class MenuComponent {
       let retornoUsuario: any = await this.UsuarioService.BuscarPorId(usuario);
       let retorno: any = await this.PessoaService.BuscarPorId(retornoUsuario.IdPessoa);
       if (retorno) {
-        if (retorno.ApelidoFantasia != '') {
-          this.UsuarioLogado = retorno.ApelidoFantasia;
-        } else {
+        if (retorno.ApelidoFantasia == "" || retorno.ApelidoFantasia == null) {
           this.UsuarioLogado = retorno.NomeRazao;
+
+        } else {
+          this.UsuarioLogado = retorno.ApelidoFantasia;
         }
       }
       const perfil = this.accountService.getTipoUser();

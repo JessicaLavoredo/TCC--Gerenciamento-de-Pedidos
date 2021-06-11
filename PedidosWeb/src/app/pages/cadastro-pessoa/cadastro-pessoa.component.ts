@@ -83,8 +83,6 @@ export class CadastroPessoaComponent implements OnInit {
   @ViewChild('modalSearchCidade') modalSearchCidade: ElementRef;
   validacao: boolean;
   formControl: string[];
-  StatusAtual: String;
-  ProximoStatus: String;
 
   constructor(private PessoaService: PessoaService, private route: ActivatedRoute, private router: Router, private AlertService: AlertService, private accountService: AccountService, private localeService: BsLocaleService) {
 
@@ -659,10 +657,6 @@ export class CadastroPessoaComponent implements OnInit {
     let retorno: any = await this.PessoaService.BuscarCidadePorFiltro(pesquisa);
     let Cidades: Cidade[] = retorno.resultado;
 
-    // Cidades.forEach(async cidade => {
-    //   let retornoEstado: any = await this.PessoaService.BuscarEstadoPorId(cidade.IdEstado);
-    //   cidade.Estado = retornoEstado
-    // });
     this.Cidades = Cidades;
   }
 

@@ -25,7 +25,8 @@
             <div class="form-group col-md-2">
                 <label for="txtIdStatus">Situação</label>
                 <select id="txtIdStatus" class="form-control {{tipoBtn}}" [(ngModel)]="Pedido.IdStatusPedido"
-                    name=" idStatus" (ngModelChange)="alterarSituacao()">
+                    [disabled]="Pedido.IdPedido == '' ? true : false" name=" idStatus"
+                    (ngModelChange)="alterarSituacao()">
                     <option [value]=Status.IdStatusPedido *ngFor="let Status of ComboStatus" class="btn-light">
                         {{Status.Nome}}
                     </option>
