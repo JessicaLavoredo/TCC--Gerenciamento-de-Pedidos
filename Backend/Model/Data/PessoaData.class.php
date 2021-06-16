@@ -73,34 +73,126 @@
         }
 
         function buscarPorFiltro($entidade){
-            $classe = str_ireplace('Data', '', get_class($entidade));
-            $propriedades = Funcoes::getPropriedades($classe);
+            $obj = Funcoes::objetoParaArray($entidade);
 
-            $sql = "SELECT * FROM ".$classe."\n";
+            $vinculos = $obj["Vinculos"];
+            unset($obj["Vinculos"]);
+
+            $enderecos = $obj["Enderecos"];
+            unset($obj["Enderecos"]);
+
+            $emails = $obj["Emails"];
+            unset($obj["Emails"]);
+
+            $telefones = $obj["Telefones"];
+            unset($obj["Telefones"]);
+
+            $sql = "SELECT DISTINCT P.* FROM Pessoa P\n";
+            $sql.= "INNER JOIN Endereco E ON E.IdPessoa = P.IdPessoa\n";
+            $sql.= "INNER JOIN Cidade C ON C.IdCidade = E.IdCidade\n";
+            $sql.= "INNER JOIN Estado UF ON UF.IdEstado = C.IdEstado\n";
+            $sql.= "INNER JOIN Email EM ON EM.IdPessoa = P.IdPessoa\n";
+            $sql.= "INNER JOIN Telefone T ON T.IdPessoa = P.IdPessoa\n";
+            $sql.= "INNER JOIN VinculoPessoa VP ON VP.IdPessoa = P.IdPessoa\n";
             $sql.= "WHERE ";
 
             $filtros = array();
-            foreach($propriedades as $prop) {
-                $getProp = 'get'.ucfirst($prop);
-                if($entidade->$getProp()) {
-                    $filtros[] = $prop." LIKE '%:".$prop."%'";
-                } else {
-                    unset($propriedades[array_search($prop, $propriedades)]);
+            foreach($obj as $chave => $valor) {
+                if($obj[$chave]) {
+                    $filtros[] = "P.".$chave." LIKE '%".$valor."%'";
+                }
+            }
+            foreach($vinculos as $vin) {
+                if($vin){
+                    $filtros[] = "VP.IdVinculo LIKE '%".$vin."%'" ;
+                }
+            }
+            foreach($telefones as $telefone){
+                if($telefone){
+                    $telefone = Funcoes::objetoParaArray($telefone);
+                    foreach($telefone as $chave => $valor) {
+                        if($telefone[$chave]){
+                            $filtros[] = "T.".$chave." LIKE '%".$valor."%'";
+                        }
+                    }
+                }
+            }
+            foreach($emails as $email){
+                if($email){
+                    $email = Funcoes::objetoParaArray($email);
+                    foreach($email as $chave => $valor) {
+                        if($email[$chave]){
+                            $filtros[] = "EM.".$chave." LIKE '%".$valor."%'";
+                        }
+                    }
+                }
+            }
+            foreach($enderecos as $endereco) {
+                if ($endereco) {
+                    $endereco = Funcoes::objetoParaArray($endereco);
+                    foreach($endereco as $chave => $valor) {
+                        if($endereco[$chave]) {
+                            if($chave === "Cidade"){
+                                foreach($valor as $chave2 => $valor2){
+                                    if($chave2 === "Estado"){
+                                        foreach($valor2 as $chave3 => $valor3){
+                                            $filtros[] = "UF.".$chave3." LIKE '%".$valor3."%'";
+                                        }
+                                    } else {
+                                        $filtros[] = "C.".$chave2." LIKE '%".$valor2."%'";
+                                    }
+                                }
+                            } else {
+                                $filtros[] = "E.".$chave." LIKE '%".$valor."%'";
+                            }
+                        }
+                    }
                 }
             }
             $sql.= implode("\nAND ", $filtros);
-
-            foreach($propriedades as $prop){
-                $getProp = 'get'.ucfirst($prop);
-                $sql = str_replace(":".$prop, $entidade->$getProp(), $sql);
-            }
 
             $stm = $this->db->prepare($sql);
             $stm->execute();
             $linhas = $stm->fetchAll();
             $ret = array();
             foreach($linhas as $linha){
-                $ret[] = Funcoes::criarEntidade("Pessoa", $linha);
+                $pessoa = Funcoes::criarEntidade("Pessoa", $linha);
+                $idPessoa = $pessoa->getIdPessoa();
+
+                $sql = "SELECT * FROM Endereco E\n";
+                $sql.= "WHERE E.IdPessoa = ".$idPessoa;
+                $stm = $this->db->prepare($sql);
+                $stm->execute();
+                $enderecos = $stm->fetchAll();
+                $pessoa->setEnderecos($enderecos);
+    
+                $sql = "SELECT * FROM Telefone T\n";
+                $sql.= "WHERE T.IdPessoa = ".$idPessoa;
+                $stm = $this->db->prepare($sql);
+                $stm->execute();
+                $telefones = $stm->fetchAll();
+                $pessoa->setTelefones($telefones);
+
+                $sql = "SELECT * FROM Email E\n";
+                $sql.= "WHERE E.IdPessoa = ".$idPessoa;
+                $stm = $this->db->prepare($sql);
+                $stm->execute();
+                $emails = $stm->fetchAll();
+                $pessoa->setEmails($emails);
+                
+                $sql = "SELECT * FROM VinculoPessoa VP\n";
+                $sql.= "WHERE VP.IdPessoa = ".$idPessoa;
+                $stm = $this->db->prepare($sql);
+                $stm->execute();
+                $linhas = $stm->fetchAll();
+                $vinculos = [];
+                foreach($linhas as $linha){
+                    if ($linha){
+                        $vinculos[] = $linha["IdVinculo"];
+                    }
+                }
+                $pessoa->setVinculos($vinculos);
+                $ret[] = $pessoa;
             }
             return $ret;
         }
