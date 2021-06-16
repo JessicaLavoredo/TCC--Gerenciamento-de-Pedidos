@@ -43,10 +43,8 @@ export class AuthInterceptor implements HttpInterceptor {
                 window.localStorage.removeItem('token');
                 this.router.navigate(['login']);
             }
-            // Erro retornando pelo backend
-            console.error(
-                `Código do erro ${error.status}, ` +
-                `Erro: ${JSON.stringify(error.error)}`);
+
+
         }
         // retornar um observable com uma mensagem amigavel.
         return throwError('Ocorreu um erro, tente novamente');

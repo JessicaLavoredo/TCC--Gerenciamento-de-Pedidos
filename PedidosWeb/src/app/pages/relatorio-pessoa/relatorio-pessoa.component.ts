@@ -23,11 +23,14 @@ export class RelatorioPessoaComponent implements OnInit {
   FiltroVinculos: any[];
   public dpConfig: Partial<BsDatepickerConfig> = new BsDatepickerConfig();
 
-  constructor(private PessoaService: PessoaService, private AlertService: AlertService, private accountService: AccountService) { }
+  constructor(private PessoaService: PessoaService, private AlertService: AlertService, private accountService: AccountService, private localeService: BsLocaleService) { }
 
   ngOnInit(): void {
     this.ValidarUsuario()
     this.limparTela()
+    this.dpConfig.isAnimated = true;
+    this.dpConfig.dateInputFormat = 'DD/MM/YYYY';
+    this.localeService.use('pt-br');
   }
   public ValidarUsuario() {
     this.perfil = this.accountService.getTipoUser();

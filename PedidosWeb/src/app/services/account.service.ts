@@ -17,13 +17,23 @@ export class AccountService {
 
 
   async login(user: UsuarioLogin) {
-    console.log(JSON.stringify(user))
-    const result = await this.http.post<any>('api/Usuario/login', JSON.stringify(user)).toPromise();
-    if (result && result.Authorization) {
-      window.localStorage.setItem('token', result.Authorization);
-      return true;
-    }
-    return false;
+    return new Promise(resolve => {
+      const json = JSON.stringify(user);
+      this.http.post('api/Usuario/login', json).subscribe(result => {
+        let resultado = {
+          resultado: result,
+          status: 200
+        };
+        resolve(resultado);
+      }, error => {
+        let resultado = {
+          resultado: error,
+          status: 401
+        };
+        resolve(resultado);
+      });
+    })
+
   }
 
 

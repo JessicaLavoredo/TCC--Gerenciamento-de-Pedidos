@@ -56,7 +56,8 @@
             <div class="form-group col-md-4">
                 <label for="txtDataNasc">Data de Nascimento</label>
                 <input type="text" class="form-control" #dp="bsDatepicker" bsDatepicker name="DataNascimento"
-                    [(bsValue)]="dataNascimento " [bsConfig]="dpConfig" [(ngModel)]="DataNascimento">
+                    [(bsValue)]="PessoaFiltro.DataNascimento " [bsConfig]="dpConfig"
+                    [(ngModel)]="PessoaFiltro.DataNascimento">
             </div>
             <div class="form-group col-md-4" *ngIf="perfil=='1'">
                 <label>Cargo</label>
@@ -75,9 +76,10 @@
             </div>
 
             <div class="form-group col-md-4">
-                <label for="txtDataNasc">Data de Inclusão</label>
-                <input type="text" class="form-control" #dp="bsDatepicker" bsDatepicker name="DataNascimento"
-                    [(bsValue)]="dataNascimento " [bsConfig]="dpConfig" [(ngModel)]="DataNascimento">
+                <label for="txtInclusao">Data de Inclusão</label>
+                <input type="text" class="form-control" #dp="bsDatepicker" bsDatepicker name="dataInclusao"
+                    [(bsValue)]="PessoaFiltro.DataInclusao " [bsConfig]="dpConfig"
+                    [(ngModel)]="PessoaFiltro.DataInclusao">
             </div>
         </div>
         <ul class="nav nav-tabs" id="myTab" role="tablist">

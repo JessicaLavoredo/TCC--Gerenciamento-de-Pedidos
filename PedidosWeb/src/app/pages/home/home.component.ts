@@ -31,4 +31,21 @@ export class HomeComponent implements OnInit {
     // this.Pessoas = retorno.resultado
   }
 
+  public PreecherComboFiltro() {
+    this.Filtros = [
+      {
+        Codigo: "NR",
+        Descricao: "Nome/Razão Social"
+      },
+      {
+        Codigo: "AF",
+        Descricao: "Apelido/Nome Fantasia"
+      },
+      {
+        Codigo: "C",
+        Descricao: "CPF/CNPJ"
+      }
+    ]
+  }
+
 }

@@ -1,1 +1,273 @@
 <app-menu></app-menu>
+<div class="TituloPagina">
+    <span>Relatório de Pedido</span>
+</div>
+<app-alert aria-live="polite" aria-atomic="true"></app-alert>
+
+<form>
+    <div class="container corpo">
+        <div class="form-row">
+            <div class="form-group col-md-1">
+                <label for="txtCodigo">Cliente</label>
+                <input type="text" class="form-control" [formControl]="queryPessoa" id="txtCliente" name="Cliente"
+                    [(ngModel)]="PedidoFiltro.IdPessoa">
+            </div>
+            <button type="button" #modalSearchPessoa class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
+                data-target="#ModalPesquisaPessoa">
+                <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+            </button>
+            <div class="form-group mt-4 col-md-0.5 mr-2">
+                <button class="btn btn-info btnsearch " (click)='PesquisarCliente()'>
+                    <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+                </button>
+            </div>
+            <div class="form-group col-md-3 mt-5">
+                <label for="txtNome">{{NomeCliente}}</label>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-1">
+                <label for="txtVendedor">Vendedor</label>
+                <input type="text" class="form-control" [formControl]="queryVendedor" id="txtVendedor" name="Vendedor"
+                    [(ngModel)]="PedidoFiltro.IdUsuarioMovimentacao">
+            </div>
+            <button type="button" #modalSearchVendedor class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
+                data-target="#ModalPesquisaVendedor">
+                <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+            </button>
+            <div class="form-group mt-4 col-md-0.5 mr-2">
+                <button class="btn btn-info btnsearch " (click)='pesquisarVendedor()'>
+                    <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+                </button>
+            </div>
+            <div class="form-group col-md-3 mt-5">
+                <label for="txtNome">{{NomeVendedor}}</label>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <div class="form-group col-md-2">
+                    <label for="txtIdStatus">Situação</label>
+                    <select id="txtIdStatus" class="form-control" [(ngModel)]="PedidoFiltro.IdStatusPedido"
+                        name=" idStatus">
+                        <option [value]=Status.IdStatusPedido *ngFor="let Status of ComboStatus" class="btn-light">
+                            {{Status.Nome}}
+                        </option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-group col-md-4">
+                <div class="form-group col-md-4">
+                    <label for="txtFormaPagamento">Forma de Pagamento</label>
+                    <select id="txtFormaPagamento" class="form-control" [(ngModel)]="PedidoFiltro.IdFormaPagamento"
+                        name=" idFormaPagamento">
+                        <option [value]=FormaPagamento.IdFormaPagamento *ngFor="let FormaPagamento of FormasPagamento">
+                            {{FormaPagamento.Descritivo}}
+                        </option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="txtDataNasc">Data de Nascimento</label>
+                <input type="text" class="form-control" #dp="bsDatepicker" bsDatepicker name="DataNascimento"
+                    [(bsValue)]="PessoaFiltro.DataNascimento " [bsConfig]="dpConfig"
+                    [(ngModel)]="PessoaFiltro.DataNascimento">
+            </div>
+
+        </div>
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a class="nav-link active" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home"
+                    aria-selected="true">Relatório</a>
+            </li>
+        </ul>
+        <div class="tab-content" id="myTabContent">
+            <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+                <table class="table">
+                    <thead class="tabelas">
+                        <tr>
+                            <th scope="col">Pedido</th>
+                            <th scope="col">Cliente</th>
+                            <th scope="col">Valor</th>
+                            <th scope="col">Situação</th>
+                            <th scope="col">Visualizar/Alterar</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- <tr *ngFor="let pessoa of PessoasFiltro">
+                            <td>{{pedido.NomeRazao}}</td>
+                            <td>{{pedido.ApelidoFantasia}}</td>
+                            <td>{{pedido.TipoPessoa}}</td>
+                            <td>{{pedido.CpfCnpj}}</td>
+                            <td>{{pedido.RgInscricao}}</td>
+                            <td>{{pedido.Genero}}</td>
+                            <td>{{pedido.DataNascimento}}</td>
+                            <td>{{pedido.DataInclusao}}</td>
+                            <td></td>
+                        </tr> -->
+                    </tbody>
+                </table>
+
+            </div>
+        </div>
+
+    </div>
+
+
+    <app-footer>
+        <span rodape>
+            <button type="submit" class="btn btn-secondary ml-5 " (click)="Gerar()">Gerar</button>
+            <button type="button" class="btn btn-secondary ml-5 " (click)="limparTela()">Novo</button>
+        </span>
+    </app-footer>
+
+</form>
+
+<div class="modal fade" id="ModalPesquisaPessoa" tabindex="-1" role="dialog" aria-labelledby="ModalPesquisaPessoaLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="ModalPesquisaLabel">Pesquisa de Usuário</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row mb-2">
+                    <div class="form-group col-md-3">
+                        <label for="inputState">Pesquisa</label>
+                        <select id="inputState" class="form-control" [(ngModel)]="FiltroPesquisa"
+                            name=" FiltroPesquisa">
+                            <option [value]=filtro.Codigo *ngFor="let filtro of Filtros">
+                                {{filtro.Descricao}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-7 mt-2">
+                        <label for="inputState"></label>
+                        <input class="form-control" type="text" name="search" [(ngModel)]="InputFiltroPesquisa">
+                    </div>
+                    <div class="form-group col-md-1 mt-2">
+                        <label for="inputState"></label>
+                        <button class="btn btn-info btnsearch " (click)='PesquisarUsuarioPorFiltro()'>
+                            Pesquisar
+                        </button>
+                    </div>
+                </div>
+                <div class="grades">
+                    <table class="table table-striped">
+                        <thead class="tabelas">
+                            <tr>
+                                <th scope="col">Código</th>
+                                <th scope="col">Nome/Razão Social </th>
+                                <th scope="col">Apelido/Nome Fantasia</th>
+                                <th scope="col">CPF/CNPJ</th>
+                                <th scope="col">Genero</th>
+                                <th scope="col">Selecionar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let pessoa of Pessoas ">
+                                <th scope="row">{{pessoa.IdPessoa}}</th>
+                                <td>{{pessoa.NomeRazao}}</td>
+                                <td>{{pessoa.ApelidoFantasia}}</td>
+                                <td>{{pessoa.CpfCnpj}}</td>
+                                <td>{{pessoa.Genero}}</td>
+                                <td><button class="btn btn-info btnselecionar btn-sm" data-dismiss="modal"
+                                        aria-label="Close" (click)="selecionarPessoa(pessoa)">
+                                        <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">
+                                            done_outline</mat-icon>
+                                    </button></td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalPesquisaVendedor" tabindex="-1" role="dialog"
+    aria-labelledby="ModalPesquisaVendedorLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="ModalPesquisaLabel">Pesquisa de Vendedor</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row mb-2">
+                    <div class="form-group col-md-3">
+                        <label for="inputState">Pesquisa</label>
+                        <select id="inputState" class="form-control" [(ngModel)]="FiltroPesquisa"
+                            name=" FiltroPesquisa">
+                            <option [value]=filtro.Codigo *ngFor="let filtro of Filtros">
+                                {{filtro.Descricao}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-7 mt-2">
+                        <label for="inputState"></label>
+                        <input class="form-control" type="text" name="search" [(ngModel)]="InputFiltroPesquisa">
+                    </div>
+                    <div class="form-group col-md-1 mt-2">
+                        <label for="inputState"></label>
+                        <button class="btn btn-info btnsearch " (click)='PesquisarUsuarioPorFiltro()'>
+                            Pesquisar
+                        </button>
+                    </div>
+                </div>
+                <div class="grades">
+                    <table class="table table-striped">
+                        <thead class="tabelas">
+                            <tr>
+                                <th scope="col">Código</th>
+                                <th scope="col">Nome/Razão Social </th>
+                                <th scope="col">Apelido/Nome Fantasia</th>
+                                <th scope="col">CPF/CNPJ</th>
+                                <th scope="col">Genero</th>
+                                <th scope="col">Selecionar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr *ngFor="let pessoa of Pessoas ">
+                                <th scope="row">{{pessoa.IdPessoa}}</th>
+                                <td>{{pessoa.NomeRazao}}</td>
+                                <td>{{pessoa.ApelidoFantasia}}</td>
+                                <td>{{pessoa.CpfCnpj}}</td>
+                                <td>{{pessoa.Genero}}</td>
+                                <td><button class="btn btn-info btnselecionar btn-sm" data-dismiss="modal"
+                                        aria-label="Close" (click)="SelecionarVendedor(pessoa)">
+                                        <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">
+                                            done_outline</mat-icon>
+                                    </button></td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    $('.datepicker').datepicker({
+        format: 'dd/mm/yyyy',
+        language: 'pt-BR'
+    });
+</script>

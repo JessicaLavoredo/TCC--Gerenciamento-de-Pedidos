@@ -22,19 +22,23 @@ export class LoginComponent implements OnInit {
   }
 
 
-  async onSubmit() {
+  onSubmit() {
     try {
       if (this.usuario.Login == '') {
         this.AlertService.show('Preencha corretamente o campo: Usuário', { classname: 'bg-danger text-light', delay: 3000 });
       } else if (this.usuario.Senha == '') {
         this.AlertService.show('Preencha corretamente o campo: Senha', { classname: 'bg-danger text-light', delay: 3000 });
       } else {
-        const autenticado = await this.accountService.login(this.usuario);
-        if (!autenticado) {
-          this.AlertService.show('Usuário ou Senha inválido', { classname: 'bg-danger text-light', delay: 3000 });
-        } else {
-          this.router.navigate(['']);
-        }
+        this.accountService.login(this.usuario).then((retorno: any) => {
+          console.log(retorno);
+          if (retorno.status == 200) {
+            window.localStorage.setItem('token', retorno.resultado.Authorization);
+            this.router.navigate(['']);
+          } else {
+            this.AlertService.show('Usuário ou Senha inválido', { classname: 'bg-danger text-light', delay: 3000 });
+          }
+        });
+
       }
     } catch (error) {
       this.AlertService.show('erro inesperado', { classname: 'bg-danger text-light', delay: 3000 });
