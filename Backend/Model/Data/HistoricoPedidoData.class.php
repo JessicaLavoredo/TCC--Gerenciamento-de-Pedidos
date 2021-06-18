@@ -4,7 +4,7 @@
             parent::__construct();
         }
 
-        function buscarStatusPorId($id) {
+        function buscarStatusPorIdPedido($id) {
             $sql = "SELECT SP.* FROM StatusPedido SP\n";
             $sql.= "INNER JOIN HistoricoPedido HP ON HP.IdStatusPedido = SP.IdStatusPedido\n";
             $sql.= "WHERE HP.IdPedido = ".$id."\n";

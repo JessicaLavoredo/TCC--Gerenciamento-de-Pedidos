@@ -66,6 +66,8 @@
                 return;
             }
             $pedido = Funcoes::criarEntidade("Pedido", $pedido);
+            $pedidoProdutos = (New PedidoProdutoData())->buscarTodosPorIdPedido($id);
+            $pedido->setProdutos($pedidoProdutos);
 
             // $sql = "SELECT * FROM HistoricoPedido\n";
             // $sql.= "WHERE IdPedido = ".$id."\n";
@@ -75,10 +77,96 @@
             // $status = $stm->fetchAll();
             // $pedido->setStatus($status);
 
-            $pedidoProdutos = (New PedidoProdutoData())->buscarTodosPorIdPedido($id);
-            $pedido->setProdutos($pedidoProdutos);
 
             return $pedido;
+        }
+
+        function buscarPorFiltro($obj){
+            $obj = Funcoes::objetoParaArray($obj);
+            
+            $pessoa = $obj['Pessoa'];
+            unset($obj['Pessoa']);
+            $enderecos = $pessoa['Enderecos'];
+            unset($pessoa['Enderecos']);
+            unset($pessoa['Vinculos']);
+            unset($pessoa['Telefones']);
+            unset($pessoa['Emails']);
+            $pedido = $obj;
+            unset($pedido["Produtos"]);
+            $status = $pedido['IdStatus'];
+            unset($pedido['IdStatus']);
+
+            $sql = "SELECT * FROM Pedido P\n";
+            $sql.= "INNER JOIN Pessoa PE ON PE.IdPessoa = P.IdPessoa\n";
+            $sql.= "INNER JOIN Endereco E ON E.IdPessoa = PE.IdPessoa\n";
+            $sql.= "INNER JOIN Cidade C ON C.IdCidade = E.IdCidade\n";
+            $sql.= "INNER JOIN Estado UF ON UF.IdEstado = C.IdEstado\n";
+            $sql.= "WHERE ";
+
+            $filtros = array();           
+
+            foreach ($enderecos as $endereco) {
+                if ($endereco) {
+                    foreach ($endereco as $chave => $valor) {
+                        if ($endereco[$chave]) {
+                            if($chave === "Cidade"){
+                                foreach($valor as $chave2 => $valor2){
+                                    if($chave2 === "Estado"){
+                                        foreach($valor2 as $chave3 => $valor3){
+                                            if(!is_null($valor3)){
+                                                $filtros[] = "UF.".$chave3." LIKE '%".$valor3."%'";
+                                            }
+                                        }
+                                    } else {
+                                        if (!is_null($valor2)){
+                                            $filtros[] = "C.".$chave2." LIKE '%".$valor2."%'";
+                                        }
+                                    }
+                                }
+                            } else {
+                                if(!is_null($valor)){
+                                    $filtros[] = "E.".$chave." LIKE '%".$valor."%'";
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            foreach ($pessoa as $chave => $valor) {
+                if (!is_null($valor)) {
+                    $filtros[] = "PE.".$chave." LIKE '%".$valor."%'";
+                }
+            }
+            
+            foreach ($pedido as $chave => $valor) {
+                if (!is_null($valor)) {
+                    $filtros[] = "P.".$chave." LIKE '%".$valor."%'";
+                }
+            }
+
+            $sql.= implode("\nAND ", $filtros);
+
+            if (!is_null($status)) {
+                $sql.= "\nAND (SELECT HP.IdStatusPedido FROM HistoricoPedido HP WHERE HP.IdPedido = P.IdPedido ORDER BY HP.DataMovimentacao DESC LIMIT 1) = ".$status;
+            }
+
+            $stm = $this->db->prepare($sql);
+            $stm->execute();
+            $linhas = $stm->fetchAll();
+            
+            $ret = array();
+            foreach ($linhas as $linha) {
+                $pedido = Funcoes::criarEntidade("Pedido", $linha);
+                $produtosPedido = (New PedidoProdutoData())->buscarTodosPorIdPedido($pedido->getIdPedido());
+                $status = (New HistoricoPedidoData())->buscarStatusPorIdPedido($pedido->getIdPedido());
+                $pedido->setProdutos($produtosPedido);
+                $pedido->setIdStatus($status->getIdStatusPedido());
+
+                $ret[] = $pedido;
+            }
+
+            return $ret;
         }
     }
 ?>

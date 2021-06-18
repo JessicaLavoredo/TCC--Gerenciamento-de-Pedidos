@@ -72,19 +72,18 @@
             }
         }
 
-        function buscarPorFiltro($entidade){
-            $obj = Funcoes::objetoParaArray($entidade);
+        function buscarPorFiltro($obj){
 
-            $vinculos = $obj["Vinculos"];
+            $vinculos = $obj["Vinculos"] ?? array();
             unset($obj["Vinculos"]);
 
-            $enderecos = $obj["Enderecos"];
+            $enderecos = $obj["Enderecos"] ?? array();
             unset($obj["Enderecos"]);
 
-            $emails = $obj["Emails"];
+            $emails = $obj["Emails"] ?? array();
             unset($obj["Emails"]);
 
-            $telefones = $obj["Telefones"];
+            $telefones = $obj["Telefones"] ?? array();
             unset($obj["Telefones"]);
 
             $sql = "SELECT DISTINCT P.* FROM Pessoa P\n";
