@@ -22,6 +22,7 @@ export class CadastroProdutoComponent implements OnInit {
   FiltroPesquisa: string;
   InputFiltroPesquisa: string;
   Filtros: any[];
+  Inativo: Boolean;
 
   @ViewChild('abrirmodalConfirmacao') abrirmodalConfirmacao: ElementRef;
   @ViewChild('modalSearch') modalSearch: ElementRef;
@@ -57,10 +58,6 @@ export class CadastroProdutoComponent implements OnInit {
   public async Gravar() {
     try {
       this.validacao = true;
-      if (this.Produto.Descricao == '') {
-        this.AlertService.show("Preenche corretamente o campo Descrição", { classname: 'bg-danger text-light', delay: 3000 });
-        this.validacao = false;
-      }
       if (this.Produto.NomeComercial == '') {
         this.AlertService.show("Preenche corretamente o campo Nome Comercial", { classname: 'bg-danger text-light', delay: 3000 });
         this.validacao = false;
@@ -83,6 +80,13 @@ export class CadastroProdutoComponent implements OnInit {
       if (!this.validacao) {
         return
       }
+      if (this.Inativo == true) {
+        this.Produto.Inativo = '1'
+      } else {
+        this.Produto.Inativo = '0'
+      }
+
+      this.Produto.IdProduto = this.Produto.IdProduto == '' ? null : this.Produto.IdProduto;
 
       let retorno: any = await this.ProdutoService.gravar(this.Produto)
       if (retorno.status == 200) {
@@ -122,19 +126,22 @@ export class CadastroProdutoComponent implements OnInit {
 
   public DepoisBuscar() {
     this.queryProduto.valueChanges.pipe(
-      filter(value => value.length > 0),
       debounceTime(200),
       distinctUntilChanged(),
       switchMap(value => this.ProdutoService.BuscarPorId(this.Produto.IdProduto)),
       map((result: any) => {
-        if (result) {
-          this.Produto = result;
-        } else {
-          this.AlertService.show("Registro não encontrado", { classname: 'bg-danger text-light', delay: 3000 });
-          this.Limpar();
-          return
-        }
+        if (result == "Codigo Indefinido") {
+          this.Produto = new Produto();
+        } else
+          if (result.status == 200) {
+            this.Produto = result.resultado;
+          } else {
+            this.AlertService.show("Registro não encontrado", { classname: 'bg-danger text-light', delay: 3000 });
+            this.Limpar();
+            return
+          }
       }
+
       )
     ).subscribe();
   }

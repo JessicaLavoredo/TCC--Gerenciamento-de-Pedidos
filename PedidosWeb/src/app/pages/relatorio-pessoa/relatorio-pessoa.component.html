@@ -9,8 +9,11 @@
         <div class="form-row">
             <div class="form-group col-md-6">
                 <label for="txtNome">Nome/Razão Social</label>
-                <input type="text" class="form-control" id="txtNome" name="Nome" [(ngModel)]="PessoaFiltro.NomeRazao">
+                <input type="text" class="form-control" id="txtNome" name="Nome" [(ngModel)]="NomeRazao">
             </div>
+        </div>
+        <div class="form-row">
+
             <div class="form-group col-md-6">
                 <label for="txtApelido">Apelido/Fantasia</label>
                 <input type="text" class="form-control" id="txtApelido" name="Apelido"
@@ -23,21 +26,29 @@
                     <div>
                         <label class="tipo">Tipo:</label>
                     </div>
-                    <mat-radio-group [(ngModel)]="PessoaFiltro.TipoPessoa" color="primary" name="tipo">
+                    <mat-radio-group [(ngModel)]="TipoPessoa" color="primary" name="tipo">
                         <mat-radio-button class="tipo" value="F">Fisico</mat-radio-button>
                         <mat-radio-button class="tipo ml-3" value="J">Jurídico</mat-radio-button>
                     </mat-radio-group>
                 </section>
             </div>
-            <div class="form-group col-md-4">
-                <label for="txtCpf">Cpf/Cnpj</label>
-                <input type="text" class="form-control" id="txtCpf" [mask]="cpfMask" name="Cpf"
-                    [(ngModel)]="PessoaFiltro.CpfCnpj">
+
+            <div class="form-group col-md-1">
+                <label for="txtCidade">Cidade</label>
+                <input type="text" class="form-control" id="txtCidade" [formControl]="queryCidade" name="cidade"
+                    appSomenteNumeros [(ngModel)]="Cidade.IdCidade" name="idCidade">
             </div>
-            <div class="form-group col-md-4">
-                <label for="txtRg">Rg/Inscrição Estadual</label>
-                <input type="text" class="form-control" id="txtRg" [mask]="rgMask" name="Rg"
-                    [(ngModel)]="PessoaFiltro.RgInscricao">
+            <button type="button" #modalSearchCidade class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
+                data-target="#ModalCidade">
+                <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+            </button>
+            <div class="form-group mt-4 col-md-0.5">
+                <button class="btn btn-info btnsearch " (click)="PesquisarCidade()">
+                    <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+                </button>
+            </div>
+            <div class="form-group col-md-2 mt-5">
+                <label for="txtNome">{{Cidade.Nome}}</label>
             </div>
         </div>
         <div class="form-row">
@@ -46,23 +57,43 @@
                     <div>
                         <label class="tipo">Genero:</label>
                     </div>
-                    <mat-radio-group [(ngModel)]="PessoaFiltro.Genero" color="primary" name="genero">
+                    <mat-radio-group [(ngModel)]="Genero" color="primary" name="genero">
                         <mat-radio-button class="genero" value="M">Masculino</mat-radio-button>
                         <mat-radio-button class="genero ml-3" value="F">Feminino</mat-radio-button>
                     </mat-radio-group>
                 </section>
             </div>
 
+            <div class="form-group col-md-1">
+                <label for="txtEstado">Estado</label>
+                <input type="text" class="form-control" id="txtEstado" [formControl]="queryEstado" name="estado"
+                    appSomenteNumeros [(ngModel)]="Estado.IdEstado">
+            </div>
+            <button type="button" #modalSearchEstado class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
+                data-target="#ModalEstado">
+                <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+            </button>
+            <div class="form-group mt-4 col-md-0.5">
+                <button class="btn btn-info btnsearch " (click)="PesquisarEstado()">
+                    <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+                </button>
+            </div>
+            <div class="form-group col-md-3 mt-5">
+                <label for="txtNome">{{Estado.Nome}}</label>
+            </div>
+
+        </div>
+        <div class="form-row">
             <div class="form-group col-md-4">
                 <label for="txtDataNasc">Data de Nascimento</label>
                 <input type="text" class="form-control" #dp="bsDatepicker" bsDatepicker name="DataNascimento"
                     [(bsValue)]="PessoaFiltro.DataNascimento " [bsConfig]="dpConfig"
                     [(ngModel)]="PessoaFiltro.DataNascimento">
             </div>
-            <div class="form-group col-md-4" *ngIf="perfil=='1'">
+            <div class="form-group col-md-4" *ngIf="perfil=='1'||perfil=='2'">
                 <label>Cargo</label>
                 <mat-form-field appearance="outline">
-                    <mat-select multiple [(ngModel)]="FiltroVinculos" placeholder="Selecione um cargo" name="vinculos">
+                    <mat-select multiple [(ngModel)]="VinculosRetorno" placeholder="Selecione um cargo" name="vinculos">
                         <mat-option *ngFor="let Vinculo of Vinculos" [value]="Vinculo.IdVinculo">
                             {{Vinculo.Nome}}</mat-option>
                     </mat-select>
@@ -72,14 +103,7 @@
         </div>
         <div class="form-row">
             <div class="form-group col-md-4 checkboxInativo">
-                <mat-checkbox color="primary" [(ngModel)]="PessoaFiltro.Inativo" name="inativo"> inativo </mat-checkbox>
-            </div>
-
-            <div class="form-group col-md-4">
-                <label for="txtInclusao">Data de Inclusão</label>
-                <input type="text" class="form-control" #dp="bsDatepicker" bsDatepicker name="dataInclusao"
-                    [(bsValue)]="PessoaFiltro.DataInclusao " [bsConfig]="dpConfig"
-                    [(ngModel)]="PessoaFiltro.DataInclusao">
+                <mat-checkbox color="primary" [(ngModel)]="Inativo" name="inativo"> inativo </mat-checkbox>
             </div>
         </div>
         <ul class="nav nav-tabs" id="myTab" role="tablist">
@@ -95,24 +119,18 @@
                         <tr>
                             <th scope="col">Nome/Razão Social</th>
                             <th scope="col">Apelido/Fantasia</th>
-                            <th scope="col">Tipo</th>
                             <th scope="col">Cpf/Cnpj</th>
                             <th scope="col">Rg/Inscrição Estadual</th>
-                            <th scope="col">Genero</th>
                             <th scope="col">Data de Nascimento</th>
-                            <th scope="col">Data de Inclusão</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr *ngFor="let pessoa of PessoasFiltro">
                             <td>{{pessoa.NomeRazao}}</td>
                             <td>{{pessoa.ApelidoFantasia}}</td>
-                            <td>{{pessoa.TipoPessoa}}</td>
                             <td>{{pessoa.CpfCnpj}}</td>
                             <td>{{pessoa.RgInscricao}}</td>
-                            <td>{{pessoa.Genero}}</td>
                             <td>{{pessoa.DataNascimento}}</td>
-                            <td>{{pessoa.DataInclusao}}</td>
                             <td></td>
                         </tr>
                     </tbody>
@@ -139,3 +157,147 @@
         language: 'pt-BR'
     });
 </script>
+
+<div class="modal fade" id="ModalCidade" tabindex="-1" role="dialog" aria-labelledby="ModalCidadeLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title" id="ModalCidadeLabel">Pesquisar Cidade</h1>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row mb-2">
+                    <div class="form-group col-md-3">
+                        <label for="txtCodigo">Pesquisa</label>
+                        <select id="txtCodigo" class="form-control" [(ngModel)]="FiltroPesquisaCidade"
+                            name=" FiltroPesquisaCidade">
+                            <option [value]=filtroCidade.Codigo *ngFor="let filtroCidade of FiltrosCidade">
+                                {{filtroCidade.Descricao}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-7 mt-2">
+                        <label for="inputState"></label>
+                        <input class="form-control" type="text" name="search" [(ngModel)]="InputFiltroPesquisaCidade">
+                    </div>
+                    <div class="form-group col-md-1 mt-2">
+                        <label for="inputState"></label>
+                        <button class="btn btn-info btnsearch " (click)='PesquisarCidadePorFiltro()'>
+                            Pesquisar
+                        </button>
+                    </div>
+                </div>
+                <div class="grades">
+                    <table class="table table-striped">
+                        <thead class="tabelas">
+                            <tr>
+                                <th scope="col">Nome</th>
+                                <th scope="col">Estado</th>
+                                <th scope="col">Selecionar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                *ngFor="let cidade of Cidades| paginate: { itemsPerPage: 5, currentPage: paginaAtualCidade }; let i = index ">
+
+                                <td>{{cidade.Nome}}</td>
+                                <td>{{cidade.Estado.Sigla}}</td>
+                                <td><button class="btn btn-info btnselecionar btn-sm" data-dismiss="modal"
+                                        aria-label="Close" (click)="selecionarCidade(cidade)">
+                                        <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">
+                                            done_outline</mat-icon>
+                                    </button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="float-right">
+                    <pagination-controls previousLabel="Anterior" nextLabel="Proxima" responsive="true" autoHide="true"
+                        (pageChange)="handlePageChangeCidade($event)"></pagination-controls>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+
+</div>
+
+
+<div class="modal fade" id="ModalEstado" tabindex="-1" role="dialog" aria-labelledby="ModalPesquisaEstadoLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="ModalPesquisaLabel">Pesquisa de Estado</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row mb-2">
+                    <div class="form-group col-md-3">
+                        <label for="inputStateEstado">Pesquisa</label>
+                        <select id="inputStateEstado" class="form-control" [(ngModel)]="FiltroPesquisaEstado"
+                            name=" idFiltroPesquisaEstado">
+                            <option [value]=filtroEstado.Codigo *ngFor="let filtroEstado of FiltrosEstado">
+                                {{filtroEstado.Descricao}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-7 mt-2">
+                        <label for="inputState"></label>
+                        <input class="form-control" type="text" name="search" [(ngModel)]="InputFiltroPesquisaEstado">
+                    </div>
+                    <div class="form-group col-md-1 mt-2">
+                        <label for="inputState"></label>
+                        <button class="btn btn-info btnsearch " (click)='PesquisarEstadoPorFiltro()'>
+                            Pesquisar
+                        </button>
+                    </div>
+                </div>
+                <div class="grades">
+                    <table class="table table-striped">
+                        <thead class="tabelas">
+                            <tr>
+                                <th scope="col">Nome</th>
+                                <th scope="col">Sigla</th>
+                                <th scope="col">Região</th>
+                                <th scope="col">Código IBGE</th>
+                                <th scope="col">Selecionar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                *ngFor="let Estado of Estados | paginate: { itemsPerPage: 5, currentPage: paginaAtualEstado }; let i = index ">
+
+                                <td>{{Estado.Nome}}</td>
+                                <td>{{Estado.Sigla}}</td>
+                                <td>{{Estado.Regiao}}</td>
+                                <td>{{Estado.CodigoIBGE}}</td>
+                                <td><button class="btn btn-info btnselecionar btn-sm" data-dismiss="modal"
+                                        aria-label="Close" (click)="selecionarEstado(Estado)">
+                                        <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">
+                                            done_outline</mat-icon>
+                                    </button></td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="float-right">
+                    <pagination-controls previousLabel="Anterior" nextLabel="Proxima" responsive="true" autoHide="true"
+                        (pageChange)="handlePageChangeEstado($event)"></pagination-controls>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>

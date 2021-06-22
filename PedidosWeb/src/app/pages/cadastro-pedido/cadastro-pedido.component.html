@@ -24,7 +24,7 @@
 
             <div class="form-group col-md-2">
                 <label for="txtIdStatus">Situação</label>
-                <select id="txtIdStatus" class="form-control {{tipoBtn}}" [(ngModel)]="Pedido.IdStatusPedido"
+                <select id="txtIdStatus" class="form-control {{tipoBtn}}" [(ngModel)]="Pedido.IdStatus"
                     [disabled]="Pedido.IdPedido == '' ? true : false" name=" idStatus"
                     (ngModelChange)="alterarSituacao()">
                     <option [value]=Status.IdStatusPedido *ngFor="let Status of ComboStatus" class="btn-light">
@@ -107,13 +107,14 @@
 
         <div class="form-row">
             <div class="form-group mt-4  col-md-0.5">
-                <button type="button" class="btn btn-info btnsearch ">
-                    <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+                <button type="button" class="btn btn-info btnsearch " (click)='Pesquisar()'>
+                    <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search
+                    </mat-icon>
                 </button>
             </div>
             <div class="form-group col-md-1">
-                <label for="txtCodigo">Produto</label>
-                <input type="text" class="form-control" [formControl]="queryProduto" id="txtCodigo" name="Codigo"
+                <label for="txtCodigoProduto">Produto</label>
+                <input type="text" class="form-control" [formControl]="queryProduto" id="txtCodigoProduto" name="Codigo"
                     [(ngModel)]="CodigoProduto">
             </div>
 
@@ -189,7 +190,8 @@
 
     <app-footer>
         <span rodape>
-            <button type="submit" class="btn btn-secondary ml-4 " (click)="Gravar()">Salvar</button>
+            <button type="submit" class="btn btn-secondary ml-4 " (click)="Gravar()"
+                [disabled]="DisableSalvar">Salvar</button>
             <button type="button" class="btn btn-secondary ml-4 " (click)="limpar()">Novo</button>
         </span>
     </app-footer>
@@ -242,7 +244,8 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr *ngFor="let Cliente of Clientes">
+                            <tr
+                                *ngFor="let Cliente of Clientes| paginate: { itemsPerPage: 5, currentPage: paginaAtualPessoa }; let i = index ">
                                 <th scope="row">{{Cliente.IdPessoa}}</th>
                                 <td>{{Cliente.NomeRazao}}</td>
                                 <td>{{Cliente.ApelidoFantasia}}</td>
@@ -260,8 +263,87 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="float-right">
+                    <pagination-controls previousLabel="Anterior" nextLabel="Proxima" responsive="true" autoHide="true"
+                        (pageChange)="handlePageChangePessoa($event)"></pagination-controls>
+                </div>
 
+            </div>
 
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="ModalPesquisa" tabindex="-1" role="dialog" aria-labelledby="ModalPesquisa"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="ModalPesquisaLabel">Pesquisa de Produtos</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row mb-2">
+                    <div class="form-group col-md-3">
+                        <label for="inputState">Pesquisa</label>
+                        <select id="inputState" class="form-control" [(ngModel)]="FiltroPesquisaProduto"
+                            name=" idpesquisa">
+                            <option [value]=filtro.Codigo *ngFor="let filtro of FiltrosProdutos">
+                                {{filtro.Descricao}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-7 mt-2">
+                        <label for="inputState"></label>
+                        <input class="form-control" type="text" name="search" [(ngModel)]="InputFiltroPesquisaProduto">
+                    </div>
+                    <div class="form-group col-md-1 mt-2">
+                        <label for="inputState"></label>
+                        <button class="btn btn-info btnsearch " (click)='PesquisarPorFiltro()'>
+                            Pesquisar
+                        </button>
+                    </div>
+                </div>
+                <div class="grades">
+                    <table class="table table-striped">
+                        <thead class="tabelas">
+                            <tr>
+                                <th scope="col">Código</th>
+                                <th scope="col">Nome Técnico</th>
+                                <th scope="col">Nome Comercial</th>
+                                <th scope="col">Código Interno</th>
+                                <th scope="col">Descrição</th>
+                                <th scope="col">Selecionar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                *ngFor="let Produto of Produtos| paginate: { itemsPerPage: 4, currentPage: paginaAtualProdutoModal }; let i = index ">
+                                <th scope="row">{{Produto.IdProduto}}</th>
+                                <td>{{Produto.NomeTecnico}}</td>
+                                <td>{{Produto.NomeComercial}}</td>
+                                <td>{{Produto.CodigoInterno}}</td>
+                                <td>{{Produto.Descricao}}</td>
+
+                                <td><button class="btn btn-info btnselecionar btn-sm" data-dismiss="modal"
+                                        aria-label="Close" (click)="selecionarProduto(Produto)">
+                                        <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">
+                                            done_outline</mat-icon>
+                                    </button></td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="float-right">
+                    <pagination-controls previousLabel="Anterior" nextLabel="Proxima" responsive="true" autoHide="true"
+                        (pageChange)="handlePageChangeProdutoModal($event)"></pagination-controls>
+                </div>
             </div>
 
         </div>

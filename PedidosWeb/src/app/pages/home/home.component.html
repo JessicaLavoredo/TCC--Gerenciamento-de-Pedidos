@@ -36,7 +36,16 @@
           </tr>
         </thead>
         <tbody>
-
+          <tr *ngFor="let Pedido of Pedidos| paginate: { itemsPerPage: 5, currentPage: paginaAtual }; let i = index ">
+            <th scope="row">{{Pedido.IdPedido}}</th>
+            <td>{{Pedido.Pessoa.NomeRazao}}</td>
+            <td>{{Pedido.Total}}</td>
+            <td>{{Pedido.Status.Nome}}</td>
+            <a routerLink="/CadastroPedido" [queryParams]="{ id: Pedido.IdPedido}" target="_blank"><button type="button"
+                class="btn btn-success ml-3">
+                Alterar
+                Cadastro </button> </a>
+          </tr>
         </tbody>
       </table>
     </div>

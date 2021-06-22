@@ -1,3 +1,4 @@
+import { AlertService } from './../services/alert.service';
 import { Injectable } from '@angular/core';
 import { HttpInterceptor, HttpRequest, HttpHandler, HttpErrorResponse } from '@angular/common/http';
 import { throwError } from 'rxjs';
@@ -9,7 +10,7 @@ import { Router } from '@angular/router';
 export class AuthInterceptor implements HttpInterceptor {
 
     constructor(
-        private accountService: AccountService, private router: Router
+        private accountService: AccountService, private router: Router, private AlertService: AlertService
     ) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler) {
@@ -43,8 +44,6 @@ export class AuthInterceptor implements HttpInterceptor {
                 window.localStorage.removeItem('token');
                 this.router.navigate(['login']);
             }
-
-
         }
         // retornar um observable com uma mensagem amigavel.
         return throwError('Ocorreu um erro, tente novamente');

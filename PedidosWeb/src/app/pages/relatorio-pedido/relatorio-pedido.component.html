@@ -10,26 +10,25 @@
             <div class="form-group col-md-1">
                 <label for="txtCodigo">Cliente</label>
                 <input type="text" class="form-control" [formControl]="queryPessoa" id="txtCliente" name="Cliente"
-                    [(ngModel)]="PedidoFiltro.IdPessoa">
+                    appSomenteNumeros [(ngModel)]="IdPessoa">
             </div>
             <button type="button" #modalSearchPessoa class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
                 data-target="#ModalPesquisaPessoa">
                 <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
             </button>
-            <div class="form-group mt-4 col-md-0.5 mr-2">
+            <div class="form-group mt-4 col-md-0.5">
                 <button class="btn btn-info btnsearch " (click)='PesquisarCliente()'>
                     <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
                 </button>
             </div>
-            <div class="form-group col-md-3 mt-5">
+            <div class="form-group col-md-4 mt-5">
                 <label for="txtNome">{{NomeCliente}}</label>
             </div>
-        </div>
-        <div class="form-row">
+
             <div class="form-group col-md-1">
                 <label for="txtVendedor">Vendedor</label>
                 <input type="text" class="form-control" [formControl]="queryVendedor" id="txtVendedor" name="Vendedor"
-                    [(ngModel)]="PedidoFiltro.IdUsuarioMovimentacao">
+                    appSomenteNumeros [(ngModel)]="IdUsuarioMovimentacao">
             </div>
             <button type="button" #modalSearchVendedor class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
                 data-target="#ModalPesquisaVendedor">
@@ -40,40 +39,74 @@
                     <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
                 </button>
             </div>
-            <div class="form-group col-md-3 mt-5">
+            <div class="form-group col-md-4 mt-5">
                 <label for="txtNome">{{NomeVendedor}}</label>
             </div>
         </div>
         <div class="form-row">
-            <div class="form-group col-md-4">
-                <div class="form-group col-md-2">
-                    <label for="txtIdStatus">Situação</label>
-                    <select id="txtIdStatus" class="form-control" [(ngModel)]="PedidoFiltro.IdStatusPedido"
-                        name=" idStatus">
-                        <option [value]=Status.IdStatusPedido *ngFor="let Status of ComboStatus" class="btn-light">
-                            {{Status.Nome}}
-                        </option>
-                    </select>
-                </div>
+            <div class="form-group col-md-1">
+                <label for="txtCidade">Cidade</label>
+                <input type="text" class="form-control" id="txtCidade" [formControl]="queryCidade" name="cidade"
+                    appSomenteNumeros [(ngModel)]="Cidade.IdCidade" name="idCidade">
             </div>
+            <button type="button" #modalSearchCidade class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
+                data-target="#ModalCidade">
+                <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+            </button>
+            <div class="form-group mt-4 col-md-0.5">
+                <button class="btn btn-info btnsearch " (click)="PesquisarCidade()">
+                    <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+                </button>
+            </div>
+            <div class="form-group col-md-4 mt-5">
+                <label for="txtNome">{{Cidade.Nome}}</label>
+            </div>
+
+            <div class="form-group col-md-1">
+                <label for="txtEstado">Estado</label>
+                <input type="text" class="form-control" id="txtEstado" [formControl]="queryEstado" name="estado"
+                    appSomenteNumeros [(ngModel)]="Estado.IdEstado">
+            </div>
+            <button type="button" #modalSearchEstado class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
+                data-target="#ModalEstado">
+                <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+            </button>
+            <div class="form-group mt-4 col-md-0.5">
+                <button class="btn btn-info btnsearch " (click)="PesquisarEstado()">
+                    <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
+                </button>
+            </div>
+            <div class="form-group col-md-4 mt-5">
+                <label for="txtNome">{{Estado.Nome}}</label>
+            </div>
+        </div>
+
+        <div class="form-row">
             <div class="form-group col-md-4">
-                <div class="form-group col-md-4">
-                    <label for="txtFormaPagamento">Forma de Pagamento</label>
-                    <select id="txtFormaPagamento" class="form-control" [(ngModel)]="PedidoFiltro.IdFormaPagamento"
-                        name=" idFormaPagamento">
-                        <option [value]=FormaPagamento.IdFormaPagamento *ngFor="let FormaPagamento of FormasPagamento">
-                            {{FormaPagamento.Descritivo}}
-                        </option>
-                    </select>
-                </div>
+                <label for="txtIdStatus">Situação</label>
+                <select id="txtIdStatus" class="form-control" [(ngModel)]="IdStatusPedido" name=" idStatus">
+                    <option [value]=Status.IdStatusPedido *ngFor="let Status of ComboStatus" class="btn-light">
+                        {{Status.Nome}}
+                    </option>
+                </select>
             </div>
         </div>
         <div class="form-row">
             <div class="form-group col-md-4">
-                <label for="txtDataNasc">Data de Nascimento</label>
-                <input type="text" class="form-control" #dp="bsDatepicker" bsDatepicker name="DataNascimento"
-                    [(bsValue)]="PessoaFiltro.DataNascimento " [bsConfig]="dpConfig"
-                    [(ngModel)]="PessoaFiltro.DataNascimento">
+                <label for="txtFormaPagamento">Forma de Pagamento</label>
+                <select id="txtFormaPagamento" class="form-control" [(ngModel)]="IdFormaPagamento"
+                    name=" idFormaPagamento">
+                    <option [value]=FormaPagamento.IdFormaPagamento *ngFor="let FormaPagamento of FormasPagamento">
+                        {{FormaPagamento.Descritivo}}
+                    </option>
+                </select>
+            </div>
+        </div>
+        <div class="form-row">
+            <div class="form-group col-md-4">
+                <label for="txtDataNasc">Data do Pedido</label>
+                <input type="text" class="form-control" #dp="bsDatepicker" bsDatepicker name="DataPedido"
+                    [(bsValue)]="DataPedido" [bsConfig]="dpConfig" [(ngModel)]="DataPedido">
             </div>
 
         </div>
@@ -96,17 +129,17 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <!-- <tr *ngFor="let pessoa of PessoasFiltro">
-                            <td>{{pedido.NomeRazao}}</td>
-                            <td>{{pedido.ApelidoFantasia}}</td>
-                            <td>{{pedido.TipoPessoa}}</td>
-                            <td>{{pedido.CpfCnpj}}</td>
-                            <td>{{pedido.RgInscricao}}</td>
-                            <td>{{pedido.Genero}}</td>
-                            <td>{{pedido.DataNascimento}}</td>
-                            <td>{{pedido.DataInclusao}}</td>
-                            <td></td>
-                        </tr> -->
+                        <tr
+                            *ngFor="let Pedido of Pedidos| paginate: { itemsPerPage: 5, currentPage: paginaAtual }; let i = index ">
+                            <th scope="row">{{Pedido.IdPedido}}</th>
+                            <td>{{Pedido.Pessoa.NomeRazao}}</td>
+                            <td>{{Pedido.Total}}</td>
+                            <td>{{Pedido.Status.Nome}}</td>
+                            <a routerLink="/CadastroPedido" [queryParams]="{ id: Pedido.IdPedido}"
+                                target="_blank"><button type="button" class="btn btn-success ml-3">
+                                    Alterar
+                                    Cadastro </button> </a>
+                        </tr>
                     </tbody>
                 </table>
 
@@ -130,7 +163,7 @@
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h2 class="modal-title" id="ModalPesquisaLabel">Pesquisa de Usuário</h2>
+                <h2 class="modal-title" id="ModalPesquisaLabel">Pesquisa de Cliente</h2>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -209,7 +242,7 @@
                 <div class="form-row mb-2">
                     <div class="form-group col-md-3">
                         <label for="inputState">Pesquisa</label>
-                        <select id="inputState" class="form-control" [(ngModel)]="FiltroPesquisa"
+                        <select id="inputState" class="form-control" [(ngModel)]="FiltroPesquisaVendedor"
                             name=" FiltroPesquisa">
                             <option [value]=filtro.Codigo *ngFor="let filtro of Filtros">
                                 {{filtro.Descricao}}
@@ -218,11 +251,11 @@
                     </div>
                     <div class="form-group col-md-7 mt-2">
                         <label for="inputState"></label>
-                        <input class="form-control" type="text" name="search" [(ngModel)]="InputFiltroPesquisa">
+                        <input class="form-control" type="text" name="search" [(ngModel)]="InputFiltroPesquisaVendedor">
                     </div>
                     <div class="form-group col-md-1 mt-2">
                         <label for="inputState"></label>
-                        <button class="btn btn-info btnsearch " (click)='PesquisarUsuarioPorFiltro()'>
+                        <button class="btn btn-info btnsearch " (click)='PesquisarVendedorPorFiltro()'>
                             Pesquisar
                         </button>
                     </div>
@@ -247,7 +280,7 @@
                                 <td>{{pessoa.CpfCnpj}}</td>
                                 <td>{{pessoa.Genero}}</td>
                                 <td><button class="btn btn-info btnselecionar btn-sm" data-dismiss="modal"
-                                        aria-label="Close" (click)="SelecionarVendedor(pessoa)">
+                                        aria-label="Close" (click)="selecionarVendedor(pessoa)">
                                         <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">
                                             done_outline</mat-icon>
                                     </button></td>
@@ -257,6 +290,148 @@
 
                         </tbody>
                     </table>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+
+<div class="modal fade" id="ModalCidade" tabindex="-1" role="dialog" aria-labelledby="ModalCidadeLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl ">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title" id="ModalCidadeLabel">Pesquisar Cidade</h1>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row mb-2">
+                    <div class="form-group col-md-3">
+                        <label for="txtCodigo">Pesquisa</label>
+                        <select id="txtCodigo" class="form-control" [(ngModel)]="FiltroPesquisaCidade"
+                            name=" FiltroPesquisaCidade">
+                            <option [value]=filtroCidade.Codigo *ngFor="let filtroCidade of FiltrosCidade">
+                                {{filtroCidade.Descricao}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-7 mt-2">
+                        <label for="inputState"></label>
+                        <input class="form-control" type="text" name="search" [(ngModel)]="InputFiltroPesquisaCidade">
+                    </div>
+                    <div class="form-group col-md-1 mt-2">
+                        <label for="inputState"></label>
+                        <button class="btn btn-info btnsearch " (click)='PesquisarCidadePorFiltro()'>
+                            Pesquisar
+                        </button>
+                    </div>
+                </div>
+                <div class="grades">
+                    <table class="table table-striped">
+                        <thead class="tabelas">
+                            <tr>
+                                <th scope="col">Nome</th>
+                                <th scope="col">Estado</th>
+                                <th scope="col">Selecionar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                *ngFor="let cidade of Cidades| paginate: { itemsPerPage: 5, currentPage: paginaAtual }; let i = index ">
+
+                                <td>{{cidade.Nome}}</td>
+                                <td>{{cidade.Estado.Sigla}}</td>
+                                <td><button class="btn btn-info btnselecionar btn-sm" data-dismiss="modal"
+                                        aria-label="Close" (click)="selecionarCidade(cidade)">
+                                        <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">
+                                            done_outline</mat-icon>
+                                    </button></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+
+            </div>
+
+        </div>
+    </div>
+
+
+</div>
+
+
+<div class="modal fade" id="ModalEstado" tabindex="-1" role="dialog" aria-labelledby="ModalPesquisaEstadoLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="ModalPesquisaLabel">Pesquisa de Estado</h2>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-row mb-2">
+                    <div class="form-group col-md-3">
+                        <label for="inputStateEstado">Pesquisa</label>
+                        <select id="inputStateEstado" class="form-control" [(ngModel)]="FiltroPesquisaEstado"
+                            name=" idFiltroPesquisaEstado">
+                            <option [value]=filtroEstado.Codigo *ngFor="let filtroEstado of FiltrosEstado">
+                                {{filtroEstado.Descricao}}
+                            </option>
+                        </select>
+                    </div>
+                    <div class="form-group col-md-7 mt-2">
+                        <label for="inputState"></label>
+                        <input class="form-control" type="text" name="search" [(ngModel)]="InputFiltroPesquisaEstado">
+                    </div>
+                    <div class="form-group col-md-1 mt-2">
+                        <label for="inputState"></label>
+                        <button class="btn btn-info btnsearch " (click)='PesquisarEstadoPorFiltro()'>
+                            Pesquisar
+                        </button>
+                    </div>
+                </div>
+                <div class="grades">
+                    <table class="table table-striped">
+                        <thead class="tabelas">
+                            <tr>
+                                <th scope="col">Nome</th>
+                                <th scope="col">Sigla</th>
+                                <th scope="col">Região</th>
+                                <th scope="col">Código IBGE</th>
+                                <th scope="col">Selecionar</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                *ngFor="let Estado of Estados | paginate: { itemsPerPage: 5, currentPage: paginaAtual }; let i = index ">
+
+                                <td>{{Estado.Nome}}</td>
+                                <td>{{Estado.Sigla}}</td>
+                                <td>{{Estado.Regiao}}</td>
+                                <td>{{Estado.CodigoIBGE}}</td>
+                                <td><button class="btn btn-info btnselecionar btn-sm" data-dismiss="modal"
+                                        aria-label="Close" (click)="selecionarEstado(Estado)">
+                                        <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">
+                                            done_outline</mat-icon>
+                                    </button></td>
+                            </tr>
+                        </tbody>
+                        <tbody>
+
+                        </tbody>
+                    </table>
+                </div>
+                <div class="float-right">
+                    <pagination-controls previousLabel="Anterior" nextLabel="Proxima" responsive="true" autoHide="true"
+                        (pageChange)="handlePageChange($event)"></pagination-controls>
                 </div>
 
             </div>

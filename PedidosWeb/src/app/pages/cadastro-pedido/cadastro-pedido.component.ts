@@ -1,13 +1,13 @@
+import { FormaPagamento } from 'src/app/class/forma-pagamento';
 import { Pedido_Produto } from './../../class/pedido_produto';
 import { Estado } from './../../class/estado';
 import { Cidade } from './../../class/cidade';
 import { promise } from 'protractor';
 import { email } from './../../class/email';
 import { endereco } from './../../class/endereco';
-import { FormaPagamento } from './../../class/forma-pagamento';
 import { Pedido } from 'src/app/class/pedido';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Produto } from 'src/app/class/produto';
 import { PedidoService } from './../../services/pedido.service';
 import { MatAccordion } from '@angular/material/expansion';
@@ -20,6 +20,7 @@ import { ProdutoService } from './../../services/produto.service';
 import { Produto_PedidoRetorno } from 'src/app/class/produto_pedidoRetorno';
 import { Console } from 'console';
 import { AccountService } from './../../services/account.service';
+import { THIS_EXPR } from '@angular/compiler/src/output/output_ast';
 
 @Component({
   selector: 'app-cadastro-pedido',
@@ -28,6 +29,7 @@ import { AccountService } from './../../services/account.service';
 })
 export class CadastroPedidoComponent implements OnInit {
   public paginaAtual = 1;
+  paginaAtualProdutoModal = 1;
   public filter;
   public Pedido: Pedido = new Pedido();
   public ClienteEscolhido: boolean;
@@ -56,26 +58,49 @@ export class CadastroPedidoComponent implements OnInit {
   tipoBtn = "btn-danger"
   ComboStatus: any[];
   classeStatus: string;
-
+  @ViewChild('modalSearch') modalSearch: ElementRef;
   public FormasPagamento: FormaPagamento[] = [];
   @ViewChild(MatAccordion) accordion: MatAccordion;
   panelOpenState = false;
   Telefone: string;
   Email: any;
   Status: any[];
-  constructor(private pedidoService: PedidoService, private accountService: AccountService, private router: Router, private AlertService: AlertService, private PessoaService: PessoaService, private ProdutoService: ProdutoService,) { }
+  perfil: string = '';
+  Idpessoa: string = '';
+  public Produtos: Produto[] = [];
+  queryProdutoCodigoInterno = new FormControl();
+  FiltroPesquisa: string;
+  Filtros: any[];
+  FiltrosProdutos: { Codigo: string; Descricao: string; }[];
+  FiltroPesquisaProduto: string;
+  InputFiltroPesquisaProduto: any;
+  idStatusAntigo: String;
+  paginaAtualPessoa = 1;
+  DisableSalvar: boolean;
+  constructor(private pedidoService: PedidoService, private route: ActivatedRoute, private accountService: AccountService, private router: Router, private AlertService: AlertService, private PessoaService: PessoaService, private ProdutoService: ProdutoService,) { }
 
   ngOnInit(): void {
+    this.DisableSalvar = false;
+    this.ValidarUsuario();
     this.listarFormaPagamento()
     this.ClienteEscolhido = false;
     this.PreecherComboFiltro();
+    this.PreecherComboFiltroProduto();
     this.listarStatus();
     this.limpar();
+    this.route.queryParams
+      .subscribe(params => {
+        if (params) {
+          this.Pedido.IdPedido = params.id ? params.id : '';
+        }
+      }
+      );
+
+
   }
 
   public DepoisBuscar() {
     this.queryProduto.valueChanges.pipe(
-      filter(value => value.length > 0),
       debounceTime(500),
       distinctUntilChanged(),
       switchMap(value => this.ProdutoService.BuscarPorId(this.CodigoProduto)),
@@ -89,8 +114,8 @@ export class CadastroPedidoComponent implements OnInit {
           this.DepoisBuscar()
           return;
         }
-        if (result) {
-          this.Produto = result;
+        if (result.status == 200) {
+          this.Produto = result.resultado;
           this.Produto_PedidoRetorno.Descricao = this.Produto.NomeComercial
           this.Produto_PedidoRetorno.IdProduto = this.Produto.IdProduto
           this.Produto_PedidoRetorno.CodInternoProduto = this.Produto.CodigoInterno
@@ -112,23 +137,26 @@ export class CadastroPedidoComponent implements OnInit {
       )
     ).subscribe();
     this.queryPedido.valueChanges.pipe(
-      filter(value => value.length > 0),
       debounceTime(500),
       distinctUntilChanged(),
       switchMap(value => this.pedidoService.BuscarPorId(this.Pedido.IdPedido)),
       map((result: any) => {
-        if (result) {
-          console.log(result);
-          this.Pedido = result;
-          this.Pedido.IdStatusPedido = result.Status.IdStatusPedido;
-          this.Cliente.IdPessoa = result.Pessoa.IdPessoa
+        if (result == "Codigo Indefinido") {
+          this.limpar();
+        } else if (result.status == 200) {
+          this.Pedido = result.resultado;
+          this.Pedido.IdStatus = result.resultado.Status.IdStatusPedido;
+          this.Cliente.IdPessoa = result.resultado.Pessoa.IdPessoa
           this.selecionarCliente(this.Cliente);
-          let mes = new Date(result.DataCricao).getMonth() + 1
+          let mes = new Date(result.resultado.DataCricao).getMonth() + 1
           let messtring = mes < 10 ? '0' + mes : mes
-          let dia = new Date(result.DataCricao).getDate()
+          let dia = new Date(result.resultado.DataCricao).getDate()
           let diastring = dia < 10 ? '0' + dia : dia
-          this.DataPedido = diastring + '/' + messtring + '/' + new Date(result.DataCricao).getFullYear();
-          result.Produtos.forEach(ProdutoPedido => {
+          this.DataPedido = diastring + '/' + messtring + '/' + new Date(result.resultado.DataCricao).getFullYear();
+          this.Produtos_PedidoRetorno = [];
+          this.TotalProdutos = '';
+          this.TotalProdutosGrade = 0;
+          result.resultado.Produtos.forEach(ProdutoPedido => {
             let ProdutoPedidoRetorno: Produto_PedidoRetorno = new Produto_PedidoRetorno();
             ProdutoPedidoRetorno.Preco = parseFloat(ProdutoPedido.Preco).toFixed(2).replace(".", ",");
             let preco = ProdutoPedido.Preco.toString().replace(",", ".")
@@ -141,18 +169,42 @@ export class CadastroPedidoComponent implements OnInit {
             this.Produtos_PedidoRetorno.push(ProdutoPedidoRetorno);
           });
           this.TotalProdutos = this.TotalProdutosGrade.toFixed(2).replace(".", ",");
-          this.Pedido.IdFormaPagamento = result.FormaPagamento.IdFormaPagamento;
+          this.Pedido.IdFormaPagamento = result.resultado.FormaPagamento.IdFormaPagamento;
 
           if (this.Produtos_PedidoRetorno.length > 0) {
             this.nenhumProduto = false;
           } else {
             this.nenhumProduto = true;
           }
-
+          this.alterarSituacao();
+          if (this.perfil == '3') {
+            if (this.Pedido.IdStatus == "2" || this.Pedido.IdStatus == "4") {
+              this.DisableSalvar = true;
+            } else {
+              this.DisableSalvar = false;
+            }
+          } else {
+            this.DisableSalvar = false;
+          }
         } else {
           if (this.Pedido.IdPedido != '') {
             this.AlertService.show("Registro não encontrado", { classname: 'bg-danger text-light', delay: 3000 });
             this.Pedido = new Pedido();
+            this.CodigoProduto = '';
+            this.Pedido = new Pedido;
+            let mes = this.Pedido.DataPedido.getMonth() + 1
+            let messtring = mes < 10 ? '0' + mes : mes
+            let dia = new Date(this.Pedido.DataPedido).getDate()
+            let diastring = dia < 10 ? '0' + dia : dia
+            this.DataPedido = diastring + '/' + messtring + '/' + this.Pedido.DataPedido.getFullYear()
+            this.Cliente = new Pessoa;
+            this.ClienteEscolhido = false;
+            this.alterarSituacao();
+            this.Produtos_PedidoRetorno = [];
+            this.TotalProdutos = '';
+            this.TotalProdutosGrade = 0;
+            this.nenhumProduto = true;
+
           }
           return;
         }
@@ -176,6 +228,9 @@ export class CadastroPedidoComponent implements OnInit {
     this.TotalProdutos = '';
     this.TotalProdutosGrade = 0;
     this.nenhumProduto = true;
+    this.Produto_PedidoRetorno.Descricao = '';
+    this.Produto_PedidoRetorno.Preco = '';
+    this.Produto_PedidoRetorno.Quantidade = '';
 
     this.DepoisBuscar();
   }
@@ -186,6 +241,31 @@ export class CadastroPedidoComponent implements OnInit {
 
   public async Gravar() {
     try {
+
+      if (this.perfil == "3") {
+        if (this.Pedido.IdStatus == "2") {
+          this.AlertService.show("Usuario não autorizado Alterar o status do pedido para Separação", { classname: 'bg-danger text-light', delay: 3000 });
+          return
+        } else if (this.Pedido.IdStatus == "4") {
+          this.AlertService.show("Usuario não autorizado Alterar o status do pedido para Entregue", { classname: 'bg-danger text-light', delay: 3000 });
+          return
+        }
+      }
+
+      if (this.Cliente.IdPessoa == '' || !this.Cliente.IdPessoa) {
+        this.AlertService.show("Informe o Cliente", { classname: 'bg-danger text-light', delay: 3000 });
+        return
+      }
+      if (this.Pedido.IdFormaPagamento == '' || !this.Pedido.IdFormaPagamento) {
+        this.AlertService.show("Informe a Forma de Pagamento", { classname: 'bg-danger text-light', delay: 3000 });
+        return
+      }
+
+      if (this.Produtos_PedidoRetorno.length <= 0) {
+        this.AlertService.show("Adicione os Produtos", { classname: 'bg-danger text-light', delay: 3000 });
+        return
+      }
+
       this.Pedido.IdPessoa = this.Cliente.IdPessoa;
       const usuario = this.accountService.getUsuario();
       this.Pedido.IdUsuarioMovimentacao = usuario;
@@ -205,7 +285,6 @@ export class CadastroPedidoComponent implements OnInit {
         this.Pedido.Produtos.push(ProdutoPedido);
       }
       this.Pedido.IdPedido = this.Pedido.IdPedido == "" ? null : this.Pedido.IdPedido;
-      console.log(this.Pedido.IdPedido)
       let retorno: any = await this.pedidoService.gravar(this.Pedido);
 
       if (retorno.status == 200) {
@@ -296,14 +375,31 @@ export class CadastroPedidoComponent implements OnInit {
     ]
   }
 
+  public PreecherComboFiltroProduto() {
+    this.FiltrosProdutos = [
+      {
+        Codigo: "NC",
+        Descricao: "Nome Comercial"
+      },
+      {
+        Codigo: "NT",
+        Descricao: "Nome Técnico"
+      },
+      {
+        Codigo: "CI",
+        Descricao: "Código Interno"
+      }
+    ]
+  }
+
   async PesquisarClientePorFiltro() {
     let pesquisa: any;
     if (this.FiltroCliente == "NR") {
-      pesquisa = { NomeRazao: this.InputFiltroPesquisa }
+      pesquisa = { NomeRazao: this.InputFiltroPesquisa, Vinculos: [2] }
     } else if (this.FiltroCliente == "AF") {
-      pesquisa = { ApelidoFantasia: this.InputFiltroPesquisa }
+      pesquisa = { ApelidoFantasia: this.InputFiltroPesquisa, Vinculos: [2] }
     } else if (this.FiltroCliente == "C") {
-      pesquisa = { CpfCnpj: this.InputFiltroPesquisa }
+      pesquisa = { CpfCnpj: this.InputFiltroPesquisa, Vinculos: [2] }
     } else {
       this.AlertService.show("Selecione o filtro de Pesquisa", { classname: 'bg-danger text-light', delay: 3000 });
       return
@@ -315,11 +411,11 @@ export class CadastroPedidoComponent implements OnInit {
   public async selecionarCliente(Cliente: Pessoa) {
     if (Cliente) {
       let retorno: any = await this.PessoaService.BuscarPorId(Cliente.IdPessoa)
-      if (retorno) {
-        this.Endereco = retorno.Enderecos[0].Logradouro + ', ' + retorno.Enderecos[0].Numero + ', ' + retorno.Enderecos[0].Bairro + ', ' + retorno.Enderecos[0].Cidade.Nome + '-' + retorno.Enderecos[0].Cidade.Estado.Sigla;
-        this.Telefone = ' (' + retorno.Telefones[0].DDD + ') ' + retorno.Telefones[0].Numero
-        this.Email = retorno.Emails[0].Endereco;
-        this.Cliente = retorno;
+      if (retorno.status == 200) {
+        this.Endereco = retorno.resultado.Enderecos[0].Logradouro + ', ' + retorno.resultado.Enderecos[0].Numero + ', ' + retorno.resultado.Enderecos[0].Bairro + ', ' + retorno.resultado.Enderecos[0].Cidade.Nome + '-' + retorno.resultado.Enderecos[0].Cidade.Estado.Sigla;
+        this.Telefone = ' (' + retorno.resultado.Telefones[0].DDD + ') ' + retorno.resultado.Telefones[0].Numero
+        this.Email = retorno.resultado.Emails[0].Endereco;
+        this.Cliente = retorno.resultado;
       }
       this.ClienteEscolhido = true;
     }
@@ -327,17 +423,68 @@ export class CadastroPedidoComponent implements OnInit {
   }
 
   public async alterarSituacao() {
-    if (this.Pedido.IdStatusPedido == '1') {
+    if (this.Pedido.IdStatus == '1') {
       this.tipoBtn = 'btn-success'
-    } else if (this.Pedido.IdStatusPedido == '2') {
+    } else if (this.Pedido.IdStatus == '2') {
       this.tipoBtn = 'btn-dark'
-    } else if (this.Pedido.IdStatusPedido == '3') {
+    } else if (this.Pedido.IdStatus == '3') {
       this.tipoBtn = 'btn-danger'
-    } else if (this.Pedido.IdStatusPedido == '4') {
+    } else if (this.Pedido.IdStatus == '4') {
       this.tipoBtn = 'btn-primary'
     }
   }
 
+  async Pesquisar() {
+    if (this.CodigoProduto == '') {
+      this.modalSearch.nativeElement.click();
+    } else {
+      let retorno: any = await this.ProdutoService.BuscarPorId(this.Produto.IdProduto)
+      if (retorno) {
+        this.Produto = retorno;
+      }
+    }
+  }
 
+
+  async PesquisarPorFiltro() {
+    let pesquisa: any;
+    if (this.FiltroPesquisaProduto == "NT") {
+      pesquisa = { NomeTecnico: this.InputFiltroPesquisaProduto }
+    } else if (this.FiltroPesquisaProduto == "C") {
+      pesquisa = { IdProduto: this.InputFiltroPesquisaProduto }
+    } else if (this.FiltroPesquisaProduto == "CI") {
+      pesquisa = { CodigoInterno: this.InputFiltroPesquisaProduto }
+    } else if (this.FiltroPesquisaProduto == "NC") {
+      pesquisa = { NomeComercial: this.InputFiltroPesquisaProduto }
+    } else {
+      this.AlertService.show("Selecione o filtro de Pesquisa", { classname: 'bg-danger text-light', delay: 3000 });
+      return
+    }
+    let retorno: any = await this.ProdutoService.BuscarPorFiltro(pesquisa);
+    this.Produtos = retorno.resultado
+  }
+
+  public selecionarProduto(Produto: Produto) {
+    if (this.Pedido.IdFormaPagamento == "") {
+      this.AlertService.show("Selecione forma de pagamento", { classname: 'bg-danger text-light', delay: 3000 });
+      return
+    }
+    if (Produto) {
+      this.CodigoProduto = Produto.IdProduto;
+      this.Pesquisar();
+    }
+  }
+
+  public ValidarUsuario() {
+    this.perfil = this.accountService.getTipoUser();
+  }
+
+  handlePageChangeProdutoModal(event) {
+    this.paginaAtualProdutoModal = event;
+  }
+
+  handlePageChangePessoa(event) {
+    this.paginaAtualPessoa = event;
+  }
 
 }

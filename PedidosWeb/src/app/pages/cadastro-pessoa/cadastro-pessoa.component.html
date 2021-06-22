@@ -70,7 +70,7 @@
         <input type="text" class="form-control" [minDate]="minDate" [maxDate]="maxDate" #dp="bsDatepicker" bsDatepicker
           name="DataNascimento" [(bsValue)]="dataNascimento " [bsConfig]="dpConfig" [(ngModel)]="DataNascimento">
       </div>
-      <div class="form-group col-md-4" *ngIf="perfil=='1'">
+      <div class="form-group col-md-4" *ngIf="perfil=='1'|| perfil=='2'">
         <label>Cargo</label>
         <mat-form-field appearance="outline">
           <mat-select multiple [(ngModel)]="Pessoa.Vinculos" placeholder="Selecione um cargo" name="Vinculos">
@@ -126,23 +126,24 @@
             <input type="text" class="form-control" id="txtCep" mask="00000-000" [(ngModel)]="Endereco.CEP" name="cep"
               maxlength="9" (ngModelChange)="buscarPorCep()">
           </div>
-          <div class="form-group col-md-3">
+
+
+          <div class="form-group col-md-1">
             <label for="txtCidade">Cidade</label>
-            <input type="text" class="form-control" id="txtCidade" name="cidade" [(ngModel)]="Endereco.Cidade.Nome"
-              name="idCidade">
-          </div>
-          <div class="form-group">
-            <input type="hidden" class="form-control" id="txtcatEnd" name="CatEnd"
-              [(ngModel)]="Endereco.Cidade.IdCidade">
+            <input type="text" class="form-control" id="txtCidade" [formControl]="queryCidade" name="cidade"
+              [(ngModel)]="Endereco.Cidade.IdCidade" name="idCidade">
           </div>
           <button type="button" #modalSearchCidade class="btn btn-info btnsearch btn-sm d-none" data-toggle="modal"
             data-target="#ModalCidade">
             <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
           </button>
-          <div class="form-group mt-4 col-md-1">
-            <button class="btn btn-info btnsearch btn-sm" (click)="PesquisarCidade()">
+          <div class="form-group mt-4 col-md-0.5">
+            <button class="btn btn-info btnsearch " (click)="PesquisarCidade()">
               <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
             </button>
+          </div>
+          <div class="form-group col-md-2 mt-5">
+            <label for="txtNome">{{Endereco.Cidade.Nome}}</label>
           </div>
         </div>
         <div class="form-row">
@@ -357,10 +358,10 @@
 
 <!-- Modal -->
 <div class="modal fade" id="ModalCidade" tabindex="-1" aria-labelledby="ModalCidadeLabel" aria-hidden="true">
-  <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+  <div class="modal-dialog modal-xl ">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="ModalCidadeLabel">Pesquisar Cidade</h5>
+        <h1 class="modal-title" id="ModalCidadeLabel">Pesquisar Cidade</h1>
         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
@@ -386,7 +387,7 @@
             </button>
           </div>
         </div>
-        <div class="Teste">
+        <div class="grades">
           <table class="table table-striped">
             <thead class="tabelas">
               <tr>
@@ -397,7 +398,7 @@
             </thead>
             <tbody>
               <tr
-                *ngFor="let cidade of Cidades| filter:filter| paginate: { itemsPerPage: 10, currentPage: paginaAtual }; let i = index ">
+                *ngFor="let cidade of Cidades| paginate: { itemsPerPage: 5, currentPage: paginaAtual }; let i = index ">
                 <td><button class="btn btn-info btnselecionar btn-sm" data-dismiss="modal" aria-label="Close"
                     (click)="selecionarCidade(cidade)">
                     <mat-icon [inline]="true" aria-hidden="false" aria-label="selecionar">done_outline</mat-icon>
@@ -408,7 +409,10 @@
             </tbody>
           </table>
         </div>
-
+        <div class="float-right">
+          <pagination-controls previousLabel="Anterior" nextLabel="Proxima" responsive="true" autoHide="true"
+            (pageChange)="handlePageChange($event)"></pagination-controls>
+        </div>
 
       </div>
 
@@ -463,7 +467,8 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let pessoa of Pessoas ">
+              <tr
+                *ngFor="let pessoa of Pessoas | paginate: { itemsPerPage: 5, currentPage: paginaAtualPessoa }; let i = index ">
                 <th scope="row">{{pessoa.IdPessoa}}</th>
                 <td>{{pessoa.NomeRazao}}</td>
                 <td>{{pessoa.ApelidoFantasia}}</td>
@@ -479,6 +484,10 @@
 
             </tbody>
           </table>
+          <div class="float-right">
+            <pagination-controls previousLabel="Anterior" nextLabel="Proxima" responsive="true" autoHide="true"
+              (pageChange)="handlePageChangePessoa($event)"></pagination-controls>
+          </div>
         </div>
 
       </div>
