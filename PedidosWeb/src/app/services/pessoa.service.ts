@@ -75,6 +75,7 @@ export class PessoaService {
           resultado: error,
           status: 401
         };
+        console.log(error);
         resolve(resultado);
       });
     })
@@ -119,13 +120,46 @@ export class PessoaService {
   }
 
 
+  async BuscarCidadePorId(Codigo: String) {
+    return new Promise(resolve => {
+      if (!Codigo) {
+        resolve("Codigo Indefinido");
+      } else {
+        this.http.get('api/Cidade/buscarPorId/' + Codigo).subscribe(result => {
+          let resultado = {
+            resultado: result,
+            status: 200
+          };
+          resolve(resultado);
+        }, error => {
+          let resultado = {
+            resultado: error,
+            status: 401
+          };
+          resolve(resultado);
+        });
+      }
+
+    })
+  }
+
   async BuscarPorId(Codigo: String) {
     return new Promise(resolve => {
       if (!Codigo) {
         resolve("Codigo Indefinido");
       } else {
         this.http.get('api/Pessoa/buscarPorId/' + Codigo).subscribe(result => {
-          resolve(result);
+          let resultado = {
+            resultado: result,
+            status: 200
+          };
+          resolve(resultado);
+        }, error => {
+          let resultado = {
+            resultado: error,
+            status: 401
+          };
+          resolve(resultado);
         });
       }
 
@@ -134,9 +168,25 @@ export class PessoaService {
 
   async BuscarEstadoPorId(Codigo: String) {
     return new Promise(resolve => {
-      this.http.get('api/Estado/buscarPorId/' + Codigo).subscribe(result => {
-        resolve(result);
-      });
+      if (!Codigo) {
+        resolve("Codigo Indefinido");
+      } else {
+        this.http.get('api/Estado/buscarPorId/' + Codigo).subscribe(result => {
+          let resultado = {
+            resultado: result,
+            status: 200
+          };
+          resolve(resultado);
+        }, error => {
+          let resultado = {
+            resultado: error,
+            status: 401
+          };
+          resolve(resultado);
+        });
+      }
+
     })
+
   }
 }

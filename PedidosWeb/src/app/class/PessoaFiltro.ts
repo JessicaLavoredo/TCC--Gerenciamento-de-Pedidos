@@ -1,4 +1,5 @@
 
+import { enderecoFitro } from './enderecoFiltro';
 export class PessoaFiltro {
     IdPessoa: string;
     TipoPessoa: string;
@@ -10,6 +11,7 @@ export class PessoaFiltro {
     Genero: string;
     Inativo: boolean;
     DataInclusao: Date;
+    Enderecos: enderecoFitro[];
 
     constructor() {
         this.IdPessoa = null;
@@ -22,6 +24,7 @@ export class PessoaFiltro {
         this.Genero = null;
         this.Inativo = null;
         this.DataInclusao = null;
+        this.Enderecos = [];
     }
 
 }

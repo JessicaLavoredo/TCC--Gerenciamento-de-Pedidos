@@ -6,6 +6,7 @@ export class Produto {
     public Descricao: string;
     public Vista: string;
     public Prazo: string;
+    public Inativo: String;
 
     constructor() {
         this.IdProduto = '';
@@ -15,5 +16,6 @@ export class Produto {
         this.Descricao = '';
         this.Vista = '';
         this.Prazo = '';
+        this.Inativo = '';
     }
 }

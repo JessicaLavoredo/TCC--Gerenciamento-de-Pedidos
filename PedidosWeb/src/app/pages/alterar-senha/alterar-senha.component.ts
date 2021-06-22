@@ -37,7 +37,7 @@ export class AlterarSenhaComponent implements OnInit {
     if (usuario) {
       let retorno: any = await this.UsuarioService.BuscarPorId(usuario)
       if (retorno) {
-        this.Usuario = retorno
+        this.Usuario = retorno.resultado
       }
     }
   }

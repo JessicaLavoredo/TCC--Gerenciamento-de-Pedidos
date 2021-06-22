@@ -30,7 +30,6 @@ export class LoginComponent implements OnInit {
         this.AlertService.show('Preencha corretamente o campo: Senha', { classname: 'bg-danger text-light', delay: 3000 });
       } else {
         this.accountService.login(this.usuario).then((retorno: any) => {
-          console.log(retorno);
           if (retorno.status == 200) {
             window.localStorage.setItem('token', retorno.resultado.Authorization);
             this.router.navigate(['']);

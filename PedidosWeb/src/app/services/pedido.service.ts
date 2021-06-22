@@ -42,14 +42,49 @@ export class PedidoService {
 
   async BuscarPorId(Codigo: String) {
     return new Promise(resolve => {
-      this.http.get('api/Pedido/buscarPorId/' + Codigo).subscribe(result => {
-        resolve(result);
-      });
+      if (!Codigo) {
+        resolve("Codigo Indefinido");
+      } else {
+        this.http.get('api/Pedido/buscarPorId/' + Codigo).subscribe(result => {
+          let resultado = {
+            resultado: result,
+            status: 200
+          };
+          resolve(resultado);
+        }, error => {
+          console.log(error);
+          let resultado = {
+            resultado: error,
+            status: 401
+          };
+          resolve(resultado);
+        })
+      }
     })
+
   }
 
   public buscarTodosStatus() {
     return this.http.get<any[]>('api/StatusPedido/buscartodos');
+  }
+
+  async BuscarPorFiltro(Filtros: any) {
+    return new Promise(resolve => {
+      const json = JSON.stringify(Filtros);
+      this.http.post('api/Pedido/buscarPorFiltro', json).subscribe(result => {
+        let resultado = {
+          resultado: result,
+          status: 200
+        };
+        resolve(resultado);
+      }, error => {
+        let resultado = {
+          resultado: error,
+          status: 401
+        };
+        resolve(resultado);
+      });
+    })
   }
 
 }

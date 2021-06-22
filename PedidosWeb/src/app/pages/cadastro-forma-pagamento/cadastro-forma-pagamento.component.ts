@@ -13,6 +13,7 @@ export class CadastroFormaPagamentoComponent implements OnInit {
   public FormasPagamento: FormaPagamento[] = [];
   public FormaPagamento: FormaPagamento = new FormaPagamento();
   validacao: boolean;
+  public paginaAtual = 1;
   constructor(private FormaPagamentoService: FormaPagamentoService, private router: Router, private AlertService: AlertService) { }
   ngOnInit(): void {
     this.listar();
@@ -72,4 +73,7 @@ export class CadastroFormaPagamentoComponent implements OnInit {
     }
   }
 
+  handlePageChange(event) {
+    this.paginaAtual = event;
+  }
 }

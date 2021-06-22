@@ -53,16 +53,23 @@ export class CadastroUsuarioComponent implements OnInit {
 
   public DepoisBuscar() {
     this.queryUsuario.valueChanges.pipe(
-      filter(value => value.length > 0),
       debounceTime(200),
       distinctUntilChanged(),
       switchMap(value => this.UsuarioService.BuscarPorId(this.Usuario.IdUsuario)),
       map((result: any) => {
-        if (result) {
-          this.Usuario = result
-          this.ConfirmacaoSenha = result.Senha;
-          this.pesquisarFuncionario();
-        }
+        if (result == "Codigo Indefinido") {
+          this.Usuario = new Usuario;
+          this.ConfirmacaoSenha = '';
+        } else
+          if (result.status == 200) {
+            this.Usuario = result.resultado
+            this.ConfirmacaoSenha = result.resultado.Senha;
+            this.pesquisarFuncionario();
+          } else {
+            this.AlertService.show("Registro não encontrado", { classname: 'bg-danger text-light', delay: 3000 });
+            this.Usuario = new Usuario;
+            this.ConfirmacaoSenha = '';
+          }
       }
       )
     ).subscribe();
@@ -84,7 +91,6 @@ export class CadastroUsuarioComponent implements OnInit {
       if (this.Usuario.IdUsuario == '') {
         this.Usuario.IdUsuario = null;
       }
-
       if (this.Usuario.Senha === this.ConfirmacaoSenha) {
         let retorno: any = await this.UsuarioService.gravar(this.Usuario)
         if (retorno.status == 200) {
@@ -103,6 +109,7 @@ export class CadastroUsuarioComponent implements OnInit {
   Limpar() {
     this.Usuario = new Usuario();
     this.NomePessoa = '';
+    this.ConfirmacaoSenha = '';
     this.FiltroPesquisaUsuario = "P";
     this.PesquisaReativaFuncionario();
     this.DepoisBuscar()
@@ -118,9 +125,15 @@ export class CadastroUsuarioComponent implements OnInit {
         if (result == "Codigo Indefinido") {
           this.NomePessoa = '';
           this.Usuario.IdPessoa = '';
-        } else if (result) {
-          this.NomePessoa = result.NomeRazao;
-        }
+        } else
+          if (result.status == 200) {
+            this.NomePessoa = result.resultado.NomeRazao;
+          } else {
+            this.AlertService.show("Registro não encontrado", { classname: 'bg-danger text-light', delay: 3000 });
+            this.NomePessoa = '';
+            this.Usuario.IdPessoa = '';
+          }
+
       }
       )
     ).subscribe();
@@ -271,6 +284,7 @@ export class CadastroUsuarioComponent implements OnInit {
       this.Usuario.IdUsuario = Usuario.IdUsuario;
     }
   }
+
 
 
 }

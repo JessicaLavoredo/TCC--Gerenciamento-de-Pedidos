@@ -27,13 +27,12 @@ export class MenuComponent {
     const usuario = this.accountService.getUsuario();
     if (usuario) {
       let retornoUsuario: any = await this.UsuarioService.BuscarPorId(usuario);
-      let retorno: any = await this.PessoaService.BuscarPorId(retornoUsuario.IdPessoa);
+      let retorno: any = await this.PessoaService.BuscarPorId(retornoUsuario.resultado.IdPessoa);
       if (retorno) {
-        if (retorno.ApelidoFantasia == "" || retorno.ApelidoFantasia == null) {
-          this.UsuarioLogado = retorno.NomeRazao;
-
+        if (retorno.resultado.ApelidoFantasia == "" || retorno.resultado.ApelidoFantasia == null) {
+          this.UsuarioLogado = retorno.resultado.NomeRazao;
         } else {
-          this.UsuarioLogado = retorno.ApelidoFantasia;
+          this.UsuarioLogado = retorno.resultado.ApelidoFantasia;
         }
       }
       const perfil = this.accountService.getTipoUser();
@@ -45,8 +44,8 @@ export class MenuComponent {
       } else if (perfil == "2") {
         this.admin = false;
         this.gerent = true;
-        this.nomePaginaPessoa = "Cadastro de Cliente"
-        this.nomePaginaPessoaRelatorio = "Relatório de Cliente"
+        this.nomePaginaPessoa = "Cadastro de Pessoa"
+        this.nomePaginaPessoaRelatorio = "Relatório de Pessoa"
       } else {
         this.nomePaginaPessoa = "Cadastro de Cliente"
         this.nomePaginaPessoaRelatorio = "Relatório de Cliente"

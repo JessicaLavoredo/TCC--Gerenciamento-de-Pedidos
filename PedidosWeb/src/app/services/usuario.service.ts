@@ -36,12 +36,25 @@ export class UsuarioService {
 
   async BuscarPorId(Codigo: String) {
     return new Promise(resolve => {
-      this.http.get('api/Usuario/buscarPorId/' + Codigo).subscribe(result => {
-        resolve(result);
-      }, error => {
-        console.log(error);
-        resolve(error);
-      });
+      if (!Codigo) {
+        resolve("Codigo Indefinido");
+      } else {
+        this.http.get('api/Usuario/buscarPorId/' + Codigo).subscribe(result => {
+
+          let resultado = {
+            resultado: result,
+            status: 200
+          };
+          resolve(resultado);
+        }, error => {
+          let resultado = {
+            resultado: error,
+            status: 401
+          };
+          resolve(resultado);
+
+        });
+      }
     })
   }
 
