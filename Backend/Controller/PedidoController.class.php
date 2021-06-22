@@ -58,7 +58,7 @@
             if(isset($obj['IdUsuarioCriadoPor'])) {
                 $entidade['IdUsuarioCriadoPor'] = $obj['IdUsuarioCriadoPor'];
             }
-            
+
             if(!is_null($pessoa)) {
                 $entidade['Pessoa'] = $pessoa;
             }
@@ -70,7 +70,18 @@
             }
 
             return $ret;
+        }
 
+        function buscarTodos() {
+            $pedidos = (new PedidoData())->buscarTodos();
+            $ret = array();
+            foreach($pedidos as $pedido){
+                $pedido = $this->converterParaResponse($pedido);
+                unset($pedido["Produtos"]);
+                $ret[] = $pedido;
+            }
+
+            return $ret;
         }
 
         function converterParaResponse($pedido){
