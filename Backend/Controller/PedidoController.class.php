@@ -54,6 +54,10 @@
 
             $entidade = Funcoes::objetoParaArray(Funcoes::criarEntidade('Pedido', $obj));
             unset($entidade['Produtos']);
+
+            if(isset($obj['IdUsuarioCriadoPor'])) {
+                $entidade['IdUsuarioCriadoPor'] = $obj['IdUsuarioCriadoPor'];
+            }
             
             if(!is_null($pessoa)) {
                 $entidade['Pessoa'] = $pessoa;

@@ -25,10 +25,16 @@
                         $stm->bindValue(":".$prop, $entidade->$get());
                     }
                     $stm->execute();
-                    $ultimoId = $entidade->getIdPessoa();
+                    $ultimoId = $entidade->getIdProduto();
 
                     $precoProduto = New ListaPrecoProduto(null, 1, $ultimoId, $entidade->getVista(), $entidade->getPrazo());
-                    $propriedadesPrecoProduto = array_filter(Funcoes::getPropriedades("ListaPrecoProduto"), function($x){if(strtoupper($x) !== strtotupper("IdListaPrecoProduto") && strtoupper($x) !== strtotupper("IdProduto")){return true;}else{return false;}});
+                    $propriedadesPrecoProduto = array_filter(Funcoes::getPropriedades("ListaPrecoProduto"), function($x){
+                        if(strtoupper($x) !== strtoupper("IdListaPrecoProduto") && strtoupper($x) !== strtoupper("IdProduto")){
+                            return true;
+                        }else{
+                            return false;
+                        }
+                    });
                     $sql = "UPDATE ListaPrecoProduto\n";
                     $sql.= "SET ";
                     foreach ($propriedadesPrecoProduto as $prop) {

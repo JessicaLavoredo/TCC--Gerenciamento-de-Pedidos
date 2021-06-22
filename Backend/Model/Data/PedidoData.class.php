@@ -161,7 +161,9 @@
                 $produtosPedido = (New PedidoProdutoData())->buscarTodosPorIdPedido($pedido->getIdPedido());
                 $status = (New HistoricoPedidoData())->buscarStatusPorIdPedido($pedido->getIdPedido());
                 $pedido->setProdutos($produtosPedido);
-                $pedido->setIdStatus($status->getIdStatusPedido());
+                if (!is_null($status)) {
+                    $pedido->setIdStatus($status->getIdStatusPedido());
+                }
 
                 $ret[] = $pedido;
             }
