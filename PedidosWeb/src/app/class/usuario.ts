@@ -4,6 +4,7 @@ export class Usuario {
     public Login: string;
     public Senha: string;
     public IdPerfil: string;
+    public Inativo: boolean;
 
     constructor() {
         this.IdPerfil = '';
@@ -11,6 +12,7 @@ export class Usuario {
         this.IdUsuario = '';
         this.Login = '';
         this.Senha = '';
+        this.Inativo = false;
     }
 
 }

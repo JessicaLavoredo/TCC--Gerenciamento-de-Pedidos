@@ -318,9 +318,18 @@ export class CadastroPessoaComponent implements OnInit {
         this.Pessoa.Genero = null;
       }
 
+      let idPessoa;
+      idPessoa = this.Pessoa.IdPessoa
+
       let retorno: any = await this.PessoaService.gravar(this.Pessoa);
       if (retorno.status == 200) {
-        this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
+        if (idPessoa == '' || idPessoa == null) {
+          this.PessoaService.buscarTodos().subscribe(result => {
+            this.AlertService.show('Registro ' + result.pop().IdPessoa + ' Gravado com sucesso', { classname: 'bg-success text-light', delay: 3000 });
+          });
+        } else {
+          this.AlertService.show('Registro ' + idPessoa + ' Gravado com sucesso', { classname: 'bg-success text-light', delay: 3000 });
+        }
         this.limparTela();
       } else {
         this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });

@@ -1,3 +1,4 @@
+import { UsuarioService } from './../../services/usuario.service';
 // import { PedidoFiltro } from './../../class/pedidoFiltro';
 import { PedidoService } from './../../services/pedido.service';
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
@@ -14,6 +15,7 @@ import { Cidade } from 'src/app/class/cidade';
 import { Estado } from 'src/app/class/estado';
 import { PessoaFiltro } from 'src/app/class/PessoaFiltro';
 import { Pedido } from 'src/app/class/pedido';
+import { AccountService } from './../../services/account.service';
 
 export interface PedidoFiltro {
   IdPedido?: string;
@@ -42,6 +44,7 @@ export interface PedidoFiltro {
     IdFormaPagamento?: string;
   },
   DataCriacao?: string;
+  IdUsuarioCriadoPor?: string;
 }
 
 @Component({
@@ -51,6 +54,7 @@ export interface PedidoFiltro {
 })
 
 export class RelatorioPedidoComponent implements OnInit {
+
   IdStatusPedido: string;
   DataPedido: Date;
   IdPessoa: string;
@@ -91,8 +95,9 @@ export class RelatorioPedidoComponent implements OnInit {
   @ViewChild('modalSearchCidade') modalSearchCidade: ElementRef;
   @ViewChild('modalSearchEstado') modalSearchEstado: ElementRef;
   Pedidos: Pedido[];
+  perfil: string;
 
-  constructor(private pedidoService: PedidoService, private AlertService: AlertService, private PessoaService: PessoaService, private localeService: BsLocaleService) { }
+  constructor(private pedidoService: PedidoService, private UsuarioService: UsuarioService, private AlertService: AlertService, private PessoaService: PessoaService, private accountService: AccountService, private localeService: BsLocaleService) { }
 
   ngOnInit(): void {
     this.limparTela();
@@ -105,6 +110,11 @@ export class RelatorioPedidoComponent implements OnInit {
     this.dpConfig.isAnimated = true;
     this.dpConfig.dateInputFormat = 'DD/MM/YYYY';
     this.localeService.use('pt-br');
+    this.ValidarUsuario();
+  }
+
+  public ValidarUsuario() {
+    this.perfil = this.accountService.getTipoUser();
   }
 
   limparTela() {
@@ -129,6 +139,20 @@ export class RelatorioPedidoComponent implements OnInit {
     this.IdFormaPagamento = this.IdFormaPagamento == '' ? null : this.IdFormaPagamento;
     this.PedidoFiltro.Pessoa = { IdPessoa: this.IdPessoa, Enderecos: [{ Cidade: this.Cidade }] };
     this.PedidoFiltro.Status = { IdStatusPedido: this.IdStatusPedido };
+
+    if (this.perfil == '3') {
+      this.PedidoFiltro.IdUsuarioCriadoPor = this.accountService.getUsuario();
+    } else {
+      if (parseInt(this.IdUsuarioMovimentacao) > 0) {
+        let retorno: any = await this.UsuarioService.BuscarUsuarioPorFiltro({ IdPessoa: this.IdUsuarioMovimentacao });
+        if (retorno.status == 200) {
+          this.PedidoFiltro.IdUsuarioCriadoPor = retorno.resultado[0].IdUsuario;
+        }
+      }
+
+
+    }
+
     if (this.DataPedido) {
       let dia = this.DataPedido.getDate();
       let Mes = this.DataPedido.getMonth() + 1;

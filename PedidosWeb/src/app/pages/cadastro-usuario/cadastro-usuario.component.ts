@@ -40,6 +40,7 @@ export class CadastroUsuarioComponent implements OnInit {
   FiltroPesquisaUsuario: string;
   InputFiltroPesquisaUsuario: string;
   FiltrosUsuario: any[];
+  validacao: boolean;
 
 
   constructor(private UsuarioService: UsuarioService, private PerfilUsuarioService: PerfilUsuarioService, private AlertService: AlertService, private PessoaService: PessoaService) { }
@@ -88,13 +89,46 @@ export class CadastroUsuarioComponent implements OnInit {
 
   public async Gravar() {
     try {
+      this.validacao = true;
+
       if (this.Usuario.IdUsuario == '') {
         this.Usuario.IdUsuario = null;
       }
+      if (this.Usuario.IdPessoa == '') {
+        this.AlertService.show("Preenche corretamente o campo Funcionário", { classname: 'bg-danger text-light', delay: 3000 });
+        this.validacao = false;
+      }
+      if (this.Usuario.Login == '') {
+        this.AlertService.show("Preenche corretamente o campo Login", { classname: 'bg-danger text-light', delay: 3000 });
+        this.validacao = false;
+      }
+
+      if (this.Usuario.Senha == '') {
+        this.AlertService.show("Preenche corretamente o campo Senha", { classname: 'bg-danger text-light', delay: 3000 });
+        this.validacao = false;
+      }
+
+      if (this.ConfirmacaoSenha == '') {
+        this.AlertService.show("Preenche corretamente o campo Confirmação de senha", { classname: 'bg-danger text-light', delay: 3000 });
+        this.validacao = false;
+      }
+
+      if (!this.validacao) {
+        return
+      }
       if (this.Usuario.Senha === this.ConfirmacaoSenha) {
+        let IdUsuario;
+        IdUsuario = this.Usuario.IdUsuario
+
         let retorno: any = await this.UsuarioService.gravar(this.Usuario)
         if (retorno.status == 200) {
-          this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
+          if (IdUsuario == '' || IdUsuario == null) {
+            this.UsuarioService.buscarTodos().subscribe(result => {
+              this.AlertService.show('Registro ' + result.pop().IdUsuario + ' Gravado com sucesso', { classname: 'bg-success text-light', delay: 3000 });
+            });
+          } else {
+            this.AlertService.show('Registro ' + IdUsuario + ' Gravado com sucesso', { classname: 'bg-success text-light', delay: 3000 });
+          }
         } else {
           this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
         }

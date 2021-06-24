@@ -41,14 +41,28 @@ export class CadastroCatEmailComponent implements OnInit {
         return
       }
 
+      let IdCategoriaEmail;
+      IdCategoriaEmail = this.categoria.IdCategoriaEmail
+
+      this.categoria.IdCategoriaEmail
+
       let retorno: any = await this.CategoriaEmailService.gravar(this.categoria);
       if (retorno.status == 200) {
-        this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
+        if (IdCategoriaEmail == '' || IdCategoriaEmail == null) {
+          this.CategoriaEmailService.buscarTodos().subscribe(result => {
+            this.categorias = result;
+            this.AlertService.show('Registro ' + result.pop().IdCategoriaEmail + ' Gravado com sucesso', { classname: 'bg-success text-light', delay: 3000 });
+          });
+        } else {
+          this.AlertService.show('Registro ' + IdCategoriaEmail + ' Gravado com sucesso', { classname: 'bg-success text-light', delay: 3000 });
+        }
+
       } else {
         this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
       }
       this.listar();
       this.categoria = new CategoriaEmail();
+      IdCategoriaEmail = null
     } catch (error) {
       console.error(error);
     }

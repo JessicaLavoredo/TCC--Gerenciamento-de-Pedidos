@@ -36,14 +36,26 @@ export class CadastroCatEnderecoComponent implements OnInit {
       if (!this.validacao) {
         return
       }
+      let IdCategoriaEndereco;
+      IdCategoriaEndereco = this.categoria.IdCategoriaEndereco
+
       let retorno: any = await this.CategoriaEnderecoService.gravar(this.categoria);
       if (retorno.status == 200) {
-        this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
+        if (IdCategoriaEndereco == '' || IdCategoriaEndereco == null) {
+          this.CategoriaEnderecoService.buscarTodos().subscribe(result => {
+            this.categorias = result;
+            this.AlertService.show('Registro ' + result.pop().IdCategoriaEndereco + ' Gravado com sucesso', { classname: 'bg-success text-light', delay: 3000 });
+          });
+        } else {
+          this.AlertService.show('Registro ' + IdCategoriaEndereco + ' Gravado com sucesso', { classname: 'bg-success text-light', delay: 3000 });
+        }
+
       } else {
         this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
       }
       this.listar();
       this.categoria = new CategoriaEndereco();
+      IdCategoriaEndereco = null;
     } catch (error) {
       console.error(error);
     }

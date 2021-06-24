@@ -285,10 +285,20 @@ export class CadastroPedidoComponent implements OnInit {
         this.Pedido.Produtos.push(ProdutoPedido);
       }
       this.Pedido.IdPedido = this.Pedido.IdPedido == "" ? null : this.Pedido.IdPedido;
+      let idPedido;
+      idPedido = this.Pedido.IdPedido
+
       let retorno: any = await this.pedidoService.gravar(this.Pedido);
 
       if (retorno.status == 200) {
-        this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
+        if (idPedido == '' || idPedido == null) {
+          this.pedidoService.buscarTodos().subscribe(result => {
+            this.AlertService.show('Registro ' + result.pop().IdPedido + ' Gravado com sucesso', { classname: 'bg-success text-light', delay: 3000 });
+          });
+        } else {
+          this.AlertService.show('Registro ' + idPedido + ' Gravado com sucesso', { classname: 'bg-success text-light', delay: 3000 });
+        }
+
         this.limpar();
       } else {
         this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });

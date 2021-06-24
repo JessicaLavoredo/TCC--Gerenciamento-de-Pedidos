@@ -34,9 +34,7 @@ export class HomeComponent implements OnInit {
     const usuario = this.accountService.getUsuario();
     if (this.Perfil == "3") {
       if (usuario) {
-        let retornoUsuario: any = await this.UsuarioService.BuscarPorId(usuario);
-        this.Vendedor = retornoUsuario.resultado.IdPessoa;
-        pesquisa = { IdPessoa: this.Vendedor }
+        pesquisa = { IdUsuarioCriadoPor: usuario }
         let retorno: any = await this.PedidoService.BuscarPorFiltro(pesquisa);
 
         retorno.resultado.forEach(Pedido => {
@@ -45,18 +43,15 @@ export class HomeComponent implements OnInit {
         this.Pedidos = retorno.resultado;
       }
     } else {
+      pesquisa = { IdUsuarioCriadoPor: null }
+      let retorno: any = await this.PedidoService.BuscarPorFiltro(pesquisa);
 
+      retorno.resultado.forEach(Pedido => {
+        Pedido.Total = parseFloat(Pedido.Total).toFixed(2).replace(".", ",");
+      });
+      this.Pedidos = retorno.resultado;
     }
 
-
-
-    // const perfil = this.accountService.getTipoUser();
-    // this.Usuario = this.accountService.getUsuario();
-    // if (this.perfil == "3") {
-    //   this.NomePagina = "Cadastro de Cliente"
-    // } else {
-    //   this.NomePagina = "Cadastro de Pessoa"
-    // }
   }
 
   async PesquisarPedidoPorFiltro() {

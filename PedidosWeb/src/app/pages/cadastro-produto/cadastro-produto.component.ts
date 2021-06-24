@@ -34,6 +34,7 @@ export class CadastroProdutoComponent implements OnInit {
 
   public Limpar() {
     this.Produto = new Produto();
+    this.Inativo = false;
     this.DepoisBuscar();
     this.PreecherComboFiltro();
   }
@@ -80,20 +81,34 @@ export class CadastroProdutoComponent implements OnInit {
       if (!this.validacao) {
         return
       }
+
       if (this.Inativo == true) {
         this.Produto.Inativo = '1'
       } else {
         this.Produto.Inativo = '0'
       }
 
+      let IdProduto;
+      IdProduto = this.Produto.IdProduto
+
+      this.Produto.Vista = this.Produto.Vista.replace(",", ".");
+      this.Produto.Prazo = this.Produto.Prazo.replace(",", ".");
+
       this.Produto.IdProduto = this.Produto.IdProduto == '' ? null : this.Produto.IdProduto;
 
       let retorno: any = await this.ProdutoService.gravar(this.Produto)
       if (retorno.status == 200) {
-        this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
+        if (IdProduto == '' || IdProduto == null) {
+          this.ProdutoService.buscarTodos().subscribe(result => {
+            this.AlertService.show('Registro ' + result.pop().IdProduto + ' Gravado com sucesso', { classname: 'bg-success text-light', delay: 3000 });
+          });
+        } else {
+          this.AlertService.show('Registro ' + IdProduto + ' Gravado com sucesso', { classname: 'bg-success text-light', delay: 3000 });
+        }
       } else {
         this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
       }
+
       this.Limpar();
     } catch (error) {
       console.error(error);
@@ -135,6 +150,8 @@ export class CadastroProdutoComponent implements OnInit {
         } else
           if (result.status == 200) {
             this.Produto = result.resultado;
+            this.Produto.Vista = this.Produto.Vista.toString().replace(".", ",");
+            this.Produto.Prazo = this.Produto.Prazo.toString().replace(".", ",");
           } else {
             this.AlertService.show("Registro não encontrado", { classname: 'bg-danger text-light', delay: 3000 });
             this.Limpar();
@@ -173,8 +190,6 @@ export class CadastroProdutoComponent implements OnInit {
   //   this.Limpar()
   //   this.ProdutoRetorno = new Produto;
   // }
-
-
 
 
 }

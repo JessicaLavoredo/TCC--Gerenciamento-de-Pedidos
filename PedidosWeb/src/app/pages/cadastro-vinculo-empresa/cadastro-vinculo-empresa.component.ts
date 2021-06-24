@@ -36,9 +36,19 @@ export class CadastroVinculoEmpresaComponent implements OnInit {
       if (!this.validacao) {
         return
       }
+
+      let IdVinculo;
+      IdVinculo = this.vinculo.IdVinculo
+
       let retorno: any = await this.VinculoEmpresaService.gravar(this.vinculo);
       if (retorno.status == 200) {
-        this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
+        if (IdVinculo == '' || IdVinculo == null) {
+          this.VinculoEmpresaService.buscarTodos().subscribe(result => {
+            this.AlertService.show('Registro ' + result.pop().IdVinculo + ' Gravado com sucesso', { classname: 'bg-success text-light', delay: 3000 });
+          });
+        } else {
+          this.AlertService.show('Registro ' + IdVinculo + ' Gravado com sucesso', { classname: 'bg-success text-light', delay: 3000 });
+        }
       } else {
         this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
       }

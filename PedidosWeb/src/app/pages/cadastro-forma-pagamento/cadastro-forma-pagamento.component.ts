@@ -35,9 +35,19 @@ export class CadastroFormaPagamentoComponent implements OnInit {
       if (!this.validacao) {
         return
       }
+      let IdFormaPagamento;
+      IdFormaPagamento = this.FormaPagamento.IdFormaPagamento
+
       let retorno: any = await this.FormaPagamentoService.gravar(this.FormaPagamento);
       if (retorno.status == 200) {
-        this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
+        if (IdFormaPagamento == '' || IdFormaPagamento == null) {
+          this.FormaPagamentoService.buscarTodos().subscribe(result => {
+            this.FormasPagamento = result;
+            this.AlertService.show('Registro ' + result.pop().IdFormaPagamento + ' Gravado com sucesso', { classname: 'bg-success text-light', delay: 3000 });
+          });
+        } else {
+          this.AlertService.show('Registro ' + IdFormaPagamento + ' Gravado com sucesso', { classname: 'bg-success text-light', delay: 3000 });
+        }
       } else {
         this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
       }

@@ -25,7 +25,7 @@
                 <label for="txtNome">{{NomeCliente}}</label>
             </div>
 
-            <div class="form-group col-md-1">
+            <div class="form-group col-md-1" *ngIf="perfil=='1' || perfil=='2'">
                 <label for="txtVendedor">Vendedor</label>
                 <input type="text" class="form-control" [formControl]="queryVendedor" id="txtVendedor" name="Vendedor"
                     appSomenteNumeros [(ngModel)]="IdUsuarioMovimentacao">
@@ -34,12 +34,12 @@
                 data-target="#ModalPesquisaVendedor">
                 <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
             </button>
-            <div class="form-group mt-4 col-md-0.5 mr-2">
+            <div class="form-group mt-4 col-md-0.5 mr-2" *ngIf="perfil=='1'|| perfil=='2'">
                 <button class="btn btn-info btnsearch " (click)='pesquisarVendedor()'>
                     <mat-icon [inline]="true" aria-hidden="false" aria-label="search">search</mat-icon>
                 </button>
             </div>
-            <div class="form-group col-md-4 mt-5">
+            <div class="form-group col-md-4 mt-5" *ngIf="perfil=='1' || perfil=='2'">
                 <label for="txtNome">{{NomeVendedor}}</label>
             </div>
         </div>

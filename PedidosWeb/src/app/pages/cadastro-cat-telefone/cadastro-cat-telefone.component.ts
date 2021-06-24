@@ -36,14 +36,26 @@ export class CadastroCatTelefoneComponent implements OnInit {
       if (!this.validacao) {
         return
       }
+
+      let IdCategoriaTelefone;
+      IdCategoriaTelefone = this.categoria.IdCategoriaTelefone
+
       let retorno: any = await this.CategoriaTelefoneService.gravar(this.categoria);
       if (retorno.status == 200) {
-        this.AlertService.show(retorno.resultado, { classname: 'bg-success text-light', delay: 3000 });
+        if (IdCategoriaTelefone == '' || IdCategoriaTelefone == null) {
+          this.CategoriaTelefoneService.buscarTodos().subscribe(result => {
+            this.categorias = result;
+            this.AlertService.show('Registro ' + result.pop().IdCategoriaTelefone + ' Gravado com sucesso', { classname: 'bg-success text-light', delay: 3000 });
+          });
+        } else {
+          this.AlertService.show('Registro ' + IdCategoriaTelefone + ' Gravado com sucesso', { classname: 'bg-success text-light', delay: 3000 });
+        }
       } else {
         this.AlertService.show(retorno.resultado, { classname: 'bg-danger text-light', delay: 3000 });
       }
       this.listar();
       this.categoria = new CategoriaTelefone();
+      IdCategoriaTelefone = null
     } catch (error) {
       console.error(error);
     }
